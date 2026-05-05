@@ -1,427 +1,204 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { DashboardCard } from "@/components/DashboardCard";
-import { Sidebar } from "@/components/Sidebar";
+import { type FormEvent, useMemo, useState } from "react";
+import { AppSidebar } from "@/components/AppSidebar";
+import { AcademicView } from "@/components/views/AcademicView";
+import { AlertsView } from "@/components/views/AlertsView";
+import { CoursesView } from "@/components/views/CoursesView";
+import { DashboardView } from "@/components/views/DashboardView";
+import {
+  EnrollmentsView,
+  type NewEnrollmentForm,
+} from "@/components/views/EnrollmentsView";
+import { LMSView } from "@/components/views/LMSView";
+import { PredictionView } from "@/components/views/PredictionView";
+import { ReportsView } from "@/components/views/ReportsView";
+import {
+  defaultStudentForm,
+  StudentsView,
+  type NewStudentForm,
+} from "@/components/views/StudentsView";
+import { TeachersView } from "@/components/views/TeachersView";
+import {
+  APP_SECTIONS,
+  seedCourses,
+  seedEnrollments,
+  seedStudents,
+  seedTeachers,
+  type AppSection,
+} from "@/data/seed";
+import { earlyAlertCount } from "@/lib/aggregates";
+import { buildMetrics } from "@/lib/student-factory";
+import type { Enrollment, Student } from "@/types/academic";
 
-type StudentStatus = "activo" | "en riesgo" | "retirado";
-type RiskLevel = "bajo" | "medio" | "alto";
-
-type Student = {
-  id: string;
-  codigo: string;
-  nombres: string;
-  apellidos: string;
-  nivel: string;
-  correo: string;
-  telefono: string;
-  estado: StudentStatus;
+const initialEnrollment: NewEnrollmentForm = {
+  studentId: "",
+  courseId: "",
+  promedio: "12",
+  asistenciaPct: "80",
 };
 
-type Teacher = {
-  id: string;
-  codigo: string;
-  nombres: string;
-  apellidos: string;
-  especialidad: string;
-  correo: string;
-  telefono: string;
-};
-
-type Course = {
-  id: string;
-  codigo: string;
-  nombre: string;
-  nivel: string;
-  profesorId: string;
-};
-
-const sections = [
-  "Dashboard",
-  "Estudiantes",
-  "Profesores",
-  "Cursos",
-  "Matriculas",
-  "Datos academicos",
-  "Actividad LMS",
-  "Prediccion",
-  "Reportes",
-];
-
-const initialStudents: Student[] = [
-  {
-    id: "s1",
-    codigo: "ST-001",
-    nombres: "Lucia",
-    apellidos: "Paredes",
-    nivel: "4to Secundaria",
-    correo: "lucia.paredes@colegio.edu.pe",
-    telefono: "987654321",
-    estado: "activo",
-  },
-  {
-    id: "s2",
-    codigo: "ST-002",
-    nombres: "Carlos",
-    apellidos: "Rojas",
-    nivel: "5to Secundaria",
-    correo: "carlos.rojas@colegio.edu.pe",
-    telefono: "912345678",
-    estado: "en riesgo",
-  },
-];
-
-const initialTeachers: Teacher[] = [
-  {
-    id: "t1",
-    codigo: "PR-001",
-    nombres: "Ana",
-    apellidos: "Quispe",
-    especialidad: "Matematica",
-    correo: "ana.quispe@colegio.edu.pe",
-    telefono: "999111222",
-  },
-  {
-    id: "t2",
-    codigo: "PR-002",
-    nombres: "Luis",
-    apellidos: "Mendoza",
-    especialidad: "Comunicacion",
-    correo: "luis.mendoza@colegio.edu.pe",
-    telefono: "988777666",
-  },
-];
-
-const initialCourses: Course[] = [
-  { id: "c1", codigo: "CU-101", nombre: "Algebra", nivel: "4to Secundaria", profesorId: "t1" },
-  { id: "c2", codigo: "CU-201", nombre: "Literatura", nivel: "5to Secundaria", profesorId: "t2" },
-];
-
-const riskByLevel = [
-  { nivel: "Bajo", valor: 56, color: "bg-emerald-500" },
-  { nivel: "Medio", valor: 29, color: "bg-amber-500" },
-  { nivel: "Alto", valor: 15, color: "bg-rose-500" },
-];
-
-const avgByCourse = [
-  { curso: "Algebra", valor: 14.2 },
-  { curso: "Literatura", valor: 12.8 },
-  { curso: "Ciencias", valor: 13.6 },
-];
-
-const lmsByWeek = [
-  { semana: "Sem 1", valor: 62 },
-  { semana: "Sem 2", valor: 74 },
-  { semana: "Sem 3", valor: 69 },
-  { semana: "Sem 4", valor: 80 },
-];
-
-function getPredictionFromRule(student: Student): { risk: RiskLevel; score: number } {
-  if (student.estado === "en riesgo") {
-    return { risk: "alto", score: 0.84 };
+function sectionSubtitle(section: AppSection): string {
+  switch (section) {
+    case "Dashboard":
+      return "Indicadores globales, tendencia histórica y ranking de riesgo.";
+    case "Alertas":
+      return "Priorización automática y recomendaciones de intervención.";
+    case "Estudiantes":
+      return "Registro y vista consolidada con score de deserción.";
+    case "Profesores":
+      return "Directorio docente del colegio.";
+    case "Cursos":
+      return "Oferta académica y asignación.";
+    case "Matrículas":
+      return "Vínculo estudiante–curso con notas y asistencia por aula.";
+    case "Datos académicos":
+      return "Resumen por estudiante y detalle de matrículas.";
+    case "Actividad LMS":
+      return "Engagement, tiempo en plataforma y entregas.";
+    case "Predicción":
+      return "Interpretabilidad del ensemble y simulación de escenarios.";
+    case "Reportes":
+      return "Tableros analíticos y exportación PDF / Excel.";
+    default:
+      return "";
   }
-  if (student.estado === "retirado") {
-    return { risk: "alto", score: 0.93 };
-  }
-  return { risk: "bajo", score: 0.2 };
 }
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState(sections[0]);
-  const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [teachers] = useState<Teacher[]>(initialTeachers);
-  const [courses] = useState<Course[]>(initialCourses);
-  const [selectedStudentId, setSelectedStudentId] = useState(initialStudents[0]?.id ?? "");
+  const [activeSection, setActiveSection] = useState<AppSection>(APP_SECTIONS[0]);
+  const [students, setStudents] = useState<Student[]>(seedStudents);
+  const [teachers] = useState(seedTeachers);
+  const [courses] = useState(seedCourses);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>(seedEnrollments);
 
-  const [newStudent, setNewStudent] = useState({
-    codigo: "",
-    nombres: "",
-    apellidos: "",
-    nivel: "",
-    correo: "",
-    telefono: "",
-    estado: "activo" as StudentStatus,
-  });
+  const [newStudent, setNewStudent] = useState<NewStudentForm>(defaultStudentForm);
+  const [enrollmentForm, setEnrollmentForm] =
+    useState<NewEnrollmentForm>(initialEnrollment);
 
-  const prediction = useMemo(() => {
-    const found = students.find((s) => s.id === selectedStudentId);
-    if (!found) {
-      return null;
-    }
-    return getPredictionFromRule(found);
-  }, [selectedStudentId, students]);
+  const alertCount = useMemo(() => earlyAlertCount(students), [students]);
 
-  const studentsAtRisk = students.filter((s) => s.estado === "en riesgo").length;
-
-  const addStudent = (event: React.FormEvent<HTMLFormElement>) => {
+  function addStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!newStudent.codigo || !newStudent.nombres || !newStudent.apellidos) {
       return;
     }
-    setStudents((prev) => [
-      ...prev,
-      {
-        id: `s-${Date.now()}`,
-        ...newStudent,
-      },
-    ]);
-    setNewStudent({
-      codigo: "",
-      nombres: "",
-      apellidos: "",
-      nivel: "",
-      correo: "",
-      telefono: "",
-      estado: "activo",
+    const promedio = Number.parseFloat(newStudent.promedioGeneral.replace(",", "."));
+    const asistencia = Number.parseFloat(newStudent.asistenciaGeneral.replace(",", "."));
+    const metrics = buildMetrics(
+      Number.isFinite(promedio) ? Math.min(20, Math.max(0, promedio)) : 13,
+      Number.isFinite(asistencia) ? Math.min(100, Math.max(0, asistencia)) : 85,
+      newStudent.engagement,
+    );
+    const created: Student = {
+      id: `s-${Date.now()}`,
+      codigo: newStudent.codigo.trim(),
+      nombres: newStudent.nombres.trim(),
+      apellidos: newStudent.apellidos.trim(),
+      nivel: newStudent.nivel.trim(),
+      correo: newStudent.correo.trim(),
+      telefono: newStudent.telefono.trim(),
+      estado: newStudent.estado,
+      metrics,
+    };
+    setStudents((prev) => [...prev, created]);
+    setNewStudent(defaultStudentForm);
+  }
+
+  function addEnrollment(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!enrollmentForm.studentId || !enrollmentForm.courseId) return;
+    const promedio = Number.parseFloat(enrollmentForm.promedio.replace(",", "."));
+    const asistencia = Number.parseFloat(enrollmentForm.asistenciaPct.replace(",", "."));
+    if (!Number.isFinite(promedio) || !Number.isFinite(asistencia)) return;
+    const row: Enrollment = {
+      id: `e-${Date.now()}`,
+      studentId: enrollmentForm.studentId,
+      courseId: enrollmentForm.courseId,
+      promedio: Math.min(20, Math.max(0, promedio)),
+      asistenciaPct: Math.min(100, Math.max(0, asistencia)),
+    };
+    setEnrollments((prev) => [...prev, row]);
+    setEnrollmentForm({
+      studentId: enrollmentForm.studentId,
+      courseId: "",
+      promedio: "12",
+      asistenciaPct: "80",
     });
-  };
+  }
+
+  function renderSection() {
+    switch (activeSection) {
+      case "Dashboard":
+        return <DashboardView students={students} courses={courses} enrollments={enrollments} />;
+      case "Alertas":
+        return <AlertsView students={students} />;
+      case "Estudiantes":
+        return (
+          <StudentsView
+            students={students}
+            newStudent={newStudent}
+            setNewStudent={setNewStudent}
+            onAddStudent={addStudent}
+          />
+        );
+      case "Profesores":
+        return <TeachersView teachers={teachers} />;
+      case "Cursos":
+        return <CoursesView courses={courses} teachers={teachers} />;
+      case "Matrículas":
+        return (
+          <EnrollmentsView
+            enrollments={enrollments}
+            students={students}
+            courses={courses}
+            form={enrollmentForm}
+            setForm={setEnrollmentForm}
+            onAdd={addEnrollment}
+          />
+        );
+      case "Datos académicos":
+        return (
+          <AcademicView students={students} courses={courses} enrollments={enrollments} />
+        );
+      case "Actividad LMS":
+        return <LMSView students={students} />;
+      case "Predicción":
+        return <PredictionView students={students} />;
+      case "Reportes":
+        return (
+          <ReportsView students={students} courses={courses} enrollments={enrollments} />
+        );
+      default:
+        return null;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 lg:flex">
-      <Sidebar sections={sections} activeSection={activeSection} onSelect={setActiveSection} />
+      <AppSidebar
+        sections={APP_SECTIONS}
+        activeSection={activeSection}
+        onSelect={setActiveSection}
+        alertCount={alertCount}
+      />
 
       <main className="flex-1 space-y-6 p-4 md:p-8">
-        <header className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">I.E.P. Blenkir Huancayo</p>
-          <h2 className="mt-1 text-2xl font-bold">
-            Modelo Predictivo de Riesgo de Desercion Estudiantil
-          </h2>
+        <header className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+          <p className="text-sm font-medium text-indigo-600">
+            I.E.P. Blenkir Huancayo · Ingeniería de Sistemas
+          </p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">
+            Modelo predictivo con ensemble learning para riesgo de deserción
+          </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Modulo activo: <span className="font-semibold">{activeSection}</span>
+            <span className="font-semibold text-slate-800">{activeSection}</span>
+            {" · "}
+            {sectionSubtitle(activeSection)}
           </p>
         </header>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <DashboardCard title="Total de estudiantes" value={students.length} />
-          <DashboardCard title="Total de cursos" value={courses.length} />
-          <DashboardCard title="Total de profesores" value={teachers.length} />
-          <DashboardCard
-            title="Estudiantes en riesgo"
-            value={studentsAtRisk}
-            subtitle="Seguimiento de alerta temprana"
-          />
-        </section>
-
-        <section className="grid gap-4 xl:grid-cols-3">
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-base font-semibold">Riesgo de desercion por nivel</h3>
-            <div className="mt-4 space-y-3">
-              {riskByLevel.map((item) => (
-                <div key={item.nivel}>
-                  <div className="mb-1 flex justify-between text-sm">
-                    <span>{item.nivel}</span>
-                    <span>{item.valor}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-slate-200">
-                    <div className={`h-2 rounded-full ${item.color}`} style={{ width: `${item.valor}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-base font-semibold">Promedio academico por curso</h3>
-            <div className="mt-4 space-y-3">
-              {avgByCourse.map((item) => (
-                <div key={item.curso}>
-                  <div className="mb-1 flex justify-between text-sm">
-                    <span>{item.curso}</span>
-                    <span>{item.valor.toFixed(1)}</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-slate-200">
-                    <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${item.valor * 6}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-base font-semibold">Actividad LMS por semana</h3>
-            <div className="mt-4 flex items-end gap-3">
-              {lmsByWeek.map((item) => (
-                <div key={item.semana} className="flex flex-1 flex-col items-center gap-2">
-                  <div
-                    className="w-full rounded-md bg-cyan-500"
-                    style={{ height: `${item.valor * 1.2}px`, minHeight: "8px" }}
-                  />
-                  <span className="text-xs text-slate-600">{item.semana}</span>
-                </div>
-              ))}
-            </div>
-          </article>
-        </section>
-
-        <section className="grid gap-4 xl:grid-cols-2">
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-base font-semibold">Registrar estudiante</h3>
-            <form className="mt-4 grid gap-3 sm:grid-cols-2" onSubmit={addStudent}>
-              <input
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Codigo"
-                value={newStudent.codigo}
-                onChange={(e) => setNewStudent((prev) => ({ ...prev, codigo: e.target.value }))}
-              />
-              <input
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Nombres"
-                value={newStudent.nombres}
-                onChange={(e) => setNewStudent((prev) => ({ ...prev, nombres: e.target.value }))}
-              />
-              <input
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Apellidos"
-                value={newStudent.apellidos}
-                onChange={(e) => setNewStudent((prev) => ({ ...prev, apellidos: e.target.value }))}
-              />
-              <input
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Nivel"
-                value={newStudent.nivel}
-                onChange={(e) => setNewStudent((prev) => ({ ...prev, nivel: e.target.value }))}
-              />
-              <input
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Correo"
-                value={newStudent.correo}
-                onChange={(e) => setNewStudent((prev) => ({ ...prev, correo: e.target.value }))}
-              />
-              <input
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Telefono"
-                value={newStudent.telefono}
-                onChange={(e) => setNewStudent((prev) => ({ ...prev, telefono: e.target.value }))}
-              />
-              <select
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                value={newStudent.estado}
-                onChange={(e) => setNewStudent((prev) => ({ ...prev, estado: e.target.value as StudentStatus }))}
-              >
-                <option value="activo">Activo</option>
-                <option value="en riesgo">En riesgo</option>
-                <option value="retirado">Retirado</option>
-              </select>
-              <button
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-                type="submit"
-              >
-                Agregar estudiante
-              </button>
-            </form>
-          </article>
-
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-base font-semibold">Prediccion simulada de riesgo</h3>
-            <div className="mt-4 space-y-3">
-              <select
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                value={selectedStudentId}
-                onChange={(e) => setSelectedStudentId(e.target.value)}
-              >
-                {students.map((student) => (
-                  <option key={student.id} value={student.id}>
-                    {student.nombres} {student.apellidos}
-                  </option>
-                ))}
-              </select>
-              {prediction ? (
-                <div className="rounded-lg bg-slate-50 p-4">
-                  <p className="text-sm text-slate-600">Nivel de riesgo estimado</p>
-                  <p className="text-2xl font-bold capitalize text-slate-900">{prediction.risk}</p>
-                  <p className="mt-1 text-sm text-slate-600">
-                    Score simulado: {(prediction.score * 100).toFixed(0)}%
-                  </p>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-600">No hay estudiante seleccionado.</p>
-              )}
-            </div>
-          </article>
-        </section>
-
-        <section className="grid gap-4 xl:grid-cols-2">
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-base font-semibold">Tabla de estudiantes</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="border-b border-slate-200 text-slate-500">
-                  <tr>
-                    <th className="py-2">Codigo</th>
-                    <th className="py-2">Estudiante</th>
-                    <th className="py-2">Nivel</th>
-                    <th className="py-2">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.map((student) => (
-                    <tr key={student.id} className="border-b border-slate-100">
-                      <td className="py-2">{student.codigo}</td>
-                      <td className="py-2">{student.nombres} {student.apellidos}</td>
-                      <td className="py-2">{student.nivel}</td>
-                      <td className="py-2 capitalize">{student.estado}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </article>
-
-          <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-base font-semibold">Tabla de profesores</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="border-b border-slate-200 text-slate-500">
-                  <tr>
-                    <th className="py-2">Codigo</th>
-                    <th className="py-2">Docente</th>
-                    <th className="py-2">Especialidad</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {teachers.map((teacher) => (
-                    <tr key={teacher.id} className="border-b border-slate-100">
-                      <td className="py-2">{teacher.codigo}</td>
-                      <td className="py-2">{teacher.nombres} {teacher.apellidos}</td>
-                      <td className="py-2">{teacher.especialidad}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </section>
-
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="mb-3 text-base font-semibold">Tabla de cursos</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="border-b border-slate-200 text-slate-500">
-                <tr>
-                  <th className="py-2">Codigo</th>
-                  <th className="py-2">Curso</th>
-                  <th className="py-2">Nivel</th>
-                  <th className="py-2">Profesor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {courses.map((course) => {
-                  const teacher = teachers.find((item) => item.id === course.profesorId);
-                  return (
-                    <tr key={course.id} className="border-b border-slate-100">
-                      <td className="py-2">{course.codigo}</td>
-                      <td className="py-2">{course.nombre}</td>
-                      <td className="py-2">{course.nivel}</td>
-                      <td className="py-2">
-                        {teacher ? `${teacher.nombres} ${teacher.apellidos}` : "Sin asignar"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        {renderSection()}
       </main>
     </div>
   );

@@ -2,16 +2,24 @@
   "name": "tesis-dashboard",
   "version": "0.1.0",
   "private": true,
+  "description": "Sistema web para tesis: modelo predictivo de riesgo de deserción estudiantil con dashboard académico.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3029",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start -p 3029",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
+    "lucide-react": "^0.468.0",
     "next": "16.2.4",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "recharts": "^2.15.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
