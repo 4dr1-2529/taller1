@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 import {
   Activity,
@@ -11,12 +13,20 @@ import {
   Sparkles,
   UserPlus,
   Users,
+  Brain,
+  LogOut,
+  MessageCircle,
+  HeartHandshake,
 } from "lucide-react";
+import Link from "next/link";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useAuth } from "@/contexts/AuthProvider";
 import type { AppSection } from "@/data/seed";
 
 const ICONS: Record<AppSection, typeof LayoutDashboard> = {
   Dashboard: LayoutDashboard,
   Alertas: AlertTriangle,
+  "Seguimiento psicológico": HeartHandshake,
   Estudiantes: Users,
   Profesores: GraduationCap,
   Cursos: BookOpen,
@@ -24,6 +34,8 @@ const ICONS: Record<AppSection, typeof LayoutDashboard> = {
   "Datos académicos": School,
   "Actividad LMS": Activity,
   Predicción: Sparkles,
+  "Modelos IA": Brain,
+  Chat: MessageCircle,
   Reportes: LineChart,
 };
 
@@ -40,6 +52,8 @@ export function AppSidebar({
   onSelect,
   alertCount,
 }: AppSidebarProps) {
+  const { user, logout, isAuthenticated } = useAuth();
+
   return (
     <aside className="w-full border-slate-800 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100 lg:min-h-screen lg:w-72">
       <div className="border-b border-slate-800 px-6 py-6">
@@ -94,8 +108,30 @@ export function AppSidebar({
         })}
       </nav>
 
-      <div className="mt-auto hidden border-t border-slate-800 p-4 text-[11px] leading-relaxed text-slate-500 lg:block">
-        I.E.P. Blenkir Huancayo · Tesis Ing. Sistemas
+      <div className="mt-auto border-t border-slate-800 p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <ThemeToggle />
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={logout}
+              className="flex items-center gap-1 text-xs text-slate-400 hover:text-white"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Salir
+            </button>
+          ) : (
+            <Link href="/login" className="text-xs text-indigo-300 hover:text-white">
+              Iniciar sesión
+            </Link>
+          )}
+        </div>
+        {user ? (
+          <p className="text-xs text-slate-400">
+            {user.nombres} · <span className="capitalize">{user.role}</span>
+          </p>
+        ) : null}
+        <p className="text-[11px] text-slate-500">I.E.P. Blenkir Huancayo · Perú</p>
       </div>
     </aside>
   );

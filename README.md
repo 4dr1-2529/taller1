@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tesis Dashboard v2.0
 
-## Getting Started
+**Modelo predictivo basado en ensemble learning para la identificación del riesgo de deserción estudiantil** — fusión de datos académicos y comportamiento en LMS.
 
-First, run the development server:
+Institución: **I.E.P. Blenkir Huancayo · Perú**
+
+## Arquitectura
+
+| Servicio | Puerto | Tecnología |
+|----------|--------|------------|
+| Frontend | 3029 | Next.js 16, React 19, Tailwind 4 |
+| Backend API | 4000 | Express, Prisma, JWT |
+| ML Service | 5000 | FastAPI, scikit-learn, XGBoost |
+
+```
+tesis-dashboard/
+├── src/                    # Frontend (Next.js)
+├── backend/                # API REST + Prisma
+├── ml-service/             # Modelos IA (RF, XGB, Stacking)
+├── database/postgresql/    # Esquema SQL producción + DER
+└── docs/                   # Arquitectura y documentación
+```
+
+## Inicio rápido
+
+### 1. Dependencias
+
+```bash
+npm install
+cd backend && npm install && cd ..
+pip install -r ml-service/requirements.txt
+```
+
+### 2. Base de datos
+
+```bash
+cp backend/.env.example backend/.env
+npm run db:push
+npm run db:seed
+```
+
+### 3. Entrenar modelos IA
+
+```bash
+npm run ml:train
+```
+
+### 4. Ejecutar todo (frontend + API + ML)
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **App:** http://localhost:3029  
+- **API:** http://localhost:4000/api/v1  
+- **ML:** http://localhost:5000/docs  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Credenciales demo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Rol | Email | Contraseña |
+|-----|-------|------------|
+| Admin | admin@iep-huancayo.edu.pe | Tesis2026! |
+| Docente | docente@iep-huancayo.edu.pe | Tesis2026! |
+| Tutor | tutor@iep-huancayo.edu.pe | Tesis2026! |
+| Psicólogo | psicologo@iep-huancayo.edu.pe | Tesis2026! |
+| Estudiante | estudiante@iep-huancayo.edu.pe | Tesis2026! |
 
-## Learn More
+## Funcionalidades
 
-To learn more about Next.js, take a look at the following resources:
+- Dashboard analítico con KPIs y gráficos Recharts
+- Predicción de riesgo (bajo / medio / alto) con interpretabilidad
+- Ensemble ML: Random Forest, XGBoost, Stacking
+- Alertas tempranas y recomendaciones automáticas
+- JWT + roles (admin, docente, tutor, psicólogo, estudiante)
+- Base de datos normalizada con auditoría y trazabilidad
+- Exportación PDF / Excel
+- Modo claro / oscuro
+- Chat interno (API)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Documentación
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Arquitectura](docs/ARQUITECTURA.md)
+- [DER](docs/DER.md)
+- [API](docs/API.md)
+- Esquema PostgreSQL: `database/postgresql/schema.sql`
 
-## Deploy on Vercel
+## Variables de entorno
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Copie `.env.example` y `backend/.env.example` y ajuste `JWT_SECRET` en producción.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tesis
+
+Sistema desarrollado como proyecto universitario avanzado — software escalable tipo SaaS educativo con IA explicable y persistencia real.

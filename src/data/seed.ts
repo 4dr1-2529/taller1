@@ -140,6 +140,7 @@ export const seedEnrollments: Enrollment[] = [
 export const APP_SECTIONS = [
   "Dashboard",
   "Alertas",
+  "Seguimiento psicológico",
   "Estudiantes",
   "Profesores",
   "Cursos",
@@ -147,6 +148,8 @@ export const APP_SECTIONS = [
   "Datos académicos",
   "Actividad LMS",
   "Predicción",
+  "Modelos IA",
+  "Chat",
   "Reportes",
 ] as const;
 

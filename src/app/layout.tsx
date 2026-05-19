@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
+import { Providers } from "@/components/Providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard académico · Riesgo de deserción",
+  title: "Tesis Dashboard · Riesgo de deserción | I.E.P. Huancayo",
   description:
-    "Sistema inteligente: datos académicos, LMS y modelo ensemble para alerta temprana.",
+    "Sistema predictivo con ensemble learning, fusión de datos académicos y comportamiento LMS.",
 };
 
 export default function RootLayout({
@@ -26,9 +28,15 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <Providers>
+          {children}
+          <Toaster richColors position="top-right" closeButton />
+        </Providers>
+      </body>
     </html>
   );
 }

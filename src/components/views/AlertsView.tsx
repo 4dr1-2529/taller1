@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { AlertTriangle, CheckCircle2, ShieldAlert } from "lucide-react";
+import { toast } from "sonner";
 import { attachPredictions } from "@/lib/aggregates";
 import { recommendationsForFactor } from "@/lib/recommendations";
-import type { Student } from "@/types/academic";
+import { api, type ApiAlert } from "@/services/api";
+import type { FactorKey, Student } from "@/types/academic";
 
 function badgeClasses(level: string) {
   return clsx(
@@ -18,94 +20,156 @@ function badgeClasses(level: string) {
 
 type AlertsViewProps = {
   students: Student[];
+  useApi?: boolean;
 };
 
-export function AlertsView({ students }: AlertsViewProps) {
-  const items = useMemo(() => {
+export function AlertsView({ students, useApi = false }: AlertsViewProps) {
+  const [apiAlerts, setApiAlerts] = useState<ApiAlert[]>([]);
+
+  const loadApi = useCallback(async () => {
+    if (!useApi) return;
+    try {
+      const res = await api.getAlerts();
+      setApiAlerts(res.items);
+    } catch {
+      setApiAlerts([]);
+    }
+  }, [useApi]);
+
+  useEffect(() => {
+    void loadApi();
+  }, [loadApi]);
+
+  const localItems = useMemo(() => {
     return attachPredictions(students)
       .filter((s) => s.prediction.level !== "bajo")
       .sort((a, b) => b.prediction.score - a.prediction.score);
   }, [students]);
 
-  const critical = items.filter((s) => s.prediction.level === "alto");
+  const criticalCount = useApi
+    ? apiAlerts.filter((a) => a.level === "alto").length
+    : localItems.filter((s) => s.prediction.level === "alto").length;
+
+  const listCount = useApi ? apiAlerts.length : localItems.length;
+
+  async function updateStatus(id: string, status: "en_seguimiento" | "resuelta") {
+    try {
+      await api.updateAlertStatus(id, status);
+      toast.success(status === "resuelta" ? "Alerta resuelta" : "En seguimiento");
+      void loadApi();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Error");
+    }
+  }
 
   return (
     <div className="space-y-6">
       <section className="grid gap-4 md:grid-cols-3">
-        <article className="rounded-2xl border border-rose-200/80 bg-rose-50/60 p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-rose-900">
+        <article className="glass-card border-rose-200/80 bg-rose-50/60 p-5 dark:bg-rose-950/30">
+          <div className="flex items-center gap-2 text-rose-900 dark:text-rose-100">
             <ShieldAlert className="h-5 w-5" aria-hidden />
             <h3 className="text-sm font-semibold">Riesgo alto</h3>
           </div>
-          <p className="mt-2 text-3xl font-bold text-rose-950">{critical.length}</p>
-          <p className="mt-1 text-sm text-rose-800/90">Requieren intervención prioritaria.</p>
+          <p className="mt-2 text-3xl font-bold text-rose-950 dark:text-rose-50">{criticalCount}</p>
         </article>
-        <article className="rounded-2xl border border-amber-200/80 bg-amber-50/60 p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-amber-950">
+        <article className="glass-card border-amber-200/80 bg-amber-50/60 p-5 dark:bg-amber-950/30">
+          <div className="flex items-center gap-2 text-amber-950 dark:text-amber-100">
             <AlertTriangle className="h-5 w-5" aria-hidden />
-            <h3 className="text-sm font-semibold">Lista priorizada</h3>
+            <h3 className="text-sm font-semibold">Alertas activas</h3>
           </div>
-          <p className="mt-2 text-3xl font-bold text-amber-950">{items.length}</p>
-          <p className="mt-1 text-sm text-amber-900/90">Medio + alto, ordenados por score.</p>
+          <p className="mt-2 text-3xl font-bold">{listCount}</p>
         </article>
-        <article className="rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-emerald-950">
+        <article className="glass-card border-emerald-200/80 bg-emerald-50/60 p-5 dark:bg-emerald-950/30">
+          <div className="flex items-center gap-2 text-emerald-950 dark:text-emerald-100">
             <CheckCircle2 className="h-5 w-5" aria-hidden />
-            <h3 className="text-sm font-semibold">Estables</h3>
+            <h3 className="text-sm font-semibold">Fuente</h3>
           </div>
-          <p className="mt-2 text-3xl font-bold text-emerald-950">
-            {students.length - items.length}
-          </p>
-          <p className="mt-1 text-sm text-emerald-900/90">Riesgo bajo según el modelo actual.</p>
+          <p className="mt-2 text-sm font-medium">{useApi ? "Base de datos + IA" : "Modelo local"}</p>
         </article>
       </section>
 
-      <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-        <h3 className="text-base font-semibold text-slate-900">Alertas inteligentes</h3>
-        <p className="text-sm text-slate-600">
-          Cada ítem incluye el factor dominante y recomendaciones automáticas alineadas al plan de tutoría.
+      <section className="glass-card rounded-2xl p-5">
+        <h3 className="text-base font-semibold">Alertas inteligentes</h3>
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          {useApi
+            ? "Alertas persistidas generadas por predicciones en el servidor."
+            : "Priorización en tiempo real según el ensemble simulado."}
         </p>
 
-        <ul className="mt-4 divide-y divide-slate-100">
-          {items.length === 0 ? (
-            <li className="py-8 text-center text-sm text-slate-500">
-              No hay estudiantes en alerta con el umbral actual.
-            </li>
+        <ul className="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
+          {useApi ? (
+            apiAlerts.length === 0 ? (
+              <li className="py-8 text-center text-sm text-slate-500">
+                Sin alertas abiertas. Ejecute predicciones desde el módulo correspondiente.
+              </li>
+            ) : (
+              apiAlerts.map((a) => {
+                const recs = recommendationsForFactor((a.factorKey ?? "bajo_promedio") as FactorKey);
+                return (
+                  <li key={a.id} className="flex flex-col gap-3 py-4 md:flex-row md:justify-between">
+                    <div>
+                      <p className="font-semibold">
+                        {a.student.nombres} {a.student.apellidos}
+                      </p>
+                      <p className="text-sm text-slate-600">{a.titulo}</p>
+                      <p className="mt-1 text-xs text-slate-500">{a.descripcion}</p>
+                      <span className={clsx("mt-2 inline-block", badgeClasses(a.level))}>
+                        {a.level} · {a.status}
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-2 md:items-end">
+                      <ul className="list-disc pl-4 text-sm text-slate-700 dark:text-slate-300">
+                        {recs.slice(0, 2).map((r) => (
+                          <li key={r.titulo}>{r.titulo}</li>
+                        ))}
+                      </ul>
+                      {a.status !== "resuelta" ? (
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => void updateStatus(a.id, "en_seguimiento")}
+                            className="rounded-lg bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900"
+                          >
+                            En seguimiento
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void updateStatus(a.id, "resuelta")}
+                            className="rounded-lg bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900"
+                          >
+                            Resolver
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })
+            )
+          ) : localItems.length === 0 ? (
+            <li className="py-8 text-center text-sm text-slate-500">No hay estudiantes en alerta.</li>
           ) : (
-            items.map((s) => {
+            localItems.map((s) => {
               const top = s.prediction.factors[0];
               const recs = recommendationsForFactor(top.key);
               return (
-                <li key={s.id} className="flex flex-col gap-3 py-4 md:flex-row md:items-start md:justify-between">
+                <li key={s.id} className="flex flex-col gap-3 py-4 md:flex-row md:justify-between">
                   <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold text-slate-900">
-                        {s.nombres} {s.apellidos}
-                      </p>
-                      <span className={badgeClasses(s.prediction.level)}>
-                        {s.prediction.level === "alto" ? "🔴" : "🟡"} {s.prediction.level}
-                      </span>
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
-                        Score {Math.round(s.prediction.score)}
-                      </span>
-                    </div>
+                    <p className="font-semibold">
+                      {s.nombres} {s.apellidos}
+                    </p>
+                    <span className={badgeClasses(s.prediction.level)}>{s.prediction.level}</span>
                     <p className="mt-1 text-sm text-slate-600">
-                      Factor principal: <strong>{top.label}</strong> · Contribución{" "}
-                      {Math.round(top.contribution)} pts
+                      {top.label} · {Math.round(top.contribution)} pts
                     </p>
                   </div>
-                  <div className="md:max-w-md">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Recomendaciones
-                    </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-slate-700">
-                      {recs.map((r) => (
-                        <li key={r.titulo}>
-                          <span className="font-medium text-slate-900">{r.titulo}:</span> {r.detalle}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <ul className="list-disc pl-4 text-sm md:max-w-md">
+                    {recs.map((r) => (
+                      <li key={r.titulo}>
+                        <strong>{r.titulo}:</strong> {r.detalle}
+                      </li>
+                    ))}
+                  </ul>
                 </li>
               );
             })

@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { BrainCircuit, FlaskConical, Server } from "lucide-react";
+import { toast } from "sonner";
+import { api } from "@/services/api";
 import { computePrediction, simulateScenario } from "@/lib/risk-model";
 import type { ScenarioDeltas, Student } from "@/types/academic";
 
@@ -17,9 +19,10 @@ function levelStyles(level: string) {
 
 type PredictionViewProps = {
   students: Student[];
+  useApi?: boolean;
 };
 
-export function PredictionView({ students }: PredictionViewProps) {
+export function PredictionView({ students, useApi = false }: PredictionViewProps) {
   const [studentId, setStudentId] = useState(students[0]?.id ?? "");
   const [deltaPromedio, setDeltaPromedio] = useState(0);
   const [deltaAsistencia, setDeltaAsistencia] = useState(0);
@@ -58,15 +61,22 @@ export function PredictionView({ students }: PredictionViewProps) {
     setApiLoading(true);
     setApiJson(null);
     try {
-      const res = await fetch("/api/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ metrics: student.metrics, estado: student.estado }),
-      });
-      const data = await res.json();
-      setApiJson(JSON.stringify(data, null, 2));
+      if (useApi && api.hasToken) {
+        const res = await api.predict(student.id);
+        setApiJson(JSON.stringify(res, null, 2));
+        toast.success(`Predicción vía API (${res.source})`);
+      } else {
+        const res = await fetch("/api/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ metrics: student.metrics, estado: student.estado }),
+        });
+        const data = await res.json();
+        setApiJson(JSON.stringify(data, null, 2));
+      }
     } catch (e) {
       setApiJson(String(e));
+      toast.error("Error en predicción");
     } finally {
       setApiLoading(false);
     }

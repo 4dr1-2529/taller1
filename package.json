@@ -1,17 +1,32 @@
 {
   "name": "tesis-dashboard",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Sistema web para tesis: modelo predictivo de riesgo de deserción estudiantil con dashboard académico.",
+  "description": "Sistema predictivo de riesgo de deserción estudiantil — I.E.P. Huancayo, Perú",
+  "workspaces": [
+    "backend",
+    "packages/shared"
+  ],
   "scripts": {
-    "dev": "next dev -p 3029",
-    "build": "next build",
-    "start": "next start -p 3029",
+    "dev": "concurrently -n web,api,ml -c cyan,magenta,green \"npm run dev:web\" \"npm run dev:api\" \"npm run dev:ml\"",
+    "dev:web": "next dev -p 3029",
+    "dev:api": "npm run dev --workspace=backend",
+    "dev:ml": "cd ml-service && python -m uvicorn app.main:app --reload --port 5000",
+    "build": "npm run build:api && next build",
+    "build:api": "npm run build --workspace=backend",
+    "start": "concurrently \"next start -p 3029\" \"npm run start --workspace=backend\"",
+    "db:generate": "npm run db:generate --workspace=backend",
+    "db:migrate": "npm run db:migrate --workspace=backend",
+    "db:push": "npm run db:push --workspace=backend",
+    "db:seed": "npm run db:seed --workspace=backend",
+    "db:studio": "npm run db:studio --workspace=backend",
+    "ml:train": "cd ml-service && python train.py",
     "lint": "eslint .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "framer-motion": "^11.15.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.468.0",
@@ -19,13 +34,16 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^2.15.0",
-    "xlsx": "^0.18.5"
+    "sonner": "^1.7.1",
+    "xlsx": "^0.18.5",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.1.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",

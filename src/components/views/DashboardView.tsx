@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { api } from "@/services/api";
 import {
   Activity,
   AlertTriangle,
@@ -39,11 +40,36 @@ type DashboardViewProps = {
   students: Student[];
   courses: Course[];
   enrollments: Enrollment[];
+  useApi?: boolean;
 };
 
-export function DashboardView({ students, courses, enrollments }: DashboardViewProps) {
-  const globalRisk = useMemo(() => globalRiskScore(students), [students]);
-  const alerts = useMemo(() => earlyAlertCount(students), [students]);
+export function DashboardView({ students, courses, enrollments, useApi = false }: DashboardViewProps) {
+  const [apiKpis, setApiKpis] = useState<{
+    avgRisk?: number;
+    openAlerts?: number;
+    byLevel?: Record<string, number>;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!useApi) return;
+    void api.getDashboardKpis().then((r) => {
+      const k = r.kpis as {
+        avgRisk?: number;
+        openAlerts?: number;
+        byLevel?: Record<string, number>;
+      };
+      setApiKpis(k);
+    }).catch(() => setApiKpis(null));
+  }, [useApi, students.length]);
+
+  const globalRisk = useMemo(
+    () => (apiKpis?.avgRisk != null && useApi ? apiKpis.avgRisk : globalRiskScore(students)),
+    [students, apiKpis, useApi],
+  );
+  const alerts = useMemo(
+    () => (apiKpis?.openAlerts != null && useApi ? apiKpis.openAlerts : earlyAlertCount(students)),
+    [students, apiKpis, useApi],
+  );
   const avgAtt = useMemo(() => averageAttendance(students), [students]);
   const avgLms = useMemo(() => averageLmsParticipation(students), [students]);
   const trend = useMemo(() => riskTrendLabel(RISK_HISTORY_MOCK), []);
