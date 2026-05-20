@@ -1,8 +1,20 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
-import { login, me } from "../controllers/auth.controller.js";
-import { createStudent, getStudent, listStudents } from "../controllers/students.controller.js";
+import { login, refresh, me, changePassword } from "../controllers/auth.controller.js";
+import { createStudent, getStudent, listStudents, updateStudent, deleteStudent } from "../controllers/students.controller.js";
+import { listTeachers, createTeacher, updateTeacher, deleteTeacher } from "../controllers/teachers.controller.js";
+import { listCourses, createCourse, updateCourse, deleteCourse } from "../controllers/courses.controller.js";
 import { dashboardStats, predict } from "../controllers/predict.controller.js";
+import {
+  listNiveles,
+  listSecciones,
+  listCursosCatalogo,
+  createSeccion,
+} from "../controllers/academic-structure.controller.js";
+import { listUsers, createUser, updateUser, deleteUser, getAuditLogs, getSystemStats } from "../controllers/admin.controller.js";
+import { listAttendance, createAttendance, bulkAttendance, updateAttendance, deleteAttendance } from "../controllers/attendance.controller.js";
+import { listGrades, createGrade, deleteGrade } from "../controllers/grades.controller.js";
+import { listReports, createReport, deleteReport, saveDashboardSnapshot, getDashboardSnapshot, listStudentRisks, createStudentRisk, applyRecommendation } from "../controllers/reports.controller.js";
 import { prisma } from "../utils/prisma.js";
 import {
   enrollmentSchema,
@@ -11,6 +23,8 @@ import {
   alertStatusSchema,
 } from "../validators/schemas.js";
 import { logAudit } from "../utils/audit.js";
+import { paramId } from "../utils/params.js";
+
 import { getMlMetrics } from "../services/ml-client.js";
 
 const router = Router();
@@ -20,32 +34,30 @@ router.get("/health", (_req, res) => {
 });
 
 router.post("/auth/login", login);
+router.post("/auth/refresh", refresh);
 router.get("/auth/me", authenticate, me);
+router.post("/auth/change-password", authenticate, changePassword);
+
+router.get("/academic/niveles", authenticate, listNiveles);
+router.get("/academic/secciones", authenticate, listSecciones);
+router.post("/academic/secciones", authenticate, authorize("admin"), createSeccion);
+router.get("/academic/cursos-catalogo", authenticate, listCursosCatalogo);
 
 router.get("/students", authenticate, listStudents);
 router.post("/students", authenticate, authorize("admin", "tutor", "docente"), createStudent);
 router.get("/students/:id", authenticate, getStudent);
+router.put("/students/:id", authenticate, authorize("admin", "tutor", "docente"), updateStudent);
+router.delete("/students/:id", authenticate, authorize("admin"), deleteStudent);
 
-router.get("/teachers", authenticate, async (_req, res, next) => {
-  try {
-    const items = await prisma.teacher.findMany({ where: { activo: true } });
-    res.json({ ok: true, items });
-  } catch (e) {
-    next(e);
-  }
-});
+router.get("/teachers", authenticate, listTeachers);
+router.post("/teachers", authenticate, authorize("admin"), createTeacher);
+router.put("/teachers/:id", authenticate, authorize("admin"), updateTeacher);
+router.delete("/teachers/:id", authenticate, authorize("admin"), deleteTeacher);
 
-router.get("/courses", authenticate, async (_req, res, next) => {
-  try {
-    const items = await prisma.course.findMany({
-      include: { profesor: true },
-      where: { activo: true },
-    });
-    res.json({ ok: true, items });
-  } catch (e) {
-    next(e);
-  }
-});
+router.get("/courses", authenticate, listCourses);
+router.post("/courses", authenticate, authorize("admin", "docente"), createCourse);
+router.put("/courses/:id", authenticate, authorize("admin", "docente"), updateCourse);
+router.delete("/courses/:id", authenticate, authorize("admin"), deleteCourse);
 
 router.get("/enrollments", authenticate, async (_req, res, next) => {
   try {
@@ -57,7 +69,6 @@ router.get("/enrollments", authenticate, async (_req, res, next) => {
     next(e);
   }
 });
-
 router.post("/enrollments", authenticate, authorize("admin", "docente"), async (req, res, next) => {
   try {
     const data = enrollmentSchema.parse(req.body);
@@ -83,22 +94,15 @@ router.get("/alerts", authenticate, async (_req, res, next) => {
     next(e);
   }
 });
-
 router.patch("/alerts/:id", authenticate, authorize("admin", "tutor", "psicologo"), async (req, res, next) => {
   try {
     const { status } = alertStatusSchema.parse(req.body);
     const item = await prisma.alert.update({
-      where: { id: req.params.id },
+      where: { id: paramId(req) },
       data: { status },
       include: { student: true },
     });
-    await logAudit({
-      entidad: "Alert",
-      entidadId: item.id,
-      accion: "UPDATE_STATUS",
-      detalle: status,
-      studentId: item.studentId,
-    });
+    await logAudit({ entidad: "Alert", entidadId: item.id, accion: "UPDATE_STATUS", detalle: status, studentId: item.studentId });
     res.json({ ok: true, item });
   } catch (e) {
     next(e);
@@ -119,45 +123,15 @@ router.get("/psych-followups", authenticate, async (req, res, next) => {
     next(e);
   }
 });
-
-router.post(
-  "/psych-followups",
-  authenticate,
-  authorize("admin", "psicologo", "tutor"),
-  async (req, res, next) => {
-    try {
-      const data = psychFollowUpSchema.parse(req.body);
-      const item = await prisma.psychologicalFollowUp.create({
-        data: {
-          studentId: data.studentId,
-          resumen: data.resumen,
-          acciones: data.acciones,
-          profesional: data.profesional,
-          fecha: data.fecha ? new Date(data.fecha) : new Date(),
-        },
-        include: { student: true },
-      });
-      await logAudit({
-        entidad: "PsychologicalFollowUp",
-        entidadId: item.id,
-        accion: "CREATE",
-        studentId: item.studentId,
-        detalle: data.resumen.slice(0, 120),
-      });
-      res.status(201).json({ ok: true, item });
-    } catch (e) {
-      next(e);
-    }
-  },
-);
-
-router.patch("/notifications/:id/read", authenticate, async (req, res, next) => {
+router.post("/psych-followups", authenticate, authorize("admin", "psicologo", "tutor"), async (req, res, next) => {
   try {
-    const item = await prisma.notification.updateMany({
-      where: { id: req.params.id, userId: req.user!.sub },
-      data: { leida: true },
+    const data = psychFollowUpSchema.parse(req.body);
+    const item = await prisma.psychologicalFollowUp.create({
+      data: { studentId: data.studentId, resumen: data.resumen, acciones: data.acciones, profesional: data.profesional, fecha: data.fecha ? new Date(data.fecha) : new Date() },
+      include: { student: true },
     });
-    res.json({ ok: true, updated: item.count });
+    await logAudit({ entidad: "PsychologicalFollowUp", entidadId: item.id, accion: "CREATE", studentId: item.studentId, detalle: data.resumen.slice(0, 120) });
+    res.status(201).json({ ok: true, item });
   } catch (e) {
     next(e);
   }
@@ -175,6 +149,17 @@ router.get("/notifications", authenticate, async (req, res, next) => {
     next(e);
   }
 });
+router.patch("/notifications/:id/read", authenticate, async (req, res, next) => {
+  try {
+    const item = await prisma.notification.updateMany({
+      where: { id: paramId(req), userId: req.user!.sub },
+      data: { leida: true },
+    });
+    res.json({ ok: true, updated: item.count });
+  } catch (e) {
+    next(e);
+  }
+});
 
 router.get("/ml/metrics", authenticate, authorize("admin", "docente", "tutor"), async (_req, res) => {
   const metrics = await getMlMetrics();
@@ -184,7 +169,7 @@ router.get("/ml/metrics", authenticate, authorize("admin", "docente", "tutor"), 
 router.get("/chat/:roomId", authenticate, async (req, res, next) => {
   try {
     const items = await prisma.chatMessage.findMany({
-      where: { roomId: req.params.roomId },
+      where: { roomId: paramId(req, "roomId") },
       orderBy: { createdAt: "asc" },
       take: 100,
     });
@@ -193,24 +178,46 @@ router.get("/chat/:roomId", authenticate, async (req, res, next) => {
     next(e);
   }
 });
-
 router.post("/chat", authenticate, async (req, res, next) => {
   try {
     const data = chatSchema.parse(req.body);
     const user = await prisma.user.findUnique({ where: { id: req.user!.sub } });
     const msg = await prisma.chatMessage.create({
-      data: {
-        roomId: data.roomId,
-        senderId: req.user!.sub,
-        senderName: `${user?.nombres} ${user?.apellidos}`,
-        senderRole: req.user!.role,
-        contenido: data.contenido,
-      },
+      data: { roomId: data.roomId, senderId: req.user!.sub, senderName: `${user?.nombres} ${user?.apellidos}`, senderRole: req.user!.role, contenido: data.contenido },
     });
     res.status(201).json({ ok: true, message: msg });
   } catch (e) {
     next(e);
   }
 });
+
+router.get("/grades", authenticate, listGrades);
+router.post("/grades", authenticate, authorize("admin", "docente"), createGrade);
+router.delete("/grades/:id", authenticate, authorize("admin", "docente"), deleteGrade);
+
+router.get("/attendance", authenticate, listAttendance);
+router.post("/attendance", authenticate, authorize("admin", "docente", "tutor"), createAttendance);
+router.post("/attendance/bulk", authenticate, authorize("admin", "docente"), bulkAttendance);
+router.put("/attendance/:id", authenticate, authorize("admin", "docente"), updateAttendance);
+router.delete("/attendance/:id", authenticate, authorize("admin"), deleteAttendance);
+
+router.get("/reports", authenticate, listReports);
+router.post("/reports", authenticate, authorize("admin", "docente", "tutor"), createReport);
+router.delete("/reports/:id", authenticate, authorize("admin"), deleteReport);
+
+router.get("/dashboard-snapshot/:periodo", authenticate, getDashboardSnapshot);
+router.post("/dashboard-snapshot", authenticate, authorize("admin", "docente"), saveDashboardSnapshot);
+
+router.get("/student-risks", authenticate, listStudentRisks);
+router.post("/student-risks", authenticate, authorize("admin", "docente"), createStudentRisk);
+
+router.patch("/recommendations/:id/apply", authenticate, applyRecommendation);
+
+router.get("/admin/users", authenticate, authorize("admin"), listUsers);
+router.post("/admin/users", authenticate, authorize("admin"), createUser);
+router.put("/admin/users/:id", authenticate, authorize("admin"), updateUser);
+router.delete("/admin/users/:id", authenticate, authorize("admin"), deleteUser);
+router.get("/admin/audit-logs", authenticate, authorize("admin"), getAuditLogs);
+router.get("/admin/system-stats", authenticate, authorize("admin"), getSystemStats);
 
 export default router;

@@ -10,14 +10,6 @@ export type AuthPayload = {
   role: UserRole;
 };
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: AuthPayload;
-    }
-  }
-}
-
 export function authenticate(req: Request, _res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {
@@ -25,11 +17,30 @@ export function authenticate(req: Request, _res: Response, next: NextFunction) {
   }
   try {
     const token = header.slice(7);
-    req.user = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
-    next();
+    const decoded = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
+    if (decoded.sub && decoded.role) {
+      req.user = decoded;
+      next();
+    } else {
+      next(new AppError(401, "Token inválido", "INVALID_TOKEN"));
+    }
   } catch {
     next(new AppError(401, "Token inválido o expirado", "INVALID_TOKEN"));
   }
+}
+
+export function authenticateOrOptional(req: Request, _res: Response, next: NextFunction) {
+  const header = req.headers.authorization;
+  if (!header?.startsWith("Bearer ")) {
+    return next();
+  }
+  try {
+    const token = header.slice(7);
+    req.user = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
+  } catch {
+    // Ignore invalid tokens for optional auth
+  }
+  next();
 }
 
 export function authorize(...roles: UserRole[]) {

@@ -1,0 +1,223 @@
+// I.E.P. Huancayo — Modelo educativo peruano + riesgo de deserción
+// Importar en https://dbdiagram.io
+
+Project tesis_desercion_huancayo {
+  database_type: 'PostgreSQL'
+  Note: 'Primaria 1°-6° y Secundaria 1°-5° con secciones A/B/C'
+}
+
+Table users {
+  id varchar [pk]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  nombres varchar [not null]
+  apellidos varchar [not null]
+  role user_role [not null, default: 'estudiante']
+  dni varchar [unique]
+  telefono varchar
+  activo boolean [default: true]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table nivel_educativo {
+  id int [pk, increment]
+  codigo nivel_codigo [unique]
+  nombre varchar
+}
+
+Table grado {
+  id int [pk, increment]
+  nivel_id int [ref: > nivel_educativo.id]
+  numero int
+  nombre varchar
+  indexes { (nivel_id, numero) [unique] }
+}
+
+Table seccion {
+  id varchar [pk]
+  grado_id int [ref: > grado.id]
+  nombre varchar
+  capacidad int [default: 30]
+  tutor_id varchar [ref: > teacher.id]
+  activo boolean [default: true]
+  indexes { (grado_id, nombre) [unique] }
+}
+
+Table curso_catalogo {
+  id varchar [pk]
+  codigo varchar [unique]
+  nombre varchar
+  area varchar
+  activo boolean [default: true]
+}
+
+Table curso_por_grado {
+  id varchar [pk]
+  grado_id int [ref: > grado.id]
+  curso_catalogo_id varchar [ref: > curso_catalogo.id]
+  horas_semanales int [default: 2]
+  indexes { (grado_id, curso_catalogo_id) [unique] }
+}
+
+Table teacher {
+  id varchar [pk]
+  user_id varchar [unique, ref: > users.id]
+  codigo varchar [unique]
+  nombres varchar
+  apellidos varchar
+  especialidad varchar
+  correo varchar
+}
+
+Table apoderado {
+  id varchar [pk]
+  user_id varchar [unique, ref: > users.id]
+  dni varchar [unique]
+  nombres varchar
+  apellidos varchar
+  telefono varchar
+}
+
+Table student {
+  id varchar [pk]
+  user_id varchar [unique, ref: > users.id]
+  codigo varchar [unique]
+  nombres varchar
+  apellidos varchar
+  seccion_id varchar [ref: > seccion.id]
+  estado student_status
+  promedio_general float
+  asistencia_general float
+  lms_engagement varchar
+  activo boolean [default: true]
+}
+
+Table student_apoderado {
+  student_id varchar [ref: > student.id]
+  apoderado_id varchar [ref: > apoderado.id]
+  parentesco varchar
+  principal boolean
+  indexes { (student_id, apoderado_id) [pk] }
+}
+
+Table course {
+  id varchar [pk]
+  codigo varchar [unique]
+  curso_catalogo_id varchar [ref: > curso_catalogo.id]
+  nombre varchar
+  profesor_id varchar [ref: > teacher.id]
+  seccion_id varchar [ref: > seccion.id]
+  periodo varchar
+  activo boolean
+}
+
+Table enrollment {
+  id varchar [pk]
+  student_id varchar [ref: > student.id]
+  course_id varchar [ref: > course.id]
+  periodo varchar
+  indexes { (student_id, course_id, periodo) [unique] }
+}
+
+Table grade {
+  id varchar [pk]
+  student_id varchar [ref: > student.id]
+  course_id varchar [ref: > course.id]
+  periodo varchar
+  bimestre int
+  nota float
+}
+
+Table lms_activity {
+  id varchar [pk]
+  student_id varchar [ref: > student.id]
+  semana varchar
+  actividad_pct float
+  minutos int
+  tareas_entregadas int
+  tareas_totales int
+  horas_plataforma float
+  conexiones int
+}
+
+Table attendance {
+  id varchar [pk]
+  student_id varchar [ref: > student.id]
+  fecha date
+  presente boolean
+  justificado boolean
+  tardanza boolean
+  indexes { (student_id, fecha) [unique] }
+}
+
+Table prediction {
+  id varchar [pk]
+  student_id varchar [ref: > student.id]
+  score float
+  level risk_level
+  probability float
+  model_version varchar
+  model_name varchar
+  factors_json text
+}
+
+Table alert {
+  id varchar [pk]
+  student_id varchar [ref: > student.id]
+  titulo varchar
+  descripcion text
+  level risk_level
+  status alert_status
+}
+
+Table ai_recommendation {
+  id varchar [pk]
+  student_id varchar [ref: > student.id]
+  factor_key varchar
+  titulo varchar
+  detalle text
+  aplicada boolean
+}
+
+Table audit_log {
+  id varchar [pk]
+  entidad varchar
+  entidad_id varchar
+  accion varchar
+  usuario_id varchar [ref: > users.id]
+  detalle text
+  created_at timestamp
+}
+
+Enum user_role {
+  admin
+  docente
+  tutor
+  psicologo
+  estudiante
+  apoderado
+}
+
+Enum nivel_codigo {
+  primaria
+  secundaria
+}
+
+Enum student_status {
+  activo
+  en_riesgo
+  retirado
+}
+
+Enum risk_level {
+  bajo
+  medio
+  alto
+}
+
+Enum alert_status {
+  abierta
+  en_seguimiento
+  resuelta
+}

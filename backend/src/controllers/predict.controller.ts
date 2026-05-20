@@ -5,29 +5,15 @@ import { predictSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { computeLocalRisk } from "../services/risk-engine.js";
 import { predictWithMl } from "../services/ml-client.js";
-
-const RECS: Record<string, { titulo: string; detalle: string }[]> = {
-  bajo_promedio: [
-    { titulo: "Tutoría académica", detalle: "Plan de recuperación quincenal en curso crítico." },
-  ],
-  baja_asistencia: [
-    { titulo: "Contacto familiar", detalle: "Identificar barreras de asistencia." },
-  ],
-  baja_actividad_lms: [
-    { titulo: "Activación LMS", detalle: "Capacitación y actividades gamificadas." },
-  ],
-  tareas_incompletas: [
-    { titulo: "Plan de entregas", detalle: "Calendarizar tareas pendientes con tutor." },
-  ],
-};
+import { recommendationsForFactor } from "../services/recommendations.js";
 
 export async function predict(req: Request, res: Response, next: NextFunction) {
   try {
     const body = predictSchema.parse(req.body);
-    let student = body.studentId
+    const student = body.studentId
       ? await prisma.student.findUnique({
           where: { id: body.studentId },
-          include: { lmsActivities: true },
+          include: { lmsActivities: { orderBy: { semana: "desc" }, take: 1 } },
         })
       : null;
 
@@ -37,12 +23,9 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
       promedioGeneral: student!.promedioGeneral,
       asistenciaGeneral: student!.asistenciaGeneral,
       lms: {
-        engagement: student!.lmsEngagement as "alto" | "medio" | "bajo",
         actividadSemanalPct: student!.lmsActivities.map((a) => a.actividadPct),
-        minutosPorSemana: student!.lmsActivities.map((a) => a.minutos),
         tareasEntregadas: student!.lmsActivities[0]?.tareasEntregadas ?? 5,
         tareasTotales: student!.lmsActivities[0]?.tareasTotales ?? 10,
-        horasPlataformaSemana: student!.lmsActivities[0]?.horasPlataforma ?? 2,
       },
     };
 
@@ -96,7 +79,7 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
             level,
           },
         });
-        const recs = RECS[top?.key ?? ""] ?? [];
+        const recs = recommendationsForFactor(top?.key ?? "general");
         for (const r of recs) {
           await prisma.aiRecommendation.create({
             data: {
@@ -110,16 +93,21 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
       }
     }
 
-    res.json({ ok: true, prediction: result, source: ml ? "ml-service" : "local-engine" });
+    res.json({ ok: true, prediction: result, source: ml ? "machine-learning" : "local-engine" });
   } catch (e) {
     next(e);
   }
 }
 
-export async function dashboardStats(_req: Request, res: Response, next: NextFunction) {
+export async function dashboardStats(req: Request, res: Response, next: NextFunction) {
   try {
+    const user = req.user!;
+    const where = user.role === "estudiante"
+      ? { id: user.sub }
+      : { activo: true };
+
     const [totalStudents, openAlerts, recentPredictions, avgRisk] = await Promise.all([
-      prisma.student.count({ where: { activo: true } }),
+      prisma.student.count({ where }),
       prisma.alert.count({ where: { status: "abierta" } }),
       prisma.prediction.findMany({
         orderBy: { createdAt: "desc" },

@@ -25,7 +25,10 @@ Sistema de tres capas para la **identificación del riesgo de deserción estudia
 | `src/` | Frontend Next.js (pages, components, hooks, services) |
 | `backend/src/` | API REST, controllers, middleware, validators |
 | `backend/prisma/` | ORM y migraciones |
-| `ml-service/` | Entrenamiento y predicción ensemble (Python) |
+| `frontend/` | Next.js 16 — UI premium (enlace a `src/`) |
+| `machine-learning/` | Entrenamiento y predicción ensemble (Python) |
+| `backend/` | API REST Express + Prisma |
+| `database/` | SQL, DBML, DER |
 | `database/postgresql/` | Esquema SQL completo (DER producción) |
 | `docs/` | Documentación de tesis |
 
@@ -46,5 +49,5 @@ Sistema de tres capas para la **identificación del riesgo de deserción estudia
 
 ## IA
 
-1. **Reglas TypeScript** — fallback offline (`risk-model.ts`)
-2. **ML Service** — Random Forest, XGBoost, Stacking con métricas F1, matriz de confusión
+1. **Motor local** — `backend/src/services/risk-engine.ts` (fallback offline)
+2. **machine-learning/** — FastAPI: Random Forest, XGBoost, stacking (F1, matriz de confusión)

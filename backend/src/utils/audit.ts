@@ -15,6 +15,7 @@ export async function logAudit(params: {
       entidad: params.entidad,
       entidadId: params.entidadId,
       accion: params.accion,
+      usuarioId: params.usuarioId,
       detalle: params.detalle,
       ipAddress: params.ipAddress,
       studentId: params.studentId,

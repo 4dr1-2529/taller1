@@ -1,11 +1,18 @@
+// =============================================================================
+// I.E.P. Huancayo — Modelo educativo peruano (Primaria + Secundaria)
+// Riesgo de deserción · Ensemble learning + LMS
+// =============================================================================
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
 
 enum UserRole {
   admin
@@ -13,6 +20,12 @@ enum UserRole {
   tutor
   psicologo
   estudiante
+  apoderado
+}
+
+enum NivelCodigo {
+  primaria
+  secundaria
 }
 
 enum StudentStatus {
@@ -40,88 +53,246 @@ enum NotificationType {
   reporte
 }
 
+enum DiaSemana {
+  lunes
+  martes
+  miercoles
+  jueves
+  viernes
+  sabado
+}
+
+// ─── RBAC ────────────────────────────────────────────────────────────────────
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  codigo      UserRole         @unique
+  nombre      String
+  descripcion String?
+  permisos    RolePermission[]
+  createdAt   DateTime         @default(now())
+}
+
+model Permission {
+  id       Int              @id @default(autoincrement())
+  codigo   String           @unique
+  modulo   String
+  roles    RolePermission[]
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  @@id([roleId, permissionId])
+}
+
+// ─── Usuarios y sesiones ─────────────────────────────────────────────────────
+
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  passwordHash  String
-  nombres       String
-  apellidos     String
-  role          UserRole  @default(estudiante)
-  activo        Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  nombres      String
+  apellidos    String
+  role         UserRole  @default(estudiante)
+  dni          String?   @unique
+  telefono     String?
+  activo       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sessions     Session[]
   notifications Notification[]
+  auditLogs    AuditLog[] @relation("AuditUser")
+  teacher      Teacher?
+  student      Student?
+  apoderado    Apoderado?
   @@index([role])
+  @@index([activo])
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokenHash String
-  ipAddress String?
-  userAgent String?
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash    String
+  refreshHash  String?
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  refreshExpiresAt DateTime?
+  createdAt    DateTime @default(now())
   @@index([userId])
+  @@index([expiresAt])
 }
 
+// ─── Estructura educativa Perú ───────────────────────────────────────────────
+
+model NivelEducativo {
+  id        Int      @id @default(autoincrement())
+  codigo    NivelCodigo @unique
+  nombre    String
+  grados    Grado[]
+  createdAt DateTime @default(now())
+}
+
+model Grado {
+  id        Int            @id @default(autoincrement())
+  nivelId   Int
+  nivel     NivelEducativo @relation(fields: [nivelId], references: [id], onDelete: Cascade)
+  numero    Int
+  nombre    String
+  secciones Seccion[]
+  cursosGrado CursoPorGrado[]
+  @@unique([nivelId, numero])
+  @@index([nivelId])
+}
+
+model Seccion {
+  id          String    @id @default(cuid())
+  gradoId     Int
+  grado       Grado     @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+  nombre      String
+  capacidad   Int       @default(30)
+  tutorId     String?
+  tutor       Teacher?  @relation("SeccionTutor", fields: [tutorId], references: [id])
+  activo      Boolean   @default(true)
+  estudiantes Student[]
+  horarios    Horario[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  @@unique([gradoId, nombre])
+  @@index([gradoId])
+  @@index([tutorId])
+}
+
+model CursoCatalogo {
+  id          String          @id @default(cuid())
+  codigo      String          @unique
+  nombre      String
+  area        String
+  descripcion String?
+  activo      Boolean         @default(true)
+  porGrado    CursoPorGrado[]
+  cursos      Course[]
+  createdAt   DateTime        @default(now())
+}
+
+model CursoPorGrado {
+  id              String        @id @default(cuid())
+  gradoId         Int
+  grado           Grado         @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+  cursoCatalogoId String
+  cursoCatalogo   CursoCatalogo @relation(fields: [cursoCatalogoId], references: [id], onDelete: Cascade)
+  horasSemanales  Int           @default(2)
+  @@unique([gradoId, cursoCatalogoId])
+}
+
+// ─── Personal ────────────────────────────────────────────────────────────────
+
 model Teacher {
-  id            String   @id @default(cuid())
-  codigo        String   @unique
+  id            String    @id @default(cuid())
+  userId        String?   @unique
+  user          User?     @relation(fields: [userId], references: [id])
+  codigo        String    @unique
   nombres       String
   apellidos     String
   especialidad  String
   correo        String
   telefono      String?
-  activo        Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  activo        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   courses       Course[]
+  seccionesTutor Seccion[] @relation("SeccionTutor")
   auditLogs     AuditLog[]
+  @@index([activo])
 }
 
-model Course {
-  id          String       @id @default(cuid())
-  codigo      String       @unique
-  nombre      String
-  nivel       String
-  profesorId  String
-  profesor    Teacher      @relation(fields: [profesorId], references: [id])
-  activo      Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  enrollments Enrollment[]
-  @@index([profesorId])
+model Apoderado {
+  id         String            @id @default(cuid())
+  userId     String?           @unique
+  user       User?             @relation(fields: [userId], references: [id])
+  dni        String            @unique
+  nombres    String
+  apellidos  String
+  correo     String?
+  telefono   String
+  createdAt  DateTime          @default(now())
+  estudiantes StudentApoderado[]
 }
+
+model StudentApoderado {
+  studentId   String
+  apoderadoId String
+  parentesco  String    @default("apoderado")
+  principal   Boolean   @default(false)
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  apoderado   Apoderado @relation(fields: [apoderadoId], references: [id], onDelete: Cascade)
+  @@id([studentId, apoderadoId])
+}
+
+// ─── Estudiantes ─────────────────────────────────────────────────────────────
 
 model Student {
-  id              String              @id @default(cuid())
-  codigo          String              @unique
-  nombres         String
-  apellidos       String
-  nivel           String
-  correo          String
-  telefono        String?
-  estado          StudentStatus       @default(activo)
-  promedioGeneral Float               @default(12)
-  asistenciaGeneral Float             @default(80)
-  lmsEngagement   String              @default("medio")
-  activo          Boolean             @default(true)
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  enrollments     Enrollment[]
-  academicHistory AcademicHistory[]
-  lmsActivities   LmsActivity[]
-  attendances     Attendance[]
-  predictions     Prediction[]
-  alerts          Alert[]
-  riskRecords     StudentRisk[]
-  recommendations AiRecommendation[]
-  psychFollowUps  PsychologicalFollowUp[]
-  auditLogs       AuditLog[]
+  id                String              @id @default(cuid())
+  userId            String?             @unique
+  user              User?               @relation(fields: [userId], references: [id])
+  codigo            String              @unique
+  nombres           String
+  apellidos         String
+  dni               String?             @unique
+  correo            String?
+  telefono          String?
+  seccionId         String?
+  seccion           Seccion?            @relation(fields: [seccionId], references: [id])
+  estado            StudentStatus       @default(activo)
+  promedioGeneral   Float               @default(0)
+  asistenciaGeneral Float               @default(0)
+  lmsEngagement     String              @default("medio")
+  activo            Boolean             @default(true)
+  fechaIngreso      DateTime            @default(now())
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  apoderados        StudentApoderado[]
+  enrollments       Enrollment[]
+  academicHistory   AcademicHistory[]
+  lmsActivities     LmsActivity[]
+  attendances       Attendance[]
+  grades            Grade[]
+  predictions       Prediction[]
+  alerts            Alert[]
+  riskRecords       StudentRisk[]
+  recommendations   AiRecommendation[]
+  psychFollowUps    PsychologicalFollowUp[]
+  auditLogs         AuditLog[]
   @@index([estado])
+  @@index([activo])
+  @@index([seccionId])
+}
+
+// ─── Cursos y matrícula ──────────────────────────────────────────────────────
+
+model Course {
+  id              String         @id @default(cuid())
+  codigo          String         @unique
+  cursoCatalogoId String?
+  cursoCatalogo   CursoCatalogo? @relation(fields: [cursoCatalogoId], references: [id])
+  nombre          String
+  profesorId      String
+  profesor        Teacher        @relation(fields: [profesorId], references: [id])
+  seccionId       String?
+  periodo         String         @default("2026")
+  activo          Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  enrollments     Enrollment[]
+  horarios        Horario[]
+  grades          Grade[]
+  @@index([profesorId])
+  @@index([seccionId])
+  @@index([activo])
 }
 
 model Enrollment {
@@ -130,12 +301,42 @@ model Enrollment {
   courseId      String
   student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   course        Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  promedio      Float
-  asistenciaPct Float
   periodo       String   @default("2026-I")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   @@unique([studentId, courseId, periodo])
+  @@index([studentId])
+  @@index([courseId])
+}
+
+model Horario {
+  id        String    @id @default(cuid())
+  seccionId String
+  courseId  String
+  seccion   Seccion   @relation(fields: [seccionId], references: [id], onDelete: Cascade)
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  dia       DiaSemana
+  horaInicio String
+  horaFin    String
+  aula       String?
+  @@index([seccionId])
+  @@index([courseId])
+}
+
+// ─── Académico ─────────────────────────────────────────────────────────────
+
+model Grade {
+  id          String   @id @default(cuid())
+  studentId   String
+  courseId    String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  periodo     String
+  bimestre    Int
+  nota        Float
+  observacion String?
+  createdAt   DateTime @default(now())
+  @@unique([studentId, courseId, periodo, bimestre])
   @@index([studentId])
   @@index([courseId])
 }
@@ -153,54 +354,60 @@ model AcademicHistory {
 }
 
 model LmsActivity {
-  id                  String   @id @default(cuid())
-  studentId           String
-  student             Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  semana              String
-  actividadPct        Float
-  minutos             Int
-  tareasEntregadas    Int
-  tareasTotales       Int
-  horasPlataforma     Float
-  createdAt           DateTime @default(now())
+  id               String   @id @default(cuid())
+  studentId        String
+  student          Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  semana           String
+  actividadPct     Float
+  minutos          Int
+  tareasEntregadas Int
+  tareasTotales    Int
+  horasPlataforma  Float
+  conexiones       Int      @default(0)
+  createdAt        DateTime @default(now())
   @@index([studentId, semana])
 }
 
 model Attendance {
-  id         String   @id @default(cuid())
-  studentId  String
-  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  fecha      DateTime
-  presente   Boolean
-  justificado Boolean @default(false)
-  createdAt  DateTime @default(now())
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  fecha       DateTime @db.Date
+  presente    Boolean
+  justificado Boolean  @default(false)
+  tardanza    Boolean  @default(false)
+  observacion String?
+  createdAt   DateTime @default(now())
+  @@unique([studentId, fecha])
   @@index([studentId, fecha])
 }
 
+// ─── IA y riesgo ─────────────────────────────────────────────────────────────
+
 model Prediction {
-  id              String    @id @default(cuid())
-  studentId       String
-  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  score           Float
-  level           RiskLevel
-  probability     Float?
-  modelVersion    String
-  modelName       String
-  factorsJson     String
-  metaJson        String?
-  createdAt       DateTime  @default(now())
+  id           String    @id @default(cuid())
+  studentId    String
+  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  score        Float
+  level        RiskLevel
+  probability  Float?
+  modelVersion String
+  modelName    String
+  factorsJson  String    @db.Text
+  metaJson     String?   @db.Text
+  createdAt    DateTime  @default(now())
   @@index([studentId, createdAt])
   @@index([level])
 }
 
 model StudentRisk {
-  id          String    @id @default(cuid())
-  studentId   String
-  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  score       Float
-  level       RiskLevel
-  periodo     String
-  createdAt   DateTime  @default(now())
+  id        String    @id @default(cuid())
+  studentId String
+  student   Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  score     Float
+  level     RiskLevel
+  periodo   String
+  createdAt DateTime  @default(now())
   @@index([studentId, periodo])
 }
 
@@ -209,24 +416,25 @@ model Alert {
   studentId   String
   student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   titulo      String
-  descripcion String
+  descripcion String      @db.Text
   factorKey   String?
   level       RiskLevel
   status      AlertStatus @default(abierta)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   @@index([status, level])
+  @@index([studentId])
 }
 
 model AiRecommendation {
-  id          String   @id @default(cuid())
-  studentId   String
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  factorKey   String
-  titulo      String
-  detalle     String
-  aplicada    Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  factorKey String
+  titulo    String
+  detalle   String   @db.Text
+  aplicada  Boolean  @default(false)
+  createdAt DateTime @default(now())
   @@index([studentId])
 }
 
@@ -235,12 +443,14 @@ model PsychologicalFollowUp {
   studentId   String
   student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   fecha       DateTime
-  resumen     String
-  acciones    String?
+  resumen     String   @db.Text
+  acciones    String?  @db.Text
   profesional String?
   createdAt   DateTime @default(now())
   @@index([studentId])
 }
+
+// ─── Sistema ─────────────────────────────────────────────────────────────────
 
 model Notification {
   id        String           @id @default(cuid())
@@ -248,7 +458,7 @@ model Notification {
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   tipo      NotificationType
   titulo    String
-  mensaje   String
+  mensaje   String           @db.Text
   leida     Boolean          @default(false)
   createdAt DateTime         @default(now())
   @@index([userId, leida])
@@ -260,34 +470,43 @@ model Report {
   tipo        String
   generadoPor String?
   archivoPath String?
-  metaJson    String?
+  metaJson    String?  @db.Text
   createdAt   DateTime @default(now())
 }
 
 model DashboardSnapshot {
-  id              String   @id @default(cuid())
-  periodo         String   @unique
-  riesgoGlobal    Float
+  id               String   @id @default(cuid())
+  periodo          String   @unique
+  riesgoGlobal     Float
   totalEstudiantes Int
-  alertasAbiertas Int
-  metaJson        String?
-  createdAt       DateTime @default(now())
+  alertasAbiertas  Int
+  metaJson         String?  @db.Text
+  createdAt        DateTime @default(now())
+}
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  clave     String   @unique
+  valor     String   @db.Text
+  updatedAt DateTime @updatedAt
 }
 
 model AuditLog {
-  id         String   @id @default(cuid())
-  entidad    String
-  entidadId  String?
-  accion     String
-  usuarioId  String?
-  detalle    String?
-  ipAddress  String?
-  createdAt  DateTime @default(now())
-  studentId  String?
-  student    Student? @relation(fields: [studentId], references: [id])
-  teacherId  String?
-  teacher    Teacher? @relation(fields: [teacherId], references: [id])
+  id        String   @id @default(cuid())
+  entidad   String
+  entidadId String?
+  accion    String
+  usuarioId String?
+  usuario   User?    @relation("AuditUser", fields: [usuarioId], references: [id])
+  detalle   String?  @db.Text
+  ipAddress String?
+  createdAt DateTime @default(now())
+  studentId String?
+  student   Student? @relation(fields: [studentId], references: [id])
+  teacherId String?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
   @@index([entidad, createdAt])
+  @@index([usuarioId])
 }
 
 model ChatMessage {
@@ -296,7 +515,7 @@ model ChatMessage {
   senderId   String
   senderName String
   senderRole UserRole
-  contenido  String
+  contenido  String   @db.Text
   createdAt  DateTime @default(now())
   @@index([roomId, createdAt])
 }

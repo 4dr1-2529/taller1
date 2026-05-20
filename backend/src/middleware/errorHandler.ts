@@ -15,7 +15,7 @@ export function errorHandler(
   err: unknown,
   _req: Request,
   res: Response,
-  _next: NextFunction,
+  _next: NextFunction, // eslint-disable-line @typescript-eslint/no-unused-vars
 ) {
   if (err instanceof ZodError) {
     return res.status(400).json({

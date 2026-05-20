@@ -1,157 +1,197 @@
+/**
+ * Seed LIMPIO — Solo estructura institucional peruana (sin estudiantes ni usuarios demo).
+ * Primer administrador: npm run db:bootstrap (usa variables ADMIN_EMAIL / ADMIN_PASSWORD)
+ */
 import { PrismaClient, UserRole } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+const PERMISOS = [
+  { codigo: "admin.full", modulo: "admin" },
+  { codigo: "estudiantes.read", modulo: "estudiantes" },
+  { codigo: "estudiantes.write", modulo: "estudiantes" },
+  { codigo: "notas.write", modulo: "academico" },
+  { codigo: "asistencia.write", modulo: "asistencia" },
+  { codigo: "alertas.manage", modulo: "alertas" },
+  { codigo: "ia.predict", modulo: "ia" },
+  { codigo: "reportes.export", modulo: "reportes" },
+  { codigo: "seguimiento.psico", modulo: "psicologia" },
+];
+
+const ROLE_PERMS: Record<UserRole, string[]> = {
+  admin: PERMISOS.map((p) => p.codigo),
+  docente: ["estudiantes.read", "notas.write", "asistencia.write", "reportes.export"],
+  tutor: ["estudiantes.read", "asistencia.write", "alertas.manage", "ia.predict"],
+  psicologo: ["estudiantes.read", "seguimiento.psico", "alertas.manage"],
+  estudiante: ["estudiantes.read"],
+  apoderado: ["estudiantes.read"],
+};
+
+const CURSOS_PRIMARIA = [
+  { codigo: "COM-P", nombre: "Comunicación", area: "Comunicación" },
+  { codigo: "MAT-P", nombre: "Matemática", area: "Matemática" },
+  { codigo: "PSO-P", nombre: "Personal Social", area: "Ciencias Sociales" },
+  { codigo: "CNP-P", nombre: "Ciencia y Tecnología", area: "Ciencia" },
+  { codigo: "ART-P", nombre: "Arte y Cultura", area: "Arte" },
+  { codigo: "EFP-P", nombre: "Educación Física", area: "Educación Física" },
+  { codigo: "ING-P", nombre: "Inglés", area: "Idiomas" },
+  { codigo: "RLE-P", nombre: "Religión", area: "Religión" },
+];
+
+const CURSOS_SECUNDARIA = [
+  { codigo: "COM-S", nombre: "Comunicación", area: "Comunicación" },
+  { codigo: "MAT-S", nombre: "Matemática", area: "Matemática" },
+  { codigo: "ING-S", nombre: "Inglés", area: "Idiomas" },
+  { codigo: "ART-S", nombre: "Arte", area: "Arte" },
+  { codigo: "EFS-S", nombre: "Educación Física", area: "Educación Física" },
+  { codigo: "RLE-S", nombre: "Religión", area: "Religión" },
+  { codigo: "CCS-S", nombre: "Ciencias Sociales", area: "Ciencias Sociales" },
+  { codigo: "DPB-S", nombre: "Desarrollo Personal", area: "Tutoría" },
+  { codigo: "FIS-S", nombre: "Física", area: "Ciencia", gradosMin: 3 },
+  { codigo: "QUI-S", nombre: "Química", area: "Ciencia", gradosMin: 4 },
+  { codigo: "BIO-S", nombre: "Biología", area: "Ciencia", gradosMin: 2 },
+  { codigo: "CTA-S", nombre: "Ciencia y Tecnología", area: "Ciencia", gradosMax: 2 },
+  { codigo: "ECO-S", nombre: "Economía", area: "Ciencias Sociales", gradosMin: 4 },
+  { codigo: "FIL-S", nombre: "Filosofía", area: "Humanidades", gradosMin: 4 },
+];
+
+const SECCIONES = ["A", "B", "C"];
+
 async function main() {
-  const hash = await bcrypt.hash("Tesis2026!", 10);
+  console.log("Seed estructura I.E.P. Perú (sin datos demo de personas)...");
 
-  const users: { email: string; role: UserRole; nombres: string; apellidos: string }[] = [
-    { email: "admin@iep-huancayo.edu.pe", role: "admin", nombres: "Admin", apellidos: "Sistema" },
-    { email: "docente@iep-huancayo.edu.pe", role: "docente", nombres: "Ana", apellidos: "Quispe" },
-    { email: "tutor@iep-huancayo.edu.pe", role: "tutor", nombres: "Carlos", apellidos: "Rojas" },
-    { email: "psicologo@iep-huancayo.edu.pe", role: "psicologo", nombres: "María", apellidos: "Torres" },
-    { email: "estudiante@iep-huancayo.edu.pe", role: "estudiante", nombres: "Lucía", apellidos: "Paredes" },
-  ];
-
-  for (const u of users) {
-    await prisma.user.upsert({
-      where: { email: u.email },
+  for (const p of PERMISOS) {
+    await prisma.permission.upsert({
+      where: { codigo: p.codigo },
       update: {},
-      create: { ...u, passwordHash: hash },
+      create: p,
     });
   }
 
-  const t1 = await prisma.teacher.upsert({
-    where: { codigo: "PR-001" },
-    update: {},
-    create: {
-      codigo: "PR-001",
-      nombres: "Ana",
-      apellidos: "Quispe",
-      especialidad: "Matemática",
-      correo: "ana.quispe@colegio.edu.pe",
-    },
-  });
-  const t2 = await prisma.teacher.upsert({
-    where: { codigo: "PR-002" },
-    update: {},
-    create: {
-      codigo: "PR-002",
-      nombres: "Luis",
-      apellidos: "Mendoza",
-      especialidad: "Comunicación",
-      correo: "luis.mendoza@colegio.edu.pe",
-    },
-  });
-
-  const c1 = await prisma.course.upsert({
-    where: { codigo: "CU-101" },
-    update: {},
-    create: { codigo: "CU-101", nombre: "Álgebra", nivel: "4to Secundaria", profesorId: t1.id },
-  });
-  const c2 = await prisma.course.upsert({
-    where: { codigo: "CU-201" },
-    update: {},
-    create: { codigo: "CU-201", nombre: "Literatura", nivel: "5to Secundaria", profesorId: t2.id },
-  });
-
-  const s1 = await prisma.student.upsert({
-    where: { codigo: "ST-001" },
-    update: {},
-    create: {
-      codigo: "ST-001",
-      nombres: "Lucía",
-      apellidos: "Paredes",
-      nivel: "4to Secundaria",
-      correo: "lucia.paredes@colegio.edu.pe",
-      promedioGeneral: 15.2,
-      asistenciaGeneral: 92,
-      lmsEngagement: "alto",
-    },
-  });
-  const s2 = await prisma.student.upsert({
-    where: { codigo: "ST-002" },
-    update: {},
-    create: {
-      codigo: "ST-002",
-      nombres: "Carlos",
-      apellidos: "Rojas",
-      nivel: "5to Secundaria",
-      correo: "carlos.rojas@colegio.edu.pe",
-      estado: "en_riesgo",
-      promedioGeneral: 10.8,
-      asistenciaGeneral: 68,
-      lmsEngagement: "bajo",
-    },
-  });
-
-  for (const [studentId, weeks] of [
-    [s1.id, [72, 68, 75, 80]],
-    [s2.id, [38, 32, 40, 35]],
-  ] as const) {
-    for (let i = 0; i < weeks.length; i++) {
-      await prisma.lmsActivity.create({
-        data: {
-          studentId,
-          semana: `Sem ${i + 1}`,
-          actividadPct: weeks[i],
-          minutos: weeks[i] * 2,
-          tareasEntregadas: studentId === s1.id ? 9 : 4,
-          tareasTotales: 10,
-          horasPlataforma: weeks[i] / 20,
-        },
+  for (const [role, perms] of Object.entries(ROLE_PERMS) as [UserRole, string[]][]) {
+    const roleRow = await prisma.role.upsert({
+      where: { codigo: role },
+      update: {},
+      create: {
+        codigo: role,
+        nombre: role.charAt(0).toUpperCase() + role.slice(1),
+        descripcion: `Rol ${role}`,
+      },
+    });
+    for (const codigo of perms) {
+      const perm = await prisma.permission.findUnique({ where: { codigo } });
+      if (!perm) continue;
+      await prisma.rolePermission.upsert({
+        where: { roleId_permissionId: { roleId: roleRow.id, permissionId: perm.id } },
+        update: {},
+        create: { roleId: roleRow.id, permissionId: perm.id },
       });
     }
   }
 
-  await prisma.enrollment.upsert({
-    where: { studentId_courseId_periodo: { studentId: s1.id, courseId: c1.id, periodo: "2026-I" } },
+  const primaria = await prisma.nivelEducativo.upsert({
+    where: { codigo: "primaria" },
     update: {},
-    create: { studentId: s1.id, courseId: c1.id, promedio: 15.5, asistenciaPct: 95 },
+    create: { codigo: "primaria", nombre: "Educación Primaria" },
   });
-  await prisma.enrollment.upsert({
-    where: { studentId_courseId_periodo: { studentId: s2.id, courseId: c2.id, periodo: "2026-I" } },
+  const secundaria = await prisma.nivelEducativo.upsert({
+    where: { codigo: "secundaria" },
     update: {},
-    create: { studentId: s2.id, courseId: c2.id, promedio: 10.2, asistenciaPct: 70 },
+    create: { codigo: "secundaria", nombre: "Educación Secundaria" },
   });
 
-  await prisma.dashboardSnapshot.upsert({
-    where: { periodo: "2026-I" },
-    update: { riesgoGlobal: 43, totalEstudiantes: 2, alertasAbiertas: 1 },
-    create: { periodo: "2026-I", riesgoGlobal: 43, totalEstudiantes: 2, alertasAbiertas: 1 },
-  });
+  const catalogMap = new Map<string, string>();
 
-  const admin = await prisma.user.findUnique({
-    where: { email: "admin@iep-huancayo.edu.pe" },
-  });
-  const tutor = await prisma.user.findUnique({ where: { email: "tutor@iep-huancayo.edu.pe" } });
-  for (const u of [admin, tutor].filter(Boolean)) {
-    await prisma.notification.create({
-      data: {
-        userId: u!.id,
-        tipo: "alerta",
-        titulo: "Alerta temprana activa",
-        mensaje: "Hay estudiantes con riesgo medio/alto. Revise el módulo de predicción.",
-      },
+  for (const c of [...CURSOS_PRIMARIA, ...CURSOS_SECUNDARIA]) {
+    const row = await prisma.cursoCatalogo.upsert({
+      where: { codigo: c.codigo },
+      update: {},
+      create: { codigo: c.codigo, nombre: c.nombre, area: c.area },
     });
+    catalogMap.set(c.codigo, row.id);
   }
 
-  if (admin) {
-    await prisma.chatMessage.create({
-      data: {
-        roomId: "iep-huancayo-tutoria",
-        senderId: admin.id,
-        senderName: "Admin Sistema",
-        senderRole: "admin",
-        contenido:
-          "Bienvenidos al canal de tutoría. Revisen las alertas de riesgo alto en el módulo de predicción.",
-      },
+  for (let n = 1; n <= 6; n++) {
+    const grado = await prisma.grado.upsert({
+      where: { nivelId_numero: { nivelId: primaria.id, numero: n } },
+      update: {},
+      create: { nivelId: primaria.id, numero: n, nombre: `${n}° Primaria` },
     });
+    for (const c of CURSOS_PRIMARIA) {
+      await prisma.cursoPorGrado.upsert({
+        where: {
+          gradoId_cursoCatalogoId: {
+            gradoId: grado.id,
+            cursoCatalogoId: catalogMap.get(c.codigo)!,
+          },
+        },
+        update: {},
+        create: {
+          gradoId: grado.id,
+          cursoCatalogoId: catalogMap.get(c.codigo)!,
+          horasSemanales: 3,
+        },
+      });
+    }
+    for (const sec of SECCIONES) {
+      await prisma.seccion.upsert({
+        where: { gradoId_nombre: { gradoId: grado.id, nombre: sec } },
+        update: {},
+        create: { gradoId: grado.id, nombre: sec },
+      });
+    }
   }
 
-  console.log("Seed OK — usuarios: admin/docente/tutor/psicologo/estudiante @iep-huancayo.edu.pe");
-  console.log("Contraseña demo: Tesis2026!");
+  for (let n = 1; n <= 5; n++) {
+    const grado = await prisma.grado.upsert({
+      where: { nivelId_numero: { nivelId: secundaria.id, numero: n } },
+      update: {},
+      create: { nivelId: secundaria.id, numero: n, nombre: `${n}° Secundaria` },
+    });
+    for (const c of CURSOS_SECUNDARIA) {
+      const min = (c as { gradosMin?: number }).gradosMin ?? 1;
+      const max = (c as { gradosMax?: number }).gradosMax ?? 5;
+      if (n < min || n > max) continue;
+      await prisma.cursoPorGrado.upsert({
+        where: {
+          gradoId_cursoCatalogoId: {
+            gradoId: grado.id,
+            cursoCatalogoId: catalogMap.get(c.codigo)!,
+          },
+        },
+        update: {},
+        create: {
+          gradoId: grado.id,
+          cursoCatalogoId: catalogMap.get(c.codigo)!,
+          horasSemanales: 4,
+        },
+      });
+    }
+    for (const sec of SECCIONES) {
+      await prisma.seccion.upsert({
+        where: { gradoId_nombre: { gradoId: grado.id, nombre: sec } },
+        update: {},
+        create: { gradoId: grado.id, nombre: sec },
+      });
+    }
+  }
+
+  await prisma.systemConfig.upsert({
+    where: { clave: "institucion_nombre" },
+    update: {},
+    create: {
+      clave: "institucion_nombre",
+      valor: JSON.stringify({
+        nombre: "I.E.P. Huancayo",
+        ciudad: "Huancayo",
+        region: "Junín",
+        pais: "Perú",
+      }),
+    },
+  });
+
+  console.log("OK: roles, permisos, niveles, grados (1°-6° prim / 1°-5° sec), secciones A-C, catálogo curricular.");
+  console.log("Sin usuarios ni estudiantes. Ejecute: npm run db:bootstrap");
 }
 
 main()
