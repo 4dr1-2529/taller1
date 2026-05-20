@@ -1,7 +1,12 @@
 "use client";
 
 import type { FormEvent } from "react";
+import { UserPlus } from "lucide-react";
 import type { Course, Enrollment, Student } from "@/types/academic";
+import { PageSection } from "@/components/ui/PageSection";
+import { FormField } from "@/components/ui/FormField";
+import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
+import { INPUT_CLASS } from "@/lib/ui";
 
 export type NewEnrollmentForm = {
   studentId: string;
@@ -28,93 +33,99 @@ export function EnrollmentsView({
   onAdd,
 }: EnrollmentsViewProps) {
   return (
-    <div className="space-y-6">
-      <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-        <h3 className="text-base font-semibold text-slate-900">Nueva matrícula / vínculo curso</h3>
-        <p className="text-sm text-slate-600">
-          Registra el desempeño por curso; alimenta reportes de desaprobados y comparativas.
-        </p>
-        <form className="mt-4 grid gap-3 md:grid-cols-4" onSubmit={onAdd}>
-          <select
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm md:col-span-2"
-            value={form.studentId}
-            onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
-            required
-          >
-            <option value="">Selecciona estudiante</option>
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.nombres} {s.apellidos}
-              </option>
-            ))}
-          </select>
-          <select
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm md:col-span-2"
-            value={form.courseId}
-            onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
-            required
-          >
-            <option value="">Selecciona curso</option>
-            {courses.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nombre}
-              </option>
-            ))}
-          </select>
-          <input
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            placeholder="Promedio curso (0–20)"
-            value={form.promedio}
-            onChange={(e) => setForm((p) => ({ ...p, promedio: e.target.value }))}
-            required
-          />
-          <input
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            placeholder="Asistencia curso %"
-            value={form.asistenciaPct}
-            onChange={(e) => setForm((p) => ({ ...p, asistenciaPct: e.target.value }))}
-            required
-          />
-          <button
-            type="submit"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 md:col-span-2"
-          >
+    <div className="space-y-8">
+      <PageSection
+        variant="form"
+        icon={UserPlus}
+        title="Nueva matrícula"
+        description="Vincule estudiante y curso; alimenta reportes de desaprobados y comparativas."
+      >
+        <form className="form-grid" onSubmit={onAdd}>
+          <FormField label="Estudiante" className="form-grid-full sm:col-span-2">
+            <select
+              className={INPUT_CLASS}
+              value={form.studentId}
+              onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
+              required
+            >
+              <option value="">Seleccione estudiante</option>
+              {students.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.nombres} {s.apellidos}
+                </option>
+              ))}
+            </select>
+          </FormField>
+          <FormField label="Curso" className="form-grid-full sm:col-span-2">
+            <select
+              className={INPUT_CLASS}
+              value={form.courseId}
+              onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
+              required
+            >
+              <option value="">Seleccione curso</option>
+              {courses.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
+          </FormField>
+          <FormField label="Promedio (0–20)">
+            <input
+              className={INPUT_CLASS}
+              placeholder="0–20"
+              value={form.promedio}
+              onChange={(e) => setForm((p) => ({ ...p, promedio: e.target.value }))}
+              required
+            />
+          </FormField>
+          <FormField label="Asistencia %">
+            <input
+              className={INPUT_CLASS}
+              placeholder="0–100"
+              value={form.asistenciaPct}
+              onChange={(e) => setForm((p) => ({ ...p, asistenciaPct: e.target.value }))}
+              required
+            />
+          </FormField>
+          <button type="submit" className="btn-primary form-grid-full">
             Guardar matrícula
           </button>
         </form>
-      </article>
+      </PageSection>
 
-      <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-        <h3 className="mb-3 text-base font-semibold text-slate-900">Matrículas registradas</h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-slate-200 text-slate-500">
-              <tr>
-                <th className="py-2">Estudiante</th>
-                <th className="py-2">Curso</th>
-                <th className="py-2">Promedio</th>
-                <th className="py-2">Asistencia</th>
-              </tr>
-            </thead>
-            <tbody>
-              {enrollments.map((e) => {
-                const st = students.find((s) => s.id === e.studentId);
-                const c = courses.find((x) => x.id === e.courseId);
-                return (
-                  <tr key={e.id} className="border-b border-slate-100">
-                    <td className="py-2">
-                      {st ? `${st.nombres} ${st.apellidos}` : e.studentId}
-                    </td>
-                    <td className="py-2">{c?.nombre ?? e.courseId}</td>
-                    <td className="py-2">{e.promedio.toFixed(1)}</td>
-                    <td className="py-2">{e.asistenciaPct}%</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </article>
+      <DataTablePanel
+        title={`Matrículas registradas (${enrollments.length})`}
+        description="Vínculos estudiante–curso del periodo actual."
+        isEmpty={enrollments.length === 0}
+        emptyMessage="Sin matrículas. Registre estudiantes y cursos primero."
+      >
+        <TableWrap>
+          <thead>
+            <tr>
+              <th>Estudiante</th>
+              <th>Curso</th>
+              <th>Promedio</th>
+              <th>Asistencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            {enrollments.map((e) => {
+              const st = students.find((s) => s.id === e.studentId);
+              const c = courses.find((x) => x.id === e.courseId);
+              return (
+                <tr key={e.id}>
+                  <td>{st ? `${st.nombres} ${st.apellidos}` : e.studentId}</td>
+                  <td>{c?.nombre ?? e.courseId}</td>
+                  <td>{e.promedio.toFixed(1)}</td>
+                  <td>{e.asistenciaPct}%</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </TableWrap>
+      </DataTablePanel>
     </div>
   );
 }

@@ -2,7 +2,13 @@ import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
 import { login, refresh, me, changePassword } from "../controllers/auth.controller.js";
 import { createStudent, getStudent, listStudents, updateStudent, deleteStudent } from "../controllers/students.controller.js";
-import { listTeachers, createTeacher, updateTeacher, deleteTeacher } from "../controllers/teachers.controller.js";
+import {
+  listTeachers,
+  createTeacher,
+  createTeacherAccount,
+  updateTeacher,
+  deleteTeacher,
+} from "../controllers/teachers.controller.js";
 import { listCourses, createCourse, updateCourse, deleteCourse } from "../controllers/courses.controller.js";
 import { dashboardStats, predict } from "../controllers/predict.controller.js";
 import {
@@ -51,6 +57,7 @@ router.delete("/students/:id", authenticate, authorize("admin"), deleteStudent);
 
 router.get("/teachers", authenticate, listTeachers);
 router.post("/teachers", authenticate, authorize("admin"), createTeacher);
+router.post("/teachers/:id/account", authenticate, authorize("admin"), createTeacherAccount);
 router.put("/teachers/:id", authenticate, authorize("admin"), updateTeacher);
 router.delete("/teachers/:id", authenticate, authorize("admin"), deleteTeacher);
 

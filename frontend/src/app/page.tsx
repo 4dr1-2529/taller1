@@ -2,7 +2,9 @@
 
 import { type FormEvent, useMemo, useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { DataSourceBanner } from "@/components/DataSourceBanner";
+import { PageTransition } from "@/components/ui/PageTransition";
 import { AcademicView } from "@/components/views/AcademicView";
 import { AcademicStructureView } from "@/components/views/AcademicStructureView";
 import { RoleDashboard } from "@/components/dashboards/RoleDashboard";
@@ -10,7 +12,6 @@ import { EmptyState } from "@/components/EmptyState";
 import { useAcademicStructure } from "@/hooks/useAcademicStructure";
 import { AlertsView } from "@/components/views/AlertsView";
 import { ChatView } from "@/components/views/ChatView";
-import { CoursesView } from "@/components/views/CoursesView";
 import { DashboardView } from "@/components/views/DashboardView";
 import { EnrollmentsView, type NewEnrollmentForm } from "@/components/views/EnrollmentsView";
 import { LMSView } from "@/components/views/LMSView";
@@ -18,11 +19,19 @@ import { PredictionView } from "@/components/views/PredictionView";
 import { MlMetricsView } from "@/components/views/MlMetricsView";
 import { ReportsView } from "@/components/views/ReportsView";
 import { defaultStudentForm, StudentsView, type NewStudentForm } from "@/components/views/StudentsView";
-import { TeachersView } from "@/components/views/TeachersView";
+import {
+  TeachersView,
+  defaultTeacherForm,
+  type NewTeacherForm,
+} from "@/components/views/TeachersView";
+import {
+  CoursesView,
+  defaultCourseForm,
+  type NewCourseForm,
+} from "@/components/views/CoursesView";
 import { PsychFollowUpView } from "@/components/views/PsychFollowUpView";
 import { GradesView } from "@/components/views/GradesView";
 import { AttendanceView } from "@/components/views/AttendanceView";
-import { NotificationBell } from "@/components/NotificationBell";
 import { APP_SECTIONS, type AppSection } from "@/data/navigation";
 import { earlyAlertCount } from "@/lib/aggregates";
 import { useAcademicData } from "@/hooks/useAcademicData";
@@ -91,7 +100,7 @@ function sectionSubtitle(section: AppSection): string {
     case "Alertas": return "Priorización automática y recomendaciones de intervención.";
     case "Seguimiento psicológico": return "Registro de entrevistas y planes de apoyo emocional.";
     case "Estudiantes": return "Registro y vista consolidada con score de deserción.";
-    case "Profesores": return "Directorio docente del colegio.";
+    case "Profesores": return "Registro de docentes, especialidad y cursos que dictan.";
     case "Cursos": return "Oferta académica y asignación.";
     case "Matrículas": return "Vínculo estudiante–curso por periodo académico.";
     case "Notas": return "Calificaciones por bimestre (escala 0–20) y recálculo de promedio.";
@@ -112,14 +121,32 @@ export default function Home() {
   const visibleSections = ROLE_SECTIONS[role] ?? [...ROLE_SECTIONS.estudiante];
 
   const [activeSection, setActiveSection] = useState<AppSection>(visibleSections[0]);
-  const { students, teachers, courses, enrollments, dataSource, loading, refresh, addStudent, addEnrollment } =
-    useAcademicData();
+  const {
+    students,
+    teachers,
+    courses,
+    enrollments,
+    dataSource,
+    loading,
+    refresh,
+    addStudent,
+    addTeacher,
+    updateTeacher,
+    deactivateTeacher,
+    createTeacherAccount,
+    addCourse,
+    updateCourse,
+    addEnrollment,
+  } = useAcademicData();
   const { secciones } = useAcademicStructure();
 
   const [newStudent, setNewStudent] = useState<NewStudentForm>(defaultStudentForm);
+  const [newTeacher, setNewTeacher] = useState<NewTeacherForm>(defaultTeacherForm);
+  const [newCourse, setNewCourse] = useState<NewCourseForm>(defaultCourseForm);
   const [enrollmentForm, setEnrollmentForm] = useState<NewEnrollmentForm>(initialEnrollment);
 
   const useApi = dataSource === "api";
+  const canManageStaff = role === "admin";
   const alertCount = useMemo(() => earlyAlertCount(students), [students]);
 
   async function handleAddStudent(event: FormEvent<HTMLFormElement>) {
@@ -133,6 +160,28 @@ export default function Home() {
     event.preventDefault();
     await addEnrollment(enrollmentForm);
     setEnrollmentForm({ studentId: enrollmentForm.studentId, courseId: "", promedio: "0", asistenciaPct: "0" });
+  }
+
+  async function handleAddTeacher(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await addTeacher(newTeacher);
+    setNewTeacher(defaultTeacherForm);
+  }
+
+  async function handleAddCourse(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const profesorId = user?.teacherId ?? newCourse.profesorId;
+    if (!profesorId) return;
+    await addCourse({
+      codigo: newCourse.codigo,
+      nombre: newCourse.nombre,
+      profesorId,
+      seccionId: newCourse.seccionId || undefined,
+    });
+    setNewCourse({
+      ...defaultCourseForm,
+      profesorId: user?.teacherId ?? "",
+    });
   }
 
   function renderSection() {
@@ -184,9 +233,34 @@ export default function Home() {
           />
         );
       case "Profesores":
-        return <TeachersView teachers={teachers} />;
+        return (
+          <TeachersView
+            teachers={teachers}
+            secciones={secciones}
+            form={newTeacher}
+            setForm={setNewTeacher}
+            onSubmit={handleAddTeacher}
+            onUpdate={updateTeacher}
+            onDeactivate={deactivateTeacher}
+            onCreateAccount={createTeacherAccount}
+            canEdit={canManageStaff}
+          />
+        );
       case "Cursos":
-        return <CoursesView courses={courses} teachers={teachers} />;
+        return (
+          <CoursesView
+            courses={courses}
+            teachers={teachers}
+            secciones={secciones}
+            form={newCourse}
+            setForm={setNewCourse}
+            onSubmit={handleAddCourse}
+            onReassignProfesor={(courseId, profesorId) => updateCourse(courseId, { profesorId })}
+            canEdit={canManageStaff || role === "docente"}
+            canReassign={canManageStaff}
+            lockProfesorId={role === "docente" ? user?.teacherId ?? undefined : undefined}
+          />
+        );
       case "Matrículas":
         return <EnrollmentsView enrollments={enrollments} students={students} courses={courses} form={enrollmentForm} setForm={setEnrollmentForm} onAdd={handleAddEnrollment} />;
       case "Notas":
@@ -211,7 +285,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen text-slate-900 lg:flex dark:text-slate-100">
+    <div className="app-content min-h-screen lg:flex">
       <AppSidebar
         sections={visibleSections}
         activeSection={activeSection}
@@ -219,31 +293,12 @@ export default function Home() {
         alertCount={alertCount}
       />
 
-      <main className="flex-1 space-y-6 p-4 md:p-8">
-        <header className="glass-card rounded-2xl p-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
-                I.E.P. Blenkir Huancayo · Ingeniería de Sistemas
-              </p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Modelo predictivo con ensemble learning para riesgo de deserción
-              </h1>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                <span className="font-semibold text-slate-800 dark:text-slate-100">
-                  {activeSection}
-                </span>
-                {" · "}
-                {sectionSubtitle(activeSection)}
-              </p>
-            </div>
-            <NotificationBell />
-          </div>
-        </header>
+      <main className="mx-auto flex-1 space-y-5 p-4 pt-16 md:max-w-[1600px] md:space-y-6 md:p-8 md:pt-8">
+        <AppHeader activeSection={activeSection} subtitle={sectionSubtitle(activeSection)} />
 
         <DataSourceBanner dataSource={dataSource} loading={loading} onRefresh={refresh} />
 
-        {renderSection()}
+        <PageTransition key={activeSection}>{renderSection()}</PageTransition>
       </main>
     </div>
   );

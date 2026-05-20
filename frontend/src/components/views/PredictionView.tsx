@@ -8,6 +8,7 @@ import { api } from "@/services/api";
 import { computePrediction, simulateScenario } from "@/lib/risk-engine";
 import { toRiskEngineStatus } from "@/lib/status";
 import type { ScenarioDeltas, Student } from "@/types/academic";
+import { SELECT_CLASS, INPUT_CLASS } from "@/lib/ui";
 
 function levelStyles(level: string) {
   return clsx(
@@ -87,7 +88,7 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+      <section className="premium-card rounded-2xl p-5 md:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
@@ -101,7 +102,7 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
             </p>
           </div>
           <select
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm lg:w-72"
+            className={clsx(SELECT_CLASS, "w-full lg:w-72")}
             value={student.id}
             onChange={(e) => {
               setStudentId(e.target.value);
@@ -171,7 +172,7 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+      <section className="premium-card rounded-2xl p-5 md:p-6">
         <div className="flex items-center gap-2">
           <FlaskConical className="h-5 w-5 text-amber-600" aria-hidden />
           <h3 className="text-base font-semibold text-slate-900">Simulación de escenarios</h3>
@@ -258,7 +259,7 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+      <section className="premium-card rounded-2xl p-5 md:p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
             <Server className="h-5 w-5 text-slate-700" aria-hidden />

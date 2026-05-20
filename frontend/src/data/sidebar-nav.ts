@@ -1,0 +1,68 @@
+import type { AppSection } from "@/data/navigation";
+
+export type SidebarGroupId = "overview" | "academic" | "ai" | "admin";
+
+export type SidebarGroup = {
+  id: SidebarGroupId;
+  label: string;
+  items: AppSection[];
+};
+
+export const SIDEBAR_GROUPS: SidebarGroup[] = [
+  {
+    id: "overview",
+    label: "General",
+    items: ["Dashboard", "Estructura académica", "Datos académicos", "Chat"],
+  },
+  {
+    id: "academic",
+    label: "Académico",
+    items: [
+      "Estudiantes",
+      "Profesores",
+      "Cursos",
+      "Matrículas",
+      "Notas",
+      "Asistencia",
+      "Actividad LMS",
+      "Seguimiento psicológico",
+    ],
+  },
+  {
+    id: "ai",
+    label: "IA y analítica",
+    items: ["Predicción", "Modelos IA", "Alertas"],
+  },
+  {
+    id: "admin",
+    label: "Administración",
+    items: ["Reportes"],
+  },
+];
+
+export function groupsForSections(visible: readonly AppSection[]): SidebarGroup[] {
+  const set = new Set(visible);
+  return SIDEBAR_GROUPS.map((g) => ({
+    ...g,
+    items: g.items.filter((item) => set.has(item)),
+  })).filter((g) => g.items.length > 0);
+}
+
+export const SECTION_BREADCRUMB: Record<AppSection, string[]> = {
+  Dashboard: ["Inicio", "Dashboard"],
+  "Estructura académica": ["Académico", "Estructura"],
+  Alertas: ["IA", "Alertas"],
+  "Seguimiento psicológico": ["Académico", "Psicología"],
+  Estudiantes: ["Académico", "Estudiantes"],
+  Profesores: ["Académico", "Docentes"],
+  Cursos: ["Académico", "Cursos"],
+  Matrículas: ["Académico", "Matrículas"],
+  Notas: ["Académico", "Notas"],
+  Asistencia: ["Académico", "Asistencia"],
+  "Datos académicos": ["Académico", "Datos"],
+  "Actividad LMS": ["Académico", "LMS"],
+  Predicción: ["IA", "Predicción"],
+  "Modelos IA": ["IA", "Modelos"],
+  Chat: ["General", "Chat"],
+  Reportes: ["Admin", "Reportes"],
+};

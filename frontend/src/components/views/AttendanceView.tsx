@@ -6,6 +6,11 @@ import { api } from "@/services/api";
 import { useAuth } from "@/contexts/AuthProvider";
 import type { Student } from "@/types/academic";
 import { EmptyState } from "@/components/EmptyState";
+import { PageSection } from "@/components/ui/PageSection";
+import { FormField } from "@/components/ui/FormField";
+import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
+import { INPUT_CLASS } from "@/lib/ui";
+import { CalendarCheck } from "lucide-react";
 
 type AttendanceRow = {
   id: string;
@@ -85,12 +90,17 @@ export function AttendanceView({ students }: AttendanceViewProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <article className="glass-card p-5">
-        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Registrar asistencia</h3>
-        <form className="mt-4 grid gap-3 md:grid-cols-3" onSubmit={(e) => void handleSubmit(e)}>
+    <div className="space-y-8">
+      <PageSection
+        variant="form"
+        icon={CalendarCheck}
+        title="Registrar asistencia"
+        description="Marque presente, tardanza o falta justificada por día."
+      >
+        <form className="form-grid" onSubmit={(e) => void handleSubmit(e)}>
+          <FormField label="Estudiante" className="form-grid-full sm:col-span-2">
           <select
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900 md:col-span-2"
+            className={INPUT_CLASS}
             value={form.studentId}
             onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
             required
@@ -102,14 +112,18 @@ export function AttendanceView({ students }: AttendanceViewProps) {
               </option>
             ))}
           </select>
+          </FormField>
+          <FormField label="Fecha">
           <input
             type="date"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900"
+            className={INPUT_CLASS}
             value={form.fecha}
             onChange={(e) => setForm((p) => ({ ...p, fecha: e.target.value }))}
             required
           />
-          <label className="flex items-center gap-2 text-sm">
+          </FormField>
+          <FormField label="Presente">
+          <label className="flex h-10 items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={form.presente}
@@ -117,7 +131,9 @@ export function AttendanceView({ students }: AttendanceViewProps) {
             />
             Presente
           </label>
-          <label className="flex items-center gap-2 text-sm">
+          </FormField>
+          <FormField label="Tardanza">
+          <label className="flex h-10 items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={form.tardanza}
@@ -125,7 +141,9 @@ export function AttendanceView({ students }: AttendanceViewProps) {
             />
             Tardanza
           </label>
-          <label className="flex items-center gap-2 text-sm">
+          </FormField>
+          <FormField label="Justificado">
+          <label className="flex h-10 items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={form.justificado}
@@ -133,54 +151,50 @@ export function AttendanceView({ students }: AttendanceViewProps) {
             />
             Justificado
           </label>
+          </FormField>
+          <FormField label="Observación" className="form-grid-full sm:col-span-2">
           <input
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900 md:col-span-2"
-            placeholder="Observación"
+            className={INPUT_CLASS}
+            placeholder="Opcional"
             value={form.observacion}
             onChange={(e) => setForm((p) => ({ ...p, observacion: e.target.value }))}
           />
-          <button
-            type="submit"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
-          >
-            Guardar
+          </FormField>
+          <button type="submit" className="btn-primary form-grid-full">
+            Guardar asistencia
           </button>
         </form>
-      </article>
+      </PageSection>
 
-      <article className="glass-card p-5">
-        <h3 className="mb-3 font-semibold">Últimos registros</h3>
-        {loading ? (
-          <p className="text-sm text-slate-500">Cargando…</p>
-        ) : items.length === 0 ? (
-          <p className="text-sm text-slate-500">Sin registros de asistencia.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="border-b border-slate-200 text-slate-500">
-                <tr>
-                  <th className="py-2">Fecha</th>
-                  <th className="py-2">Estudiante</th>
-                  <th className="py-2">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((a) => (
-                  <tr key={a.id} className="border-b border-slate-100">
-                    <td className="py-2">{new Date(a.fecha).toLocaleDateString("es-PE")}</td>
-                    <td className="py-2">
-                      {a.student ? `${a.student.nombres} ${a.student.apellidos}` : a.studentId}
-                    </td>
-                    <td className="py-2 capitalize">
-                      {a.presente ? (a.tardanza ? "Tardanza" : "Presente") : a.justificado ? "Falta justificada" : "Falta"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </article>
+      <DataTablePanel
+        title="Últimos registros"
+        description={loading ? "Cargando…" : `${items.length} registro(s)`}
+        isEmpty={!loading && items.length === 0}
+        emptyMessage="Sin registros de asistencia."
+      >
+        <TableWrap>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Estudiante</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((a) => (
+              <tr key={a.id}>
+                <td>{new Date(a.fecha).toLocaleDateString("es-PE")}</td>
+                <td>
+                  {a.student ? `${a.student.nombres} ${a.student.apellidos}` : a.studentId}
+                </td>
+                <td className="capitalize">
+                  {a.presente ? (a.tardanza ? "Tardanza" : "Presente") : a.justificado ? "Falta justificada" : "Falta"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </TableWrap>
+      </DataTablePanel>
     </div>
   );
 }

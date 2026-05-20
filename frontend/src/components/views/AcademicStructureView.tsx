@@ -52,7 +52,7 @@ export function AcademicStructureView() {
 
   return (
     <div className="space-y-6">
-      <div className="glass-card p-5">
+      <div className="premium-card rounded-2xl md:p-6 p-5">
         <div className="flex items-center gap-3">
           <Layers className="h-8 w-8 text-indigo-500" />
           <div>
@@ -69,7 +69,7 @@ export function AcademicStructureView() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {niveles.map((nivel) => (
-          <article key={nivel.id} className="glass-card p-5">
+          <article key={nivel.id} className="premium-card rounded-2xl md:p-6 p-5">
             <div className="mb-4 flex items-center gap-2">
               <GraduationCap className="h-5 w-5 text-violet-500" />
               <h4 className="font-semibold capitalize text-slate-900 dark:text-slate-100">{nivel.nombre}</h4>

@@ -47,7 +47,7 @@ export function MlMetricsView() {
 
   if (error || !data) {
     return (
-      <div className="glass-card rounded-2xl p-8 text-center text-sm text-slate-600">
+      <div className="premium-card rounded-2xl md:p-6 rounded-2xl p-8 text-center text-sm text-slate-600">
         <Brain className="mx-auto mb-3 h-10 w-10 text-indigo-500" />
         <p>{error ?? "Sin métricas"}</p>
         <p className="mt-2 text-xs text-slate-500">
@@ -64,7 +64,7 @@ export function MlMetricsView() {
 
   return (
     <div className="space-y-6">
-      <section className="glass-card rounded-2xl p-5">
+      <section className="premium-card rounded-2xl md:p-6 rounded-2xl p-5">
         <h3 className="flex items-center gap-2 text-base font-semibold">
           <Brain className="h-5 w-5 text-indigo-600" />
           Comparación de modelos (ensemble learning)
@@ -87,7 +87,7 @@ export function MlMetricsView() {
 
       <section className="grid gap-4 lg:grid-cols-3">
         {Object.entries(data).map(([name, m]) => (
-          <article key={name} className="glass-card rounded-2xl p-5">
+          <article key={name} className="premium-card rounded-2xl md:p-6 rounded-2xl p-5">
             <h4 className="font-semibold capitalize">{name.replace("_", " ")}</h4>
             <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
               <div>

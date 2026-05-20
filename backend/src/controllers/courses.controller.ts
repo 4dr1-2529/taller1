@@ -4,12 +4,27 @@ import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramId } from "../utils/params.js";
 import { courseSchema } from "../validators/schemas.js";
+import { getTeacherIdForUser } from "../utils/teacher.js";
 
 export async function listCourses(req: Request, res: Response, next: NextFunction) {
   try {
     const seccionId = req.query.seccionId as string | undefined;
+    let profesorId = req.query.profesorId as string | undefined;
+
+    if (req.user?.role === "docente") {
+      const tid = await getTeacherIdForUser(req.user.sub);
+      if (!tid) {
+        return res.json({ ok: true, items: [] });
+      }
+      profesorId = tid;
+    }
+
     const items = await prisma.course.findMany({
-      where: { activo: true, ...(seccionId ? { seccionId } : {}) },
+      where: {
+        activo: true,
+        ...(seccionId ? { seccionId } : {}),
+        ...(profesorId ? { profesorId } : {}),
+      },
       include: {
         profesor: { select: { id: true, nombres: true, apellidos: true } },
         cursoCatalogo: true,
@@ -24,6 +39,14 @@ export async function listCourses(req: Request, res: Response, next: NextFunctio
 export async function createCourse(req: Request, res: Response, next: NextFunction) {
   try {
     const { codigo, nombre, profesorId, seccionId, cursoCatalogoId, periodo } = courseSchema.parse(req.body);
+
+    if (req.user?.role === "docente") {
+      const tid = await getTeacherIdForUser(req.user.sub);
+      if (!tid || tid !== profesorId) {
+        throw new AppError(403, "Solo puede crear cursos a su nombre");
+      }
+    }
+
     const existing = await prisma.course.findUnique({ where: { codigo } });
     if (existing) throw new AppError(409, "Código de curso ya existe");
     const course = await prisma.course.create({

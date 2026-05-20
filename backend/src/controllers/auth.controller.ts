@@ -25,7 +25,10 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       loginAttempts.delete(ip);
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { teacher: { select: { id: true, codigo: true } } },
+    });
     if (!user || !user.activo) {
       trackAttempt(ip);
       throw new AppError(401, "Credenciales incorrectas");
@@ -80,6 +83,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         nombres: user.nombres,
         apellidos: user.apellidos,
         role: user.role,
+        teacherId: user.teacher?.id ?? null,
       },
     });
   } catch (e) {
@@ -120,7 +124,16 @@ export async function me(req: Request, res: Response, next: NextFunction) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user!.sub },
-      select: { id: true, email: true, nombres: true, apellidos: true, role: true, activo: true, createdAt: true },
+      select: {
+        id: true,
+        email: true,
+        nombres: true,
+        apellidos: true,
+        role: true,
+        activo: true,
+        createdAt: true,
+        teacher: { select: { id: true, codigo: true, especialidad: true } },
+      },
     });
     if (!user) throw new AppError(404, "Usuario no encontrado");
     res.json({ ok: true, user });

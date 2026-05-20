@@ -17,6 +17,7 @@ import {
   YAxis,
 } from "recharts";
 import type { Student } from "@/types/academic";
+import { SELECT_CLASS } from "@/lib/ui";
 
 function engagementBadge(eng: string) {
   return clsx(
@@ -64,16 +65,16 @@ export function LMSView({ students }: LMSViewProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+    <div className="space-y-8">
+      <div className="premium-card flex flex-col gap-3 rounded-2xl p-5 md:flex-row md:items-center md:justify-between md:p-6">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">Comportamiento en LMS</h3>
-          <p className="text-sm text-slate-600">
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">Comportamiento en LMS</h3>
+          <p className="text-sm text-[var(--text-muted)]">
             Actividad semanal, tiempo en plataforma y cumplimiento de tareas.
           </p>
         </div>
         <select
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm md:w-72"
+          className={clsx(SELECT_CLASS, "w-full md:w-72")}
           value={student.id}
           onChange={(e) => setStudentId(e.target.value)}
         >
@@ -86,7 +87,7 @@ export function LMSView({ students }: LMSViewProps) {
       </div>
 
       <section className="grid gap-4 lg:grid-cols-3">
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+        <article className="premium-card rounded-2xl p-5 md:p-6">
           <div className="flex items-center gap-2 text-slate-900">
             <MonitorSmartphone className="h-5 w-5 text-indigo-600" aria-hidden />
             <h4 className="font-semibold">Nivel de engagement</h4>
@@ -100,7 +101,7 @@ export function LMSView({ students }: LMSViewProps) {
             Derivado de la combinación de actividad semanal, minutos conectados y entregas.
           </p>
         </article>
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+        <article className="premium-card rounded-2xl p-5 md:p-6">
           <div className="flex items-center gap-2 text-slate-900">
             <Clock3 className="h-5 w-5 text-sky-600" aria-hidden />
             <h4 className="font-semibold">Tiempo en plataforma</h4>
@@ -110,7 +111,7 @@ export function LMSView({ students }: LMSViewProps) {
           </p>
           <p className="text-sm text-slate-600">Promedio semanal registrado (simulado).</p>
         </article>
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+        <article className="premium-card rounded-2xl p-5 md:p-6">
           <div className="flex items-center gap-2 text-slate-900">
             <Send className="h-5 w-5 text-amber-600" aria-hidden />
             <h4 className="font-semibold">Tareas</h4>
@@ -123,7 +124,7 @@ export function LMSView({ students }: LMSViewProps) {
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+        <article className="premium-card rounded-2xl p-5 md:p-6">
           <h4 className="font-semibold text-slate-900">Actividad y minutos por semana</h4>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -155,7 +156,7 @@ export function LMSView({ students }: LMSViewProps) {
           </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+        <article className="premium-card rounded-2xl p-5 md:p-6">
           <h4 className="font-semibold text-slate-900">Entregas vs pendientes</h4>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">

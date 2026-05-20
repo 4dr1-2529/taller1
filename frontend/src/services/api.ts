@@ -6,6 +6,7 @@ export type AuthUser = {
   nombres: string;
   apellidos: string;
   role: "admin" | "docente" | "tutor" | "psicologo" | "estudiante" | "apoderado";
+  teacherId?: string | null;
 };
 
 export type ApiSeccion = {
@@ -234,6 +235,13 @@ class ApiClient {
 
   async deleteTeacher(id: string) {
     return this.request<{ ok: boolean }>(`/teachers/${id}`, { method: "DELETE" });
+  }
+
+  async createTeacherAccount(id: string, password: string) {
+    return this.request<{ teacher: Teacher }>(`/teachers/${id}/account`, {
+      method: "POST",
+      body: JSON.stringify({ password }),
+    });
   }
 
   async getNiveles() {

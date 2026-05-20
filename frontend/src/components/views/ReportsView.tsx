@@ -57,9 +57,9 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-        <h3 className="text-base font-semibold text-slate-900">Exportación</h3>
-        <p className="text-sm text-slate-600">
+      <section className="premium-card p-6 md:p-7">
+        <h3 className="text-lg font-semibold text-[var(--text-primary)]">Exportación</h3>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
           Genera archivos listos para comité académico o anexos de tesis (Excel / PDF).
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -69,7 +69,7 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
             onClick={() =>
               run("excel", () => exportStudentsToExcel(withPred, "estudiantes_riesgo.xlsx"))
             }
-            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"
+            className="btn-primary disabled:opacity-60"
           >
             <FileSpreadsheet className="h-4 w-4" aria-hidden />
             {busy === "excel" ? "Generando…" : "Excel · Estudiantes y riesgo"}
@@ -82,7 +82,7 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
                 exportCourseRiskPdf(courseRiskRows, "Riesgo promedio por curso", "riesgo_por_curso.pdf"),
               )
             }
-            className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+            className="btn-secondary disabled:opacity-60"
           >
             <FileText className="h-4 w-4" aria-hidden />
             {busy === "pdf-cursos" ? "Generando…" : "PDF · Riesgo por curso"}
@@ -93,7 +93,7 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
             onClick={() =>
               run("pdf-fallas", () => exportFailsByCoursePdf(fails, "desaprobados_por_curso.pdf"))
             }
-            className="inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-500 disabled:opacity-60"
+            className="btn-primary bg-gradient-to-r from-rose-600 to-pink-600 disabled:opacity-60"
           >
             <FileText className="h-4 w-4" aria-hidden />
             {busy === "pdf-fallas" ? "Generando…" : "PDF · Desaprobados"}
@@ -102,7 +102,7 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
             type="button"
             disabled={busy !== null}
             onClick={() => run("excel-lms", () => exportLowLmsExcel(lowLms, "baja_actividad_lms.xlsx"))}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
+            className="btn-secondary disabled:opacity-60"
           >
             <FileSpreadsheet className="h-4 w-4" aria-hidden />
             {busy === "excel-lms" ? "Generando…" : "Excel · Baja actividad LMS"}
@@ -111,7 +111,7 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+        <article className="premium-card p-6">
           <h3 className="text-base font-semibold text-slate-900">Estudiantes en riesgo por curso</h3>
           <ul className="mt-3 space-y-3 text-sm">
             {atRiskByCourse.map((row) => (
@@ -133,11 +133,11 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
           </ul>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+        <article className="premium-card p-6">
           <h3 className="text-base font-semibold text-slate-900">Cursos con más desaprobados</h3>
           <p className="text-sm text-slate-600">Umbral: promedio de matrícula &lt; 11.</p>
           <div className="mt-3 overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
+            <table className="data-table min-w-full">
               <thead className="border-b border-slate-200 text-slate-500">
                 <tr>
                   <th className="py-2">Curso</th>

@@ -53,6 +53,8 @@ export type Teacher = {
   telefono: string;
   courses?: TeacherCourse[];
   courseCount?: number;
+  userId?: string | null;
+  user?: { id: string; email: string; activo: boolean } | null;
 };
 
 export type Course = {

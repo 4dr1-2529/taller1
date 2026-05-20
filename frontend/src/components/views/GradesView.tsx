@@ -1,11 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { useAuth } from "@/contexts/AuthProvider";
 import type { Course, Student } from "@/types/academic";
 import { EmptyState } from "@/components/EmptyState";
+import { PageSection } from "@/components/ui/PageSection";
+import { FormField } from "@/components/ui/FormField";
+import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
+import { INPUT_CLASS } from "@/lib/ui";
 
 type GradeRow = {
   id: string;
@@ -89,116 +94,117 @@ export function GradesView({ students, courses }: GradesViewProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <article className="glass-card p-5">
-        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Registrar nota</h3>
-        <p className="text-sm text-slate-600 dark:text-slate-400">
-          Escala vigente en Perú: 0 a 20 por bimestre. El promedio general del estudiante se recalcula automáticamente.
-        </p>
-        <form className="mt-4 grid gap-3 md:grid-cols-3" onSubmit={(e) => void handleSubmit(e)}>
-          <select
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900 md:col-span-2"
-            value={form.studentId}
-            onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
-            required
-          >
-            <option value="">Estudiante</option>
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.codigo} — {s.nombres} {s.apellidos}
-              </option>
-            ))}
-          </select>
-          <select
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900 md:col-span-2"
-            value={form.courseId}
-            onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
-            required
-          >
-            <option value="">Curso</option>
-            {courses.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nombre}
-              </option>
-            ))}
-          </select>
-          <input
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900"
-            placeholder="Periodo"
-            value={form.periodo}
-            onChange={(e) => setForm((p) => ({ ...p, periodo: e.target.value }))}
-          />
-          <select
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900"
-            value={form.bimestre}
-            onChange={(e) => setForm((p) => ({ ...p, bimestre: e.target.value }))}
-          >
-            {[1, 2, 3, 4].map((b) => (
-              <option key={b} value={b}>
-                Bimestre {b}
-              </option>
-            ))}
-          </select>
-          <input
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900"
-            placeholder="Nota (0–20)"
-            inputMode="decimal"
-            value={form.nota}
-            onChange={(e) => setForm((p) => ({ ...p, nota: e.target.value }))}
-            required
-          />
-          <input
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900 md:col-span-2"
-            placeholder="Observación (opcional)"
-            value={form.observacion}
-            onChange={(e) => setForm((p) => ({ ...p, observacion: e.target.value }))}
-          />
-          <button
-            type="submit"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 md:col-span-3"
-          >
+    <div className="space-y-8">
+      <PageSection
+        variant="form"
+        icon={ClipboardList}
+        title="Registrar nota"
+        description="Escala vigente en Perú: 0 a 20 por bimestre. El promedio general se recalcula automáticamente."
+      >
+        <form className="form-grid" onSubmit={(e) => void handleSubmit(e)}>
+          <FormField label="Estudiante" className="form-grid-full sm:col-span-2">
+            <select
+              className={INPUT_CLASS}
+              value={form.studentId}
+              onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
+              required
+            >
+              <option value="">Seleccione</option>
+              {students.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.codigo} — {s.nombres} {s.apellidos}
+                </option>
+              ))}
+            </select>
+          </FormField>
+          <FormField label="Curso" className="form-grid-full sm:col-span-2">
+            <select
+              className={INPUT_CLASS}
+              value={form.courseId}
+              onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
+              required
+            >
+              <option value="">Seleccione</option>
+              {courses.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
+          </FormField>
+          <FormField label="Periodo">
+            <input
+              className={INPUT_CLASS}
+              value={form.periodo}
+              onChange={(e) => setForm((p) => ({ ...p, periodo: e.target.value }))}
+            />
+          </FormField>
+          <FormField label="Bimestre">
+            <select
+              className={INPUT_CLASS}
+              value={form.bimestre}
+              onChange={(e) => setForm((p) => ({ ...p, bimestre: e.target.value }))}
+            >
+              {[1, 2, 3, 4].map((b) => (
+                <option key={b} value={b}>
+                  Bimestre {b}
+                </option>
+              ))}
+            </select>
+          </FormField>
+          <FormField label="Nota (0–20)">
+            <input
+              className={INPUT_CLASS}
+              inputMode="decimal"
+              value={form.nota}
+              onChange={(e) => setForm((p) => ({ ...p, nota: e.target.value }))}
+              required
+            />
+          </FormField>
+          <FormField label="Observación" className="form-grid-full">
+            <input
+              className={INPUT_CLASS}
+              value={form.observacion}
+              onChange={(e) => setForm((p) => ({ ...p, observacion: e.target.value }))}
+            />
+          </FormField>
+          <button type="submit" className="btn-primary form-grid-full">
             Guardar nota
           </button>
         </form>
-      </article>
+      </PageSection>
 
-      <article className="glass-card p-5">
-        <h3 className="mb-3 font-semibold text-slate-900 dark:text-slate-100">Historial de notas</h3>
-        {loading ? (
-          <p className="text-sm text-slate-500">Cargando…</p>
-        ) : items.length === 0 ? (
-          <p className="text-sm text-slate-500">Sin notas registradas.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="border-b border-slate-200 text-slate-500 dark:border-slate-700">
-                <tr>
-                  <th className="py-2">Estudiante</th>
-                  <th className="py-2">Curso</th>
-                  <th className="py-2">Periodo</th>
-                  <th className="py-2">Bim.</th>
-                  <th className="py-2">Nota</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((g) => (
-                  <tr key={g.id} className="border-b border-slate-100 dark:border-slate-800">
-                    <td className="py-2">
-                      {g.student
-                        ? `${g.student.nombres} ${g.student.apellidos}`
-                        : g.studentId.slice(0, 8)}
-                    </td>
-                    <td className="py-2">{g.course?.nombre ?? "—"}</td>
-                    <td className="py-2">{g.periodo}</td>
-                    <td className="py-2">{g.bimestre}</td>
-                    <td className="py-2 font-semibold">{g.nota.toFixed(1)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </article>
+      <DataTablePanel
+        title="Historial de notas"
+        description={loading ? "Cargando…" : `${items.length} registro(s)`}
+        isEmpty={!loading && items.length === 0}
+        emptyMessage="Sin notas registradas."
+      >
+        <TableWrap>
+          <thead>
+            <tr>
+              <th>Estudiante</th>
+              <th>Curso</th>
+              <th>Periodo</th>
+              <th>Bim.</th>
+              <th>Nota</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((g) => (
+              <tr key={g.id}>
+                <td>
+                  {g.student ? `${g.student.nombres} ${g.student.apellidos}` : g.studentId.slice(0, 8)}
+                </td>
+                <td>{g.course?.nombre ?? "—"}</td>
+                <td>{g.periodo}</td>
+                <td>{g.bimestre}</td>
+                <td className="font-semibold">{g.nota.toFixed(1)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </TableWrap>
+      </DataTablePanel>
     </div>
   );
 }

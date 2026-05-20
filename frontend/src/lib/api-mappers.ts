@@ -60,6 +60,8 @@ type ApiTeacher = {
   especialidad: string;
   correo: string;
   telefono: string | null;
+  userId?: string | null;
+  user?: { id: string; email: string; activo: boolean } | null;
   courses?: ApiTeacherCourse[];
   _count?: { courses: number };
 };
@@ -140,6 +142,8 @@ export function mapTeacherFromApi(row: ApiTeacher): Teacher {
     especialidad: row.especialidad,
     correo: row.correo,
     telefono: row.telefono ?? "",
+    userId: row.userId ?? row.user?.id ?? null,
+    user: row.user ?? null,
     courses: (row.courses ?? []).map((c) => ({
       id: c.id,
       codigo: c.codigo,

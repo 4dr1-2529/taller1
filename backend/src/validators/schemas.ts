@@ -94,25 +94,43 @@ export const alertStatusSchema = z.object({
   status: z.enum(["abierta", "en_seguimiento", "resuelta"]),
 });
 
-export const teacherSchema = z.object({
+const teacherCourseInput = z.object({
   codigo: z.string().min(2).max(32),
-  nombres: z.string().min(2).max(120),
-  apellidos: z.string().min(2).max(120),
-  especialidad: z.string().min(2).max(120),
-  correo: z.string().email().max(255),
-  telefono: z.string().max(20).optional(),
-  cursos: z
-    .array(
-      z.object({
-        codigo: z.string().min(2).max(32),
-        nombre: z.string().min(2).max(160),
-        seccionId: z.string().optional(),
-        cursoCatalogoId: z.string().optional(),
-        periodo: z.string().max(16).optional(),
-      }),
-    )
-    .max(12)
-    .optional(),
+  nombre: z.string().min(2).max(160),
+  seccionId: z.string().optional(),
+  cursoCatalogoId: z.string().optional(),
+  periodo: z.string().max(16).optional(),
+});
+
+export const teacherSchema = z
+  .object({
+    codigo: z.string().min(2).max(32),
+    nombres: z.string().min(2).max(120),
+    apellidos: z.string().min(2).max(120),
+    especialidad: z.string().min(2).max(120),
+    correo: z.string().email().max(255),
+    telefono: z.string().max(20).optional(),
+    password: z.string().min(8).max(128).optional(),
+    crearCuenta: z.boolean().optional(),
+    cursos: z.array(teacherCourseInput).max(12).optional(),
+  })
+  .refine((d) => !d.crearCuenta || (d.password && d.password.length >= 8), {
+    message: "Indique una contraseña de al menos 8 caracteres para la cuenta",
+    path: ["password"],
+  });
+
+export const updateTeacherSchema = z.object({
+  nombres: z.string().min(2).max(120).optional(),
+  apellidos: z.string().min(2).max(120).optional(),
+  especialidad: z.string().min(2).max(120).optional(),
+  correo: z.string().email().max(255).optional(),
+  telefono: z.string().max(20).optional().nullable(),
+  activo: z.boolean().optional(),
+  cursosNuevos: z.array(teacherCourseInput).max(12).optional(),
+});
+
+export const teacherAccountSchema = z.object({
+  password: z.string().min(8).max(128),
 });
 
 export const courseSchema = z.object({

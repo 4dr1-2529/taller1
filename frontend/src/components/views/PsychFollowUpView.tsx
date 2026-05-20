@@ -66,7 +66,7 @@ export function PsychFollowUpView({ students, useApi = false }: PsychFollowUpVie
 
   if (!isAuthenticated) {
     return (
-      <div className="glass-card rounded-2xl p-8 text-center">
+      <div className="premium-card rounded-2xl md:p-6 rounded-2xl p-8 text-center">
         <HeartHandshake className="mx-auto mb-3 h-10 w-10 text-rose-500" />
         <p className="text-sm text-slate-600">Seguimiento psicológico requiere sesión activa.</p>
         <Link href="/login" className="mt-4 inline-block text-sm font-semibold text-indigo-600">
@@ -78,7 +78,7 @@ export function PsychFollowUpView({ students, useApi = false }: PsychFollowUpVie
 
   return (
     <div className="space-y-6">
-      <section className="glass-card rounded-2xl p-5">
+      <section className="premium-card rounded-2xl md:p-6 rounded-2xl p-5">
         <h3 className="flex items-center gap-2 font-semibold">
           <HeartHandshake className="h-5 w-5 text-rose-500" />
           Nuevo seguimiento psicológico
@@ -125,7 +125,7 @@ export function PsychFollowUpView({ students, useApi = false }: PsychFollowUpVie
         </form>
       </section>
 
-      <section className="glass-card rounded-2xl p-5">
+      <section className="premium-card rounded-2xl md:p-6 rounded-2xl p-5">
         <h3 className="font-semibold">Historial de seguimiento</h3>
         <ul className="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
           {records.length === 0 ? (

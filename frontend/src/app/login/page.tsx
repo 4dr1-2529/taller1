@@ -1,8 +1,18 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { GraduationCap, Loader2, Eye, EyeOff } from "lucide-react";
+import {
+  Brain,
+  GraduationCap,
+  Loader2,
+  Eye,
+  EyeOff,
+  Sparkles,
+  Shield,
+  BarChart3,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthProvider";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -47,79 +57,175 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-indigo-950">
-      <div className="absolute right-4 top-4">
+    <div className="relative flex min-h-screen overflow-hidden">
+      <motion.div
+        className="pointer-events-none absolute inset-0"
+        animate={{
+          background: [
+            "radial-gradient(circle at 20% 20%, rgba(99,102,241,0.25), transparent 50%)",
+            "radial-gradient(circle at 80% 30%, rgba(6,182,212,0.2), transparent 45%)",
+            "radial-gradient(circle at 40% 80%, rgba(168,85,247,0.2), transparent 50%)",
+          ],
+        }}
+        transition={{ duration: 12, repeat: Infinity, repeatType: "reverse" }}
+      />
+
+      <div className="absolute right-4 top-4 z-20">
         <ThemeToggle />
       </div>
-      <div className="glass-card w-full max-w-md rounded-3xl p-8 shadow-xl">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-xl bg-indigo-600 p-3 text-white shadow-lg shadow-indigo-500/30">
-            <GraduationCap className="h-8 w-8" />
-          </div>
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              I.E.P. Huancayo - Perú
-            </p>
-            <h1 className="gradient-text text-xl font-bold">Tesis Dashboard</h1>
-          </div>
-        </div>
-        <p className="mb-6 text-sm text-slate-600 dark:text-slate-300">
-          Modelo predictivo de riesgo de deserción estudiantil.
-        </p>
-        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
-              Correo electrónico
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
-              className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm transition bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 ${errors.email ? "border-rose-500 focus:ring-rose-500" : "border-slate-200 dark:border-slate-600 focus:ring-indigo-500"}`}
-              placeholder="correo@ejemplo.com"
-            />
-            {errors.email && <p className="mt-1 text-xs text-rose-500">{errors.email}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">
-              Contraseña
-            </label>
-            <div className="relative mt-1">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
-                className={`w-full rounded-xl border px-4 py-2.5 pr-10 text-sm transition bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 ${errors.password ? "border-rose-500 focus:ring-rose-500" : "border-slate-200 dark:border-slate-600 focus:ring-indigo-500"}`}
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+
+      {/* Panel ilustración */}
+      <motion.aside
+        className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-12 text-white lg:flex"
+        initial={{ opacity: 0, x: -24 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div
+          className="absolute -left-20 top-20 h-64 w-64 rounded-full bg-indigo-500/30 blur-3xl"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute -right-10 bottom-20 h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl"
+          animate={{ scale: [1.1, 1, 1.1] }}
+          transition={{ duration: 10, repeat: Infinity }}
+        />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 shadow-lg shadow-indigo-500/40">
+              <BarChart3 className="h-6 w-6" />
+            </span>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-widest text-indigo-300">
+                I.E.P. Huancayo · Perú
+              </p>
+              <h1 className="text-2xl font-bold">EduRisk AI</h1>
             </div>
-            {errors.password && <p className="mt-1 text-xs text-rose-500">{errors.password}</p>}
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-60 transition"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            Ingresar
-          </button>
-        </form>
-        <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
-          Primera vez: configure el administrador con{" "}
-          <code className="rounded bg-slate-100 px-1 dark:bg-slate-800">npm run db:bootstrap</code>
-        </p>
-      </div>
+          <p className="mt-8 max-w-md text-lg leading-relaxed text-slate-300">
+            Plataforma inteligente de predicción de{" "}
+            <span className="gradient-text font-semibold">riesgo de deserción</span> estudiantil
+            basada en IA y análisis LMS.
+          </p>
+        </div>
+
+        <motion.div
+          className="relative z-10 grid gap-4"
+          initial="hidden"
+          animate="visible"
+          variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
+        >
+          {[
+            { icon: Brain, label: "Ensemble ML", desc: "Random Forest · XGBoost · Stacking" },
+            { icon: Sparkles, label: "Predicción en tiempo real", desc: "Score de riesgo 0–100" },
+            { icon: Shield, label: "Panel institucional", desc: "Roles: admin, docente, tutoría" },
+          ].map((item) => (
+            <motion.div
+              key={item.label}
+              variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
+              className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur"
+            >
+              <item.icon className="h-8 w-8 text-cyan-400" />
+              <div>
+                <p className="font-semibold">{item.label}</p>
+                <p className="text-sm text-slate-400">{item.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.aside>
+
+      {/* Formulario */}
+      <motion.div
+        className="flex w-full flex-col items-center justify-center p-6 lg:w-1/2"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <div className="glass-card w-full max-w-md rounded-3xl p-8 md:p-10">
+          <div className="mb-8 flex items-center gap-3 lg:hidden">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 p-3 text-white shadow-lg">
+              <GraduationCap className="h-7 w-7" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                EduRisk AI
+              </p>
+              <h2 className="gradient-text text-lg font-bold">Acceso institucional</h2>
+            </div>
+          </div>
+
+          <h2 className="hidden text-2xl font-bold text-[var(--text-primary)] lg:block">
+            Iniciar sesión
+          </h2>
+          <p className="mt-2 hidden text-sm text-[var(--text-secondary)] lg:block">
+            Ingrese sus credenciales del colegio para acceder al panel.
+          </p>
+
+          <form onSubmit={(e) => void handleSubmit(e)} className="mt-8 space-y-5">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--text-primary)]">
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors((p) => ({ ...p, email: undefined }));
+                }}
+                className={`input-premium ${errors.email ? "border-rose-500 ring-rose-500/30" : ""}`}
+                placeholder="correo@iep-huancayo.edu.pe"
+              />
+              {errors.email ? <p className="mt-1.5 text-xs text-rose-400">{errors.email}</p> : null}
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--text-primary)]">
+                Contraseña
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setErrors((p) => ({ ...p, password: undefined }));
+                  }}
+                  className={`input-premium pr-10 ${errors.password ? "border-rose-500 ring-rose-500/30" : ""}`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.password ? (
+                <p className="mt-1.5 text-xs text-rose-400">{errors.password}</p>
+              ) : null}
+            </div>
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              Ingresar al panel
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-xs text-[var(--text-muted)]">
+            Primera vez: configure el administrador con{" "}
+            <code className="rounded-md bg-[var(--accent-muted)] px-1.5 py-0.5 font-mono text-[10px]">
+              npm run db:bootstrap
+            </code>
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 }
