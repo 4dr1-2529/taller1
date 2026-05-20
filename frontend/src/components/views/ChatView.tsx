@@ -134,7 +134,12 @@ export function ChatView() {
 
   if (!isAuthenticated) {
     return (
-      <motion.div className="premium-card flex flex-col items-center p-10 text-center">
+      <motion.div
+        className="premium-card flex flex-col items-center p-10 text-center"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <MessageCircle className="mb-4 h-12 w-12 text-indigo-400" />
         <h3 className="text-lg font-semibold text-[var(--text-primary)]">Chat institucional</h3>
         <p className="mt-2 max-w-md text-sm text-[var(--text-secondary)]">
@@ -148,44 +153,98 @@ export function ChatView() {
   }
 
   return (
-    <motion.div className="chat-shell premium-card flex h-[min(78vh,640px)] flex-col overflow-hidden">
-      <header className="chat-header flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-5 py-4">
+    <motion.div
+      className="chat-shell flex h-[min(82vh,720px)] gap-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111214] shadow-2xl md:grid md:grid-cols-[240px_1fr]"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+    >
+      <aside className="hidden flex-col border-r border-white/[0.06] bg-[#1a1b1e]/90 p-3 md:flex">
+        <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-[#6d6f78]">Canales</p>
+        <ul className="mt-3 space-y-1">
+          {[
+            { id: "tutoria", label: "Tutoría general", active: true },
+            { id: "alertas", label: "Alertas deserción" },
+            { id: "psico", label: "Psicología" },
+            { id: "docentes", label: "Coordinación docente" },
+          ].map((ch) => (
+            <li key={ch.id}>
+              <button
+                type="button"
+                className={clsx(
+                  "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors",
+                  ch.active
+                    ? "bg-violet-500/15 text-white ring-1 ring-violet-500/25"
+                    : "text-[#b5bac1] hover:bg-white/[0.04]",
+                )}
+              >
+                <Hash className="h-4 w-4 shrink-0 opacity-70" />
+                {ch.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-auto rounded-xl border border-white/[0.06] bg-gradient-to-br from-violet-600/20 to-cyan-500/10 p-3">
+          <div className="flex items-center gap-2">
+            <Bot className="h-8 w-8 rounded-lg bg-violet-500/30 p-1.5 text-violet-200" />
+            <div>
+              <p className="text-xs font-semibold text-white">Asistente IA</p>
+              <p className="text-[10px] text-[#b5bac1]">Resúmenes de riesgo</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+      <header className="flex shrink-0 items-center justify-between border-b border-white/10 bg-[#2b2d31]/80 px-5 py-3.5 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 shadow-lg shadow-indigo-500/30">
+          <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 via-purple-500 to-cyan-500 shadow-lg shadow-purple-500/25">
             <Hash className="h-5 w-5 text-white" />
-          </span>
+            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#1e1f22] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
+          </div>
           <div>
-            <h3 className="font-semibold text-[var(--text-primary)]">Tutoría · I.E.P. Huancayo</h3>
-            <p className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+            <h3 className="text-[15px] font-semibold tracking-tight text-white">
+              Tutoría · I.E.P. Huancayo
+            </h3>
+            <div className="flex items-center gap-1.5 text-[11px] text-[#b5bac1]">
               <span className="inline-flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
                 En línea
               </span>
-              · {ROOM_ID}
-            </p>
+              <span className="text-[#6d6f78]">·</span>
+              <span className="font-mono text-[10px] opacity-70">{ROOM_ID}</span>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="badge-info hidden sm:inline-flex">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-1 text-[10px] font-medium text-purple-300 backdrop-blur-sm">
             <Sparkles className="h-3 w-3" />
             IA activa
           </span>
-          <span className="badge-success">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-medium text-cyan-300 backdrop-blur-sm">
             <Users className="h-3 w-3" />
             Equipo
           </span>
         </div>
       </header>
 
-      <div className="chat-messages flex-1 space-y-4 overflow-y-auto p-4 md:p-5">
+      {/* Messages Area */}
+      <div className="flex-1 space-y-1 overflow-y-auto px-4 py-4 md:px-5 md:py-5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Bot className="mb-3 h-10 w-10 text-[var(--text-muted)]" />
+          <motion.div
+            className="flex flex-col items-center justify-center py-20 text-center"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
+              <Bot className="h-8 w-8 text-[#6d6f78]" />
+            </div>
             <p className="text-sm font-medium text-[var(--text-primary)]">Sin mensajes aún</p>
-            <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]">
+            <p className="mt-1.5 max-w-sm text-xs text-[var(--text-muted)]">
               Coordine alertas de deserción con docentes y psicología.
             </p>
-          </div>
+          </motion.div>
         ) : (
           <AnimatePresence initial={false}>
             {messages.map((m, idx) => {
@@ -198,42 +257,60 @@ export function ChatView() {
               return (
                 <motion.div
                   key={m.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="group"
                 >
                   {showDate ? (
-                    <p className="chat-date-divider my-4 text-center text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-                      {formatDate(m.createdAt)}
-                    </p>
+                    <div className="my-5 flex items-center gap-3">
+                      <div className="h-px flex-1 bg-white/10" />
+                      <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6d6f78]">
+                        {formatDate(m.createdAt)}
+                      </span>
+                      <div className="h-px flex-1 bg-white/10" />
+                    </div>
                   ) : null}
-                  <div className={clsx("flex gap-2.5", mine ? "flex-row-reverse" : "flex-row")}>
+
+                  <div className={clsx("flex items-start gap-3 py-1", mine && "flex-row-reverse")}>
+                    {/* Avatar */}
                     {!mine ? (
-                      <span
+                      <div
                         className={clsx(
-                          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-xs font-bold text-white shadow-md",
+                          "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-gradient-to-br text-[11px] font-bold text-white shadow-md transition-transform hover:scale-105",
                           grad,
                         )}
                         title={m.senderName}
                       >
                         {initials(m.senderName)}
-                      </span>
-                    ) : null}
-                    <div className={clsx("max-w-[min(85%,420px)]", mine && "text-right")}>
-                      <div
-                        className={clsx(
-                          "mb-1 flex flex-wrap items-center gap-2 text-[10px]",
-                          mine && "justify-end",
-                        )}
-                      >
-                        <span className="font-semibold text-[var(--text-primary)]">{m.senderName}</span>
-                        <span className="badge-info py-0">{roleLabel(m.senderRole)}</span>
-                        <span className="text-[var(--text-muted)]">{formatTime(m.createdAt)}</span>
                       </div>
+                    ) : (
+                      <div className="h-10 w-10 shrink-0" />
+                    )}
+
+                    {/* Message Content */}
+                    <div className={clsx("min-w-0 max-w-[min(80%,480px)]", mine && "flex flex-col items-end")}>
+                      {/* Sender Info */}
+                      <div className={clsx("mb-1 flex flex-wrap items-center gap-2 text-[11px]", mine && "flex-row-reverse")}>
+                        <span className="font-semibold text-white">{m.senderName}</span>
+                        <span
+                          className={clsx(
+                            "inline-flex items-center rounded-md bg-gradient-to-r px-1.5 py-0.5 text-[9px] font-semibold text-white",
+                            grad,
+                          )}
+                        >
+                          {roleLabel(m.senderRole)}
+                        </span>
+                        <span className="text-[10px] text-[#6d6f78]">{formatTime(m.createdAt)}</span>
+                      </div>
+
+                      {/* Message Bubble */}
                       <div
                         className={clsx(
-                          "chat-bubble inline-block px-4 py-2.5 text-sm leading-relaxed shadow-md",
-                          mine ? "chat-bubble-mine" : "chat-bubble-other",
+                          "relative inline-block rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed shadow-md transition-all hover:shadow-lg",
+                          mine
+                            ? "bg-gradient-to-br from-violet-600 to-purple-700 text-white rounded-br-md"
+                            : "bg-[#2b2d31]/90 text-[#dbdee1] backdrop-blur-sm border border-white/5 rounded-bl-md",
                         )}
                       >
                         {m.contenido}
@@ -245,30 +322,55 @@ export function ChatView() {
             })}
           </AnimatePresence>
         )}
-        {isTyping && text.trim() ? <TypingIndicator /> : null}
+
+        {isTyping && text.trim() && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
+            <TypingIndicator />
+          </motion.div>
+        )}
         <div ref={bottomRef} />
       </div>
 
+      {/* Input Area */}
       <form
         onSubmit={(e) => void handleSend(e)}
-        className="chat-composer flex gap-2 border-t border-[var(--border-subtle)] bg-[var(--surface)]/60 p-4 backdrop-blur-md"
+        className="shrink-0 border-t border-white/10 bg-[#2b2d31]/60 p-4 backdrop-blur-xl"
       >
-        <input
-          value={text}
-          onChange={(e) => handleTextChange(e.target.value)}
-          placeholder="Escriba un mensaje para el equipo…"
-          maxLength={2000}
-          className="input-premium flex-1"
-        />
-        <button
-          type="submit"
-          disabled={sending || !text.trim()}
-          className="btn-primary shrink-0 px-4"
-          aria-label="Enviar"
-        >
-          <Send className="h-5 w-5" />
-        </button>
+        <div className="flex items-end gap-3">
+          <div className="relative flex-1">
+            <input
+              value={text}
+              onChange={(e) => handleTextChange(e.target.value)}
+              placeholder="Escriba un mensaje para el equipo…"
+              maxLength={2000}
+              className="w-full rounded-xl border border-white/10 bg-[#1e1f22]/80 px-4 py-3 text-[13px] text-white placeholder-[#6d6f78] outline-none transition-all focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#6d6f78]">
+              {text.length}/2000
+            </span>
+          </div>
+          <motion.button
+            type="submit"
+            disabled={sending || !text.trim()}
+            whileHover={{ scale: text.trim() ? 1.05 : 1 }}
+            whileTap={{ scale: text.trim() ? 0.95 : 1 }}
+            className={clsx(
+              "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-lg transition-all",
+              text.trim()
+                ? "bg-gradient-to-br from-violet-600 to-purple-600 shadow-purple-500/25 hover:shadow-purple-500/40"
+                : "cursor-not-allowed bg-[#3f4147] text-[#6d6f78]",
+            )}
+            aria-label="Enviar"
+          >
+            <Send className="h-5 w-5" />
+          </motion.button>
+        </div>
       </form>
+      </div>
     </motion.div>
   );
 }

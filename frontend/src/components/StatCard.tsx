@@ -20,36 +20,89 @@ type StatCardProps = {
   animateValue?: boolean;
 };
 
-const variantStyles: Record<NonNullable<StatCardProps["variant"]>, { ring: string; glow: string; icon: string }> = {
+const variantConfig: Record<NonNullable<StatCardProps["variant"]>, {
+  cardBorder: string;
+  cardBg: string;
+  cardHover: string;
+  glowColor: string;
+  iconBg: string;
+  iconText: string;
+  trendBg: string;
+  trendText: string;
+  blobColor: string;
+  numberText: string;
+}> = {
   default: {
-    ring: "from-indigo-500/20 to-cyan-500/10",
-    glow: "shadow-indigo-500/10",
-    icon: "from-indigo-500 to-violet-600",
+    cardBorder: "border-indigo-500/10 group-hover:border-indigo-500/30",
+    cardBg: "bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-indigo-950/40",
+    cardHover: "group-hover:shadow-[0_0_40px_-10px_rgba(99,102,241,0.3)]",
+    glowColor: "shadow-indigo-500/20",
+    iconBg: "from-indigo-500/20 to-violet-600/20",
+    iconText: "text-indigo-400",
+    trendBg: "bg-indigo-500/10 border-indigo-500/20",
+    trendText: "text-indigo-400",
+    blobColor: "bg-indigo-500/30",
+    numberText: "text-white",
   },
   success: {
-    ring: "from-emerald-500/25 to-teal-500/10",
-    glow: "shadow-emerald-500/15",
-    icon: "from-emerald-500 to-teal-600",
+    cardBorder: "border-emerald-500/10 group-hover:border-emerald-500/30",
+    cardBg: "bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-emerald-950/40",
+    cardHover: "group-hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]",
+    glowColor: "shadow-emerald-500/20",
+    iconBg: "from-emerald-500/20 to-teal-600/20",
+    iconText: "text-emerald-400",
+    trendBg: "bg-emerald-500/10 border-emerald-500/20",
+    trendText: "text-emerald-400",
+    blobColor: "bg-emerald-500/30",
+    numberText: "text-white",
   },
   warning: {
-    ring: "from-amber-500/25 to-orange-500/10",
-    glow: "shadow-amber-500/15",
-    icon: "from-amber-500 to-orange-600",
+    cardBorder: "border-amber-500/10 group-hover:border-amber-500/30",
+    cardBg: "bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-amber-950/40",
+    cardHover: "group-hover:shadow-[0_0_40px_-10px_rgba(245,158,11,0.3)]",
+    glowColor: "shadow-amber-500/20",
+    iconBg: "from-amber-500/20 to-orange-600/20",
+    iconText: "text-amber-400",
+    trendBg: "bg-amber-500/10 border-amber-500/20",
+    trendText: "text-amber-400",
+    blobColor: "bg-amber-500/30",
+    numberText: "text-white",
   },
   danger: {
-    ring: "from-rose-500/25 to-pink-500/10",
-    glow: "shadow-rose-500/15",
-    icon: "from-rose-500 to-pink-600",
+    cardBorder: "border-rose-500/10 group-hover:border-rose-500/30",
+    cardBg: "bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-rose-950/40",
+    cardHover: "group-hover:shadow-[0_0_40px_-10px_rgba(244,63,94,0.3)]",
+    glowColor: "shadow-rose-500/20",
+    iconBg: "from-rose-500/20 to-pink-600/20",
+    iconText: "text-rose-400",
+    trendBg: "bg-rose-500/10 border-rose-500/20",
+    trendText: "text-rose-400",
+    blobColor: "bg-rose-500/30",
+    numberText: "text-white",
   },
   cyan: {
-    ring: "from-cyan-500/25 to-blue-500/10",
-    glow: "shadow-cyan-500/15",
-    icon: "from-cyan-500 to-blue-600",
+    cardBorder: "border-cyan-500/10 group-hover:border-cyan-500/30",
+    cardBg: "bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-cyan-950/40",
+    cardHover: "group-hover:shadow-[0_0_40px_-10px_rgba(6,182,212,0.3)]",
+    glowColor: "shadow-cyan-500/20",
+    iconBg: "from-cyan-500/20 to-blue-600/20",
+    iconText: "text-cyan-400",
+    trendBg: "bg-cyan-500/10 border-cyan-500/20",
+    trendText: "text-cyan-400",
+    blobColor: "bg-cyan-500/30",
+    numberText: "text-white",
   },
   purple: {
-    ring: "from-purple-500/25 to-fuchsia-500/10",
-    glow: "shadow-purple-500/15",
-    icon: "from-purple-500 to-fuchsia-600",
+    cardBorder: "border-purple-500/10 group-hover:border-purple-500/30",
+    cardBg: "bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-purple-950/40",
+    cardHover: "group-hover:shadow-[0_0_40px_-10px_rgba(168,85,247,0.3)]",
+    glowColor: "shadow-purple-500/20",
+    iconBg: "from-purple-500/20 to-fuchsia-600/20",
+    iconText: "text-purple-400",
+    trendBg: "bg-purple-500/10 border-purple-500/20",
+    trendText: "text-purple-400",
+    blobColor: "bg-purple-500/30",
+    numberText: "text-white",
   },
 };
 
@@ -68,69 +121,125 @@ export function StatCard({
   variant = "default",
   animateValue = true,
 }: StatCardProps) {
-  const styles = variantStyles[variant];
+  const cfg = variantConfig[variant];
   const numeric = parseNumeric(value);
   const suffix = typeof value === "string" ? value.replace(/[\d.,\s-]+/g, "") : "";
 
+  const trendIcon = trend?.direction === "up" ? (
+    <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
+      <path d="M6 2L10 7H2L6 2Z" fill="currentColor" />
+    </svg>
+  ) : trend?.direction === "down" ? (
+    <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
+      <path d="M6 10L2 5H10L6 10Z" fill="currentColor" />
+    </svg>
+  ) : (
+    <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
+      <rect x="1" y="5" width="10" height="2" rx="1" fill="currentColor" />
+    </svg>
+  );
+
   return (
     <motion.article
-      className={clsx("premium-card group p-5 md:p-6", styles.glow)}
-      whileHover={{ scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 400, damping: 28 }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      whileHover={{ scale: 1.02, y: -4 }}
+      className={clsx(
+        "relative overflow-hidden rounded-2xl border bg-gradient-to-br p-6 shadow-lg backdrop-blur-xl transition-all duration-500",
+        cfg.cardBorder,
+        cfg.cardBg,
+        cfg.cardHover,
+        cfg.glowColor,
+      )}
     >
-      <motion.div
+      <div
         className={clsx(
-          "pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-gradient-to-br opacity-40 blur-2xl transition-opacity group-hover:opacity-70",
-          styles.ring,
+          "pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full blur-3xl transition-opacity duration-500 group-hover:opacity-70",
+          cfg.blobColor,
         )}
         aria-hidden
       />
 
-      <motion.div
-        className="flex items-start justify-between gap-3"
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-            {title}
-          </p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--text-primary)] md:text-4xl">
-            {animateValue && numeric != null ? (
-              <AnimatedNumber value={numeric} suffix={suffix} />
-            ) : (
-              value
+      <div
+        className={clsx(
+          "pointer-events-none absolute -bottom-12 -left-12 h-24 w-24 rounded-full blur-2xl opacity-30",
+          cfg.blobColor,
+        )}
+        aria-hidden
+      />
+
+      <div className="relative z-10">
+        <div className="mb-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {Icon && (
+              <div
+                className={clsx(
+                  "flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br backdrop-blur-sm",
+                  cfg.iconBg,
+                )}
+              >
+                <Icon className={clsx("h-6 w-6", cfg.iconText)} aria-hidden />
+              </div>
             )}
-          </p>
-          {subtitle ? (
-            <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">{subtitle}</p>
-          ) : null}
-          {trend ? (
-            <p
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+              {title}
+            </h3>
+          </div>
+
+          {trend && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
               className={clsx(
-                "mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold",
-                trend.direction === "up" && "badge-danger",
-                trend.direction === "down" && "badge-success",
-                trend.direction === "flat" && "badge-info",
+                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
+                cfg.trendBg,
+                cfg.trendText,
               )}
             >
-              {trend.direction === "up" ? "▲" : trend.direction === "down" ? "▼" : "◆"} {trend.label}
-            </p>
-          ) : null}
+              {trendIcon}
+              <span>{trend.label}</span>
+            </motion.div>
+          )}
         </div>
 
-        {Icon ? (
-          <span
-            className={clsx(
-              "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg",
-              styles.icon,
-            )}
+        <motion.p
+          className={clsx(
+            "text-4xl font-bold tracking-tight md:text-5xl",
+            cfg.numberText,
+          )}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          {animateValue && numeric != null ? (
+            <AnimatedNumber value={numeric} suffix={suffix} />
+          ) : (
+            value
+          )}
+        </motion.p>
+
+        {subtitle && (
+          <motion.p
+            className="mt-2 text-sm text-slate-500"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15 }}
           >
-            <Icon className="h-5 w-5 opacity-90" aria-hidden />
-          </span>
-        ) : null}
-      </motion.div>
+            {subtitle}
+          </motion.p>
+        )}
+      </div>
+
+      <div
+        className={clsx(
+          "pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100",
+          "bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)]",
+          "bg-[size:24px_24px]",
+        )}
+        aria-hidden
+      />
     </motion.article>
   );
 }

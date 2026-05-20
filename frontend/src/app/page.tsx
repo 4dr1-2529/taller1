@@ -1,10 +1,7 @@
 "use client";
 
 import { type FormEvent, useMemo, useState } from "react";
-import { AppSidebar } from "@/components/AppSidebar";
-import { AppHeader } from "@/components/layout/AppHeader";
-import { DataSourceBanner } from "@/components/DataSourceBanner";
-import { PageTransition } from "@/components/ui/PageTransition";
+import { AppShell } from "@/components/layout/AppShell";
 import { AcademicView } from "@/components/views/AcademicView";
 import { AcademicStructureView } from "@/components/views/AcademicStructureView";
 import { RoleDashboard } from "@/components/dashboards/RoleDashboard";
@@ -285,21 +282,17 @@ export default function Home() {
   }
 
   return (
-    <div className="app-content min-h-screen lg:flex">
-      <AppSidebar
-        sections={visibleSections}
-        activeSection={activeSection}
-        onSelect={(s) => { setActiveSection(s); }}
-        alertCount={alertCount}
-      />
-
-      <main className="mx-auto flex-1 space-y-5 p-4 pt-16 md:max-w-[1600px] md:space-y-6 md:p-8 md:pt-8">
-        <AppHeader activeSection={activeSection} subtitle={sectionSubtitle(activeSection)} />
-
-        <DataSourceBanner dataSource={dataSource} loading={loading} onRefresh={refresh} />
-
-        <PageTransition key={activeSection}>{renderSection()}</PageTransition>
-      </main>
-    </div>
+    <AppShell
+      sections={visibleSections}
+      activeSection={activeSection}
+      onSelectSection={setActiveSection}
+      alertCount={alertCount}
+      subtitle={sectionSubtitle(activeSection)}
+      dataSource={dataSource}
+      loading={loading}
+      onRefresh={refresh}
+    >
+      {renderSection()}
+    </AppShell>
   );
 }

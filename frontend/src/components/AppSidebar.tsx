@@ -76,130 +76,309 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
     });
   }
 
+  const getInitials = (nombres: string, apellidos: string) => {
+    const first = nombres?.charAt(0)?.toUpperCase() ?? "";
+    const last = apellidos?.charAt(0)?.toUpperCase() ?? "";
+    return first + last;
+  };
+
   const sidebarContent = (
     <div className="flex h-full flex-col">
-      <div className="border-b border-white/5 p-4">
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 shadow-lg shadow-indigo-500/40">
-            <BarChart3 className="h-5 w-5 text-white" aria-hidden />
-          </span>
-          {!collapsed ? (
-            <div className="min-w-0">
-              <p className="truncate text-sm font-bold text-white">EduRisk AI</p>
-              <p className="truncate text-[10px] text-slate-400">Deserción · LMS · Ensemble</p>
-            </div>
-          ) : null}
+      {/* Brand Section */}
+      <div className="relative border-b border-white/[0.06] px-5 py-5">
+        <div className="flex items-center gap-3.5">
+          <motion.div
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl overflow-hidden"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-500 to-cyan-400" />
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-purple-500 to-violet-600"
+              animate={{ opacity: [0.5, 0.9, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <BarChart3 className="relative h-5 w-5 text-white drop-shadow-lg" aria-hidden />
+          </motion.div>
+
+          <AnimatePresence mode="wait">
+            {!collapsed && (
+              <motion.div
+                className="min-w-0"
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <p className="truncate text-[15px] font-bold tracking-tight text-white">
+                  EduRisk AI
+                </p>
+                <p className="truncate text-[11px] font-medium text-slate-500">
+                  Deserción · LMS · Ensemble
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        {!collapsed && alertCount > 0 ? (
-          <p className="mt-3 flex items-center gap-2 rounded-lg bg-rose-500/15 px-2.5 py-2 text-[11px] font-medium text-rose-200 ring-1 ring-rose-500/25">
-            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-            {alertCount} alertas activas
-          </p>
-        ) : null}
+
+        {/* Alert Banner */}
+        <AnimatePresence>
+          {!collapsed && alertCount > 0 && (
+            <motion.div
+              className="mt-4 flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-rose-500/10 to-orange-500/5 px-3 py-2.5 ring-1 ring-rose-500/20"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25 }}
+            >
+              <div className="relative">
+                <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-rose-400/30"
+                  animate={{ scale: [1, 1.6], opacity: [0.6, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              <span className="text-[12px] font-semibold text-rose-200">
+                {alertCount} alertas activas
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      <nav className="flex-1 space-y-2 overflow-y-auto p-3">
+      {/* Navigation */}
+      <nav className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-3 py-4 scrollbar-thin">
         {groups.map((group, gi) => (
-          <div key={group.id}>
-            {gi > 0 ? <div className="sidebar-group-divider" aria-hidden /> : null}
-            {!collapsed ? (
-              <p className="mb-2 mt-1 px-2 text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-300/70">
-                {group.label}
-              </p>
-            ) : null}
-            <ul className="space-y-0.5">
+          <motion.div
+            key={group.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: gi * 0.05 }}
+          >
+            {/* Group Label */}
+            <AnimatePresence>
+              {!collapsed && (
+                <motion.div
+                  className="mb-2.5 flex items-center gap-2 px-2.5"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <div className="h-px flex-1 bg-gradient-to-r from-violet-500/30 via-purple-500/20 to-transparent" />
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400/60">
+                    {group.label}
+                  </p>
+                  <div className="h-px flex-1 bg-gradient-to-l from-violet-500/30 via-purple-500/20 to-transparent" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Nav Items */}
+            <ul className="space-y-1">
               {group.items.map((section) => {
                 const Icon = ICONS[section];
                 const isActive = section === activeSection;
                 if (!Icon) return null;
                 return (
                   <li key={section}>
-                    <button
+                    <motion.button
                       type="button"
                       title={collapsed ? section : undefined}
                       onClick={() => {
                         onSelect(section);
                         setMobileOpen(false);
                       }}
+                      whileHover={{ scale: collapsed ? 1 : 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
                       className={clsx(
-                        "group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-all duration-200",
+                        "group relative flex w-full items-center gap-3.5 rounded-xl px-3.5 py-3 text-left text-[14px] font-medium transition-all duration-200",
                         isActive
-                          ? "sidebar-nav-active bg-gradient-to-r from-indigo-500/25 to-cyan-500/15 font-semibold text-white ring-1 ring-indigo-400/40"
-                          : "text-slate-400 hover:bg-white/8 hover:text-white hover:shadow-[0_0_12px_rgba(99,102,241,0.15)]",
+                          ? "bg-gradient-to-r from-violet-500/[0.18] via-purple-500/[0.12] to-transparent text-white shadow-[0_0_20px_rgba(139,92,246,0.12),inset_0_1px_0_rgba(255,255,255,0.05)] ring-1 ring-violet-500/20"
+                          : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-200 hover:shadow-[0_0_15px_rgba(139,92,246,0.08)]",
+                        collapsed && "justify-center px-0",
                       )}
                     >
-                      {isActive ? (
-                        <span className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-full bg-gradient-to-b from-indigo-400 to-cyan-400" />
-                      ) : null}
-                      <Icon className={clsx("h-4 w-4 shrink-0", isActive && "text-indigo-300")} />
-                      {!collapsed ? <span className="flex-1 truncate">{section}</span> : null}
-                      {!collapsed && section === "Alertas" && alertCount > 0 ? (
-                        <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
-                          {alertCount}
-                        </span>
-                      ) : null}
-                    </button>
+                      {/* Active Left Glow Bar */}
+                      {isActive && (
+                        <motion.span
+                          className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-violet-400 via-purple-400 to-cyan-400"
+                          initial={{ scaleY: 0 }}
+                          animate={{ scaleY: 1 }}
+                          transition={{ duration: 0.25, type: "spring" }}
+                          style={{
+                            boxShadow: "0 0 12px rgba(139,92,246,0.5), 0 0 24px rgba(139,92,246,0.25)",
+                          }}
+                        />
+                      )}
+
+                      {/* Icon */}
+                      <motion.div
+                        className={clsx(
+                          "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200",
+                          isActive
+                            ? "bg-violet-500/15 text-violet-300"
+                            : "bg-transparent text-slate-500 group-hover:text-slate-300 group-hover:bg-white/[0.04]",
+                        )}
+                      >
+                        <Icon className="h-[22px] w-[22px]" aria-hidden />
+                      </motion.div>
+
+                      {/* Label */}
+                      <AnimatePresence>
+                        {!collapsed && (
+                          <motion.span
+                            className="flex-1 truncate"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                          >
+                            {section}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Alert Badge with Pulse */}
+                      <AnimatePresence>
+                        {!collapsed && section === "Alertas" && alertCount > 0 && (
+                          <motion.div
+                            className="relative"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                          >
+                            <motion.div
+                              className="absolute inset-0 rounded-full bg-rose-500/40"
+                              animate={{ scale: [1, 1.8], opacity: [0.5, 0] }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                            />
+                            <span className="relative flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-orange-500 text-[10px] font-bold text-white shadow-lg shadow-rose-500/30">
+                              {alertCount > 9 ? "9+" : alertCount}
+                            </span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
                   </li>
                 );
               })}
             </ul>
-          </div>
+          </motion.div>
         ))}
       </nav>
 
-      <div className="border-t border-white/5 p-3 space-y-2">
+      {/* Bottom Section */}
+      <div className="border-t border-white/[0.06] px-3 py-4 space-y-3">
+        {/* Collapse Toggle + Theme */}
         <div className="flex items-center justify-between gap-2">
           <ThemeToggle />
-          {!collapsed && isAuthenticated ? (
-            <button type="button" onClick={logout} className="btn-ghost text-slate-400 hover:text-white border-white/10">
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-all duration-200 hover:bg-white/[0.06] hover:text-slate-300"
+            aria-label={collapsed ? "Expandir" : "Colapsar"}
+          >
+            <motion.div
+              animate={{ rotate: collapsed ? 180 : 0 }}
+              transition={{ duration: 0.3, type: "spring" }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </motion.div>
+          </button>
+          {isAuthenticated && (
+            <motion.button
+              type="button"
+              onClick={logout}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-slate-500 transition-all duration-200 hover:bg-rose-500/10 hover:text-rose-300 hover:ring-1 hover:ring-rose-500/20"
+            >
               <LogOut className="h-3.5 w-3.5" />
-              Salir
-            </button>
-          ) : null}
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: "auto" }}
+                    exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Salir
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          )}
         </div>
-        {!collapsed && user ? (
-          <div className="rounded-xl bg-white/5 p-2.5 ring-1 ring-white/5">
-            <p className="truncate text-xs font-medium text-white">
-              {user.nombres} {user.apellidos}
-            </p>
-            <p className="text-[10px] capitalize text-slate-500">{user.role}</p>
-          </div>
-        ) : null}
+
+        {/* User Profile Card */}
+        <AnimatePresence>
+          {!collapsed && user && (
+            <motion.div
+              className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.04] to-white/[0.02] p-3 ring-1 ring-white/[0.06] transition-all duration-200 hover:ring-white/[0.1]"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-[12px] font-bold text-white shadow-lg shadow-violet-500/20 ring-1 ring-white/10">
+                  {getInitials(user.nombres, user.apellidos)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-semibold text-white">
+                    {user.nombres} {user.apellidos}
+                  </p>
+                  <p className="text-[11px] font-medium capitalize text-slate-500">
+                    {user.role}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 
   return (
     <>
-      <button
+      {/* Mobile Menu Button */}
+      <motion.button
         type="button"
-        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/90 text-white ring-1 ring-white/10 backdrop-blur lg:hidden"
+        className="fixed left-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900/80 text-white ring-1 ring-white/10 backdrop-blur-xl transition-all duration-200 hover:bg-slate-800/90 hover:ring-white/20 lg:hidden"
         onClick={() => setMobileOpen(true)}
         aria-label="Abrir menú"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
         <Menu className="h-5 w-5" />
-      </button>
+      </motion.button>
 
+      {/* Mobile Overlay */}
       <AnimatePresence>
-        {mobileOpen ? (
+        {mobileOpen && (
           <>
             <motion.div
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
-              className="glass-sidebar fixed inset-y-0 left-0 z-50 w-72 text-slate-100 lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-[280px] bg-slate-950/95 text-slate-100 backdrop-blur-xl ring-1 ring-white/[0.08] lg:hidden"
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
-              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              transition={{ type: "spring", damping: 30, stiffness: 350 }}
             >
               <button
                 type="button"
-                className="absolute right-3 top-3 rounded-lg p-1 text-slate-400 hover:text-white"
+                className="absolute right-3 top-3 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-white"
                 onClick={() => setMobileOpen(false)}
               >
                 <X className="h-5 w-5" />
@@ -207,25 +386,17 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
               {sidebarContent}
             </motion.aside>
           </>
-        ) : null}
+        )}
       </AnimatePresence>
 
-      <aside
-        className={clsx(
-          "glass-sidebar sticky top-0 hidden h-screen shrink-0 flex-col text-slate-100 transition-all duration-300 lg:flex",
-          collapsed ? "w-[72px]" : "w-72",
-        )}
+      {/* Desktop Sidebar */}
+      <motion.aside
+        className="glass-sidebar-premium sticky top-0 z-30 hidden h-screen shrink-0 flex-col text-slate-100 transition-all duration-300 lg:flex"
+        animate={{ width: collapsed ? 88 : 320 }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
       >
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          className="absolute -right-3 top-20 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-slate-900 text-slate-300 shadow-lg hover:text-white"
-          aria-label={collapsed ? "Expandir" : "Colapsar"}
-        >
-          <ChevronLeft className={clsx("h-3.5 w-3.5 transition", collapsed && "rotate-180")} />
-        </button>
         {sidebarContent}
-      </aside>
+      </motion.aside>
     </>
   );
 }

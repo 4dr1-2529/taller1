@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { HeartHandshake, Plus } from "lucide-react";
+import { motion } from "framer-motion";
+import { HeartHandshake, Plus, UserCog } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthProvider";
@@ -64,30 +65,72 @@ export function PsychFollowUpView({ students, useApi = false }: PsychFollowUpVie
     }
   }
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+  };
+
   if (!isAuthenticated) {
     return (
-      <div className="premium-card rounded-2xl md:p-6 rounded-2xl p-8 text-center">
-        <HeartHandshake className="mx-auto mb-3 h-10 w-10 text-rose-500" />
-        <p className="text-sm text-slate-600">Seguimiento psicológico requiere sesión activa.</p>
-        <Link href="/login" className="mt-4 inline-block text-sm font-semibold text-indigo-600">
-          Iniciar sesión
-        </Link>
-      </div>
+      <motion.div
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        className="premium-card rounded-2xl p-8 text-center"
+      >
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/20 to-pink-500/20 ring-1 ring-white/10">
+            <HeartHandshake className="h-6 w-6 text-rose-400" />
+          </div>
+          <p className="text-sm text-[var(--text-secondary)]">Seguimiento psicológico requiere sesión activa.</p>
+          <Link href="/login" className="mt-2 text-sm font-semibold text-violet-400 hover:text-violet-300">
+            Iniciar sesión
+          </Link>
+        </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <section className="premium-card rounded-2xl md:p-6 rounded-2xl p-5">
-        <h3 className="flex items-center gap-2 font-semibold">
-          <HeartHandshake className="h-5 w-5 text-rose-500" />
-          Nuevo seguimiento psicológico
-        </h3>
+    <div className="space-y-8">
+      {/* Section Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
+      >
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500/20 to-rose-500/20 ring-1 ring-white/10">
+              <UserCog className="h-4 w-4 text-pink-400" />
+            </div>
+            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+              Psychological Follow-Up
+            </h2>
+          </div>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            Track counseling sessions and intervention plans
+          </p>
+        </div>
+      </motion.div>
+
+      {/* New Follow-Up Form */}
+      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/20 to-pink-500/20 ring-1 ring-white/10">
+            <HeartHandshake className="h-4 w-4 text-rose-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Nuevo seguimiento psicológico</h3>
+            <p className="text-xs text-[var(--text-secondary)]">Record session notes and action items</p>
+          </div>
+        </div>
         <form onSubmit={(e) => void handleSubmit(e)} className="mt-4 space-y-3">
           <select
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900/50"
+            className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/50 px-3 py-2 text-sm text-[var(--text-primary)]"
           >
             {students.map((s) => (
               <option key={s.id} value={s.id}>
@@ -100,57 +143,66 @@ export function PsychFollowUpView({ students, useApi = false }: PsychFollowUpVie
             onChange={(e) => setResumen(e.target.value)}
             placeholder="Resumen de la sesión o entrevista…"
             rows={3}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900/50"
+            className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/50 px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]"
           />
           <textarea
             value={acciones}
             onChange={(e) => setAcciones(e.target.value)}
             placeholder="Acciones acordadas (opcional)"
             rows={2}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900/50"
+            className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/50 px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]"
           />
           <button
             type="submit"
             disabled={loading || !useApi}
-            className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-500 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white hover:from-rose-500 hover:to-pink-500 disabled:opacity-50"
           >
             <Plus className="h-4 w-4" />
             Registrar seguimiento
           </button>
           {!useApi ? (
-            <p className="text-xs text-amber-700 dark:text-amber-300">
+            <p className="text-xs text-amber-400">
               Conecte la API (inicio de sesión + servidor) para persistir en base de datos.
             </p>
           ) : null}
         </form>
-      </section>
+      </motion.section>
 
-      <section className="premium-card rounded-2xl md:p-6 rounded-2xl p-5">
-        <h3 className="font-semibold">Historial de seguimiento</h3>
-        <ul className="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
+      {/* History */}
+      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
+            <HeartHandshake className="h-4 w-4 text-violet-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Historial de seguimiento</h3>
+            <p className="text-xs text-[var(--text-secondary)]">Past sessions and intervention records</p>
+          </div>
+        </div>
+        <ul className="mt-4 divide-y divide-[var(--border-subtle)]">
           {records.length === 0 ? (
-            <li className="py-6 text-center text-sm text-slate-500">Sin registros aún.</li>
+            <li className="py-6 text-center text-sm text-[var(--text-muted)]">Sin registros aún.</li>
           ) : (
             records.map((r) => (
               <li key={r.id} className="py-4">
-                <p className="font-medium">
+                <p className="font-medium text-[var(--text-primary)]">
                   {r.student.nombres} {r.student.apellidos}{" "}
-                  <span className="text-slate-500">· {r.student.codigo}</span>
+                  <span className="text-[var(--text-muted)]">· {r.student.codigo}</span>
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-[var(--text-muted)]">
                   {new Date(r.fecha).toLocaleDateString("es-PE")} · {r.profesional ?? "—"}
                 </p>
-                <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">{r.resumen}</p>
+                <p className="mt-2 text-sm text-[var(--text-secondary)]">{r.resumen}</p>
                 {r.acciones ? (
-                  <p className="mt-1 text-sm text-slate-600">
-                    <strong>Acciones:</strong> {r.acciones}
+                  <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                    <strong className="text-[var(--text-primary)]">Acciones:</strong> {r.acciones}
                   </p>
                 ) : null}
               </li>
             ))
           )}
         </ul>
-      </section>
+      </motion.section>
     </div>
   );
 }

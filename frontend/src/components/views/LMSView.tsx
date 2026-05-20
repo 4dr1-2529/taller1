@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import clsx from "clsx";
-import { Clock3, MonitorSmartphone, Send } from "lucide-react";
+import { Clock3, MonitorSmartphone, Send, Laptop, BarChart3 } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -22,9 +23,9 @@ import { SELECT_CLASS } from "@/lib/ui";
 function engagementBadge(eng: string) {
   return clsx(
     "rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize",
-    eng === "alto" && "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200",
-    eng === "medio" && "bg-amber-100 text-amber-900 ring-1 ring-amber-200",
-    eng === "bajo" && "bg-rose-100 text-rose-900 ring-1 ring-rose-200",
+    eng === "alto" && "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20",
+    eng === "medio" && "bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/20",
+    eng === "bajo" && "bg-rose-500/15 text-rose-400 ring-1 ring-rose-500/20",
   );
 }
 
@@ -60,111 +61,216 @@ export function LMSView({ students }: LMSViewProps) {
     ];
   }, [student]);
 
+  const gridStroke = "rgba(255, 255, 255, 0.04)";
+  const tickFill = "var(--text-muted)";
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+  };
+
   if (!student) {
-    return <p className="text-sm text-slate-600">No hay estudiantes para analizar LMS.</p>;
+    return <p className="text-sm text-[var(--text-muted)]">No hay estudiantes para analizar LMS.</p>;
   }
 
   return (
     <div className="space-y-8">
-      <div className="premium-card flex flex-col gap-3 rounded-2xl p-5 md:flex-row md:items-center md:justify-between md:p-6">
+      {/* Section Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
+      >
         <div>
-          <h3 className="text-lg font-semibold text-[var(--text-primary)]">Comportamiento en LMS</h3>
-          <p className="text-sm text-[var(--text-muted)]">
-            Actividad semanal, tiempo en plataforma y cumplimiento de tareas.
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 ring-1 ring-white/10">
+              <Laptop className="h-4 w-4 text-cyan-400" />
+            </div>
+            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+              LMS Analytics
+            </h2>
+          </div>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            Platform engagement, activity tracking, and task completion
           </p>
         </div>
-        <select
-          className={clsx(SELECT_CLASS, "w-full md:w-72")}
-          value={student.id}
-          onChange={(e) => setStudentId(e.target.value)}
-        >
-          {students.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.nombres} {s.apellidos}
-            </option>
-          ))}
-        </select>
-      </div>
+      </motion.div>
 
+      {/* Student Selector */}
+      <motion.div variants={cardVariants} initial="hidden" animate="visible">
+        <div className="premium-card flex flex-col gap-3 rounded-2xl p-5 md:flex-row md:items-center md:justify-between md:p-6">
+          <div>
+            <h3 className="text-lg font-semibold text-[var(--text-primary)]">Comportamiento en LMS</h3>
+            <p className="text-sm text-[var(--text-muted)]">
+              Actividad semanal, tiempo en plataforma y cumplimiento de tareas.
+            </p>
+          </div>
+          <select
+            className={clsx(SELECT_CLASS, "w-full md:w-72")}
+            value={student.id}
+            onChange={(e) => setStudentId(e.target.value)}
+          >
+            {students.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.nombres} {s.apellidos}
+              </option>
+            ))}
+          </select>
+        </div>
+      </motion.div>
+
+      {/* KPI Cards */}
       <section className="grid gap-4 lg:grid-cols-3">
-        <article className="premium-card rounded-2xl p-5 md:p-6">
-          <div className="flex items-center gap-2 text-slate-900">
-            <MonitorSmartphone className="h-5 w-5 text-indigo-600" aria-hidden />
-            <h4 className="font-semibold">Nivel de engagement</h4>
+        <motion.article
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          className="premium-card rounded-2xl p-5 md:p-6"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
+              <MonitorSmartphone className="h-4 w-4 text-violet-400" aria-hidden />
+            </div>
+            <h4 className="font-semibold text-[var(--text-primary)]">Nivel de engagement</h4>
           </div>
           <p className="mt-3">
             <span className={engagementBadge(student.metrics.lms.engagement)}>
               {student.metrics.lms.engagement}
             </span>
           </p>
-          <p className="mt-3 text-sm text-slate-600">
+          <p className="mt-3 text-sm text-[var(--text-secondary)]">
             Derivado de la combinación de actividad semanal, minutos conectados y entregas.
           </p>
-        </article>
-        <article className="premium-card rounded-2xl p-5 md:p-6">
-          <div className="flex items-center gap-2 text-slate-900">
-            <Clock3 className="h-5 w-5 text-sky-600" aria-hidden />
-            <h4 className="font-semibold">Tiempo en plataforma</h4>
+        </motion.article>
+        <motion.article
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.05 }}
+          className="premium-card rounded-2xl p-5 md:p-6"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 ring-1 ring-white/10">
+              <Clock3 className="h-4 w-4 text-cyan-400" aria-hidden />
+            </div>
+            <h4 className="font-semibold text-[var(--text-primary)]">Tiempo en plataforma</h4>
           </div>
-          <p className="mt-3 text-3xl font-bold text-slate-900">
+          <p className="mt-3 text-3xl font-bold text-[var(--text-primary)]">
             {student.metrics.lms.horasPlataformaSemana.toFixed(1)} h
           </p>
-          <p className="text-sm text-slate-600">Promedio semanal registrado (simulado).</p>
-        </article>
-        <article className="premium-card rounded-2xl p-5 md:p-6">
-          <div className="flex items-center gap-2 text-slate-900">
-            <Send className="h-5 w-5 text-amber-600" aria-hidden />
-            <h4 className="font-semibold">Tareas</h4>
+          <p className="text-sm text-[var(--text-secondary)]">Promedio semanal registrado (simulado).</p>
+        </motion.article>
+        <motion.article
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.1 }}
+          className="premium-card rounded-2xl p-5 md:p-6"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 ring-1 ring-white/10">
+              <Send className="h-4 w-4 text-amber-400" aria-hidden />
+            </div>
+            <h4 className="font-semibold text-[var(--text-primary)]">Tareas</h4>
           </div>
-          <p className="mt-3 text-3xl font-bold text-slate-900">
+          <p className="mt-3 text-3xl font-bold text-[var(--text-primary)]">
             {student.metrics.lms.tareasEntregadas}/{student.metrics.lms.tareasTotales}
           </p>
-          <p className="text-sm text-slate-600">Entregadas vs total programadas.</p>
-        </article>
+          <p className="text-sm text-[var(--text-secondary)]">Entregadas vs total programadas.</p>
+        </motion.article>
       </section>
 
+      {/* Charts */}
       <section className="grid gap-4 xl:grid-cols-2">
-        <article className="premium-card rounded-2xl p-5 md:p-6">
-          <h4 className="font-semibold text-slate-900">Actividad y minutos por semana</h4>
-          <div className="mt-4 h-72">
+        <motion.article
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          className="premium-card rounded-2xl p-5 md:p-6"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
+              <BarChart3 className="h-4 w-4 text-violet-400" />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[var(--text-primary)]">Actividad y minutos por semana</h4>
+              <p className="text-xs text-[var(--text-secondary)]">Weekly activity percentage and minutes</p>
+            </div>
+          </div>
+          <div className="mt-5 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={weekly}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="semana" tick={{ fontSize: 11 }} />
-                <YAxis yAxisId="left" tick={{ fontSize: 11 }} />
-                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
+                <XAxis dataKey="semana" tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="left" tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  wrapperClassName="chart-tooltip"
+                  contentStyle={{
+                    background: "var(--surface-elevated)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "0.75rem",
+                    backdropFilter: "blur(12px)",
+                  }}
+                />
                 <Legend />
                 <Line
                   yAxisId="left"
                   type="monotone"
                   dataKey="actividad"
                   name="Actividad %"
-                  stroke="#6366f1"
-                  strokeWidth={2}
+                  stroke="#818cf8"
+                  strokeWidth={2.5}
+                  dot={{ r: 3, fill: "#6366f1", strokeWidth: 2, stroke: "#09090b" }}
+                  activeDot={{ r: 5, fill: "#818cf8", strokeWidth: 2, stroke: "#09090b" }}
                 />
                 <Line
                   yAxisId="right"
                   type="monotone"
                   dataKey="minutos"
                   name="Minutos"
-                  stroke="#0ea5e9"
-                  strokeWidth={2}
+                  stroke="#22d3ee"
+                  strokeWidth={2.5}
+                  dot={{ r: 3, fill: "#06b6d4", strokeWidth: 2, stroke: "#09090b" }}
+                  activeDot={{ r: 5, fill: "#22d3ee", strokeWidth: 2, stroke: "#09090b" }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </article>
+        </motion.article>
 
-        <article className="premium-card rounded-2xl p-5 md:p-6">
-          <h4 className="font-semibold text-slate-900">Entregas vs pendientes</h4>
-          <div className="mt-4 h-72">
+        <motion.article
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.05 }}
+          className="premium-card rounded-2xl p-5 md:p-6"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 ring-1 ring-white/10">
+              <Send className="h-4 w-4 text-emerald-400" />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[var(--text-primary)]">Entregas vs pendientes</h4>
+              <p className="text-xs text-[var(--text-secondary)]">Task completion breakdown</p>
+            </div>
+          </div>
+          <div className="mt-5 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={tareasData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="tipo" tick={{ fontSize: 10 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
+                <XAxis dataKey="tipo" tick={{ fontSize: 10, fill: tickFill }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  wrapperClassName="chart-tooltip"
+                  contentStyle={{
+                    background: "var(--surface-elevated)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "0.75rem",
+                    backdropFilter: "blur(12px)",
+                  }}
+                />
                 <Bar dataKey="valor" name="Cantidad" radius={[6, 6, 0, 0]}>
                   {tareasData.map((row) => (
                     <Cell key={row.tipo} fill={row.fill} />
@@ -173,7 +279,7 @@ export function LMSView({ students }: LMSViewProps) {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </article>
+        </motion.article>
       </section>
     </div>
   );

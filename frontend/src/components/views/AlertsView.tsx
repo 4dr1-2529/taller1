@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, ShieldAlert } from "lucide-react";
+import { motion } from "framer-motion";
+import { AlertTriangle, CheckCircle2, ShieldAlert, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { attachPredictions } from "@/lib/aggregates";
 import { recommendationsForFactor } from "@/lib/recommendations";
@@ -58,6 +59,29 @@ export function AlertsView({ students, useApi = false }: AlertsViewProps) {
 
   return (
     <div className="space-y-8">
+      {/* Section Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
+      >
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500/20 to-pink-500/20 ring-1 ring-white/10">
+              <Bell className="h-4 w-4 text-rose-400" />
+            </div>
+            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+              Smart Alerts
+            </h2>
+          </div>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            AI-powered risk alerts and intervention recommendations
+          </p>
+        </div>
+      </motion.div>
+
+      {/* KPI Cards */}
       <StaggerList className="grid gap-4 md:grid-cols-3">
         <StaggerItem>
           <KpiCard label="Riesgo alto" value={criticalCount} icon={ShieldAlert} variant="rose" />
@@ -76,6 +100,7 @@ export function AlertsView({ students, useApi = false }: AlertsViewProps) {
         </StaggerItem>
       </StaggerList>
 
+      {/* Alerts List */}
       <PageSection
         icon={AlertTriangle}
         title="Alertas inteligentes"

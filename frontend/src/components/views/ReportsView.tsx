@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FileSpreadsheet, FileText } from "lucide-react";
+import { motion } from "framer-motion";
+import { FileSpreadsheet, FileText, Download, BarChart3 } from "lucide-react";
 import {
   attachPredictions,
   atRiskStudentsByCourse,
@@ -15,6 +16,8 @@ import {
   exportStudentsToExcel,
 } from "@/lib/export-reports";
 import type { Course, Enrollment, Student } from "@/types/academic";
+import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
+import { RiskBadge } from "@/components/ui/RiskBadge";
 
 type ReportsViewProps = {
   students: Student[];
@@ -55,13 +58,48 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
     }
   }
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+  };
+
   return (
-    <div className="space-y-6">
-      <section className="premium-card p-6 md:p-7">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)]">Exportación</h3>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          Genera archivos listos para comité académico o anexos de tesis (Excel / PDF).
-        </p>
+    <div className="space-y-8">
+      {/* Section Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
+      >
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 ring-1 ring-white/10">
+              <Download className="h-4 w-4 text-emerald-400" />
+            </div>
+            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+              Reports & Export
+            </h2>
+          </div>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            Generate Excel and PDF reports for academic committees
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Export Buttons */}
+      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card p-5 md:p-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
+            <FileSpreadsheet className="h-4 w-4 text-violet-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Exportación</h3>
+            <p className="text-xs text-[var(--text-secondary)]">
+              Genera archivos listos para comité académico o anexos de tesis (Excel / PDF).
+            </p>
+          </div>
+        </div>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
@@ -108,19 +146,29 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
             {busy === "excel-lms" ? "Generando…" : "Excel · Baja actividad LMS"}
           </button>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="grid gap-4 xl:grid-cols-2">
-        <article className="premium-card p-6">
-          <h3 className="text-base font-semibold text-slate-900">Estudiantes en riesgo por curso</h3>
-          <ul className="mt-3 space-y-3 text-sm">
+      {/* Data Sections */}
+      <div className="grid gap-6 xl:grid-cols-2">
+        {/* At-Risk Students by Course */}
+        <motion.article variants={cardVariants} initial="hidden" animate="visible" className="premium-card p-5 md:p-6">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/20 to-pink-500/20 ring-1 ring-white/10">
+              <BarChart3 className="h-4 w-4 text-rose-400" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-[var(--text-primary)]">Estudiantes en riesgo por curso</h3>
+              <p className="text-xs text-[var(--text-secondary)]">Students above risk threshold per course</p>
+            </div>
+          </div>
+          <ul className="mt-4 space-y-3 text-sm">
             {atRiskByCourse.map((row) => (
-              <li key={row.courseId} className="rounded-xl border border-slate-100 bg-slate-50/80 p-3">
-                <p className="font-semibold text-slate-900">{row.courseName}</p>
+              <li key={row.courseId} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 p-3">
+                <p className="font-semibold text-[var(--text-primary)]">{row.courseName}</p>
                 {row.students.length === 0 ? (
-                  <p className="text-slate-500">Sin estudiantes sobre umbral.</p>
+                  <p className="text-[var(--text-muted)]">Sin estudiantes sobre umbral.</p>
                 ) : (
-                  <ul className="mt-2 list-disc space-y-1 pl-4 text-slate-700">
+                  <ul className="mt-2 list-disc space-y-1 pl-4 text-[var(--text-secondary)]">
                     {row.students.map((s) => (
                       <li key={s.id}>
                         {s.nombre} — score {s.score} ({s.level})
@@ -131,62 +179,86 @@ export function ReportsView({ students, courses, enrollments }: ReportsViewProps
               </li>
             ))}
           </ul>
-        </article>
+        </motion.article>
 
-        <article className="premium-card p-6">
-          <h3 className="text-base font-semibold text-slate-900">Cursos con más desaprobados</h3>
-          <p className="text-sm text-slate-600">Umbral: promedio de matrícula &lt; 11.</p>
-          <div className="mt-3 overflow-x-auto">
-            <table className="data-table min-w-full">
-              <thead className="border-b border-slate-200 text-slate-500">
+        {/* Failed Courses */}
+        <motion.article variants={cardVariants} initial="hidden" animate="visible" className="premium-card p-5 md:p-6">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 ring-1 ring-white/10">
+              <FileText className="h-4 w-4 text-amber-400" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-[var(--text-primary)]">Cursos con más desaprobados</h3>
+              <p className="text-xs text-[var(--text-secondary)]">Umbral: promedio de matrícula &lt; 11.</p>
+            </div>
+          </div>
+          <DataTablePanel
+            title="Desaprobados por curso"
+            isEmpty={fails.length === 0}
+            emptyMessage="No hay cursos con desaprobados."
+          >
+            <TableWrap>
+              <thead>
                 <tr>
-                  <th className="py-2">Curso</th>
-                  <th className="py-2">Desaprobados</th>
+                  <th>Curso</th>
+                  <th>Desaprobados</th>
                 </tr>
               </thead>
               <tbody>
                 {[...fails]
                   .sort((a, b) => b.desaprobados - a.desaprobados)
                   .map((f) => (
-                    <tr key={f.courseId} className="border-b border-slate-100">
-                      <td className="py-2">{f.nombre}</td>
-                      <td className="py-2 font-semibold">{f.desaprobados}</td>
+                    <tr key={f.courseId}>
+                      <td>{f.nombre}</td>
+                      <td className="font-semibold">{f.desaprobados}</td>
                     </tr>
                   ))}
               </tbody>
-            </table>
-          </div>
-        </article>
-      </section>
+            </TableWrap>
+          </DataTablePanel>
+        </motion.article>
+      </div>
 
-      <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-        <h3 className="text-base font-semibold text-slate-900">Estudiantes con baja actividad LMS</h3>
-        <p className="text-sm text-slate-600">Participación promedio semanal ≤ 45%.</p>
-        <div className="mt-3 overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-slate-200 text-slate-500">
+      {/* Low LMS Activity */}
+      <motion.article variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 ring-1 ring-white/10">
+            <FileSpreadsheet className="h-4 w-4 text-cyan-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Estudiantes con baja actividad LMS</h3>
+            <p className="text-xs text-[var(--text-secondary)]">Participación promedio semanal ≤ 45%.</p>
+          </div>
+        </div>
+        <DataTablePanel
+          title="Baja actividad LMS"
+          isEmpty={lowLms.length === 0}
+          emptyMessage="No hay estudiantes con baja actividad LMS."
+        >
+          <TableWrap>
+            <thead>
               <tr>
-                <th className="py-2">Estudiante</th>
-                <th className="py-2">Engagement</th>
-                <th className="py-2">Horas semana</th>
-                <th className="py-2">Score riesgo</th>
+                <th>Estudiante</th>
+                <th>Engagement</th>
+                <th>Horas semana</th>
+                <th>Score riesgo</th>
               </tr>
             </thead>
             <tbody>
               {lowLms.map((s) => (
-                <tr key={s.id} className="border-b border-slate-100">
-                  <td className="py-2">
+                <tr key={s.id}>
+                  <td>
                     {s.nombres} {s.apellidos}
                   </td>
-                  <td className="py-2 capitalize">{s.metrics.lms.engagement}</td>
-                  <td className="py-2">{s.metrics.lms.horasPlataformaSemana.toFixed(1)} h</td>
-                  <td className="py-2 font-medium">{Math.round(s.prediction.score)}</td>
+                  <td className="capitalize">{s.metrics.lms.engagement}</td>
+                  <td>{s.metrics.lms.horasPlataformaSemana.toFixed(1)} h</td>
+                  <td className="font-medium">{Math.round(s.prediction.score)}</td>
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
-      </article>
+          </TableWrap>
+        </DataTablePanel>
+      </motion.article>
     </div>
   );
 }

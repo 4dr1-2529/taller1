@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { UserPlus } from "lucide-react";
+import { motion } from "framer-motion";
+import { UserPlus, Users, Search } from "lucide-react";
 import { attachPredictions } from "@/lib/aggregates";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import type { LmsEngagement, Student, StudentStatus } from "@/types/academic";
@@ -62,159 +63,197 @@ export function StudentsView({
     (s) => `${s.codigo} ${s.nombres} ${s.apellidos} ${s.nivel}`,
   );
 
-  return (
-    <div className="grid gap-8 xl:grid-cols-2">
-      <PageSection
-        variant="form"
-        icon={UserPlus}
-        title="Registrar estudiante"
-        description="Asigne grado y sección. Los indicadores alimentan el modelo ensemble de riesgo de deserción."
-      >
-        <form className="form-grid" onSubmit={onAddStudent}>
-          <FormField label="Código">
-            <input
-              className={INPUT_CLASS}
-              placeholder="Ej. 2024-001"
-              value={newStudent.codigo}
-              onChange={(e) => setNewStudent((p) => ({ ...p, codigo: e.target.value }))}
-              required
-            />
-          </FormField>
-          <FormField label="Nombres">
-            <input
-              className={INPUT_CLASS}
-              value={newStudent.nombres}
-              onChange={(e) => setNewStudent((p) => ({ ...p, nombres: e.target.value }))}
-              required
-            />
-          </FormField>
-          <FormField label="Apellidos" className="form-grid-full sm:col-span-2">
-            <input
-              className={INPUT_CLASS}
-              value={newStudent.apellidos}
-              onChange={(e) => setNewStudent((p) => ({ ...p, apellidos: e.target.value }))}
-              required
-            />
-          </FormField>
-          <FormField label="Sección" className="form-grid-full">
-            <select
-              className={INPUT_CLASS}
-              value={newStudent.seccionId}
-              onChange={(e) => setNewStudent((p) => ({ ...p, seccionId: e.target.value }))}
-              required
-            >
-              <option value="">Seleccione sección (grado · salón)</option>
-              {secciones.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </FormField>
-          {secciones.length === 0 ? (
-            <p className="form-grid-full text-xs text-amber-400">
-              Ejecute `npm run db:seed` para cargar niveles, grados y secciones.
-            </p>
-          ) : null}
-          <FormField label="Correo (opcional)">
-            <input
-              type="email"
-              className={INPUT_CLASS}
-              value={newStudent.correo}
-              onChange={(e) => setNewStudent((p) => ({ ...p, correo: e.target.value }))}
-            />
-          </FormField>
-          <FormField label="Teléfono">
-            <input
-              className={INPUT_CLASS}
-              value={newStudent.telefono}
-              onChange={(e) => setNewStudent((p) => ({ ...p, telefono: e.target.value }))}
-            />
-          </FormField>
-          <FormField label="Promedio (0–20)">
-            <input
-              className={INPUT_CLASS}
-              inputMode="decimal"
-              value={newStudent.promedioGeneral}
-              onChange={(e) => setNewStudent((p) => ({ ...p, promedioGeneral: e.target.value }))}
-            />
-          </FormField>
-          <FormField label="Asistencia %">
-            <input
-              className={INPUT_CLASS}
-              inputMode="numeric"
-              value={newStudent.asistenciaGeneral}
-              onChange={(e) => setNewStudent((p) => ({ ...p, asistenciaGeneral: e.target.value }))}
-            />
-          </FormField>
-          <FormField label="Engagement LMS">
-            <select
-              className={INPUT_CLASS}
-              value={newStudent.engagement}
-              onChange={(e) =>
-                setNewStudent((p) => ({ ...p, engagement: e.target.value as LmsEngagement }))
-              }
-            >
-              <option value="alto">Alto</option>
-              <option value="medio">Medio</option>
-              <option value="bajo">Bajo</option>
-            </select>
-          </FormField>
-          <FormField label="Estado">
-            <select
-              className={INPUT_CLASS}
-              value={newStudent.estado}
-              onChange={(e) =>
-                setNewStudent((p) => ({ ...p, estado: e.target.value as StudentStatus }))
-              }
-            >
-              <option value="activo">Activo</option>
-              <option value="en riesgo">En riesgo</option>
-              <option value="retirado">Retirado</option>
-            </select>
-          </FormField>
-          <button type="submit" className="btn-primary form-grid-full">
-            Agregar estudiante
-          </button>
-        </form>
-      </PageSection>
+  const cardVariants = {
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+  };
 
-      <DataTablePanel
-        title="Estudiantes y riesgo"
-        description="Score de deserción calculado por el ensemble."
-        searchPlaceholder="Buscar por nombre o código…"
-        searchValue={search}
-        onSearch={setSearch}
-        isEmpty={filtered.length === 0}
-        emptyMessage="No hay estudiantes registrados."
+  return (
+    <div className="space-y-8">
+      {/* Section Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
       >
-        <TableWrap>
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th>Estudiante</th>
-              <th>Sección</th>
-              <th>Prom.</th>
-              <th>Riesgo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((student) => (
-              <tr key={student.id}>
-                <td className="font-medium">{student.codigo}</td>
-                <td>
-                  {student.nombres} {student.apellidos}
-                </td>
-                <td className="text-xs text-[var(--text-secondary)]">{student.nivel}</td>
-                <td>{student.metrics.promedioGeneral.toFixed(1)}</td>
-                <td>
-                  <RiskBadge level={student.prediction.level} score={student.prediction.score} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </TableWrap>
-      </DataTablePanel>
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-500/20 ring-1 ring-white/10">
+              <Users className="h-4 w-4 text-violet-400" />
+            </div>
+            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+              Student Management
+            </h2>
+          </div>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            Register students and monitor dropout risk scores
+          </p>
+        </div>
+        <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
+          {students.length} students
+        </span>
+      </motion.div>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+        {/* Registration Form */}
+        <motion.div variants={cardVariants} initial="hidden" animate="visible">
+          <PageSection
+            variant="form"
+            icon={UserPlus}
+            title="Registrar estudiante"
+            description="Asigne grado y sección. Los indicadores alimentan el modelo ensemble de riesgo de deserción."
+          >
+            <form className="form-grid" onSubmit={onAddStudent}>
+              <FormField label="Código">
+                <input
+                  className={INPUT_CLASS}
+                  placeholder="Ej. 2024-001"
+                  value={newStudent.codigo}
+                  onChange={(e) => setNewStudent((p) => ({ ...p, codigo: e.target.value }))}
+                  required
+                />
+              </FormField>
+              <FormField label="Nombres">
+                <input
+                  className={INPUT_CLASS}
+                  value={newStudent.nombres}
+                  onChange={(e) => setNewStudent((p) => ({ ...p, nombres: e.target.value }))}
+                  required
+                />
+              </FormField>
+              <FormField label="Apellidos" className="form-grid-full sm:col-span-2">
+                <input
+                  className={INPUT_CLASS}
+                  value={newStudent.apellidos}
+                  onChange={(e) => setNewStudent((p) => ({ ...p, apellidos: e.target.value }))}
+                  required
+                />
+              </FormField>
+              <FormField label="Sección" className="form-grid-full">
+                <select
+                  className={INPUT_CLASS}
+                  value={newStudent.seccionId}
+                  onChange={(e) => setNewStudent((p) => ({ ...p, seccionId: e.target.value }))}
+                  required
+                >
+                  <option value="">Seleccione sección (grado · salón)</option>
+                  {secciones.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </FormField>
+              {secciones.length === 0 ? (
+                <p className="form-grid-full text-xs text-amber-400">
+                  Ejecute `npm run db:seed` para cargar niveles, grados y secciones.
+                </p>
+              ) : null}
+              <FormField label="Correo (opcional)">
+                <input
+                  type="email"
+                  className={INPUT_CLASS}
+                  value={newStudent.correo}
+                  onChange={(e) => setNewStudent((p) => ({ ...p, correo: e.target.value }))}
+                />
+              </FormField>
+              <FormField label="Teléfono">
+                <input
+                  className={INPUT_CLASS}
+                  value={newStudent.telefono}
+                  onChange={(e) => setNewStudent((p) => ({ ...p, telefono: e.target.value }))}
+                />
+              </FormField>
+              <FormField label="Promedio (0–20)">
+                <input
+                  className={INPUT_CLASS}
+                  inputMode="decimal"
+                  value={newStudent.promedioGeneral}
+                  onChange={(e) => setNewStudent((p) => ({ ...p, promedioGeneral: e.target.value }))}
+                />
+              </FormField>
+              <FormField label="Asistencia %">
+                <input
+                  className={INPUT_CLASS}
+                  inputMode="numeric"
+                  value={newStudent.asistenciaGeneral}
+                  onChange={(e) => setNewStudent((p) => ({ ...p, asistenciaGeneral: e.target.value }))}
+                />
+              </FormField>
+              <FormField label="Engagement LMS">
+                <select
+                  className={INPUT_CLASS}
+                  value={newStudent.engagement}
+                  onChange={(e) =>
+                    setNewStudent((p) => ({ ...p, engagement: e.target.value as LmsEngagement }))
+                  }
+                >
+                  <option value="alto">Alto</option>
+                  <option value="medio">Medio</option>
+                  <option value="bajo">Bajo</option>
+                </select>
+              </FormField>
+              <FormField label="Estado">
+                <select
+                  className={INPUT_CLASS}
+                  value={newStudent.estado}
+                  onChange={(e) =>
+                    setNewStudent((p) => ({ ...p, estado: e.target.value as StudentStatus }))
+                  }
+                >
+                  <option value="activo">Activo</option>
+                  <option value="en riesgo">En riesgo</option>
+                  <option value="retirado">Retirado</option>
+                </select>
+              </FormField>
+              <button type="submit" className="btn-primary form-grid-full">
+                Agregar estudiante
+              </button>
+            </form>
+          </PageSection>
+        </motion.div>
+
+        {/* Students Table */}
+        <motion.div variants={cardVariants} initial="hidden" animate="visible">
+          <DataTablePanel
+            title="Estudiantes y riesgo"
+            description="Score de deserción calculado por el ensemble."
+            searchPlaceholder="Buscar por nombre o código…"
+            searchValue={search}
+            onSearch={setSearch}
+            isEmpty={filtered.length === 0}
+            emptyMessage="No hay estudiantes registrados."
+          >
+            <TableWrap>
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Estudiante</th>
+                  <th>Sección</th>
+                  <th>Prom.</th>
+                  <th>Riesgo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((student) => (
+                  <tr key={student.id}>
+                    <td className="font-medium">{student.codigo}</td>
+                    <td>
+                      {student.nombres} {student.apellidos}
+                    </td>
+                    <td className="text-xs text-[var(--text-secondary)]">{student.nivel}</td>
+                    <td>{student.metrics.promedioGeneral.toFixed(1)}</td>
+                    <td>
+                      <RiskBadge level={student.prediction.level} score={student.prediction.score} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableWrap>
+          </DataTablePanel>
+        </motion.div>
+      </div>
     </div>
   );
 }

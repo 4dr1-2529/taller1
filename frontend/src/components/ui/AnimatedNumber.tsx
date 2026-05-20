@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 type AnimatedNumberProps = {
   value: number;
@@ -35,9 +36,14 @@ export function AnimatedNumber({ value, duration = 700, decimals = 0, suffix = "
     decimals > 0 ? display.toFixed(decimals) : Math.round(display).toLocaleString("es-PE");
 
   return (
-    <span>
+    <motion.span
+      key={Math.round(display)}
+      initial={{ opacity: 0.7, y: 2 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.15 }}
+    >
       {formatted}
       {suffix}
-    </span>
+    </motion.span>
   );
 }
