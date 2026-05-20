@@ -4,7 +4,6 @@ import { type FormEvent, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { AcademicView } from "@/components/views/AcademicView";
 import { AcademicStructureView } from "@/components/views/AcademicStructureView";
-import { RoleDashboard } from "@/components/dashboards/RoleDashboard";
 import { EmptyState } from "@/components/EmptyState";
 import { useAcademicStructure } from "@/hooks/useAcademicStructure";
 import { AlertsView } from "@/components/views/AlertsView";
@@ -193,25 +192,20 @@ export default function Home() {
 
     switch (activeSection) {
       case "Dashboard":
-        return (
-          <div className="space-y-6">
-            <RoleDashboard
-              role={role}
-              students={students}
-              courses={courses}
-              enrollments={enrollments}
-              alertCount={alertCount}
-            />
-            {students.length > 0 ? (
-              <DashboardView students={students} courses={courses} enrollments={enrollments} useApi={useApi} />
-            ) : (
-              <EmptyState
-                title="Sin estudiantes registrados"
-                description="Cree el usuario administrador (npm run db:bootstrap), inicie sesión y registre estudiantes reales por sección."
-                showLogin={!useApi}
-              />
-            )}
-          </div>
+        return students.length > 0 ? (
+          <DashboardView
+            role={role}
+            students={students}
+            courses={courses}
+            enrollments={enrollments}
+            useApi={useApi}
+          />
+        ) : (
+          <EmptyState
+            title="Sin estudiantes registrados"
+            description="Cree el usuario administrador (npm run db:bootstrap), inicie sesión y registre estudiantes reales por sección."
+            showLogin={!useApi}
+          />
         );
       case "Estructura académica":
         return <AcademicStructureView />;
