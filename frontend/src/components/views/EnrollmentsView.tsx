@@ -1,14 +1,24 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { motion } from "framer-motion";
 import { UserPlus, FileUser } from "lucide-react";
+import { toast } from "sonner";
 import type { Course, Enrollment, Student } from "@/types/academic";
 import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { INPUT_CLASS } from "@/lib/ui";
+import {
+  type FieldErrors,
+  firstError,
+  sanitizeGradeInput,
+  sanitizePercentInput,
+  validateGradeString,
+  validatePercentString,
+  clearFieldError,
+} from "@/lib/validation";
 
 export type NewEnrollmentForm = {
   studentId: string;
@@ -34,6 +44,7 @@ export function EnrollmentsView({
   setForm,
   onAdd,
 }: EnrollmentsViewProps) {
+  const [errors, setErrors] = useState<FieldErrors>({});
   const selectedStudent = students.find((s) => s.id === form.studentId);
   const coursesForStudent = useMemo(() => {
     if (!selectedStudent?.seccionId) return courses;
@@ -83,14 +94,34 @@ export function EnrollmentsView({
             title="Nueva matrícula"
             description="Vincule estudiante y curso; alimenta reportes de desaprobados y comparativas."
           >
-            <form className="form-grid" onSubmit={onAdd}>
-              <FormField label="Estudiante" className="form-grid-full sm:col-span-2">
+            <form
+              className="form-grid"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const nextErrors: FieldErrors = {};
+                if (!form.studentId) nextErrors.studentId = "Seleccione un estudiante";
+                if (!form.courseId) nextErrors.courseId = "Seleccione un curso";
+                const promedioErr = validateGradeString(form.promedio, true);
+                if (promedioErr) nextErrors.promedio = promedioErr;
+                const asistErr = validatePercentString(form.asistenciaPct, true);
+                if (asistErr) nextErrors.asistenciaPct = asistErr;
+                setErrors(nextErrors);
+                const msg = firstError(nextErrors);
+                if (msg) {
+                  toast.error(msg);
+                  return;
+                }
+                onAdd(e);
+              }}
+            >
+              <FormField label="Estudiante" className="form-grid-full sm:col-span-2" error={errors.studentId}>
                 <select
                   className={INPUT_CLASS}
                   value={form.studentId}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, studentId: e.target.value, courseId: "" }))
-                  }
+                  onChange={(e) => {
+                    setErrors((p) => clearFieldError(p, "studentId"));
+                    setForm((p) => ({ ...p, studentId: e.target.value, courseId: "" }));
+                  }}
                   required
                 >
                   <option value="">Seleccione estudiante</option>
@@ -101,11 +132,14 @@ export function EnrollmentsView({
                   ))}
                 </select>
               </FormField>
-              <FormField label="Curso" className="form-grid-full sm:col-span-2">
+              <FormField label="Curso" className="form-grid-full sm:col-span-2" error={errors.courseId}>
                 <select
                   className={INPUT_CLASS}
                   value={form.courseId}
-                  onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
+                  onChange={(e) => {
+                    setErrors((p) => clearFieldError(p, "courseId"));
+                    setForm((p) => ({ ...p, courseId: e.target.value }));
+                  }}
                   required
                   disabled={!form.studentId}
                 >
@@ -124,21 +158,29 @@ export function EnrollmentsView({
                   </p>
                 ) : null}
               </FormField>
-              <FormField label="Promedio (0–20)">
+              <FormField label="Promedio (0–20)" error={errors.promedio} hint="Solo números">
                 <input
                   className={INPUT_CLASS}
+                  inputMode="decimal"
                   placeholder="0–20"
                   value={form.promedio}
-                  onChange={(e) => setForm((p) => ({ ...p, promedio: e.target.value }))}
+                  onChange={(e) => {
+                    setErrors((p) => clearFieldError(p, "promedio"));
+                    setForm((p) => ({ ...p, promedio: sanitizeGradeInput(e.target.value) }));
+                  }}
                   required
                 />
               </FormField>
-              <FormField label="Asistencia %">
+              <FormField label="Asistencia %" error={errors.asistenciaPct} hint="0–100, solo números">
                 <input
                   className={INPUT_CLASS}
+                  inputMode="numeric"
                   placeholder="0–100"
                   value={form.asistenciaPct}
-                  onChange={(e) => setForm((p) => ({ ...p, asistenciaPct: e.target.value }))}
+                  onChange={(e) => {
+                    setErrors((p) => clearFieldError(p, "asistenciaPct"));
+                    setForm((p) => ({ ...p, asistenciaPct: sanitizePercentInput(e.target.value) }));
+                  }}
                   required
                 />
               </FormField>

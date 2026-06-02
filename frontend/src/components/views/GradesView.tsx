@@ -12,6 +12,14 @@ import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { INPUT_CLASS } from "@/lib/ui";
+import {
+  type FieldErrors,
+  firstError,
+  sanitizeGradeInput,
+  validateGradeForm,
+  parseGrade,
+  clearFieldError,
+} from "@/lib/validation";
 
 type GradeRow = {
   id: string;
@@ -42,6 +50,7 @@ export function GradesView({ students, courses }: GradesViewProps) {
     nota: "",
     observacion: "",
   });
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   const selectedStudent = students.find((s) => s.id === form.studentId);
   const coursesForStudent = useMemo(() => {
@@ -80,9 +89,16 @@ export function GradesView({ students, courses }: GradesViewProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const nota = Number.parseFloat(form.nota.replace(",", "."));
-    if (!form.studentId || !form.courseId || !Number.isFinite(nota)) {
-      toast.error("Complete estudiante, curso y nota válida (0–20)");
+    const nextErrors = validateGradeForm(form);
+    setErrors(nextErrors);
+    const msg = firstError(nextErrors);
+    if (msg) {
+      toast.error(msg);
+      return;
+    }
+    const nota = parseGrade(form.nota);
+    if (nota === null) {
+      toast.error("Nota inválida (0–20, solo números)");
       return;
     }
     try {
@@ -144,13 +160,14 @@ export function GradesView({ students, courses }: GradesViewProps) {
             description="Escala vigente en Perú: 0 a 20 por bimestre. El promedio general se recalcula automáticamente."
           >
             <form className="form-grid" onSubmit={(e) => void handleSubmit(e)}>
-              <FormField label="Estudiante" className="form-grid-full sm:col-span-2">
+              <FormField label="Estudiante" className="form-grid-full sm:col-span-2" error={errors.studentId}>
                 <select
                   className={INPUT_CLASS}
                   value={form.studentId}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, studentId: e.target.value, courseId: "" }))
-                  }
+                  onChange={(e) => {
+                    setErrors((p) => clearFieldError(p, "studentId"));
+                    setForm((p) => ({ ...p, studentId: e.target.value, courseId: "" }));
+                  }}
                   required
                 >
                   <option value="">Seleccione</option>
@@ -161,11 +178,14 @@ export function GradesView({ students, courses }: GradesViewProps) {
                   ))}
                 </select>
               </FormField>
-              <FormField label="Curso" className="form-grid-full sm:col-span-2">
+              <FormField label="Curso" className="form-grid-full sm:col-span-2" error={errors.courseId}>
                 <select
                   className={INPUT_CLASS}
                   value={form.courseId}
-                  onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
+                  onChange={(e) => {
+                    setErrors((p) => clearFieldError(p, "courseId"));
+                    setForm((p) => ({ ...p, courseId: e.target.value }));
+                  }}
                   required
                   disabled={!form.studentId}
                 >
@@ -199,12 +219,16 @@ export function GradesView({ students, courses }: GradesViewProps) {
                   ))}
                 </select>
               </FormField>
-              <FormField label="Nota (0–20)">
+              <FormField label="Nota (0–20)" error={errors.nota} hint="Solo números, máximo 20">
                 <input
                   className={INPUT_CLASS}
                   inputMode="decimal"
+                  placeholder="0–20"
                   value={form.nota}
-                  onChange={(e) => setForm((p) => ({ ...p, nota: e.target.value }))}
+                  onChange={(e) => {
+                    setErrors((p) => clearFieldError(p, "nota"));
+                    setForm((p) => ({ ...p, nota: sanitizeGradeInput(e.target.value) }));
+                  }}
                   required
                 />
               </FormField>

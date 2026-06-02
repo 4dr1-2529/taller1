@@ -1,4 +1,14 @@
 import { z } from "zod";
+import {
+  bimestreField,
+  codigoField,
+  gradeField,
+  optionalDniField,
+  optionalEmailField,
+  optionalPhoneField,
+  percentageField,
+  personNameField,
+} from "./fields.js";
 
 export const loginSchema = z.object({
   email: z.string().email("Correo inválido").max(255),
@@ -8,11 +18,13 @@ export const loginSchema = z.object({
 export const createUserSchema = z.object({
   email: z.string().email("Correo inválido").max(255),
   password: z.string().min(8, "Mínimo 8 caracteres").max(128),
-  nombres: z.string().min(2).max(120),
-  apellidos: z.string().min(2).max(120),
+  nombres: personNameField,
+  apellidos: personNameField,
   role: z
     .enum(["admin", "docente", "tutor", "psicologo", "estudiante", "apoderado"])
     .default("estudiante"),
+  dni: optionalDniField,
+  telefono: optionalPhoneField,
 });
 
 export const changePasswordSchema = z.object({
@@ -21,16 +33,16 @@ export const changePasswordSchema = z.object({
 });
 
 export const studentSchema = z.object({
-  codigo: z.string().min(2).max(32),
-  nombres: z.string().min(2).max(120),
-  apellidos: z.string().min(2).max(120),
+  codigo: codigoField,
+  nombres: personNameField,
+  apellidos: personNameField,
   seccionId: z.string().min(1, "Seleccione grado y sección"),
-  dni: z.string().max(8).optional(),
-  correo: z.string().email().optional().or(z.literal("")),
-  telefono: z.string().max(20).optional(),
+  dni: optionalDniField,
+  correo: optionalEmailField,
+  telefono: optionalPhoneField,
   estado: z.enum(["activo", "en_riesgo", "retirado"]).optional(),
-  promedioGeneral: z.number().min(0).max(20).optional(),
-  asistenciaGeneral: z.number().min(0).max(100).optional(),
+  promedioGeneral: gradeField.optional(),
+  asistenciaGeneral: percentageField.optional(),
   lmsEngagement: z.enum(["alto", "medio", "bajo"]).optional(),
 });
 
@@ -44,8 +56,8 @@ export const gradeSchema = z.object({
   studentId: z.string().min(1),
   courseId: z.string().min(1),
   periodo: z.string().min(4).default("2026-I"),
-  bimestre: z.coerce.number().int().min(1).max(4),
-  nota: z.coerce.number().min(0).max(20),
+  bimestre: bimestreField,
+  nota: gradeField,
   observacion: z.string().max(500).optional(),
 });
 
@@ -62,11 +74,11 @@ export const predictSchema = z.object({
   studentId: z.string().optional(),
   metrics: z
     .object({
-      promedioGeneral: z.number().min(0).max(20),
-      asistenciaGeneral: z.number().min(0).max(100),
+      promedioGeneral: gradeField,
+      asistenciaGeneral: percentageField,
       lms: z.object({
         engagement: z.enum(["alto", "medio", "bajo"]),
-        actividadSemanalPct: z.array(z.number().min(0).max(100)),
+        actividadSemanalPct: z.array(percentageField),
         minutosPorSemana: z.array(z.number().min(0)),
         tareasEntregadas: z.number().min(0),
         tareasTotales: z.number().min(1),
@@ -95,7 +107,7 @@ export const alertStatusSchema = z.object({
 });
 
 const teacherCourseInput = z.object({
-  codigo: z.string().min(2).max(32),
+  codigo: codigoField,
   nombre: z.string().min(2).max(160),
   seccionId: z.string().min(1, "Seleccione grado y sección"),
   cursoCatalogoId: z.string().optional(),
@@ -104,12 +116,12 @@ const teacherCourseInput = z.object({
 
 export const teacherSchema = z
   .object({
-    codigo: z.string().min(2).max(32),
-    nombres: z.string().min(2).max(120),
-    apellidos: z.string().min(2).max(120),
+    codigo: codigoField,
+    nombres: personNameField,
+    apellidos: personNameField,
     especialidad: z.string().min(2).max(120),
-    correo: z.string().email().max(255),
-    telefono: z.string().max(20).optional(),
+    correo: z.string().email("Correo inválido").max(255),
+    telefono: optionalPhoneField,
     password: z.string().min(8).max(128).optional(),
     crearCuenta: z.boolean().optional(),
     cursos: z.array(teacherCourseInput).max(12).optional(),
@@ -120,11 +132,11 @@ export const teacherSchema = z
   });
 
 export const updateTeacherSchema = z.object({
-  nombres: z.string().min(2).max(120).optional(),
-  apellidos: z.string().min(2).max(120).optional(),
+  nombres: personNameField.optional(),
+  apellidos: personNameField.optional(),
   especialidad: z.string().min(2).max(120).optional(),
-  correo: z.string().email().max(255).optional(),
-  telefono: z.string().max(20).optional().nullable(),
+  correo: z.string().email("Correo inválido").max(255).optional(),
+  telefono: optionalPhoneField.nullable(),
   activo: z.boolean().optional(),
   cursosNuevos: z.array(teacherCourseInput).max(12).optional(),
 });
@@ -134,7 +146,7 @@ export const teacherAccountSchema = z.object({
 });
 
 export const courseSchema = z.object({
-  codigo: z.string().min(2).max(32),
+  codigo: codigoField,
   nombre: z.string().min(2).max(160),
   profesorId: z.string().min(1),
   seccionId: z.string().min(1, "Seleccione grado y sección"),

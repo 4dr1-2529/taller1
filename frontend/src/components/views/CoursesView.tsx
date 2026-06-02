@@ -10,6 +10,7 @@ import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { INPUT_CLASS } from "@/lib/ui";
+import { sanitizeCodigo, validateCodigo } from "@/lib/validation";
 
 export type NewCourseForm = {
   codigo: string;
@@ -80,6 +81,15 @@ export function CoursesView({
 
   function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const codigoErr = validateCodigo(form.codigo);
+    if (codigoErr) {
+      toast.error(codigoErr);
+      return;
+    }
+    if (!form.nombre.trim()) {
+      toast.error("Indique el nombre del curso");
+      return;
+    }
     if (!form.gradoId || !form.seccionId) {
       toast.error("Seleccione grado y sección (salón A, B o C)");
       return;
@@ -128,11 +138,11 @@ export function CoursesView({
             description="Cada curso pertenece a un grado y una sección (A, B o C). No se comparte entre salones del mismo grado."
           >
             <form className="form-grid" onSubmit={handleFormSubmit}>
-              <FormField label="Código">
+              <FormField label="Código" hint="Letras, números, - y _">
                 <input
                   className={INPUT_CLASS}
                   value={form.codigo}
-                  onChange={(e) => setForm((p) => ({ ...p, codigo: e.target.value }))}
+                  onChange={(e) => setForm((p) => ({ ...p, codigo: sanitizeCodigo(e.target.value) }))}
                   required
                 />
               </FormField>

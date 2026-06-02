@@ -11,6 +11,14 @@ import {
   mapTeacherFromApi,
 } from "@/lib/api-mappers";
 import { buildMetrics } from "@/lib/student-factory";
+import {
+  parseGrade,
+  parsePercent,
+  validateStudentForm,
+  validateTeacherForm,
+  validateTeacherProfileFields,
+  firstError,
+} from "@/lib/validation";
 import { api } from "@/services/api";
 import type { Course, Enrollment, Student, Teacher } from "@/types/academic";
 import type { NewStudentForm } from "@/components/views/StudentsView";
@@ -99,15 +107,17 @@ export function useAcademicData() {
       toast.error("Inicie sesión para registrar estudiantes");
       return;
     }
-    if (!form.seccionId) {
-      toast.error("Seleccione una sección (grado y salón)");
+    const fieldErrors = validateStudentForm(form);
+    const validationMsg = firstError(fieldErrors);
+    if (validationMsg) {
+      toast.error(validationMsg);
       return;
     }
-    const promedio = Number.parseFloat(form.promedioGeneral.replace(",", "."));
-    const asistencia = Number.parseFloat(form.asistenciaGeneral.replace(",", "."));
+    const promedioParsed = form.promedioGeneral.trim() ? parseGrade(form.promedioGeneral) : 0;
+    const asistenciaParsed = form.asistenciaGeneral.trim() ? parsePercent(form.asistenciaGeneral) : 0;
     const metrics = buildMetrics(
-      Number.isFinite(promedio) ? Math.min(20, Math.max(0, promedio)) : 0,
-      Number.isFinite(asistencia) ? Math.min(100, Math.max(0, asistencia)) : 0,
+      promedioParsed ?? 0,
+      asistenciaParsed ?? 0,
       form.engagement,
     );
     try {
@@ -116,6 +126,7 @@ export function useAcademicData() {
         nombres: form.nombres.trim(),
         apellidos: form.apellidos.trim(),
         seccionId: form.seccionId,
+        dni: form.dni.trim() || undefined,
         correo: form.correo.trim() || undefined,
         telefono: form.telefono.trim() || undefined,
         estado: mapEstadoToApi(form.estado),
@@ -134,6 +145,12 @@ export function useAcademicData() {
   async function addTeacher(form: NewTeacherForm): Promise<void> {
     if (!api.hasToken) {
       toast.error("Inicie sesión para registrar docentes");
+      return;
+    }
+    const fieldErrors = validateTeacherForm(form);
+    const validationMsg = firstError(fieldErrors);
+    if (validationMsg) {
+      toast.error(validationMsg);
       return;
     }
     const cursos = form.cursos
@@ -179,6 +196,12 @@ export function useAcademicData() {
     },
   ) {
     if (!api.hasToken) return;
+    const fieldErrors = validateTeacherProfileFields(data);
+    const validationMsg = firstError(fieldErrors);
+    if (validationMsg) {
+      toast.error(validationMsg);
+      return;
+    }
     const cursosNuevos = data.cursosNuevos
       .filter((c) => c.codigo.trim() && c.nombre.trim() && c.seccionId)
       .map((c) => ({
