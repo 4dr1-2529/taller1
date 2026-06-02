@@ -39,7 +39,7 @@ export function BentoHero({
           {greeting}
         </h2>
         <p className="mt-2 max-w-lg text-sm leading-relaxed text-[var(--text-secondary)]">
-          Riesgo agregado del cohorte, alertas activas y señales del ensemble en una sola vista.
+          Riesgo agregado del cohorte, alertas activas y señales del modelo en una sola vista.
         </p>
       </div>
 

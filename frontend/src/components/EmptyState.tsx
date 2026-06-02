@@ -13,7 +13,7 @@ type EmptyStateProps = {
 export function EmptyState({ title, description, showLogin }: EmptyStateProps) {
   return (
     <motion.div
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent px-8 py-20 text-center backdrop-blur-xl"
+      className="relative overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--card)] px-8 py-20 text-center shadow-[var(--card-shadow)]"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}

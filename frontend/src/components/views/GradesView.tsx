@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ClipboardList, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
@@ -42,6 +42,14 @@ export function GradesView({ students, courses }: GradesViewProps) {
     nota: "",
     observacion: "",
   });
+
+  const selectedStudent = students.find((s) => s.id === form.studentId);
+  const coursesForStudent = useMemo(() => {
+    if (!selectedStudent?.seccionId) return courses;
+    return courses.filter(
+      (c) => !c.seccionId || c.seccionId === selectedStudent.seccionId,
+    );
+  }, [courses, selectedStudent]);
 
   const load = useCallback(async () => {
     if (!api.hasToken) return;
@@ -114,15 +122,15 @@ export function GradesView({ students, courses }: GradesViewProps) {
               <GraduationCap className="h-4 w-4 text-violet-400" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Grade Registry
+              Registro de notas
             </h2>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Record and track bimester grades (Peruvian 0–20 scale)
+            Registre y consulte calificaciones por bimestre (escala 0–20)
           </p>
         </div>
         <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {items.length} records
+          {items.length} registros
         </span>
       </motion.div>
 
@@ -140,13 +148,15 @@ export function GradesView({ students, courses }: GradesViewProps) {
                 <select
                   className={INPUT_CLASS}
                   value={form.studentId}
-                  onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, studentId: e.target.value, courseId: "" }))
+                  }
                   required
                 >
                   <option value="">Seleccione</option>
                   {students.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.codigo} — {s.nombres} {s.apellidos}
+                      {s.codigo} — {s.nombres} {s.apellidos} ({s.nivel})
                     </option>
                   ))}
                 </select>
@@ -157,11 +167,14 @@ export function GradesView({ students, courses }: GradesViewProps) {
                   value={form.courseId}
                   onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
                   required
+                  disabled={!form.studentId}
                 >
-                  <option value="">Seleccione</option>
-                  {courses.map((c) => (
+                  <option value="">
+                    {form.studentId ? "Curso de su sección" : "Primero elija estudiante"}
+                  </option>
+                  {coursesForStudent.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.nombre}
+                      {c.nombre} — {c.nivel}
                     </option>
                   ))}
                 </select>

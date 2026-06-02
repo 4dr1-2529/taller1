@@ -10,8 +10,16 @@ import { EmptyState } from "@/components/EmptyState";
 import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
+import { AttendanceStatusPicker } from "@/components/ui/AttendanceStatusPicker";
 import { INPUT_CLASS } from "@/lib/ui";
-import { CalendarCheck, CalendarDays } from "lucide-react";
+import {
+  estadoBadgeClass,
+  estadoLabel,
+  estadoToFlags,
+  flagsToEstado,
+  type AttendanceEstado,
+} from "@/lib/attendance-status";
+import { CalendarCheck } from "lucide-react";
 
 type AttendanceRow = {
   id: string;
@@ -32,12 +40,11 @@ export function AttendanceView({ students }: AttendanceViewProps) {
   const { isAuthenticated } = useAuth();
   const [items, setItems] = useState<AttendanceRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
   const [form, setForm] = useState({
     studentId: "",
     fecha: new Date().toISOString().slice(0, 10),
-    presente: true,
-    justificado: false,
-    tardanza: false,
+    estado: "presente" as AttendanceEstado,
     observacion: "",
   });
 
@@ -58,11 +65,20 @@ export function AttendanceView({ students }: AttendanceViewProps) {
     if (isAuthenticated) void load();
   }, [isAuthenticated, load]);
 
+  const filtered = items.filter((a) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    const name = a.student
+      ? `${a.student.nombres} ${a.student.apellidos} ${a.student.codigo}`.toLowerCase()
+      : a.studentId;
+    return name.includes(q) || new Date(a.fecha).toLocaleDateString("es-PE").includes(q);
+  });
+
   if (!isAuthenticated) {
     return (
       <EmptyState
         title="Control de asistencia"
-        description="Registre asistencia diaria por estudiante. Los docentes y tutores pueden marcar presente, tardanza o falta justificada."
+        description="Registre la asistencia diaria: asistió, tardanza, falta o falta justificada."
         showLogin
       />
     );
@@ -74,19 +90,18 @@ export function AttendanceView({ students }: AttendanceViewProps) {
       toast.error("Seleccione estudiante y fecha");
       return;
     }
+    const flags = estadoToFlags(form.estado);
     try {
       await api.createAttendance({
         studentId: form.studentId,
         fecha: form.fecha,
-        presente: form.presente,
-        justificado: form.justificado,
-        tardanza: form.tardanza,
+        ...flags,
         observacion: form.observacion || undefined,
       });
-      toast.success("Asistencia registrada");
+      toast.success("Asistencia guardada");
       void load();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error al registrar");
+      toast.error(err instanceof Error ? err.message : "No se pudo guardar");
     }
   }
 
@@ -96,103 +111,53 @@ export function AttendanceView({ students }: AttendanceViewProps) {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500/20 to-blue-500/20 ring-1 ring-white/10">
-              <CalendarDays className="h-4 w-4 text-sky-400" />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Attendance Control
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Daily attendance tracking per student
-          </p>
-        </div>
-        <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {items.length} records
-        </span>
-      </motion.div>
-
+    <div className="space-y-6">
       <div className="grid gap-6 xl:grid-cols-2">
-        {/* Attendance Form */}
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <PageSection
             variant="form"
             icon={CalendarCheck}
-            title="Registrar asistencia"
-            description="Marque presente, tardanza o falta justificada por día."
+            title="Registrar asistencia del día"
+            description="Indique si el estudiante asistió, llegó tarde o tuvo falta."
           >
             <form className="form-grid" onSubmit={(e) => void handleSubmit(e)}>
-              <FormField label="Estudiante" className="form-grid-full sm:col-span-2">
-              <select
-                className={INPUT_CLASS}
-                value={form.studentId}
-                onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
-                required
-              >
-                <option value="">Estudiante</option>
-                {students.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.codigo} — {s.nombres} {s.apellidos}
-                  </option>
-                ))}
-              </select>
+              <FormField label="Estudiante" className="form-grid-full">
+                <select
+                  className={INPUT_CLASS}
+                  value={form.studentId}
+                  onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
+                  required
+                >
+                  <option value="">Seleccione un estudiante…</option>
+                  {students.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.codigo} — {s.nombres} {s.apellidos}
+                    </option>
+                  ))}
+                </select>
               </FormField>
               <FormField label="Fecha">
-              <input
-                type="date"
-                className={INPUT_CLASS}
-                value={form.fecha}
-                onChange={(e) => setForm((p) => ({ ...p, fecha: e.target.value }))}
-                required
-              />
-              </FormField>
-              <FormField label="Presente">
-              <label className="flex h-10 items-center gap-2 text-sm text-[var(--text-secondary)]">
                 <input
-                  type="checkbox"
-                  checked={form.presente}
-                  onChange={(e) => setForm((p) => ({ ...p, presente: e.target.checked }))}
+                  type="date"
+                  className={INPUT_CLASS}
+                  value={form.fecha}
+                  onChange={(e) => setForm((p) => ({ ...p, fecha: e.target.value }))}
+                  required
                 />
-                Presente
-              </label>
               </FormField>
-              <FormField label="Tardanza">
-              <label className="flex h-10 items-center gap-2 text-sm text-[var(--text-secondary)]">
+              <FormField label="Estado del día" className="form-grid-full">
+                <AttendanceStatusPicker
+                  value={form.estado}
+                  onChange={(estado) => setForm((p) => ({ ...p, estado }))}
+                />
+              </FormField>
+              <FormField label="Observación (opcional)" className="form-grid-full">
                 <input
-                  type="checkbox"
-                  checked={form.tardanza}
-                  onChange={(e) => setForm((p) => ({ ...p, tardanza: e.target.checked }))}
+                  className={INPUT_CLASS}
+                  placeholder="Ej. permiso médico, viaje familiar…"
+                  value={form.observacion}
+                  onChange={(e) => setForm((p) => ({ ...p, observacion: e.target.value }))}
                 />
-                Tardanza
-              </label>
-              </FormField>
-              <FormField label="Justificado">
-              <label className="flex h-10 items-center gap-2 text-sm text-[var(--text-secondary)]">
-                <input
-                  type="checkbox"
-                  checked={form.justificado}
-                  onChange={(e) => setForm((p) => ({ ...p, justificado: e.target.checked }))}
-                />
-                Justificado
-              </label>
-              </FormField>
-              <FormField label="Observación" className="form-grid-full sm:col-span-2">
-              <input
-                className={INPUT_CLASS}
-                placeholder="Opcional"
-                value={form.observacion}
-                onChange={(e) => setForm((p) => ({ ...p, observacion: e.target.value }))}
-              />
               </FormField>
               <button type="submit" className="btn-primary form-grid-full">
                 Guardar asistencia
@@ -201,13 +166,15 @@ export function AttendanceView({ students }: AttendanceViewProps) {
           </PageSection>
         </motion.div>
 
-        {/* Attendance Table */}
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <DataTablePanel
-            title="Últimos registros"
-            description={loading ? "Cargando…" : `${items.length} registro(s)`}
-            isEmpty={!loading && items.length === 0}
-            emptyMessage="Sin registros de asistencia."
+            title="Historial de asistencia"
+            description={loading ? "Cargando registros…" : `${filtered.length} registro(s)`}
+            searchPlaceholder="Buscar por nombre, código o fecha…"
+            searchValue={query}
+            onSearch={setQuery}
+            isEmpty={!loading && filtered.length === 0}
+            emptyMessage="Aún no hay registros. Use el formulario para marcar la primera asistencia."
           >
             <TableWrap>
               <thead>
@@ -215,20 +182,29 @@ export function AttendanceView({ students }: AttendanceViewProps) {
                   <th>Fecha</th>
                   <th>Estudiante</th>
                   <th>Estado</th>
+                  <th>Nota</th>
                 </tr>
               </thead>
               <tbody>
-                {items.map((a) => (
-                  <tr key={a.id}>
-                    <td>{new Date(a.fecha).toLocaleDateString("es-PE")}</td>
-                    <td>
-                      {a.student ? `${a.student.nombres} ${a.student.apellidos}` : a.studentId}
-                    </td>
-                    <td className="capitalize">
-                      {a.presente ? (a.tardanza ? "Tardanza" : "Presente") : a.justificado ? "Falta justificada" : "Falta"}
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((a) => {
+                  const estado = flagsToEstado(a);
+                  return (
+                    <tr key={a.id}>
+                      <td>{new Date(a.fecha).toLocaleDateString("es-PE")}</td>
+                      <td>
+                        {a.student
+                          ? `${a.student.nombres} ${a.student.apellidos}`
+                          : a.studentId}
+                      </td>
+                      <td>
+                        <span className={estadoBadgeClass(estado)}>{estadoLabel(estado)}</span>
+                      </td>
+                      <td className="text-[var(--text-secondary)]">
+                        {a.observacion?.trim() || "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </TableWrap>
           </DataTablePanel>

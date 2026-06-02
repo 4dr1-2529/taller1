@@ -13,7 +13,7 @@ export function ThemeToggle() {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-violet-500/30 hover:bg-violet-500/10 hover:shadow-lg hover:shadow-violet-500/10"
+      className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--accent-muted)] backdrop-blur-sm transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/15 hover:shadow-md dark:hover:shadow-violet-500/10"
       aria-label={theme === "dark" ? "Modo claro" : "Modo oscuro"}
     >
       <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500/10 to-cyan-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

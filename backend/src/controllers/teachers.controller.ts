@@ -10,6 +10,10 @@ import {
   teacherSchema,
   updateTeacherSchema,
 } from "../validators/schemas.js";
+import {
+  buildCourseCodigoForSeccion,
+  requireActiveSeccion,
+} from "../utils/course-section.js";
 
 const courseInclude = {
   where: { activo: true as const },
@@ -29,17 +33,42 @@ const userSelect = { select: { id: true, email: true, activo: true } };
 async function createCoursesForTeacher(
   tx: Prisma.TransactionClient,
   teacherId: string,
-  cursos: { codigo: string; nombre: string; seccionId?: string; cursoCatalogoId?: string; periodo?: string }[],
+  cursos: { codigo: string; nombre: string; seccionId: string; cursoCatalogoId?: string; periodo?: string }[],
 ) {
   for (const c of cursos) {
-    const dup = await tx.course.findUnique({ where: { codigo: c.codigo } });
-    if (dup) throw new AppError(409, `El curso con código ${c.codigo} ya existe`);
-    await tx.course.create({
-      data: {
-        codigo: c.codigo,
+    const seccion = await requireActiveSeccion(c.seccionId, tx);
+    const codigoFinal = buildCourseCodigoForSeccion(c.codigo, seccion);
+
+    const dup = await tx.course.findUnique({ where: { codigo: codigoFinal } });
+    if (dup) {
+      throw new AppError(
+        409,
+        `El curso ${codigoFinal} ya existe en ${seccion.grado.nombre} ${seccion.nombre}`,
+      );
+    }
+
+    const dupSeccion = await tx.course.findFirst({
+      where: {
+        seccionId: c.seccionId,
         nombre: c.nombre,
         profesorId: teacherId,
-        seccionId: c.seccionId ?? null,
+        activo: true,
+        periodo: c.periodo ?? "2026",
+      },
+    });
+    if (dupSeccion) {
+      throw new AppError(
+        409,
+        `Ya existe "${c.nombre}" en ${seccion.grado.nombre} ${seccion.nombre}`,
+      );
+    }
+
+    await tx.course.create({
+      data: {
+        codigo: codigoFinal,
+        nombre: c.nombre,
+        profesorId: teacherId,
+        seccionId: c.seccionId,
         cursoCatalogoId: c.cursoCatalogoId ?? null,
         periodo: c.periodo ?? "2026",
       },
@@ -165,6 +194,8 @@ export async function createTeacherAccount(req: Request, res: Response, next: Ne
       accion: "CREATE_ACCOUNT",
       usuarioId: req.user!.sub,
       teacherId: id,
+      detalle: `Cuenta creada: ${teacher.correo}`,
+      ipAddress: req.ip ?? req.socket.remoteAddress ?? undefined,
     });
     res.status(201).json({ ok: true, teacher: updated });
   } catch (e) {

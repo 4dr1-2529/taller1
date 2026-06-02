@@ -24,6 +24,7 @@ import { INPUT_CLASS } from "@/lib/ui";
 export type NewTeacherCourse = {
   codigo: string;
   nombre: string;
+  gradoId: string;
   seccionId: string;
 };
 
@@ -60,7 +61,7 @@ export type EditTeacherForm = {
   cursosNuevos: NewTeacherCourse[];
 };
 
-const emptyCourse = (): NewTeacherCourse => ({ codigo: "", nombre: "", seccionId: "" });
+const emptyCourse = (): NewTeacherCourse => ({ codigo: "", nombre: "", gradoId: "", seccionId: "" });
 
 type TeachersViewProps = {
   teachers: Teacher[];
@@ -150,11 +151,11 @@ export function TeachersView({
               <Users className="h-4 w-4 text-cyan-400" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Teacher Management
+              Gestión de profesores
             </h2>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Manage faculty profiles, courses, and system access
+            Perfiles docentes, cursos asignados y acceso al sistema
           </p>
         </div>
         <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
@@ -163,12 +164,20 @@ export function TeachersView({
       </motion.div>
 
       {canEdit ? (
-        <motion.div variants={cardVariants} initial="hidden" animate="visible">
+        <motion.div variants={cardVariants} initial="hidden" animate="visible" className="space-y-4">
+          <div className="rounded-2xl border border-violet-500/25 bg-violet-500/10 px-4 py-3 text-sm text-[var(--text-secondary)]">
+            <p className="font-semibold text-violet-600 dark:text-violet-300">Cuentas de correo para profesores</p>
+            <p className="mt-1">
+              El <strong className="text-[var(--text-primary)]">correo</strong> del docente será su usuario de
+              acceso. Marque «Crear cuenta de acceso» al registrar o use «Activar acceso» en docentes ya guardados.
+              Supervise su actividad en <strong className="text-[var(--text-primary)]">Administración → Monitoreo docentes</strong>.
+            </p>
+          </div>
           <PageSection
             variant="form"
             icon={UserPlus}
             title="Registrar docente"
-            description="Perfil, cursos que dicta y opcionalmente cuenta para ingresar al sistema."
+            description="Perfil, cursos por grado y sección, y cuenta de acceso (correo + contraseña)."
           >
             <form className="space-y-6" onSubmit={onSubmit}>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -188,18 +197,27 @@ export function TeachersView({
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Especialidad</span>
                   <input className={INPUT_CLASS} placeholder="Matemática…" value={form.especialidad} onChange={(e) => setForm((p) => ({ ...p, especialidad: e.target.value }))} required />
                 </label>
-                <label className="block text-sm">
-                  <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Correo</span>
-                  <input type="email" className={INPUT_CLASS} value={form.correo} onChange={(e) => setForm((p) => ({ ...p, correo: e.target.value }))} required />
+                <label className="block text-sm sm:col-span-2">
+                  <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">
+                    Correo institucional (usuario de acceso)
+                  </span>
+                  <input
+                    type="email"
+                    className={INPUT_CLASS}
+                    placeholder="profesor@iep-huancayo.edu.pe"
+                    value={form.correo}
+                    onChange={(e) => setForm((p) => ({ ...p, correo: e.target.value }))}
+                    required
+                  />
                 </label>
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Teléfono</span>
                   <input className={INPUT_CLASS} value={form.telefono} onChange={(e) => setForm((p) => ({ ...p, telefono: e.target.value }))} />
                 </label>
               </div>
-              <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+              <label className="form-grid-full flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                 <input type="checkbox" checked={form.crearCuenta} onChange={(e) => setForm((p) => ({ ...p, crearCuenta: e.target.checked }))} />
-                Crear cuenta de acceso (rol docente)
+                Crear cuenta de acceso ahora (el docente entrará con este correo y la contraseña)
               </label>
               {form.crearCuenta ? (
                 <label className="block max-w-md text-sm">
@@ -305,11 +323,13 @@ export function TeachersView({
                 {open && !hasAccount && canEdit ? (
                   <div className="flex flex-wrap items-end gap-2 border-t border-[var(--border-subtle)] px-4 py-3">
                     <label className="flex-1 text-sm">
-                      <span className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">Crear cuenta de acceso</span>
-                      <input type="password" className={INPUT_CLASS} placeholder="Contraseña (mín. 8)" value={accountPassword} onChange={(e) => setAccountPassword(e.target.value)} minLength={8} />
+                      <span className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">
+                        Contraseña inicial para {teacher.correo}
+                      </span>
+                      <input type="password" className={INPUT_CLASS} placeholder="Mínimo 8 caracteres" value={accountPassword} onChange={(e) => setAccountPassword(e.target.value)} minLength={8} />
                     </label>
                     <button type="button" className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500" onClick={() => void onCreateAccount(teacher.id, accountPassword).then(() => setAccountPassword(""))}>
-                      <KeyRound className="h-3.5 w-3.5" /> Activar login
+                      <KeyRound className="h-3.5 w-3.5" /> Crear acceso con este correo
                     </button>
                   </div>) : null}
 
@@ -348,6 +368,14 @@ function CourseBlock({
   onRemove: (i: number) => void;
   onChange: (i: number, patch: Partial<NewTeacherCourse>) => void;
 }) {
+  const grados = useMemo(() => {
+    const seen = new Map<number, string>();
+    for (const s of secciones) {
+      if (!seen.has(s.gradoId)) seen.set(s.gradoId, s.gradoLabel);
+    }
+    return [...seen.entries()].map(([id, label]) => ({ id: String(id), label }));
+  }, [secciones]);
+
   return (
     <div className="rounded-xl border border-dashed border-violet-500/30 bg-violet-500/5 p-4">
       <div className="flex items-center justify-between gap-2">
@@ -356,23 +384,70 @@ function CourseBlock({
           <Plus className="h-3.5 w-3.5" /> Añadir
         </button>
       </div>
+      <p className="mt-1 text-xs text-[var(--text-muted)]">
+        Indique grado y sección (A, B o C) por cada curso; no se asigna a todo el grado.
+      </p>
       {cursos.length === 0 ? (
-        <p className="mt-2 text-xs text-[var(--text-muted)]">Sin cursos en esta sección.</p>
+        <p className="mt-2 text-xs text-[var(--text-muted)]">Sin cursos agregados.</p>
       ) : (
         <ul className="mt-3 space-y-2">
-          {cursos.map((c, i) => (
-            <li key={i} className="grid gap-2 sm:grid-cols-4">
-              <input className={INPUT_CLASS} placeholder="Código" value={c.codigo} onChange={(e) => onChange(i, { codigo: e.target.value })} required />
-              <input className={INPUT_CLASS} placeholder="Nombre" value={c.nombre} onChange={(e) => onChange(i, { nombre: e.target.value })} required />
-              <select className={INPUT_CLASS} value={c.seccionId} onChange={(e) => onChange(i, { seccionId: e.target.value })}>
-                <option value="">Sin sección</option>
-                {secciones.map((s) => (
-                  <option key={s.id} value={s.id}>{s.label}</option>
-                ))}
-              </select>
-              <button type="button" onClick={() => onRemove(i)} className="text-xs text-rose-400 hover:text-rose-300">Quitar</button>
-            </li>
-          ))}
+          {cursos.map((c, i) => {
+            const seccionesGrado = secciones.filter(
+              (s) => !c.gradoId || s.gradoId === Number(c.gradoId),
+            );
+            return (
+              <li key={i} className="grid gap-2 sm:grid-cols-5">
+                <input
+                  className={INPUT_CLASS}
+                  placeholder="Código"
+                  value={c.codigo}
+                  onChange={(e) => onChange(i, { codigo: e.target.value })}
+                  required
+                />
+                <input
+                  className={INPUT_CLASS}
+                  placeholder="Nombre"
+                  value={c.nombre}
+                  onChange={(e) => onChange(i, { nombre: e.target.value })}
+                  required
+                />
+                <select
+                  className={INPUT_CLASS}
+                  value={c.gradoId}
+                  onChange={(e) => onChange(i, { gradoId: e.target.value, seccionId: "" })}
+                  required
+                >
+                  <option value="">Grado</option>
+                  {grados.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className={INPUT_CLASS}
+                  value={c.seccionId}
+                  onChange={(e) => onChange(i, { seccionId: e.target.value })}
+                  required
+                  disabled={!c.gradoId}
+                >
+                  <option value="">{c.gradoId ? "Sección" : "Grado primero"}</option>
+                  {seccionesGrado.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.nombre}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => onRemove(i)}
+                  className="text-xs text-rose-400 hover:text-rose-300"
+                >
+                  Quitar
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

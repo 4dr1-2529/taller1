@@ -159,6 +159,7 @@ model Seccion {
   tutor       Teacher?  @relation("SeccionTutor", fields: [tutorId], references: [id])
   activo      Boolean   @default(true)
   estudiantes Student[]
+  courses     Course[]
   horarios    Horario[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -283,6 +284,7 @@ model Course {
   profesorId      String
   profesor        Teacher        @relation(fields: [profesorId], references: [id])
   seccionId       String?
+  seccion         Seccion?       @relation(fields: [seccionId], references: [id])
   periodo         String         @default("2026")
   activo          Boolean        @default(true)
   createdAt       DateTime       @default(now())

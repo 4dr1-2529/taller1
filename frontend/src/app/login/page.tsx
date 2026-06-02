@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
@@ -18,7 +18,7 @@ import { useAuth } from "@/contexts/AuthProvider";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, loading: authLoading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,9 +26,18 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-  if (isAuthenticated) {
-    router.replace("/");
-    return null;
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.replace("/");
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  if (authLoading || isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-violet-400" aria-label="Cargando" />
+      </div>
+    );
   }
 
   function validate(): boolean {
@@ -101,7 +110,7 @@ export default function LoginPage() {
               <p className="text-xs font-medium uppercase tracking-widest text-indigo-300">
                 I.E.P. Huancayo · Perú
               </p>
-              <h1 className="text-2xl font-bold">EduRisk AI</h1>
+              <h1 className="text-2xl font-bold">I.E.P. Huancayo</h1>
             </div>
           </div>
           <p className="mt-8 max-w-md text-lg leading-relaxed text-slate-300">
@@ -118,9 +127,9 @@ export default function LoginPage() {
           variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
         >
           {[
-            { icon: Brain, label: "Ensemble ML", desc: "Random Forest · XGBoost · Stacking" },
-            { icon: Sparkles, label: "Predicción en tiempo real", desc: "Score de riesgo 0–100" },
-            { icon: Shield, label: "Panel institucional", desc: "Roles: admin, docente, tutoría" },
+            { icon: Brain, label: "Modelo conjunto IA", desc: "Bosque aleatorio · XGBoost · Stacking" },
+            { icon: Sparkles, label: "Predicción en tiempo real", desc: "Puntaje de riesgo 0–100" },
+            { icon: Shield, label: "Panel institucional", desc: "Administrador, docente, tutoría, psicología" },
           ].map((item) => (
             <motion.div
               key={item.label}
@@ -151,7 +160,7 @@ export default function LoginPage() {
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-                EduRisk AI
+                Panel institucional
               </p>
               <h2 className="gradient-text text-lg font-bold">Acceso institucional</h2>
             </div>

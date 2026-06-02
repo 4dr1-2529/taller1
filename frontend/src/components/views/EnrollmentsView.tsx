@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import type { FormEvent } from "react";
 import { motion } from "framer-motion";
 import { UserPlus, FileUser } from "lucide-react";
@@ -33,6 +34,14 @@ export function EnrollmentsView({
   setForm,
   onAdd,
 }: EnrollmentsViewProps) {
+  const selectedStudent = students.find((s) => s.id === form.studentId);
+  const coursesForStudent = useMemo(() => {
+    if (!selectedStudent?.seccionId) return courses;
+    return courses.filter(
+      (c) => !c.seccionId || c.seccionId === selectedStudent.seccionId,
+    );
+  }, [courses, selectedStudent]);
+
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
@@ -53,15 +62,15 @@ export function EnrollmentsView({
               <FileUser className="h-4 w-4 text-emerald-400" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Enrollment Management
+              Gestión de matrículas
             </h2>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Link students to courses and track academic performance
+            Vincule estudiantes con cursos y registre su rendimiento
           </p>
         </div>
         <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {enrollments.length} enrollments
+          {enrollments.length} matrículas
         </span>
       </motion.div>
 
@@ -79,13 +88,15 @@ export function EnrollmentsView({
                 <select
                   className={INPUT_CLASS}
                   value={form.studentId}
-                  onChange={(e) => setForm((p) => ({ ...p, studentId: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, studentId: e.target.value, courseId: "" }))
+                  }
                   required
                 >
                   <option value="">Seleccione estudiante</option>
                   {students.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.nombres} {s.apellidos}
+                      {s.nombres} {s.apellidos} — {s.nivel}
                     </option>
                   ))}
                 </select>
@@ -96,14 +107,22 @@ export function EnrollmentsView({
                   value={form.courseId}
                   onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
                   required
+                  disabled={!form.studentId}
                 >
-                  <option value="">Seleccione curso</option>
-                  {courses.map((c) => (
+                  <option value="">
+                    {form.studentId ? "Seleccione curso de su sección" : "Primero elija estudiante"}
+                  </option>
+                  {coursesForStudent.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.nombre}
+                      {c.nombre} — {c.nivel}
                     </option>
                   ))}
                 </select>
+                {form.studentId && coursesForStudent.length === 0 ? (
+                  <p className="mt-1 text-xs text-amber-400">
+                    No hay cursos registrados para la sección de este estudiante.
+                  </p>
+                ) : null}
               </FormField>
               <FormField label="Promedio (0–20)">
                 <input
@@ -154,7 +173,9 @@ export function EnrollmentsView({
                   return (
                     <tr key={e.id}>
                       <td>{st ? `${st.nombres} ${st.apellidos}` : e.studentId}</td>
-                      <td>{c?.nombre ?? e.courseId}</td>
+                      <td>
+                        {c ? `${c.nombre} (${c.nivel})` : e.courseId}
+                      </td>
                       <td>{e.promedio.toFixed(1)}</td>
                       <td>{e.asistenciaPct}%</td>
                     </tr>

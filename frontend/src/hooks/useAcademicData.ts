@@ -20,7 +20,7 @@ import type { NewTeacherForm } from "@/components/views/TeachersView";
 export type DataSource = "api" | "none";
 
 export function useAcademicData() {
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, refresh: refreshAuth } = useAuth();
   const [dataSource, setDataSource] = useState<DataSource>("none");
   const [loading, setLoading] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
@@ -50,17 +50,36 @@ export function useAcademicData() {
       );
       setDataSource("api");
       return true;
-    } catch {
-      setStudents([]);
-      setTeachers([]);
-      setCourses([]);
-      setEnrollments([]);
-      setDataSource("none");
-      return false;
+    } catch (firstError) {
+      try {
+        await refreshAuth();
+        if (!api.hasToken) throw firstError;
+        const [st, te, co, en] = await Promise.all([
+          api.getStudents(200),
+          api.getTeachers(),
+          api.getCourses(),
+          api.getEnrollments(),
+        ]);
+        setStudents(st.items.map((r) => mapStudentFromApi(r as Parameters<typeof mapStudentFromApi>[0])));
+        setTeachers(te.items.map((r) => mapTeacherFromApi(r as Parameters<typeof mapTeacherFromApi>[0])));
+        setCourses(co.items.map((r) => mapCourseFromApi(r as Parameters<typeof mapCourseFromApi>[0])));
+        setEnrollments(
+          en.items.map((r) => mapEnrollmentFromApi(r as Parameters<typeof mapEnrollmentFromApi>[0])),
+        );
+        setDataSource("api");
+        return true;
+      } catch {
+        setStudents([]);
+        setTeachers([]);
+        setCourses([]);
+        setEnrollments([]);
+        setDataSource("none");
+        return false;
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [refreshAuth]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -118,11 +137,11 @@ export function useAcademicData() {
       return;
     }
     const cursos = form.cursos
-      .filter((c) => c.codigo.trim() && c.nombre.trim())
+      .filter((c) => c.codigo.trim() && c.nombre.trim() && c.seccionId)
       .map((c) => ({
         codigo: c.codigo.trim(),
         nombre: c.nombre.trim(),
-        seccionId: c.seccionId || undefined,
+        seccionId: c.seccionId,
         periodo: "2026",
       }));
     try {
@@ -161,11 +180,11 @@ export function useAcademicData() {
   ) {
     if (!api.hasToken) return;
     const cursosNuevos = data.cursosNuevos
-      .filter((c) => c.codigo.trim() && c.nombre.trim())
+      .filter((c) => c.codigo.trim() && c.nombre.trim() && c.seccionId)
       .map((c) => ({
         codigo: c.codigo.trim(),
         nombre: c.nombre.trim(),
-        seccionId: c.seccionId || undefined,
+        seccionId: c.seccionId,
         periodo: "2026",
       }));
     try {
@@ -227,10 +246,14 @@ export function useAcademicData() {
     codigo: string;
     nombre: string;
     profesorId: string;
-    seccionId?: string;
+    seccionId: string;
   }): Promise<void> {
     if (!api.hasToken) {
       toast.error("Inicie sesión para crear cursos");
+      return;
+    }
+    if (!payload.seccionId) {
+      toast.error("Seleccione grado y sección del curso");
       return;
     }
     try {

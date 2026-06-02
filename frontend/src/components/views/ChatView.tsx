@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
-import { Bot, Hash, MessageCircle, Send, Sparkles, Users } from "lucide-react";
+import { Bot, Hash, MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthProvider";
@@ -154,77 +154,20 @@ export function ChatView() {
 
   return (
     <motion.div
-      className="chat-shell flex h-[min(82vh,720px)] gap-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111214] shadow-2xl md:grid md:grid-cols-[240px_1fr]"
+      className="chat-shell flex h-[min(82vh,720px)] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111214] shadow-2xl"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
     >
-      <aside className="hidden flex-col border-r border-white/[0.06] bg-[#1a1b1e]/90 p-3 md:flex">
-        <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-[#6d6f78]">Canales</p>
-        <ul className="mt-3 space-y-1">
-          {[
-            { id: "tutoria", label: "Tutoría general", active: true },
-            { id: "alertas", label: "Alertas deserción" },
-            { id: "psico", label: "Psicología" },
-            { id: "docentes", label: "Coordinación docente" },
-          ].map((ch) => (
-            <li key={ch.id}>
-              <button
-                type="button"
-                className={clsx(
-                  "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors",
-                  ch.active
-                    ? "bg-violet-500/15 text-white ring-1 ring-violet-500/25"
-                    : "text-[#b5bac1] hover:bg-white/[0.04]",
-                )}
-              >
-                <Hash className="h-4 w-4 shrink-0 opacity-70" />
-                {ch.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-auto rounded-xl border border-white/[0.06] bg-gradient-to-br from-violet-600/20 to-cyan-500/10 p-3">
-          <div className="flex items-center gap-2">
-            <Bot className="h-8 w-8 rounded-lg bg-violet-500/30 p-1.5 text-violet-200" />
-            <div>
-              <p className="text-xs font-semibold text-white">Asistente IA</p>
-              <p className="text-[10px] text-[#b5bac1]">Resúmenes de riesgo</p>
-            </div>
-          </div>
+      <header className="flex shrink-0 items-center gap-3 border-b border-white/10 bg-[#2b2d31]/80 px-5 py-3.5 backdrop-blur-xl">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 via-purple-500 to-cyan-500 shadow-lg shadow-purple-500/25">
+          <Hash className="h-5 w-5 text-white" />
         </div>
-      </aside>
-
-      <div className="flex min-w-0 flex-1 flex-col">
-      <header className="flex shrink-0 items-center justify-between border-b border-white/10 bg-[#2b2d31]/80 px-5 py-3.5 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 via-purple-500 to-cyan-500 shadow-lg shadow-purple-500/25">
-            <Hash className="h-5 w-5 text-white" />
-            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#1e1f22] bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
-          </div>
-          <div>
-            <h3 className="text-[15px] font-semibold tracking-tight text-white">
-              Tutoría · I.E.P. Huancayo
-            </h3>
-            <div className="flex items-center gap-1.5 text-[11px] text-[#b5bac1]">
-              <span className="inline-flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
-                En línea
-              </span>
-              <span className="text-[#6d6f78]">·</span>
-              <span className="font-mono text-[10px] opacity-70">{ROOM_ID}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-1 text-[10px] font-medium text-purple-300 backdrop-blur-sm">
-            <Sparkles className="h-3 w-3" />
-            IA activa
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-medium text-cyan-300 backdrop-blur-sm">
-            <Users className="h-3 w-3" />
-            Equipo
-          </span>
+        <div>
+          <h3 className="text-[15px] font-semibold tracking-tight text-white">
+            Tutoría · I.E.P. Huancayo
+          </h3>
+          <p className="text-[11px] text-[#b5bac1]">Sala única de coordinación institucional</p>
         </div>
       </header>
 
@@ -370,7 +313,6 @@ export function ChatView() {
           </motion.button>
         </div>
       </form>
-      </div>
     </motion.div>
   );
 }

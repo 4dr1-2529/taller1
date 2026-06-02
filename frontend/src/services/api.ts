@@ -152,6 +152,20 @@ export type AuditLog = {
   detalle: string | null;
   ipAddress: string | null;
   createdAt: string;
+  usuario?: {
+    id: string;
+    email: string;
+    nombres: string;
+    apellidos: string;
+    role: string;
+  } | null;
+  teacher?: {
+    id: string;
+    codigo: string;
+    nombres: string;
+    apellidos: string;
+    correo: string;
+  } | null;
   student?: { nombres: string; apellidos: string; codigo: string };
 };
 
@@ -361,9 +375,15 @@ class ApiClient {
     });
   }
 
-  async getAuditLogs(page = 1, limit = 50) {
+  async getAuditLogs(params?: { page?: number; limit?: number; role?: string; teacherId?: string; entidad?: string }) {
+    const q = new URLSearchParams();
+    q.set("page", String(params?.page ?? 1));
+    q.set("limit", String(params?.limit ?? 50));
+    if (params?.role) q.set("role", params.role);
+    if (params?.teacherId) q.set("teacherId", params.teacherId);
+    if (params?.entidad) q.set("entidad", params.entidad);
     return this.request<{ items: AuditLog[]; pagination: { page: number; limit: number; total: number; pages: number } }>(
-      `/admin/audit-logs?page=${page}&limit=${limit}`,
+      `/admin/audit-logs?${q.toString()}`,
     );
   }
 

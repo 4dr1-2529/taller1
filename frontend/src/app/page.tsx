@@ -2,17 +2,15 @@
 
 import { type FormEvent, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { AcademicView } from "@/components/views/AcademicView";
+import { BentoDashboard } from "@/components/dashboard/bento/BentoDashboard";
 import { AcademicStructureView } from "@/components/views/AcademicStructureView";
 import { EmptyState } from "@/components/EmptyState";
 import { useAcademicStructure } from "@/hooks/useAcademicStructure";
 import { AlertsView } from "@/components/views/AlertsView";
 import { ChatView } from "@/components/views/ChatView";
-import { DashboardView } from "@/components/views/DashboardView";
 import { EnrollmentsView, type NewEnrollmentForm } from "@/components/views/EnrollmentsView";
 import { LMSView } from "@/components/views/LMSView";
 import { PredictionView } from "@/components/views/PredictionView";
-import { MlMetricsView } from "@/components/views/MlMetricsView";
 import { ReportsView } from "@/components/views/ReportsView";
 import { defaultStudentForm, StudentsView, type NewStudentForm } from "@/components/views/StudentsView";
 import {
@@ -28,6 +26,7 @@ import {
 import { PsychFollowUpView } from "@/components/views/PsychFollowUpView";
 import { GradesView } from "@/components/views/GradesView";
 import { AttendanceView } from "@/components/views/AttendanceView";
+import { TeacherMonitoringView } from "@/components/views/TeacherMonitoringView";
 import { APP_SECTIONS, type AppSection } from "@/data/navigation";
 import { earlyAlertCount } from "@/lib/aggregates";
 import { useAcademicData } from "@/hooks/useAcademicData";
@@ -45,7 +44,6 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Matrículas",
     "Notas",
     "Asistencia",
-    "Datos académicos",
     "Actividad LMS",
     "Predicción",
     "Chat",
@@ -61,7 +59,6 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Matrículas",
     "Notas",
     "Asistencia",
-    "Datos académicos",
     "Actividad LMS",
     "Predicción",
     "Chat",
@@ -72,14 +69,13 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Alertas",
     "Seguimiento psicológico",
     "Estudiantes",
-    "Datos académicos",
     "Actividad LMS",
     "Predicción",
     "Chat",
     "Reportes",
   ],
-  estudiante: ["Dashboard", "Datos académicos", "Actividad LMS", "Predicción"],
-  apoderado: ["Dashboard", "Datos académicos", "Actividad LMS", "Alertas", "Predicción"],
+  estudiante: ["Dashboard", "Actividad LMS", "Predicción"],
+  apoderado: ["Dashboard", "Actividad LMS", "Alertas", "Predicción"],
 };
 
 const initialEnrollment: NewEnrollmentForm = {
@@ -95,18 +91,18 @@ function sectionSubtitle(section: AppSection): string {
     case "Estructura académica": return "Niveles Primaria/Secundaria, grados y secciones del colegio.";
     case "Alertas": return "Priorización automática y recomendaciones de intervención.";
     case "Seguimiento psicológico": return "Registro de entrevistas y planes de apoyo emocional.";
-    case "Estudiantes": return "Registro y vista consolidada con score de deserción.";
+    case "Estudiantes": return "Registro y vista consolidada con puntaje de deserción.";
     case "Profesores": return "Registro de docentes, especialidad y cursos que dictan.";
     case "Cursos": return "Oferta académica y asignación.";
     case "Matrículas": return "Vínculo estudiante–curso por periodo académico.";
     case "Notas": return "Calificaciones por bimestre (escala 0–20) y recálculo de promedio.";
-    case "Asistencia": return "Control diario: presente, tardanza y falta justificada.";
-    case "Datos académicos": return "Resumen por estudiante y detalle de matrículas.";
-    case "Actividad LMS": return "Engagement, tiempo en plataforma y entregas.";
-    case "Predicción": return "Interpretabilidad del ensemble y simulación de escenarios.";
-    case "Modelos IA": return "Random Forest, boosting y stacking — métricas y matriz de confusión.";
+    case "Asistencia": return "Registro diario: asistió, tardanza, falta o falta justificada.";
+    case "Actividad LMS": return "Uso de la plataforma virtual: tiempo conectado, tareas y nivel de compromiso.";
+    case "Predicción": return "Puntaje de riesgo, simulación de escenarios y métricas del modelo.";
     case "Chat": return "Coordinación entre tutoría, docentes y psicología.";
     case "Reportes": return "Tableros analíticos y exportación PDF / Excel.";
+    case "Monitoreo docentes":
+      return "Cree correos de acceso y supervise la actividad de cada profesor en el sistema.";
     default: return "";
   }
 }
@@ -167,12 +163,12 @@ export default function Home() {
   async function handleAddCourse(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const profesorId = user?.teacherId ?? newCourse.profesorId;
-    if (!profesorId) return;
+    if (!profesorId || !newCourse.seccionId) return;
     await addCourse({
       codigo: newCourse.codigo,
       nombre: newCourse.nombre,
       profesorId,
-      seccionId: newCourse.seccionId || undefined,
+      seccionId: newCourse.seccionId,
     });
     setNewCourse({
       ...defaultCourseForm,
@@ -193,7 +189,7 @@ export default function Home() {
     switch (activeSection) {
       case "Dashboard":
         return students.length > 0 ? (
-          <DashboardView
+          <BentoDashboard
             role={role}
             students={students}
             courses={courses}
@@ -258,16 +254,14 @@ export default function Home() {
         return <GradesView students={students} courses={courses} />;
       case "Asistencia":
         return <AttendanceView students={students} />;
-      case "Datos académicos":
-        return <AcademicView students={students} courses={courses} enrollments={enrollments} />;
       case "Actividad LMS":
         return <LMSView students={students} />;
       case "Predicción":
         return <PredictionView students={students} useApi={dataSource === "api"} />;
-      case "Modelos IA":
-        return <MlMetricsView />;
       case "Chat":
         return <ChatView />;
+      case "Monitoreo docentes":
+        return <TeacherMonitoringView teachers={teachers} />;
       case "Reportes":
         return <ReportsView students={students} courses={courses} enrollments={enrollments} />;
       default:

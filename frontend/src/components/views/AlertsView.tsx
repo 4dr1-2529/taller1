@@ -1,17 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, ShieldAlert, Bell } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { attachPredictions } from "@/lib/aggregates";
 import { recommendationsForFactor } from "@/lib/recommendations";
 import { api, type Alert as ApiAlert } from "@/services/api";
 import type { FactorKey, Student } from "@/types/academic";
-import { KpiCard } from "@/components/ui/KpiCard";
 import { PageSection } from "@/components/ui/PageSection";
 import { RiskBadge } from "@/components/ui/RiskBadge";
-import { StaggerItem, StaggerList } from "@/components/ui/PageTransition";
 
 type AlertsViewProps = {
   students: Student[];
@@ -41,12 +38,6 @@ export function AlertsView({ students, useApi = false }: AlertsViewProps) {
       .sort((a, b) => b.prediction.score - a.prediction.score);
   }, [students]);
 
-  const criticalCount = useApi
-    ? apiAlerts.filter((a) => a.level === "alto").length
-    : localItems.filter((s) => s.prediction.level === "alto").length;
-
-  const listCount = useApi ? apiAlerts.length : localItems.length;
-
   async function updateStatus(id: string, status: "en_seguimiento" | "resuelta") {
     try {
       await api.updateAlertStatus(id, status);
@@ -58,59 +49,16 @@ export function AlertsView({ students, useApi = false }: AlertsViewProps) {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500/20 to-pink-500/20 ring-1 ring-white/10">
-              <Bell className="h-4 w-4 text-rose-400" />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Smart Alerts
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            AI-powered risk alerts and intervention recommendations
-          </p>
-        </div>
-      </motion.div>
-
-      {/* KPI Cards */}
-      <StaggerList className="grid gap-4 md:grid-cols-3">
-        <StaggerItem>
-          <KpiCard label="Riesgo alto" value={criticalCount} icon={ShieldAlert} variant="rose" />
-        </StaggerItem>
-        <StaggerItem>
-          <KpiCard label="Alertas activas" value={listCount} icon={AlertTriangle} variant="amber" />
-        </StaggerItem>
-        <StaggerItem>
-          <KpiCard
-            label="Fuente de datos"
-            value={useApi ? "API + IA" : "Local"}
-            icon={CheckCircle2}
-            variant="emerald"
-            subtitle="Motor de predicción"
-          />
-        </StaggerItem>
-      </StaggerList>
-
-      {/* Alerts List */}
-      <PageSection
+    <PageSection
         icon={AlertTriangle}
         title="Alertas inteligentes"
         description={
           useApi
             ? "Alertas persistidas generadas por predicciones en el servidor."
-            : "Priorización en tiempo real según el ensemble simulado."
+            : "Priorización en tiempo real según el modelo simulado."
         }
       >
-        <ul className="divide-y divide-[var(--border-subtle)]">
+        <ul className="space-y-3">
           {useApi ? (
             apiAlerts.length === 0 ? (
               <li className="py-12 text-center text-sm text-[var(--text-muted)]">
@@ -122,7 +70,7 @@ export function AlertsView({ students, useApi = false }: AlertsViewProps) {
                 return (
                   <li
                     key={a.id}
-                    className="flex flex-col gap-4 py-5 transition-colors hover:bg-[var(--accent-muted)]/30 md:flex-row md:justify-between"
+                    className="alert-feed-card flex flex-col gap-4 md:flex-row md:justify-between"
                   >
                     <div>
                       <p className="font-semibold text-[var(--text-primary)]">
@@ -175,7 +123,7 @@ export function AlertsView({ students, useApi = false }: AlertsViewProps) {
               return (
                 <li
                   key={s.id}
-                  className="flex flex-col gap-4 py-5 transition-colors hover:bg-[var(--accent-muted)]/30 md:flex-row md:justify-between"
+                  className="alert-feed-card flex flex-col gap-4 md:flex-row md:justify-between"
                 >
                   <div>
                     <p className="font-semibold text-[var(--text-primary)]">
@@ -200,7 +148,6 @@ export function AlertsView({ students, useApi = false }: AlertsViewProps) {
             })
           )}
         </ul>
-      </PageSection>
-    </div>
+    </PageSection>
   );
 }

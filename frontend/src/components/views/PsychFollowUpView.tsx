@@ -39,7 +39,7 @@ export function PsychFollowUpView({ students, useApi = false }: PsychFollowUpVie
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!studentId || resumen.trim().length < 10) {
-      toast.error("Complete el resumen (mínimo 10 caracteres)");
+      toast.error("Escriba el resumen (mínimo 10 caracteres)");
       return;
     }
     if (!useApi || !isAuthenticated) {
@@ -106,11 +106,11 @@ export function PsychFollowUpView({ students, useApi = false }: PsychFollowUpVie
               <UserCog className="h-4 w-4 text-pink-400" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Psychological Follow-Up
+              Seguimiento psicológico
             </h2>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Track counseling sessions and intervention plans
+            Registre entrevistas, sesiones y planes de intervención
           </p>
         </div>
       </motion.div>
@@ -123,7 +123,7 @@ export function PsychFollowUpView({ students, useApi = false }: PsychFollowUpVie
           </div>
           <div>
             <h3 className="text-sm font-semibold text-[var(--text-primary)]">Nuevo seguimiento psicológico</h3>
-            <p className="text-xs text-[var(--text-secondary)]">Record session notes and action items</p>
+            <p className="text-xs text-[var(--text-secondary)]">Notas de sesión y acciones acordadas</p>
           </div>
         </div>
         <form onSubmit={(e) => void handleSubmit(e)} className="mt-4 space-y-3">

@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { BookOpen, Plus, Library } from "lucide-react";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
@@ -14,6 +15,7 @@ export type NewCourseForm = {
   codigo: string;
   nombre: string;
   profesorId: string;
+  gradoId: string;
   seccionId: string;
 };
 
@@ -21,6 +23,7 @@ export const defaultCourseForm: NewCourseForm = {
   codigo: "",
   nombre: "",
   profesorId: "",
+  gradoId: "",
   seccionId: "",
 };
 
@@ -51,6 +54,20 @@ export function CoursesView({
 }: CoursesViewProps) {
   const [query, setQuery] = useState("");
 
+  const grados = useMemo(() => {
+    const seen = new Map<number, string>();
+    for (const s of secciones) {
+      if (!seen.has(s.gradoId)) seen.set(s.gradoId, s.gradoLabel);
+    }
+    return [...seen.entries()].map(([id, label]) => ({ id: String(id), label }));
+  }, [secciones]);
+
+  const seccionesDelGrado = useMemo(() => {
+    const gid = Number(form.gradoId);
+    if (!gid) return [];
+    return secciones.filter((s) => s.gradoId === gid);
+  }, [secciones, form.gradoId]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return courses;
@@ -60,6 +77,15 @@ export function CoursesView({
       return `${c.nombre} ${c.codigo} ${c.nivel} ${teacherName}`.toLowerCase().includes(q);
     });
   }, [courses, teachers, query]);
+
+  function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!form.gradoId || !form.seccionId) {
+      toast.error("Seleccione grado y sección (salón A, B o C)");
+      return;
+    }
+    onSubmit(e);
+  }
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
@@ -81,15 +107,15 @@ export function CoursesView({
               <Library className="h-4 w-4 text-amber-400" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Course Catalog
+              Catálogo de cursos
             </h2>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Manage academic courses and teacher assignments
+            Administre cursos académicos y asignación de docentes
           </p>
         </div>
         <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {filtered.length} courses
+          {filtered.length} cursos
         </span>
       </motion.div>
 
@@ -99,9 +125,9 @@ export function CoursesView({
             variant="form"
             icon={Plus}
             title="Nuevo curso"
-            description="Asigne nombre, código y docente responsable. Puede vincular una sección (grado · salón)."
+            description="Cada curso pertenece a un grado y una sección (A, B o C). No se comparte entre salones del mismo grado."
           >
-            <form className="form-grid" onSubmit={onSubmit}>
+            <form className="form-grid" onSubmit={handleFormSubmit}>
               <FormField label="Código">
                 <input
                   className={INPUT_CLASS}
@@ -135,20 +161,44 @@ export function CoursesView({
                   ))}
                 </select>
               </FormField>
-              <FormField label="Sección (opcional)">
+              <FormField label="Grado">
                 <select
                   className={INPUT_CLASS}
-                  value={form.seccionId}
-                  onChange={(e) => setForm((p) => ({ ...p, seccionId: e.target.value }))}
+                  value={form.gradoId}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, gradoId: e.target.value, seccionId: "" }))
+                  }
+                  required
                 >
-                  <option value="">Sin sección específica</option>
-                  {secciones.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.label}
+                  <option value="">Seleccione grado</option>
+                  {grados.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.label}
                     </option>
                   ))}
                 </select>
               </FormField>
+              <FormField label="Sección (salón)">
+                <select
+                  className={INPUT_CLASS}
+                  value={form.seccionId}
+                  onChange={(e) => setForm((p) => ({ ...p, seccionId: e.target.value }))}
+                  required
+                  disabled={!form.gradoId}
+                >
+                  <option value="">
+                    {form.gradoId ? "Seleccione sección" : "Primero elija el grado"}
+                  </option>
+                  {seccionesDelGrado.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      Sección {s.nombre}
+                    </option>
+                  ))}
+                </select>
+              </FormField>
+              <p className="form-grid-full text-xs text-[var(--text-muted)]">
+                El código se guardará con sufijo del salón (ej. MAT-4A) para no repetirlo en 4° B o 4° C.
+              </p>
               <button type="submit" className="btn-primary form-grid-full">
                 <BookOpen className="h-4 w-4" />
                 Crear curso
@@ -174,7 +224,7 @@ export function CoursesView({
               <tr>
                 <th>Código</th>
                 <th>Curso</th>
-                <th>Área / nivel</th>
+                <th>Grado · sección</th>
                 <th>Docente</th>
               </tr>
             </thead>

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import { Clock3, MonitorSmartphone, Send, Laptop, BarChart3 } from "lucide-react";
+import { Clock3, MonitorSmartphone, Send, BarChart3 } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -20,9 +20,15 @@ import {
 import type { Student } from "@/types/academic";
 import { SELECT_CLASS } from "@/lib/ui";
 
+const ENGAGEMENT_LABELS: Record<string, string> = {
+  alto: "Alto",
+  medio: "Medio",
+  bajo: "Bajo",
+};
+
 function engagementBadge(eng: string) {
   return clsx(
-    "rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize",
+    "rounded-full px-2.5 py-0.5 text-xs font-semibold",
     eng === "alto" && "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20",
     eng === "medio" && "bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/20",
     eng === "bajo" && "bg-rose-500/15 text-rose-400 ring-1 ring-rose-500/20",
@@ -74,29 +80,7 @@ export function LMSView({ students }: LMSViewProps) {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 ring-1 ring-white/10">
-              <Laptop className="h-4 w-4 text-cyan-400" />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              LMS Analytics
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Platform engagement, activity tracking, and task completion
-          </p>
-        </div>
-      </motion.div>
-
+    <div className="space-y-6">
       {/* Student Selector */}
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
         <div className="premium-card flex flex-col gap-3 rounded-2xl p-5 md:flex-row md:items-center md:justify-between md:p-6">
@@ -132,11 +116,11 @@ export function LMSView({ students }: LMSViewProps) {
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
               <MonitorSmartphone className="h-4 w-4 text-violet-400" aria-hidden />
             </div>
-            <h4 className="font-semibold text-[var(--text-primary)]">Nivel de engagement</h4>
+            <h4 className="font-semibold text-[var(--text-primary)]">Nivel de compromiso</h4>
           </div>
           <p className="mt-3">
             <span className={engagementBadge(student.metrics.lms.engagement)}>
-              {student.metrics.lms.engagement}
+              {ENGAGEMENT_LABELS[student.metrics.lms.engagement] ?? student.metrics.lms.engagement}
             </span>
           </p>
           <p className="mt-3 text-sm text-[var(--text-secondary)]">
@@ -195,7 +179,7 @@ export function LMSView({ students }: LMSViewProps) {
             </div>
             <div>
               <h4 className="text-sm font-semibold text-[var(--text-primary)]">Actividad y minutos por semana</h4>
-              <p className="text-xs text-[var(--text-secondary)]">Weekly activity percentage and minutes</p>
+              <p className="text-xs text-[var(--text-secondary)]">Porcentaje de actividad y minutos por semana</p>
             </div>
           </div>
           <div className="mt-5 h-72">
@@ -253,7 +237,7 @@ export function LMSView({ students }: LMSViewProps) {
             </div>
             <div>
               <h4 className="text-sm font-semibold text-[var(--text-primary)]">Entregas vs pendientes</h4>
-              <p className="text-xs text-[var(--text-secondary)]">Task completion breakdown</p>
+              <p className="text-xs text-[var(--text-secondary)]">Desglose de tareas entregadas y pendientes</p>
             </div>
           </div>
           <div className="mt-5 h-72">

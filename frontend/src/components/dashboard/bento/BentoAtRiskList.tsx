@@ -12,7 +12,7 @@ export function BentoAtRiskList({ students }: { students: StudentWithPrediction[
         <Users className="h-4 w-4 text-rose-400" />
         <div>
           <h3 className="text-base font-semibold text-[var(--text-primary)]">Ranking en riesgo</h3>
-          <p className="text-xs text-[var(--text-secondary)]">Top estudiantes por score</p>
+          <p className="text-xs text-[var(--text-secondary)]">Estudiantes con mayor puntaje de riesgo</p>
         </div>
       </header>
       <ul className="mt-4 flex-1 space-y-2">

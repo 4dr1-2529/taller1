@@ -1,4 +1,5 @@
 """ML Service - FastAPI application with proper lifespan management."""
+import json
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
@@ -38,7 +39,8 @@ async def lifespan(app: FastAPI):
     try:
         model = joblib.load(MODELS_DIR / "stacking_model.joblib")
         feature_names = joblib.load(MODELS_DIR / "features.joblib")
-        metrics = joblib.load(MODELS_DIR / "metrics.json")
+        with open(MODELS_DIR / "metrics.json", encoding="utf-8") as f:
+            metrics = json.load(f)
         print("ML models loaded successfully")
     except FileNotFoundError:
         print("ML models not found. Run train.py first.")

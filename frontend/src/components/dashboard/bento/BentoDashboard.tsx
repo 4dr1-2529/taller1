@@ -5,20 +5,13 @@ import { Activity, BookOpen, GraduationCap, Users } from "lucide-react";
 import {
   attachPredictions,
   averageAttendance,
-  averageLmsParticipation,
   earlyAlertCount,
   globalRiskScore,
   rankingAtRisk,
   riskByCourse,
   riskTrendLabel,
 } from "@/lib/aggregates";
-import {
-  buildActivityStream,
-  buildAiInsights,
-  dashboardGreeting,
-  buildRiskHistorySeries,
-  buildTimelineEvents,
-} from "@/lib/dashboard-data";
+import { dashboardGreeting, buildRiskHistorySeries } from "@/lib/dashboard-data";
 import type { Course, Enrollment, Student } from "@/types/academic";
 import { api } from "@/services/api";
 import { BentoCell } from "./BentoCell";
@@ -27,9 +20,6 @@ import { BentoAlertsPanel } from "./BentoAlertsPanel";
 import { BentoKpiStrip, type KpiItem } from "./BentoKpiStrip";
 import { BentoRiskTrend, BentoDistribution, BentoCourseBars } from "./BentoCharts";
 import { BentoAtRiskList } from "./BentoAtRiskList";
-import { BentoTimeline } from "./BentoTimeline";
-import { BentoActivity } from "./BentoActivity";
-import { BentoAiInsights } from "./BentoAiInsights";
 
 type BentoDashboardProps = {
   role: string;
@@ -69,7 +59,6 @@ export function BentoDashboard({
     [students, apiKpis, useApi],
   );
   const avgAtt = useMemo(() => averageAttendance(students), [students]);
-  const avgLms = useMemo(() => averageLmsParticipation(students), [students]);
   const riskHistory = useMemo(() => buildRiskHistorySeries(students), [students]);
   const trend = useMemo(() => riskTrendLabel(riskHistory), [riskHistory]);
   const courseRows = useMemo(
@@ -99,28 +88,11 @@ export function BentoDashboard({
     ].filter((d) => d.value > 0);
   }, [withPred, highRisk, lowRisk]);
 
-  const timeline = useMemo(() => buildTimelineEvents(students), [students]);
-  const activity = useMemo(() => buildActivityStream(students), [students]);
-  const insights = useMemo(() => buildAiInsights(students), [students]);
-
   const kpis: KpiItem[] = [
-    { label: "Estudiantes", value: students.length, icon: Users, hint: "Cohorte activo" },
+    { label: "Estudiantes", value: students.length, icon: Users },
     { label: "Cursos", value: courses.length, icon: BookOpen },
     { label: "Matrículas", value: enrollments.length, icon: GraduationCap },
-    {
-      label: "Asistencia",
-      value: avgAtt,
-      suffix: "%",
-      icon: Activity,
-      hint: "Promedio institucional",
-    },
-    {
-      label: "LMS",
-      value: avgLms,
-      suffix: "%",
-      icon: Activity,
-      hint: "Participación semanal",
-    },
+    { label: "Asistencia prom.", value: avgAtt, suffix: "%", icon: Activity },
   ];
 
   return (
@@ -158,18 +130,6 @@ export function BentoDashboard({
 
       <BentoCell col={6} row={2} delay={0.16}>
         <BentoAtRiskList students={topAtRisk} />
-      </BentoCell>
-
-      <BentoCell col={4} row={2} delay={0.18}>
-        <BentoTimeline events={timeline} />
-      </BentoCell>
-
-      <BentoCell col={4} row={2} delay={0.2}>
-        <BentoActivity items={activity} />
-      </BentoCell>
-
-      <BentoCell col={4} row={2} delay={0.22}>
-        <BentoAiInsights insights={insights} />
       </BentoCell>
     </div>
   );

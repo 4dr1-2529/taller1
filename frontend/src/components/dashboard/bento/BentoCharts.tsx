@@ -82,7 +82,7 @@ export function BentoDistribution({ data }: BentoDistributionProps) {
         </span>
         <div>
           <h3 className="text-base font-semibold text-[var(--text-primary)]">Distribución</h3>
-          <p className="text-xs text-[var(--text-secondary)]">Niveles del ensemble</p>
+          <p className="text-xs text-[var(--text-secondary)]">Niveles de riesgo del cohorte</p>
         </div>
       </header>
       <div className="relative mt-2 flex flex-1 items-center justify-center">
@@ -126,7 +126,7 @@ export function BentoCourseBars({ rows }: { rows: CourseRiskRow[] }) {
             <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
             <XAxis dataKey="nombre" tick={{ fontSize: 10, fill: tickFill }} axisLine={false} tickLine={false} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: tickFill }} axisLine={false} tickLine={false} />
-            <Tooltip wrapperClassName="chart-tooltip" formatter={(v: number) => [`${v.toFixed(1)}`, "Score"]} />
+            <Tooltip wrapperClassName="chart-tooltip" formatter={(v: number) => [`${v.toFixed(1)}`, "Puntaje"]} />
             <Bar dataKey="riesgoPromedio" fill="#6366f1" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

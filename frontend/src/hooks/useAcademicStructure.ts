@@ -7,7 +7,10 @@ import { useAuth } from "@/contexts/AuthProvider";
 export type SeccionOption = {
   id: string;
   nombre: string;
+  /** Ej. Primaria · 4° Primaria A */
   label: string;
+  /** Ej. Primaria · 4° Primaria */
+  gradoLabel: string;
   gradoId: number;
   nivelCodigo: string;
 };
@@ -29,12 +32,14 @@ export function useAcademicStructure() {
         const grado = s.grado;
         const nivel = grado?.nivel?.codigo === "secundaria" ? "Secundaria" : "Primaria";
         const gradoNombre = grado?.nombre ?? `${grado?.numero}°`;
+        const gradoLabel = `${nivel} · ${gradoNombre}`;
         return {
           id: s.id,
           nombre: s.nombre,
           gradoId: grado?.id ?? 0,
           nivelCodigo: grado?.nivel?.codigo ?? "primaria",
-          label: `${nivel} · ${gradoNombre} ${s.nombre}`,
+          gradoLabel,
+          label: `${gradoLabel} ${s.nombre}`,
         };
       });
       setSecciones(options);

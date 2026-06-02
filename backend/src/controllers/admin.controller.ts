@@ -63,15 +63,42 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
 
 export async function getAuditLogs(req: Request, res: Response, next: NextFunction) {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 50;
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(10, parseInt(req.query.limit as string) || 50));
     const skip = (page - 1) * limit;
+    const teacherId = req.query.teacherId as string | undefined;
+    const role = req.query.role as string | undefined;
+    const entidad = req.query.entidad as string | undefined;
+
+    const where: {
+      teacherId?: string;
+      entidad?: string;
+      usuario?: { role: "docente" };
+    } = {};
+
+    if (teacherId) where.teacherId = teacherId;
+    if (entidad) where.entidad = entidad;
+    if (role === "docente") {
+      where.usuario = { role: "docente" };
+    }
+
     const [items, total] = await Promise.all([
       prisma.auditLog.findMany({
-        skip, take: limit, orderBy: { createdAt: "desc" },
-        include: { student: { select: { nombres: true, apellidos: true, codigo: true } } },
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          usuario: {
+            select: { id: true, email: true, nombres: true, apellidos: true, role: true },
+          },
+          teacher: {
+            select: { id: true, codigo: true, nombres: true, apellidos: true, correo: true },
+          },
+          student: { select: { nombres: true, apellidos: true, codigo: true } },
+        },
       }),
-      prisma.auditLog.count(),
+      prisma.auditLog.count({ where }),
     ]);
     res.json({ ok: true, items, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
   } catch (e) {

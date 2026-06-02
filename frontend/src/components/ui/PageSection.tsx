@@ -27,7 +27,7 @@ export function PageSection({
   return (
     <motion.section
       className={clsx(
-        "relative overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface-elevated)] backdrop-blur-xl",
+        "relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] backdrop-blur-xl",
         variant === "form" && "p-6 md:p-8",
         variant === "table" && "overflow-hidden",
         variant === "default" && "p-6 md:p-8",

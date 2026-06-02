@@ -5,6 +5,16 @@ import { logAudit } from "../utils/audit.js";
 import { paramId } from "../utils/params.js";
 import { courseSchema } from "../validators/schemas.js";
 import { getTeacherIdForUser } from "../utils/teacher.js";
+import {
+  buildCourseCodigoForSeccion,
+  requireActiveSeccion,
+} from "../utils/course-section.js";
+
+const courseInclude = {
+  profesor: { select: { id: true, nombres: true, apellidos: true } },
+  cursoCatalogo: true,
+  seccion: { include: { grado: { include: { nivel: true } } } },
+};
 
 export async function listCourses(req: Request, res: Response, next: NextFunction) {
   try {
@@ -25,10 +35,7 @@ export async function listCourses(req: Request, res: Response, next: NextFunctio
         ...(seccionId ? { seccionId } : {}),
         ...(profesorId ? { profesorId } : {}),
       },
-      include: {
-        profesor: { select: { id: true, nombres: true, apellidos: true } },
-        cursoCatalogo: true,
-      },
+      include: courseInclude,
     });
     res.json({ ok: true, items });
   } catch (e) {
@@ -47,18 +54,43 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
       }
     }
 
-    const existing = await prisma.course.findUnique({ where: { codigo } });
-    if (existing) throw new AppError(409, "Código de curso ya existe");
-    const course = await prisma.course.create({
-      data: {
-        codigo,
+    const seccion = await requireActiveSeccion(seccionId);
+    const codigoFinal = buildCourseCodigoForSeccion(codigo, seccion);
+
+    const existing = await prisma.course.findUnique({ where: { codigo: codigoFinal } });
+    if (existing) {
+      throw new AppError(
+        409,
+        `Ya existe un curso con código ${codigoFinal} en ${seccion.grado.nombre} ${seccion.nombre}`,
+      );
+    }
+
+    const dupSeccion = await prisma.course.findFirst({
+      where: {
+        seccionId,
         nombre,
         profesorId,
-        seccionId: seccionId ?? null,
+        activo: true,
+        periodo: periodo ?? "2026",
+      },
+    });
+    if (dupSeccion) {
+      throw new AppError(
+        409,
+        `Este docente ya tiene el curso "${nombre}" en ${seccion.grado.nombre} ${seccion.nombre}`,
+      );
+    }
+
+    const course = await prisma.course.create({
+      data: {
+        codigo: codigoFinal,
+        nombre,
+        profesorId,
+        seccionId,
         cursoCatalogoId: cursoCatalogoId ?? null,
         periodo: periodo ?? "2026",
       },
-      include: { profesor: true, cursoCatalogo: true },
+      include: courseInclude,
     });
     await logAudit({
       entidad: "Course",
@@ -75,10 +107,11 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
 export async function updateCourse(req: Request, res: Response, next: NextFunction) {
   try {
     const { nombre, profesorId, seccionId, activo } = req.body;
+    if (seccionId) await requireActiveSeccion(seccionId);
     const course = await prisma.course.update({
       where: { id: paramId(req) },
       data: { nombre, profesorId, seccionId, activo },
-      include: { profesor: true },
+      include: courseInclude,
     });
     await logAudit({
       entidad: "Course",

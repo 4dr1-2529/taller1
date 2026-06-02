@@ -56,7 +56,7 @@ export async function exportLowLmsExcel(
   const data = students.map((s) => ({
     Codigo: s.codigo,
     Estudiante: `${s.nombres} ${s.apellidos}`,
-    Engagement: s.metrics.lms.engagement,
+    Compromiso_LMS: s.metrics.lms.engagement,
     Horas_plataforma_sem: s.metrics.lms.horasPlataformaSemana,
     Tareas: `${s.metrics.lms.tareasEntregadas}/${s.metrics.lms.tareasTotales}`,
     Score_riesgo: s.prediction.score,

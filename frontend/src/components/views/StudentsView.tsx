@@ -3,7 +3,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { motion } from "framer-motion";
-import { UserPlus, Users, Search } from "lucide-react";
+import { UserPlus } from "lucide-react";
+import { MiniProgressBar } from "@/components/ui/MiniProgressBar";
 import { attachPredictions } from "@/lib/aggregates";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import type { LmsEngagement, Student, StudentStatus } from "@/types/academic";
@@ -69,32 +70,7 @@ export function StudentsView({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-500/20 ring-1 ring-white/10">
-              <Users className="h-4 w-4 text-violet-400" />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Student Management
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Register students and monitor dropout risk scores
-          </p>
-        </div>
-        <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {students.length} students
-        </span>
-      </motion.div>
-
+    <div className="space-y-6">
       <div className="grid gap-6 xl:grid-cols-2">
         {/* Registration Form */}
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
@@ -102,7 +78,7 @@ export function StudentsView({
             variant="form"
             icon={UserPlus}
             title="Registrar estudiante"
-            description="Asigne grado y sección. Los indicadores alimentan el modelo ensemble de riesgo de deserción."
+            description="Asigne grado y sección. Los indicadores alimentan el modelo de riesgo de deserción."
           >
             <form className="form-grid" onSubmit={onAddStudent}>
               <FormField label="Código">
@@ -181,7 +157,7 @@ export function StudentsView({
                   onChange={(e) => setNewStudent((p) => ({ ...p, asistenciaGeneral: e.target.value }))}
                 />
               </FormField>
-              <FormField label="Engagement LMS">
+              <FormField label="Compromiso en plataforma">
                 <select
                   className={INPUT_CLASS}
                   value={newStudent.engagement}
@@ -189,9 +165,9 @@ export function StudentsView({
                     setNewStudent((p) => ({ ...p, engagement: e.target.value as LmsEngagement }))
                   }
                 >
-                  <option value="alto">Alto</option>
-                  <option value="medio">Medio</option>
-                  <option value="bajo">Bajo</option>
+                  <option value="alto">Compromiso alto</option>
+                  <option value="medio">Compromiso medio</option>
+                  <option value="bajo">Compromiso bajo</option>
                 </select>
               </FormField>
               <FormField label="Estado">
@@ -218,7 +194,7 @@ export function StudentsView({
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <DataTablePanel
             title="Estudiantes y riesgo"
-            description="Score de deserción calculado por el ensemble."
+            description="Puntaje de deserción calculado por el modelo conjunto."
             searchPlaceholder="Buscar por nombre o código…"
             searchValue={search}
             onSearch={setSearch}
@@ -228,22 +204,49 @@ export function StudentsView({
             <TableWrap>
               <thead>
                 <tr>
-                  <th>Código</th>
                   <th>Estudiante</th>
                   <th>Sección</th>
-                  <th>Prom.</th>
-                  <th>Riesgo</th>
+                  <th>Promedio</th>
+                  <th>Asistencia</th>
+                  <th>Riesgo (IA)</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((student) => (
                   <tr key={student.id}>
-                    <td className="font-medium">{student.codigo}</td>
                     <td>
-                      {student.nombres} {student.apellidos}
+                      <div className="flex items-center gap-3">
+                        <span className="avatar-chip">
+                          {student.nombres.charAt(0)}
+                          {student.apellidos.charAt(0)}
+                        </span>
+                        <div>
+                          <p className="font-medium">
+                            {student.nombres} {student.apellidos}
+                          </p>
+                          <p className="text-xs text-[var(--text-muted)]">{student.codigo}</p>
+                        </div>
+                      </div>
                     </td>
-                    <td className="text-xs text-[var(--text-secondary)]">{student.nivel}</td>
-                    <td>{student.metrics.promedioGeneral.toFixed(1)}</td>
+                    <td className="text-sm text-[var(--text-secondary)]">{student.nivel}</td>
+                    <td>
+                      <span className="font-semibold tabular-nums">
+                        {student.metrics.promedioGeneral.toFixed(1)}
+                      </span>
+                      <span className="text-xs text-[var(--text-muted)]"> / 20</span>
+                    </td>
+                    <td>
+                      <MiniProgressBar
+                        value={student.metrics.asistenciaGeneral}
+                        variant={
+                          student.metrics.asistenciaGeneral >= 85
+                            ? "emerald"
+                            : student.metrics.asistenciaGeneral >= 70
+                              ? "amber"
+                              : "rose"
+                        }
+                      />
+                    </td>
                     <td>
                       <RiskBadge level={student.prediction.level} score={student.prediction.score} />
                     </td>

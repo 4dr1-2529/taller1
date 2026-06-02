@@ -97,7 +97,7 @@ export const alertStatusSchema = z.object({
 const teacherCourseInput = z.object({
   codigo: z.string().min(2).max(32),
   nombre: z.string().min(2).max(160),
-  seccionId: z.string().optional(),
+  seccionId: z.string().min(1, "Seleccione grado y sección"),
   cursoCatalogoId: z.string().optional(),
   periodo: z.string().max(16).optional(),
 });
@@ -137,7 +137,7 @@ export const courseSchema = z.object({
   codigo: z.string().min(2).max(32),
   nombre: z.string().min(2).max(160),
   profesorId: z.string().min(1),
-  seccionId: z.string().optional(),
+  seccionId: z.string().min(1, "Seleccione grado y sección"),
   cursoCatalogoId: z.string().optional(),
   periodo: z.string().max(16).default("2026"),
 });

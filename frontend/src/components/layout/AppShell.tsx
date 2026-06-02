@@ -77,7 +77,9 @@ export function AppShell({
 
         <main className="app-content flex-1 px-4 pb-10 pt-5 md:px-8 md:pb-12 md:pt-6">
           <div className="mx-auto w-full max-w-[1680px] space-y-6">
-            <DataSourceBanner dataSource={dataSource} loading={loading} onRefresh={onRefresh} />
+            {dataSource !== "api" ? (
+              <DataSourceBanner dataSource={dataSource} loading={loading} onRefresh={onRefresh} />
+            ) : null}
             <PageTransition key={activeSection}>
               <div className="view-surface">{children}</div>
             </PageTransition>

@@ -45,23 +45,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const t = localStorage.getItem("tesis-token");
-    const rt = localStorage.getItem("tesis-refresh-token");
-    const u = localStorage.getItem("tesis-user");
-    if (t && u) {
-      setToken(t);
-      if (rt) setRefreshToken(rt);
+    async function restoreSession() {
+      const t = localStorage.getItem("tesis-token");
+      const rt = localStorage.getItem("tesis-refresh-token");
+      const u = localStorage.getItem("tesis-user");
+      if (!t || !u) {
+        setLoading(false);
+        return;
+      }
       try {
         setUser(JSON.parse(u) as AuthUser);
-        api.setToken(t);
       } catch {
-        localStorage.removeItem("tesis-token");
-        localStorage.removeItem("tesis-refresh-token");
-        localStorage.removeItem("tesis-user");
+        logout();
+        setLoading(false);
+        return;
+      }
+      setToken(t);
+      if (rt) setRefreshToken(rt);
+      api.setToken(t);
+      try {
+        const me = await api.getMe();
+        setUser(me.user);
+        localStorage.setItem("tesis-user", JSON.stringify(me.user));
+      } catch {
+        if (rt) {
+          try {
+            const res = await api.refreshToken(rt);
+            setToken(res.token);
+            api.setToken(res.token);
+            localStorage.setItem("tesis-token", res.token);
+            const me = await api.getMe();
+            setUser(me.user);
+            localStorage.setItem("tesis-user", JSON.stringify(me.user));
+          } catch {
+            logout();
+          }
+        } else {
+          logout();
+        }
+      } finally {
+        setLoading(false);
       }
     }
-    setLoading(false);
-  }, []);
+    void restoreSession();
+  }, [logout]);
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await api.login(email, password);

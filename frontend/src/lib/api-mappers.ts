@@ -73,6 +73,7 @@ type ApiCourse = {
   nivel?: string;
   profesorId: string;
   seccionId?: string | null;
+  seccion?: ApiSeccion | null;
   periodo?: string;
   profesor?: { nombres: string; apellidos: string };
   cursoCatalogo?: { nombre: string; area: string };
@@ -157,9 +158,10 @@ export function mapTeacherFromApi(row: ApiTeacher): Teacher {
 }
 
 export function mapCourseFromApi(row: ApiCourse): Course {
-  const nivel =
-    row.nivel ??
-    (row.cursoCatalogo ? `${row.cursoCatalogo.area} · ${row.cursoCatalogo.nombre}` : "General");
+  const nivel = row.seccion
+    ? formatSeccionLabel(row.seccion)
+    : row.nivel ??
+      (row.cursoCatalogo ? `${row.cursoCatalogo.area} · ${row.cursoCatalogo.nombre}` : "Sin sección");
   return {
     id: row.id,
     codigo: row.codigo,

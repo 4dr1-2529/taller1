@@ -9,12 +9,11 @@ export const APP_SECTIONS = [
   "Matrículas",
   "Notas",
   "Asistencia",
-  "Datos académicos",
   "Actividad LMS",
   "Predicción",
-  "Modelos IA",
   "Chat",
   "Reportes",
+  "Monitoreo docentes",
 ] as const;
 
 export type AppSection = (typeof APP_SECTIONS)[number];

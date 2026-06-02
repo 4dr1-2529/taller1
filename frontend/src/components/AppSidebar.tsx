@@ -8,10 +8,10 @@ import {
   AlertTriangle,
   BarChart3,
   BookOpen,
-  Brain,
   CalendarCheck,
   ChevronLeft,
   ClipboardList,
+  Eye,
   GraduationCap,
   HeartHandshake,
   Layers,
@@ -20,16 +20,16 @@ import {
   LogOut,
   Menu,
   MessageCircle,
-  School,
   Sparkles,
   UserPlus,
   Users,
   X,
 } from "lucide-react";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useAuth } from "@/contexts/AuthProvider";
 import type { AppSection } from "@/data/navigation";
 import { groupsForSections } from "@/data/sidebar-nav";
+import { getSectionLabel } from "@/data/section-labels";
+import { getRoleLabel } from "@/lib/role-labels";
 
 const ICONS: Record<AppSection, React.ComponentType<{ className?: string }>> = {
   Dashboard: LayoutDashboard,
@@ -42,12 +42,11 @@ const ICONS: Record<AppSection, React.ComponentType<{ className?: string }>> = {
   Matrículas: UserPlus,
   Notas: ClipboardList,
   Asistencia: CalendarCheck,
-  "Datos académicos": School,
   "Actividad LMS": Activity,
   Predicción: Sparkles,
-  "Modelos IA": Brain,
   Chat: MessageCircle,
   Reportes: LineChart,
+  "Monitoreo docentes": Eye,
 };
 
 type AppSidebarProps = {
@@ -85,19 +84,15 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
   const sidebarContent = (
     <div className="flex h-full flex-col">
       {/* Brand Section */}
-      <div className="relative border-b border-white/[0.06] px-5 py-5">
+      <div className="relative border-b border-[var(--border-subtle)] px-5 py-5">
         <div className="flex items-center gap-3.5">
           <motion.div
             className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl overflow-hidden"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            aria-label="Panel institucional I.E.P. Huancayo"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-500 to-cyan-400" />
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-purple-500 to-violet-600"
-              animate={{ opacity: [0.5, 0.9, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
             <BarChart3 className="relative h-5 w-5 text-white drop-shadow-lg" aria-hidden />
           </motion.div>
 
@@ -110,11 +105,11 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                 exit={{ opacity: 0, x: -8 }}
                 transition={{ duration: 0.2 }}
               >
-                <p className="truncate text-[15px] font-bold tracking-tight text-white">
-                  EduRisk AI
+                <p className="truncate text-[15px] font-bold tracking-tight text-[var(--sidebar-text)]">
+                  I.E.P. Huancayo
                 </p>
-                <p className="truncate text-[11px] font-medium text-slate-500">
-                  Deserción · LMS · Ensemble
+                <p className="truncate text-[11px] font-medium text-[var(--sidebar-muted)]">
+                  Riesgo de deserción · LMS
                 </p>
               </motion.div>
             )}
@@ -184,7 +179,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                   <li key={section}>
                     <motion.button
                       type="button"
-                      title={collapsed ? section : undefined}
+                      title={collapsed ? getSectionLabel(section) : undefined}
                       onClick={() => {
                         onSelect(section);
                         setMobileOpen(false);
@@ -195,15 +190,15 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                       className={clsx(
                         "group relative flex w-full items-center gap-3.5 rounded-xl px-3.5 py-3 text-left text-[14px] font-medium transition-all duration-200",
                         isActive
-                          ? "bg-gradient-to-r from-violet-500/[0.18] via-purple-500/[0.12] to-transparent text-white shadow-[0_0_20px_rgba(139,92,246,0.12),inset_0_1px_0_rgba(255,255,255,0.05)] ring-1 ring-violet-500/20"
-                          : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-200 hover:shadow-[0_0_15px_rgba(139,92,246,0.08)]",
+                          ? "bg-gradient-to-r from-cyan-500/15 via-teal-500/10 to-transparent text-[var(--sidebar-text)] ring-1 ring-cyan-500/25 shadow-[0_0_16px_rgba(34,211,238,0.08)]"
+                          : "text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]",
                         collapsed && "justify-center px-0",
                       )}
                     >
                       {/* Active Left Glow Bar */}
                       {isActive && (
                         <motion.span
-                          className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-violet-400 via-purple-400 to-cyan-400"
+                          className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-cyan-400 to-teal-400"
                           initial={{ scaleY: 0 }}
                           animate={{ scaleY: 1 }}
                           transition={{ duration: 0.25, type: "spring" }}
@@ -218,8 +213,8 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                         className={clsx(
                           "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200",
                           isActive
-                            ? "bg-violet-500/15 text-violet-300"
-                            : "bg-transparent text-slate-500 group-hover:text-slate-300 group-hover:bg-white/[0.04]",
+                            ? "bg-cyan-500/15 text-cyan-600 dark:text-cyan-300"
+                            : "bg-transparent text-[var(--sidebar-muted)] group-hover:text-[var(--sidebar-text)] group-hover:bg-[var(--sidebar-hover)]",
                         )}
                       >
                         <Icon className="h-[22px] w-[22px]" aria-hidden />
@@ -235,7 +230,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.15 }}
                           >
-                            {section}
+                            {getSectionLabel(section)}
                           </motion.span>
                         )}
                       </AnimatePresence>
@@ -271,14 +266,12 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
       </nav>
 
       {/* Bottom Section */}
-      <div className="border-t border-white/[0.06] px-3 py-4 space-y-3">
-        {/* Collapse Toggle + Theme */}
+      <div className="border-t border-[var(--border-subtle)] px-3 py-4 space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <ThemeToggle />
           <button
             type="button"
             onClick={toggleCollapsed}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-all duration-200 hover:bg-white/[0.06] hover:text-slate-300"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--sidebar-muted)] transition-all duration-200 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]"
             aria-label={collapsed ? "Expandir" : "Colapsar"}
           >
             <motion.div
@@ -294,7 +287,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
               onClick={logout}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-slate-500 transition-all duration-200 hover:bg-rose-500/10 hover:text-rose-300 hover:ring-1 hover:ring-rose-500/20"
+              className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-[var(--sidebar-muted)] transition-all duration-200 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300 hover:ring-1 hover:ring-rose-500/20"
             >
               <LogOut className="h-3.5 w-3.5" />
               <AnimatePresence>
@@ -317,7 +310,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
         <AnimatePresence>
           {!collapsed && user && (
             <motion.div
-              className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.04] to-white/[0.02] p-3 ring-1 ring-white/[0.06] transition-all duration-200 hover:ring-white/[0.1]"
+              className="group relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--sidebar-hover)] p-3 transition-all duration-200 hover:border-violet-500/25"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
@@ -328,11 +321,11 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                   {getInitials(user.nombres, user.apellidos)}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-semibold text-white">
+                  <p className="truncate text-[13px] font-semibold text-[var(--sidebar-text)]">
                     {user.nombres} {user.apellidos}
                   </p>
-                  <p className="text-[11px] font-medium capitalize text-slate-500">
-                    {user.role}
+                  <p className="text-[11px] font-medium text-[var(--sidebar-muted)]">
+                    {getRoleLabel(user.role)}
                   </p>
                 </div>
               </div>
@@ -348,7 +341,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
       {/* Mobile Menu Button */}
       <motion.button
         type="button"
-        className="fixed left-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900/80 text-white ring-1 ring-white/10 backdrop-blur-xl transition-all duration-200 hover:bg-slate-800/90 hover:ring-white/20 lg:hidden"
+        className="fixed left-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-[var(--text-primary)] shadow-lg backdrop-blur-xl lg:hidden"
         onClick={() => setMobileOpen(true)}
         aria-label="Abrir menú"
         whileHover={{ scale: 1.05 }}
@@ -370,7 +363,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
-              className="fixed inset-y-0 left-0 z-50 w-[280px] bg-slate-950/95 text-slate-100 backdrop-blur-xl ring-1 ring-white/[0.08] lg:hidden"
+              className="glass-sidebar-premium fixed inset-y-0 left-0 z-50 w-[280px] text-[var(--sidebar-text)] lg:hidden"
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
@@ -391,7 +384,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
 
       {/* Desktop Sidebar */}
       <motion.aside
-        className="glass-sidebar-premium sticky top-0 z-30 hidden h-screen shrink-0 flex-col text-slate-100 transition-all duration-300 lg:flex"
+        className="glass-sidebar-premium sticky top-0 z-30 hidden h-screen shrink-0 flex-col text-[var(--sidebar-text)] transition-all duration-300 lg:flex"
         animate={{ width: collapsed ? 88 : 320 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
       >

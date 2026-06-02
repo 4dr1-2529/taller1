@@ -4,18 +4,28 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
-
-type Theme = "light" | "dark";
+import { type Theme, themeCookieValue } from "@/lib/theme";
 
 function applyThemeToDocument(t: Theme) {
-  if (typeof document === "undefined") return;
   const root = document.documentElement;
   root.classList.toggle("dark", t === "dark");
   root.style.colorScheme = t;
+}
+
+function readStoredTheme(): Theme {
+  const stored = localStorage.getItem("tesis-theme");
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function persistTheme(t: Theme) {
+  localStorage.setItem("tesis-theme", t);
+  document.cookie = themeCookieValue(t);
+  applyThemeToDocument(t);
 }
 
 const ThemeContext = createContext<{
@@ -25,26 +35,23 @@ const ThemeContext = createContext<{
 } | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
+  const [theme, setThemeState] = useState<Theme>("light");
 
-  useEffect(() => {
-    const stored = localStorage.getItem("tesis-theme") as Theme | null;
-    const initial = stored ?? "dark";
-    applyThemeToDocument(initial);
+  useLayoutEffect(() => {
+    const initial = readStoredTheme();
+    persistTheme(initial);
     setThemeState(initial);
   }, []);
 
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
-    localStorage.setItem("tesis-theme", t);
-    applyThemeToDocument(t);
+    persistTheme(t);
   }, []);
 
   const toggle = useCallback(() => {
     setThemeState((prev) => {
       const next = prev === "light" ? "dark" : "light";
-      localStorage.setItem("tesis-theme", next);
-      applyThemeToDocument(next);
+      persistTheme(next);
       return next;
     });
   }, []);

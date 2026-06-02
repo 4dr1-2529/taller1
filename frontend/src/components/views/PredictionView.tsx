@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import { BrainCircuit, FlaskConical, Server, Brain } from "lucide-react";
+import { BrainCircuit, FlaskConical, Server } from "lucide-react";
+import { MlMetricsSection } from "@/components/views/MlMetricsSection";
+import { RiskGauge } from "@/components/ui/RiskGauge";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { computePrediction, simulateScenario } from "@/lib/risk-engine";
@@ -94,38 +96,15 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
 
   return (
     <div className="space-y-8">
-      {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
-              <Brain className="h-4 w-4 text-violet-400" />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Prediction Engine
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Ensemble risk scoring and scenario simulation
-          </p>
-        </div>
-      </motion.div>
-
-      {/* Prediction Module */}
       <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h3 className="flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
               <BrainCircuit className="h-5 w-5 text-violet-400" aria-hidden />
-              Módulo de predicción (ensemble)
+              Módulo de predicción (modelo conjunto)
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-[var(--text-secondary)]">
-              El score (0–100) agrega factores académicos, asistencia, LMS y tareas. Con el servicio{" "}
+              El puntaje (0–100) agrega factores académicos, asistencia, plataforma virtual y tareas. Con el servicio{" "}
               <strong className="text-[var(--text-primary)]">machine-learning</strong> (Python) se usan probabilidades calibradas del modelo
               entrenado.
             </p>
@@ -149,17 +128,19 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
           </select>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          {/* Current Result */}
-          <article className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 p-4">
+        <div className="mt-6 grid gap-4 lg:grid-cols-3">
+          <article className="chart-panel flex flex-col items-center justify-center p-4 lg:col-span-1">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+              Riesgo actual
+            </p>
+            <RiskGauge score={base.score} level={base.level} />
+          </article>
+
+          <article className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 p-4 lg:col-span-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-              Resultado actual
+              Factores de ponderación
             </p>
-            <p className={levelStyles(base.level)}>{base.level}</p>
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              Score numérico:{" "}
-              <span className="font-semibold text-[var(--text-primary)]">{Math.round(base.score)}</span> / 100
-            </p>
+            <p className={clsx("mt-1 text-sm capitalize", levelStyles(base.level))}>Nivel {base.level}</p>
             <ul className="mt-4 space-y-2">
               {base.factors.map((f) => (
                 <li key={f.key}>
@@ -210,7 +191,7 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
           <h3 className="text-base font-semibold text-[var(--text-primary)]">Simulación de escenarios</h3>
         </div>
         <p className="text-sm text-[var(--text-secondary)]">
-          Ajusta mejoras hipotéticas para ver el impacto en el score (útil para planes de intervención).
+          Ajuste mejoras hipotéticas para ver el impacto en el puntaje (útil para planes de intervención).
         </p>
 
         <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -241,7 +222,7 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
             <span className="text-xs text-[var(--text-muted)]">+{deltaAsistencia}%</span>
           </label>
           <label className="block text-sm">
-            <span className="text-[var(--text-secondary)]">Δ Actividad LMS (cada semana, 0–100)</span>
+            <span className="text-[var(--text-secondary)]">Δ Actividad en plataforma (cada semana, 0–100)</span>
             <input
               type="range"
               min={0}
@@ -268,26 +249,16 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
           </label>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 p-4">
-            <p className="text-xs font-semibold uppercase text-[var(--text-muted)]">Proyección</p>
-            <p className={levelStyles(simulated.level)}>{simulated.level}</p>
-            <p className="text-sm text-[var(--text-secondary)]">
-              Nuevo score:{" "}
-              <span className="font-semibold text-[var(--text-primary)]">{Math.round(simulated.score)}</span> / 100
-            </p>
-            <p className="mt-2 text-xs text-[var(--text-muted)]">
-              Δ respecto al actual: {(simulated.score - base.score).toFixed(1)} puntos
-            </p>
-          </div>
-          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-emerald-200/80">
-            <p className="font-semibold text-emerald-300">Lectura para la tesis</p>
-            <p className="mt-2">
-              La descomposición por factores permite explicar el "por qué" del riesgo (similar a importancia
-              de variables en modelos de árbol). Al migrar a Python, se pueden reportar SHAP o importancia
-              Gini/permutación por modelo base.
-            </p>
-          </div>
+        <div className="mt-6 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 p-4">
+          <p className="text-xs font-semibold uppercase text-[var(--text-muted)]">Proyección</p>
+          <p className={levelStyles(simulated.level)}>{simulated.level}</p>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Nuevo puntaje:{" "}
+            <span className="font-semibold text-[var(--text-primary)]">{Math.round(simulated.score)}</span> / 100
+          </p>
+          <p className="mt-2 text-xs text-[var(--text-muted)]">
+            Cambio respecto al actual: {(simulated.score - base.score).toFixed(1)} puntos
+          </p>
         </div>
       </motion.section>
 
@@ -310,7 +281,7 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
             disabled={apiLoading || !useApi || !api.hasToken}
             className="rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:from-violet-500 hover:to-indigo-500 disabled:opacity-60"
           >
-            {apiLoading ? "Consultando…" : "Ejecutar predicción vía API"}
+            {apiLoading ? "Consultando…" : "Ejecutar predicción en servidor"}
           </button>
         </div>
         {apiJson ? (
@@ -318,6 +289,10 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
             {apiJson}
           </pre>
         ) : null}
+      </motion.section>
+
+      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
+        <MlMetricsSection />
       </motion.section>
     </div>
   );

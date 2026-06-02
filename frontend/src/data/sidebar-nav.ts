@@ -12,7 +12,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     id: "overview",
     label: "General",
-    items: ["Dashboard", "Estructura académica", "Datos académicos", "Chat"],
+    items: ["Dashboard", "Estructura académica", "Chat"],
   },
   {
     id: "academic",
@@ -31,12 +31,12 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     id: "ai",
     label: "IA y analítica",
-    items: ["Predicción", "Modelos IA", "Alertas"],
+    items: ["Predicción", "Alertas"],
   },
   {
     id: "admin",
     label: "Administración",
-    items: ["Reportes"],
+    items: ["Monitoreo docentes", "Reportes"],
   },
 ];
 
@@ -49,7 +49,7 @@ export function groupsForSections(visible: readonly AppSection[]): SidebarGroup[
 }
 
 export const SECTION_BREADCRUMB: Record<AppSection, string[]> = {
-  Dashboard: ["Inicio", "Dashboard"],
+  Dashboard: ["Inicio", "Panel principal"],
   "Estructura académica": ["Académico", "Estructura"],
   Alertas: ["IA", "Alertas"],
   "Seguimiento psicológico": ["Académico", "Psicología"],
@@ -59,10 +59,9 @@ export const SECTION_BREADCRUMB: Record<AppSection, string[]> = {
   Matrículas: ["Académico", "Matrículas"],
   Notas: ["Académico", "Notas"],
   Asistencia: ["Académico", "Asistencia"],
-  "Datos académicos": ["Académico", "Datos"],
-  "Actividad LMS": ["Académico", "LMS"],
+  "Actividad LMS": ["Académico", "Plataforma"],
   Predicción: ["IA", "Predicción"],
-  "Modelos IA": ["IA", "Modelos"],
-  Chat: ["General", "Chat"],
-  Reportes: ["Admin", "Reportes"],
+  Chat: ["General", "Mensajes"],
+  Reportes: ["Administración", "Reportes"],
+  "Monitoreo docentes": ["Administración", "Monitoreo"],
 };

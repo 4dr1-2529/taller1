@@ -30,6 +30,7 @@ import {
 } from "../validators/schemas.js";
 import { logAudit } from "../utils/audit.js";
 import { paramId } from "../utils/params.js";
+import { AppError } from "../middleware/errorHandler.js";
 
 import { getMlMetrics } from "../services/ml-client.js";
 
@@ -79,6 +80,19 @@ router.get("/enrollments", authenticate, async (_req, res, next) => {
 router.post("/enrollments", authenticate, authorize("admin", "docente"), async (req, res, next) => {
   try {
     const data = enrollmentSchema.parse(req.body);
+    const [student, course] = await Promise.all([
+      prisma.student.findUnique({ where: { id: data.studentId }, select: { seccionId: true } }),
+      prisma.course.findUnique({ where: { id: data.courseId }, select: { seccionId: true, nombre: true } }),
+    ]);
+    if (!student || !course) {
+      throw new AppError(404, "Estudiante o curso no encontrado");
+    }
+    if (course.seccionId && student.seccionId && course.seccionId !== student.seccionId) {
+      throw new AppError(
+        400,
+        `El curso "${course.nombre}" no pertenece a la sección del estudiante`,
+      );
+    }
     const item = await prisma.enrollment.create({ data });
     res.status(201).json({ ok: true, item });
   } catch (e) {
