@@ -2,6 +2,7 @@
 
 > **Modelo predictivo basado en ensemble learning para la identificación del riesgo de deserción estudiantil** — fusión de datos académicos y comportamiento en LMS.
 
+**Repositorio:** [github.com/4dr1-2529/taller1](https://github.com/4dr1-2529/taller1) (código en `tesis-dashboard/`)  
 **Institución:** I.E.P. Blenkir Huancayo · Perú  
 **Tipo:** Software SaaS educativo con IA explicable y persistencia real
 
@@ -17,38 +18,17 @@
 
 ```
 tesis-dashboard/
-├── frontend/               # Next.js (src vía enlace a /src durante migración)
-├── machine-learning/       # FastAPI + scikit-learn (ensemble)
-│   ├── app/                # API inferencia
-│   ├── data/               # Datasets CSV
-│   ├── models/             # Artefactos .joblib
-│   ├── training/           # Guía entrenamiento
-│   ├── evaluation/         # Métricas y evaluación
-│   ├── reports/            # Reportes exportados
-│   ├── utils/              # Validadores de entrada
-│   └── train.py            # Script principal
-├── src/                    # Código UI (App Router)
-│   ├── app/                # Pages + API routes
-│   ├── components/         # UI components + views
-│   ├── contexts/           # Auth + Theme providers
-│   ├── hooks/              # Custom React hooks
-│   ├── lib/                # Shared utilities (risk engine, recommendations)
-│   ├── services/           # API client
-│   ├── types/              # TypeScript types
-│   └── data/               # Constantes UI (sin datos demo)
+├── frontend/               # Next.js (App Router)
 ├── backend/                # API REST + Prisma ORM
-│   ├── src/
-│   │   ├── controllers/    # Request handlers
-│   │   ├── middleware/     # Auth, sanitization, error handling
-│   │   ├── routes/         # API route definitions
-│   │   ├── services/       # Business logic (ML client, risk engine)
-│   │   ├── utils/          # Prisma, audit logging
-│   │   └── validators/     # Zod schemas
-│   └── prisma/             # Database schema + migrations
-│   ├── app/main.py         # FastAPI (machine-learning/)
-│   └── train.py            # Entrenamiento ensemble
-├── database/mysql/         # Guía XAMPP · database/postgresql/ (referencia)
-└── docs/                   # Architecture documentation
+│   ├── src/                # controllers, routes, services, validators
+│   └── prisma/             # schema, seed, migrate-roles.sql
+├── machine-learning/       # FastAPI + entrenamiento ensemble
+│   ├── app/                # API inferencia
+│   ├── models/             # Artefactos .joblib + metrics.json
+│   ├── utils/              # Validadores de entrada
+│   └── train.py
+├── database/mysql/         # Guía XAMPP
+└── docs/                   # API, roles, pruebas, Postman, SonarQube
 ```
 
 ## Inicio rápido
@@ -62,32 +42,40 @@ tesis-dashboard/
 ### 2. Dependencias
 
 ```bash
-# Frontend + root
 npm install
-
-# Backend
 cd backend && npm install && cd ..
-
-# ML Service
 pip install -r machine-learning/requirements.txt
 ```
 
 ### 3. Base de datos
 
 ```bash
-# 1. Inicie MySQL en el panel de XAMPP
-# 2. Cree la base (opcional):
+# 1. Inicie MySQL en XAMPP
+# 2. (Opcional) crear BD:
 powershell -File scripts/setup-mysql-xampp.ps1
 
 cp backend/.env.example backend/.env
+# Edite DATABASE_URL, JWT_SECRET, etc.
 
-# Migrar tablas (Prisma → MySQL)
 npm run db:push
-npm run db:seed
+npm run db:seed          # estructura académica + permisos
+npm run db:seed:demo     # 50 estudiantes, 5 profesores, predicciones, alertas
+```
 
-# Crear administrador (variables en backend/.env)
-# ADMIN_EMAIL=admin@tucolegio.edu.pe
-# ADMIN_PASSWORD=SuClaveSegura123!
+**BD existente con roles antiguos** (tutor, psicólogo, apoderado): ejecute antes de `db:push`:
+
+```bash
+cd backend
+npx prisma db execute --file prisma/migrate-roles.sql
+npx prisma db push --accept-data-loss
+npx prisma generate
+```
+
+Ver [backend/prisma/migrations/README-REFACTOR.md](backend/prisma/migrations/README-REFACTOR.md).
+
+**Administrador manual** (opcional, variables en `backend/.env`):
+
+```bash
 npm run db:bootstrap
 ```
 
@@ -97,7 +85,7 @@ npm run db:bootstrap
 npm run ml:train
 ```
 
-### 5. Ejecutar todo
+### 5. Ejecutar
 
 ```bash
 npm run dev
@@ -109,134 +97,91 @@ npm run dev
 | API | http://localhost:4000/api/v1 |
 | ML Docs | http://localhost:5000/docs |
 
-### Credenciales demo
+Si aparece `EADDRINUSE` en 3029/4000/5000, cierre instancias previas o termine los procesos que usan esos puertos.
 
-| Rol | Email | Contraseña |
-|-----|-------|------------|
-| Admin | admin@iep-huancayo.edu.pe | Tesis2026! |
-| Docente | docente@iep-huancayo.edu.pe | Tesis2026! |
-| Tutor | tutor@iep-huancayo.edu.pe | Tesis2026! |
-| Psicólogo | psicologo@iep-huancayo.edu.pe | Tesis2026! |
-| Estudiante | estudiante@iep-huancayo.edu.pe | Tesis2026! |
+### Credenciales demo (`db:seed:demo`)
+
+Contraseña para todos: **`Tesis2026!`**
+
+| Rol (UI) | Email | Rol sistema |
+|----------|-------|-------------|
+| Director | `director@iep-huancayo.edu.pe` | `admin` |
+| Profesor | `profesor1@iep-huancayo.edu.pe` | `docente` |
+| Estudiante | `estudiante01@iep-huancayo.edu.pe` | `estudiante` |
+
+También válido: `admin@iep-huancayo.edu.pe` (mismo password, rol `admin`).
 
 ---
 
 ## Funcionalidades
 
 ### Core
-- Dashboard analítico con KPIs y gráficos Recharts
+- Dashboard analítico por rol (KPIs, gráficos Recharts)
 - Predicción de riesgo (bajo / medio / alto) con interpretabilidad
-- Ensemble ML: Random Forest, XGBoost, Stacking
-- Alertas tempranas y recomendaciones automáticas
-- Chat interno para coordinación entre roles
+- Ensemble ML: Random Forest, XGBoost/HistGradientBoosting, Stacking
+- Alertas tempranas (`nueva`, `en_seguimiento`, `resuelta`) con factores y recomendación
+- **Mensajería académica** (comunicados globales, avisos de curso, mensajes directos)
 
 ### Seguridad
-- JWT Authentication con refresh tokens
-- Role-based access control (admin, docente, tutor, psicólogo, estudiante)
-- Brute-force protection en login
-- XSS sanitization, rate limiting, Helmet CSP
-- Auditoría completa de acciones (AuditLog)
-- Sesiones con invalidación
+- JWT + refresh tokens
+- RBAC con **3 roles**: `admin`, `docente`, `estudiante`
+- Brute-force protection, XSS sanitization, rate limiting, Helmet
+- Auditoría (AuditLog) y sesiones con invalidación
 
 ### UI/UX
-- Modo claro / oscuro robusto
-- Responsive design (mobile, tablet, desktop)
-- Glassmorphism + gradientes modernos
-- Skeleton loading states
-- Toast notifications (Sonner)
-- Validaciones en tiempo real
-- Accesibilidad mejorada
-
-### Datos
-- Base de datos MySQL normalizada (XAMPP)
-- 18 modelos con relaciones completas
-- Índices optimizados
-- Trazabilidad y control de cambios
-- Exportación PDF / Excel
+- Modo claro / oscuro, responsive, skeletons, toasts (Sonner)
+- Validaciones en formularios (DNI, teléfono, notas, rangos académicos)
 
 ---
 
 ## Roles y permisos
 
-| Funcionalidad | Admin | Docente | Tutor | Psicólogo | Estudiante |
-|---------------|-------|---------|-------|-----------|------------|
-| Dashboard global | ✅ | ✅ | ✅ | ✅ | ✅ (solo su data) |
-| Gestión estudiantes | ✅ CRUD | ✅ Create | ✅ Create | ❌ | ❌ |
-| Gestión profesores | ✅ CRUD | ❌ | ❌ | ❌ | ❌ |
-| Gestión cursos | ✅ CRUD | ✅ CRUD | ❌ | ❌ | ❌ |
-| Predicción IA | ✅ | ✅ | ✅ | ✅ | ✅ (solo su data) |
-| Alertas | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Seguimiento psicológico | ✅ | ❌ | ✅ | ✅ | ❌ |
-| Chat | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Reportes | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Administración usuarios | ✅ CRUD | ❌ | ❌ | ❌ | ❌ |
-| Logs de auditoría | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Rol sistema | Etiqueta UI | Alcance |
+|-------------|-------------|---------|
+| `admin` | **Director** | Gestión total, comunicados globales, predicciones y alertas |
+| `docente` | **Profesor** | Sus cursos y estudiantes; notas, asistencia, LMS, predicción, mensajes |
+| `estudiante` | **Estudiante** | Notas, asistencia, LMS, riesgo propio, mensajería |
+
+**Eliminados en v2.0:** tutor, psicólogo, apoderado, seguimiento psicológico, chat genérico.
+
+Detalle: [docs/roles.md](docs/roles.md)
 
 ---
 
-## API Endpoints
+## API (resumen)
 
 ### Auth
-- `POST /api/v1/auth/login` — Iniciar sesión
-- `POST /api/v1/auth/refresh` — Renovar token
-- `GET /api/v1/auth/me` — Perfil actual
-- `POST /api/v1/auth/change-password` — Cambiar contraseña
+- `POST /auth/login` · `POST /auth/refresh` · `GET /auth/me` · `POST /auth/change-password`
 
-### Estudiantes
-- `GET /api/v1/students` — Listar (con paginación y búsqueda)
-- `POST /api/v1/students` — Crear (admin, tutor, docente)
-- `GET /api/v1/students/:id` — Detalle
-- `PUT /api/v1/students/:id` — Actualizar
-- `DELETE /api/v1/students/:id` — Eliminar (admin)
+### Académico
+- `GET/POST /students` — solo **admin** crea/elimina
+- `GET/POST /teachers`, `/courses`, `/enrollments`, `/grades`, `/attendance` — según rol
 
-### IA / Predicción
-- `POST /api/v1/predict` — Predecir riesgo (guarda historial + alerta si medio/alto)
-- `GET /api/v1/predictions` — Historial de predicciones (filtro por estudiante)
-- `GET /api/v1/predictions/:id` — Detalle de predicción
-- `GET /api/v1/dashboard/kpis` — Estadísticas globales y tendencia
-- `GET /api/v1/alerts` — Alertas tempranas (alcance por rol)
-- `GET /api/v1/ml/metrics` — Métricas del modelo (RF, XGBoost/HGB, Stacking)
+### Predicción e IA
+- `POST /predict` — riesgo + historial + alerta si medio/alto
+- `GET /predictions` · `GET /dashboard/kpis` · `GET /alerts` · `PATCH /alerts/:id`
+- `GET /ml/metrics`
 
-### ML Service (puerto 5000)
-- `POST /predict` — Probabilidad de abandono, score, nivel, factores, recomendación
-- `GET /metrics` — Comparación Accuracy, Precision, Recall, F1, matrices de confusión
-- `GET /health` — Estado del servicio
+### Mensajería académica
+- `GET /messages/rooms` · `GET /messages/:roomId` · `POST /messages` · `PATCH /messages/:roomId/read`
 
-### Administración (solo admin)
-- `GET /api/v1/admin/users` — Listar usuarios
-- `POST /api/v1/admin/users` — Crear usuario
-- `PUT /api/v1/admin/users/:id` — Actualizar usuario
-- `DELETE /api/v1/admin/users/:id` — Eliminar usuario
-- `GET /api/v1/admin/audit-logs` — Logs de auditoría
-- `GET /api/v1/admin/system-stats` — Estadísticas del sistema
+### ML Service (`:5000`)
+- `POST /predict` · `GET /metrics` · `GET /health`
 
-Ver [API.md](docs/API.md) para documentación completa.
+Documentación completa: [docs/API.md](docs/API.md) · Colección Postman: [docs/postman/](docs/postman/)
 
 ---
 
 ## Machine Learning
 
-### Modelos (ensemble learning)
-- **Random Forest** — 150 árboles, `class_weight=balanced`
-- **XGBoost** (o HistGradientBoosting si hay incompatibilidad de versiones)
-- **Stacking** — RF + HGB con meta-clasificador RF
-- **Selección automática** del mejor modelo por **F1-score** → se guarda en `models/best_model.joblib`
+### Modelos
+- **Random Forest** · **XGBoost** (o HistGradientBoosting) · **Stacking**
+- Mejor modelo por **F1-score** → `models/best_model.joblib`
 
-### Variables de la tesis (10 features)
-| Variable | Descripción |
-|----------|-------------|
-| `promedio_general` | Promedio académico (0–20) |
-| `cursos_desaprobados` | Cantidad de cursos con nota &lt; 11 |
-| `asistencia_general` | Porcentaje de asistencia (0–100) |
-| `frecuencia_acceso_lms` | Actividad promedio semanal en LMS |
-| `tiempo_plataforma` | Horas semanales en plataforma |
-| `tareas_ratio` | Tareas entregadas / totales |
-| `participacion_actividades` | Participación en actividades |
-| `uso_foros` | Uso de foros (0–1) |
-| `disminucion_actividad` | Caída de actividad entre semanas |
-| `estado` | activo / en_riesgo / retirado |
+### Variables (10 features)
+`promedio_general`, `cursos_desaprobados`, `asistencia_general`, `frecuencia_acceso_lms`, `tiempo_plataforma`, `tareas_ratio`, `participacion_actividades`, `uso_foros`, `disminucion_actividad`, `estado` (activo / en_riesgo / retirado)
 
-### Salida de `/predict` (formato tesis + compatibilidad)
+### Respuesta formato tesis
 
 ```json
 {
@@ -244,69 +189,22 @@ Ver [API.md](docs/API.md) para documentación completa.
   "score_predictivo": 85,
   "nivel_riesgo": "Alto",
   "factores_riesgo": [],
-  "recomendacion": "",
-  "modelo_usado": "stacking",
+  "recomendacion": "…",
+  "modelo_usado": "random_forest",
   "fecha_prediccion": "2026-06-02T12:00:00.000Z"
 }
 ```
 
-También se devuelven alias en inglés/camelCase (`score`, `level`, `factors`, etc.) para el frontend.
+Alias en inglés (`score`, `level`, `factors`, …) para compatibilidad con el frontend.
 
-### Flujo del sistema
-
-```
-Frontend (3029) → Backend API (4000) → ML Service (5000)
-                      ↓
-            Historial (Prediction)
-                      ↓
-         Alerta temprana (medio/alto) → Dashboard + Notificaciones
-```
-
-### Entrenamiento y métricas
 ```bash
 npm run ml:train
-```
-Genera `models/metrics.json` y `models/metrics_comparison.csv` con Accuracy, Precision, Recall, F1 y matriz de confusión por modelo.
-
-### Pruebas
-```bash
-npm run ml:test          # unit tests Python
-npm run test:smoke       # API + ML (servicios en ejecución)
+npm run ml:test
+npm run test:smoke    # requiere API :4000 y ML :5000 en ejecución
+npm run test          # unit backend + ML (sin smoke)
 ```
 
----
-
-## Base de datos
-
-### Esquema
-18 modelos normalizados:
-- **Usuarios y sesiones** — Auth con JWT + refresh tokens
-- **Académico** — Students, Teachers, Courses, Enrollments
-- **Seguimiento** — Predictions, Alerts, AiRecommendations, StudentRisk
-- **Actividad** — LmsActivity, Attendance, AcademicHistory
-- **Sistema** — Notifications, Reports, AuditLog, ChatMessage, DashboardSnapshot
-
-### Diagrama DER
-Ver [DER.md](docs/DER.md) y `database/mysql/README.md`
-
----
-
-## Variables de entorno
-
-### Frontend (`.env.local`)
-```
-NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
-```
-
-### Backend (`backend/.env`)
-```
-DATABASE_URL="mysql://root@localhost:3306/tesis_dashboard"
-JWT_SECRET="change-me"
-JWT_EXPIRES_IN="8h"
-PORT=4000
-CORS_ORIGIN="http://localhost:3029"
-NODE_ENV="development"
-```
+Más: [docs/machine-learning.md](docs/machine-learning.md)
 
 ---
 
@@ -314,29 +212,59 @@ NODE_ENV="development"
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run dev` | Ejecutar todo (frontend + API + ML) |
-| `npm run dev:web` | Solo frontend |
-| `npm run dev:api` | Solo backend API |
-| `npm run dev:ml` | Solo ML service |
+| `npm run dev` | Frontend + API + ML |
+| `npm run dev:web` / `dev:api` / `dev:ml` | Servicio individual |
 | `npm run build` | Build producción |
-| `npm run db:push` | Sincronizar schema |
-| `npm run db:seed` | Poblar datos demo |
-| `npm run db:studio` | Abrir Prisma Studio |
-| `npm run ml:train` | Entrenar modelos IA |
-| `npm run ml:test` | Pruebas unitarias ML |
-| `npm run test:unit` | Formato respuesta tesis (Node) |
-| `npm run test:smoke` | Pruebas smoke API/ML |
-| `npm run test` | unit + ml + smoke |
-| `npm run lint` | Lint código |
+| `npm run db:push` | Sincronizar schema Prisma |
+| `npm run db:seed` | Estructura y permisos |
+| `npm run db:seed:demo` | Datos demo (50 estudiantes, etc.) |
+| `npm run db:bootstrap` | Crear admin desde `.env` |
+| `npm run db:studio` | Prisma Studio |
+| `npm run ml:train` | Entrenar modelos |
+| `npm run ml:test` | Tests Python ML |
+| `npm run test` | Unitarios backend + ML |
+| `npm run test:smoke` | Smoke API + ML + login |
+| `npm run lint` | ESLint frontend |
+
+---
+
+## Variables de entorno
+
+### Frontend (`frontend/.env.local`)
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
+```
+
+### Backend (`backend/.env`)
+
+```
+DATABASE_URL="mysql://root@localhost:3306/tesis_dashboard"
+JWT_SECRET="change-me"
+JWT_EXPIRES_IN="8h"
+PORT=4000
+CORS_ORIGIN="http://localhost:3029"
+ML_SERVICE_URL="http://localhost:5000"
+```
+
+Copie desde `backend/.env.example`.
 
 ---
 
 ## Documentación
 
-- [Arquitectura](docs/ARQUITECTURA.md)
-- [DER](docs/DER.md)
-- [API](docs/API.md)
-- [MySQL / XAMPP](database/mysql/README.md)
+| Documento | Contenido |
+|-----------|-----------|
+| [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Capas y flujo de datos |
+| [docs/API.md](docs/API.md) | Endpoints REST |
+| [docs/roles.md](docs/roles.md) | Matriz de permisos |
+| [docs/validaciones.md](docs/validaciones.md) | Reglas de formularios |
+| [docs/machine-learning.md](docs/machine-learning.md) | Entrenamiento e inferencia |
+| [docs/pruebas-funcionales.md](docs/pruebas-funcionales.md) | Casos de prueba |
+| [docs/pruebas-no-funcionales.md](docs/pruebas-no-funcionales.md) | Seguridad y rendimiento |
+| [docs/postman.md](docs/postman.md) | Colección Postman |
+| [docs/sonarqube.md](docs/sonarqube.md) | Análisis estático |
+| [database/mysql/README.md](database/mysql/README.md) | XAMPP / MySQL |
 
 ---
 

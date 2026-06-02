@@ -7,19 +7,22 @@ type Scope = Prisma.StudentWhereInput;
 export async function buildDashboardAnalytics(scope: Scope) {
   const [
     totalStudents,
+    totalTeachers,
     openAlerts,
     alertsByLevel,
     recentPredictions,
     avgRisk,
     studentsWithSection,
+    avgGrade,
   ] = await Promise.all([
     prisma.student.count({ where: scope }),
+    prisma.teacher.count({ where: { activo: true } }),
     prisma.alert.count({
-      where: { status: { in: ["abierta", "en_seguimiento"] }, student: scope },
+      where: { status: { in: ["nueva", "en_seguimiento"] }, student: scope },
     }),
     prisma.alert.groupBy({
       by: ["level"],
-      where: { status: { in: ["abierta", "en_seguimiento"] }, student: scope },
+      where: { status: { in: ["nueva", "en_seguimiento"] }, student: scope },
       _count: true,
     }),
     prisma.prediction.findMany({
@@ -50,6 +53,8 @@ export async function buildDashboardAnalytics(scope: Scope) {
       select: {
         id: true,
         seccionId: true,
+        promedioGeneral: true,
+        asistenciaGeneral: true,
         seccion: {
           select: {
             nombre: true,
@@ -59,6 +64,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
         predictions: { orderBy: { createdAt: "desc" }, take: 1, select: { level: true, score: true } },
       },
     }),
+    prisma.student.aggregate({ where: scope, _avg: { promedioGeneral: true, asistenciaGeneral: true } }),
   ]);
 
   const byLevel = { bajo: 0, medio: 0, alto: 0 };
@@ -93,8 +99,11 @@ export async function buildDashboardAnalytics(scope: Scope) {
   return {
     kpis: {
       totalStudents,
+      totalTeachers,
       openAlerts,
       avgRisk: Math.round((avgRisk._avg.score ?? 0) * 10) / 10,
+      avgGrade: Math.round((avgGrade._avg.promedioGeneral ?? 0) * 10) / 10,
+      avgAttendance: Math.round((avgGrade._avg.asistenciaGeneral ?? 0) * 10) / 10,
       byLevel,
       alertsByLevel: Object.fromEntries(alertsByLevel.map((a) => [a.level, a._count])),
     },

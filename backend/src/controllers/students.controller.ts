@@ -36,7 +36,7 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
           seccion: { include: { grado: { include: { nivel: true } } } },
           lmsActivities: { orderBy: { semana: "asc" } },
           predictions: { orderBy: { createdAt: "desc" }, take: 1 },
-          alerts: { where: { status: "abierta" } },
+          alerts: { where: { status: { in: ["nueva", "en_seguimiento"] } } },
         },
       }),
       prisma.student.count({ where }),

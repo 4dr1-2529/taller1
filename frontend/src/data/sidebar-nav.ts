@@ -1,6 +1,6 @@
 import type { AppSection } from "@/data/navigation";
 
-export type SidebarGroupId = "overview" | "academic" | "ai" | "admin";
+export type SidebarGroupId = "overview" | "academic" | "ai" | "comms";
 
 export type SidebarGroup = {
   id: SidebarGroupId;
@@ -11,32 +11,23 @@ export type SidebarGroup = {
 export const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     id: "overview",
-    label: "General",
-    items: ["Dashboard", "Estructura académica", "Chat"],
+    label: "Panel",
+    items: ["Dashboard"],
   },
   {
     id: "academic",
-    label: "Académico",
-    items: [
-      "Estudiantes",
-      "Profesores",
-      "Cursos",
-      "Matrículas",
-      "Notas",
-      "Asistencia",
-      "Actividad LMS",
-      "Seguimiento psicológico",
-    ],
+    label: "Gestión académica",
+    items: ["Estudiantes", "Profesores", "Cursos", "Matrículas", "Notas", "Asistencia", "Actividad LMS"],
   },
   {
     id: "ai",
-    label: "IA y analítica",
+    label: "Predicción de deserción",
     items: ["Predicción", "Historial predicciones", "Alertas"],
   },
   {
-    id: "admin",
-    label: "Administración",
-    items: ["Monitoreo docentes", "Reportes"],
+    id: "comms",
+    label: "Comunicación",
+    items: ["Mensajería Académica", "Reportes"],
   },
 ];
 
@@ -50,19 +41,16 @@ export function groupsForSections(visible: readonly AppSection[]): SidebarGroup[
 
 export const SECTION_BREADCRUMB: Record<AppSection, string[]> = {
   Dashboard: ["Inicio", "Panel principal"],
-  "Estructura académica": ["Académico", "Estructura"],
-  Alertas: ["IA", "Alertas"],
-  "Seguimiento psicológico": ["Académico", "Psicología"],
   Estudiantes: ["Académico", "Estudiantes"],
-  Profesores: ["Académico", "Docentes"],
+  Profesores: ["Académico", "Profesores"],
   Cursos: ["Académico", "Cursos"],
   Matrículas: ["Académico", "Matrículas"],
   Notas: ["Académico", "Notas"],
   Asistencia: ["Académico", "Asistencia"],
-  "Actividad LMS": ["Académico", "Plataforma"],
-  Predicción: ["IA", "Predicción"],
+  "Actividad LMS": ["Académico", "Plataforma virtual"],
+  Predicción: ["IA", "Riesgo de deserción"],
   "Historial predicciones": ["IA", "Historial"],
-  Chat: ["General", "Mensajes"],
-  Reportes: ["Administración", "Reportes"],
-  "Monitoreo docentes": ["Administración", "Monitoreo"],
+  Alertas: ["IA", "Alertas tempranas"],
+  "Mensajería Académica": ["Comunicación", "Mensajes"],
+  Reportes: ["Analítica", "Reportes"],
 };

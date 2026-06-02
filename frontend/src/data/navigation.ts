@@ -1,8 +1,6 @@
+/** Secciones del sistema — enfoque tesis ML deserción (3 roles). */
 export const APP_SECTIONS = [
   "Dashboard",
-  "Estructura académica",
-  "Alertas",
-  "Seguimiento psicológico",
   "Estudiantes",
   "Profesores",
   "Cursos",
@@ -12,9 +10,9 @@ export const APP_SECTIONS = [
   "Actividad LMS",
   "Predicción",
   "Historial predicciones",
-  "Chat",
+  "Alertas",
+  "Mensajería Académica",
   "Reportes",
-  "Monitoreo docentes",
 ] as const;
 
 export type AppSection = (typeof APP_SECTIONS)[number];

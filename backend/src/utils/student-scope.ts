@@ -1,6 +1,5 @@
 /**
- * Alcance de estudiantes según rol (RBAC operativo).
- * admin/tutor/psicologo: cohorte activa; docente: sus cursos; estudiante/apoderado: solo propio.
+ * Alcance de estudiantes — 3 roles: Director (admin), Profesor (docente), Estudiante.
  */
 import type { Prisma, UserRole } from "@prisma/client";
 import { prisma } from "./prisma.js";
@@ -11,7 +10,7 @@ export type ScopeUser = { sub: string; role: UserRole };
 export async function resolveStudentScope(user: ScopeUser): Promise<Prisma.StudentWhereInput> {
   const base: Prisma.StudentWhereInput = { activo: true };
 
-  if (user.role === "admin" || user.role === "tutor" || user.role === "psicologo") {
+  if (user.role === "admin") {
     return base;
   }
 
@@ -32,18 +31,26 @@ export async function resolveStudentScope(user: ScopeUser): Promise<Prisma.Stude
     return student ? { id: student.id } : { id: "__none__" };
   }
 
-  if (user.role === "apoderado") {
-    const apoderado = await prisma.apoderado.findFirst({ where: { userId: user.sub } });
-    if (!apoderado) return { id: "__none__" };
-    const links = await prisma.studentApoderado.findMany({
-      where: { apoderadoId: apoderado.id },
-      select: { studentId: true },
-    });
-    const ids = links.map((l) => l.studentId);
-    if (!ids.length) return { id: "__none__" };
-    return { id: { in: ids } };
-  }
+  return { id: "__none__" };
+}
 
+export async function resolveCourseScope(user: ScopeUser): Promise<Prisma.CourseWhereInput> {
+  if (user.role === "admin") return { activo: true };
+  if (user.role === "docente") {
+    const teacher = await prisma.teacher.findFirst({ where: { userId: user.sub, activo: true } });
+    if (!teacher) return { id: "__none__" };
+    return { activo: true, profesorId: teacher.id };
+  }
+  if (user.role === "estudiante") {
+    const student = await prisma.student.findFirst({ where: { userId: user.sub, activo: true } });
+    if (!student) return { id: "__none__" };
+    const enrollments = await prisma.enrollment.findMany({
+      where: { studentId: student.id },
+      select: { courseId: true },
+    });
+    const ids = enrollments.map((e) => e.courseId);
+    return ids.length ? { id: { in: ids }, activo: true } : { id: "__none__" };
+  }
   return { id: "__none__" };
 }
 

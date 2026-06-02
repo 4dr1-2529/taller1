@@ -198,6 +198,16 @@ def train_models() -> None:
                 "f1_score": m["f1_score"],
             })
 
+    history = {
+        "trained_at": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
+        "best_model": best_key,
+        "best_f1_score": best_f1,
+        "n_samples": int(X.shape[0]),
+        "results": results,
+    }
+    with open(MODELS_DIR / "training_history.json", "w", encoding="utf-8") as f:
+        json.dump(history, f, indent=2, ensure_ascii=False)
+
     print(f"Artefactos en {MODELS_DIR}")
     print("Entrenamiento completado.")
 

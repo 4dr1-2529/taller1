@@ -1,0 +1,305 @@
+{
+  "info": {
+    "name": "Tesis Dashboard API",
+    "description": "Colección para predicción de deserción — importar en Postman. Variables: baseUrl, token",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "token", "value": "" },
+    { "key": "studentId", "value": "" },
+    { "key": "courseId", "value": "" },
+    { "key": "alertId", "value": "" },
+    { "key": "roomId", "value": "global:institucional" }
+  ],
+  "item": [
+    {
+      "name": "AUTH",
+      "item": [
+        {
+          "name": "Login válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const j = pm.response.json();",
+                  "  pm.collectionVariables.set('token', j.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"director@iep-huancayo.edu.pe\",\n  \"password\": \"Tesis2026!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login inválido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"bad@mail.com\",\n  \"password\": \"wrong\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Perfil (me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "DIRECTOR",
+      "item": [
+        {
+          "name": "Listar estudiantes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/students?limit=50"
+          }
+        },
+        {
+          "name": "Crear estudiante",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"EST-TEST-001\",\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Prueba\",\n  \"seccionId\": \"REEMPLAZAR_SECCION_ID\",\n  \"promedioGeneral\": 14,\n  \"asistenciaGeneral\": 88\n}"
+            },
+            "url": "{{baseUrl}}/students"
+          }
+        },
+        {
+          "name": "Listar profesores",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/teachers"
+          }
+        },
+        {
+          "name": "Listar cursos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/courses"
+          }
+        },
+        {
+          "name": "Dashboard KPIs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/dashboard/kpis"
+          }
+        },
+        {
+          "name": "Comunicado global",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"global:institucional\",\n  \"scope\": \"global\",\n  \"contenido\": \"Comunicado institucional de prueba.\"\n}"
+            },
+            "url": "{{baseUrl}}/messages"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROFESOR",
+      "item": [
+        {
+          "name": "Login profesor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"profesor1@iep-huancayo.edu.pe\",\n  \"password\": \"Tesis2026!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Mis cursos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/courses"
+          }
+        },
+        {
+          "name": "Registrar nota",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"courseId\": \"{{courseId}}\",\n  \"periodo\": \"2026-I\",\n  \"bimestre\": 1,\n  \"nota\": 15\n}"
+            },
+            "url": "{{baseUrl}}/grades"
+          }
+        },
+        {
+          "name": "Predicción estudiante",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/predict"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ESTUDIANTE",
+      "item": [
+        {
+          "name": "Login estudiante",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"estudiante01@iep-huancayo.edu.pe\",\n  \"password\": \"Tesis2026!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Mis datos (students scope)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/students"
+          }
+        },
+        {
+          "name": "Historial predicciones",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/predictions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ML",
+      "item": [
+        {
+          "name": "ML Health",
+          "request": { "method": "GET", "url": "http://localhost:5000/health" }
+        },
+        {
+          "name": "ML Predict riesgo bajo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promedio_general\": 16,\n  \"asistencia_general\": 95,\n  \"frecuencia_acceso_lms\": 85,\n  \"tareas_ratio\": 0.9,\n  \"estado\": \"activo\"\n}"
+            },
+            "url": "http://localhost:5000/predict"
+          }
+        },
+        {
+          "name": "ML Metrics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/ml/metrics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ALERTAS",
+      "item": [
+        {
+          "name": "Listar alertas",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/alerts"
+          }
+        },
+        {
+          "name": "Actualizar estado alerta",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"en_seguimiento\"\n}" },
+            "url": "{{baseUrl}}/alerts/{{alertId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "MENSAJERÍA",
+      "item": [
+        {
+          "name": "Salas disponibles",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/messages/rooms"
+          }
+        },
+        {
+          "name": "Listar mensajes sala",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/messages/{{roomId}}"
+          }
+        },
+        {
+          "name": "Marcar leídos",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/messages/{{roomId}}/read"
+          }
+        }
+      ]
+    }
+  ]
+}

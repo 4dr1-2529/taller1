@@ -17,10 +17,7 @@ datasource db {
 enum UserRole {
   admin
   docente
-  tutor
-  psicologo
   estudiante
-  apoderado
 }
 
 enum NivelCodigo {
@@ -41,9 +38,16 @@ enum RiskLevel {
 }
 
 enum AlertStatus {
-  abierta
+  nueva
   en_seguimiento
   resuelta
+}
+
+enum MessageScope {
+  global
+  profesores
+  curso
+  directo
 }
 
 enum NotificationType {
@@ -108,6 +112,7 @@ model User {
   teacher      Teacher?
   student      Student?
   apoderado    Apoderado?
+  messageReads MessageRead[]
   @@index([role])
   @@index([activo])
 }
@@ -414,16 +419,20 @@ model StudentRisk {
 }
 
 model Alert {
-  id          String      @id @default(cuid())
-  studentId   String
-  student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  titulo      String
-  descripcion String      @db.Text
-  factorKey   String?
-  level       RiskLevel
-  status      AlertStatus @default(abierta)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id             String      @id @default(cuid())
+  studentId      String
+  student        Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  titulo         String
+  descripcion    String      @db.Text
+  factorKey      String?
+  level          RiskLevel
+  score          Float?
+  probability    Float?
+  factorsJson    String?     @db.Text
+  recommendation String?     @db.Text
+  status         AlertStatus @default(nueva)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   @@index([status, level])
   @@index([studentId])
 }
@@ -512,12 +521,30 @@ model AuditLog {
 }
 
 model ChatMessage {
-  id         String   @id @default(cuid())
-  roomId     String
-  senderId   String
-  senderName String
-  senderRole UserRole
-  contenido  String   @db.Text
-  createdAt  DateTime @default(now())
+  id              String       @id @default(cuid())
+  roomId          String
+  scope           MessageScope @default(directo)
+  senderId        String
+  senderName      String
+  senderRole      UserRole
+  recipientUserId String?
+  courseId        String?
+  parentMessageId String?
+  contenido       String       @db.Text
+  createdAt       DateTime     @default(now())
+  reads           MessageRead[]
   @@index([roomId, createdAt])
+  @@index([recipientUserId])
+  @@index([courseId])
+}
+
+model MessageRead {
+  messageId String
+  userId    String
+  leida     Boolean    @default(false)
+  readAt    DateTime?
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([messageId, userId])
+  @@index([userId, leida])
 }

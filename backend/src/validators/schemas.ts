@@ -20,9 +20,7 @@ export const createUserSchema = z.object({
   password: z.string().min(8, "Mínimo 8 caracteres").max(128),
   nombres: personNameField,
   apellidos: personNameField,
-  role: z
-    .enum(["admin", "docente", "tutor", "psicologo", "estudiante", "apoderado"])
-    .default("estudiante"),
+  role: z.enum(["admin", "docente", "estudiante"]).default("estudiante"),
   dni: optionalDniField,
   telefono: optionalPhoneField,
 });
@@ -89,21 +87,17 @@ export const predictSchema = z.object({
   estado: z.enum(["activo", "en_riesgo", "retirado"]).optional(),
 });
 
-export const chatSchema = z.object({
-  roomId: z.string().min(1),
-  contenido: z.string().min(1).max(2000),
-});
-
-export const psychFollowUpSchema = z.object({
-  studentId: z.string().min(1),
-  resumen: z.string().min(10).max(5000),
-  acciones: z.string().max(5000).optional(),
-  profesional: z.string().max(120).optional(),
-  fecha: z.string().datetime().optional(),
+export const messageSchema = z.object({
+  roomId: z.string().min(1).optional(),
+  contenido: z.string().min(1).max(4000),
+  scope: z.enum(["global", "profesores", "curso", "directo"]).optional(),
+  recipientUserId: z.string().optional(),
+  courseId: z.string().optional(),
+  parentMessageId: z.string().optional(),
 });
 
 export const alertStatusSchema = z.object({
-  status: z.enum(["abierta", "en_seguimiento", "resuelta"]),
+  status: z.enum(["nueva", "en_seguimiento", "resuelta"]),
 });
 
 const teacherCourseInput = z.object({

@@ -129,7 +129,7 @@ export default function LoginPage() {
           {[
             { icon: Brain, label: "Modelo conjunto IA", desc: "Bosque aleatorio · XGBoost · Stacking" },
             { icon: Sparkles, label: "Predicción en tiempo real", desc: "Puntaje de riesgo 0–100" },
-            { icon: Shield, label: "Panel institucional", desc: "Administrador, docente, tutoría, psicología" },
+            { icon: Shield, label: "Panel institucional", desc: "Director, profesor y estudiante" },
           ].map((item) => (
             <motion.div
               key={item.label}

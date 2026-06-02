@@ -132,7 +132,7 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
         const openDuplicate = await prisma.alert.findFirst({
           where: {
             studentId: student.id,
-            status: { in: ["abierta", "en_seguimiento"] },
+            status: { in: ["nueva", "en_seguimiento"] },
             level,
           },
         });
@@ -144,11 +144,16 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
               titulo: `[${priority.toUpperCase()}] Alerta temprana — riesgo ${level}`,
               descripcion: [
                 `Score predictivo: ${result.score}/100.`,
+                `Probabilidad de abandono: ${(result.probabilityAbandono * 100).toFixed(1)}%.`,
                 `Motivo principal: ${top?.label ?? "Indicadores compuestos"}.`,
-                `Recomendación: ${result.recommendation}`,
               ].join(" "),
               factorKey: top?.key ?? "general",
               level,
+              score: result.score,
+              probability: result.probabilityAbandono,
+              factorsJson,
+              recommendation: result.recommendation,
+              status: "nueva",
             },
           });
 
@@ -164,9 +169,8 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
             });
           }
 
-          // Notificar tutores/psicólogos/admin
           const staff = await prisma.user.findMany({
-            where: { role: { in: ["admin", "tutor", "psicologo"] }, activo: true },
+            where: { role: { in: ["admin", "docente"] }, activo: true },
             select: { id: true },
             take: 20,
           });

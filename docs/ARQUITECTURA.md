@@ -1,53 +1,37 @@
-# Arquitectura del sistema — Tesis Dashboard v2
+# Arquitectura
 
 ## Visión general
 
-Sistema de tres capas para la **identificación del riesgo de deserción estudiantil** (I.E.P. Huancayo, Perú), con fusión de datos académicos y comportamiento LMS.
+Sistema web para **predicción de riesgo de deserción estudiantil** mediante ensemble learning (Random Forest, XGBoost/HGB, Stacking).
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Frontend       │────▶│  Backend API    │────▶│  Base de datos  │
-│  Next.js :3029  │     │  Express :4000  │     │  SQLite / PG    │
-└────────┬────────┘     └────────┬────────┘     └─────────────────┘
-         │                       │
-         │                       ▼
-         │               ┌─────────────────┐
-         └──────────────▶│  ML Service     │
-                         │  FastAPI :5000  │
-                         │  RF+XGB+Stack   │
-                         └─────────────────┘
+[Frontend Next.js :3029]
+        │ JWT
+        ▼
+[Backend Express :4000] ──► [MySQL]
+        │
+        ▼
+[ML FastAPI :5000] ──► modelos .joblib
 ```
 
-## Carpetas
+## Capas
 
-| Ruta | Rol |
-|------|-----|
-| `src/` | Frontend Next.js (pages, components, hooks, services) |
-| `backend/src/` | API REST, controllers, middleware, validators |
-| `backend/prisma/` | ORM y migraciones |
-| `frontend/` | Next.js 16 — UI premium (enlace a `src/`) |
-| `machine-learning/` | Entrenamiento y predicción ensemble (Python) |
-| `backend/` | API REST Express + Prisma |
-| `database/` | SQL, DBML, DER |
-| `database/postgresql/` | Esquema SQL completo (DER producción) |
-| `docs/` | Documentación de tesis |
+| Capa | Tecnología | Responsabilidad |
+|------|------------|-----------------|
+| Presentación | Next.js, React, Tailwind | Dashboards por rol, formularios, gráficos |
+| API | Express, Prisma, Zod | Auth, RBAC, persistencia, orquestación ML |
+| ML | FastAPI, scikit-learn | Entrenamiento, inferencia, métricas |
+| Datos | MySQL (XAMPP) | Estudiantes, notas, alertas, mensajes |
 
-## Roles
+## Flujo de predicción
 
-- **admin** — configuración y auditoría
-- **docente** — cursos y calificaciones
-- **tutor** — alertas y seguimiento
-- **psicologo** — seguimiento psicológico
-- **estudiante** — consulta de su perfil
+1. Profesor o director ejecuta predicción con `studentId`.
+2. Backend agrega métricas académicas + LMS.
+3. Servicio ML devuelve score, probabilidad, nivel, factores.
+4. Se guarda en `Prediction` y, si riesgo ≥ medio, se crea `Alert`.
 
 ## Seguridad
 
-- JWT en cabecera `Authorization: Bearer`
-- Rate limiting, Helmet, sanitización XSS
-- Validación Zod en todas las rutas de escritura
-- Prisma parametrizado (anti SQL injection)
-
-## IA
-
-1. **Motor local** — `backend/src/services/risk-engine.ts` (fallback offline)
-2. **machine-learning/** — FastAPI: Random Forest, XGBoost, stacking (F1, matriz de confusión)
+- JWT en cabecera `Authorization: Bearer`.
+- Middleware `authenticate` + `authorize(roles)`.
+- Alcance de datos: `resolveStudentScope` por rol.

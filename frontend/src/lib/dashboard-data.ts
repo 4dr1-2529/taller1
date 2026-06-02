@@ -2,12 +2,9 @@ import { globalRiskScore } from "@/lib/aggregates";
 import type { RiskHistoryPoint, Student } from "@/types/academic";
 
 const ROLE_GREETING: Record<string, string> = {
-  admin: "Vista ejecutiva del colegio",
-  docente: "Seguimiento de tus estudiantes",
-  tutor: "Monitoreo de tutoría y alertas",
-  psicologo: "Casos prioritarios de bienestar",
-  estudiante: "Tu progreso académico",
-  apoderado: "Seguimiento familiar",
+  admin: "Panel del director — riesgo de deserción institucional",
+  docente: "Seguimiento de tus estudiantes y cursos",
+  estudiante: "Tu rendimiento y nivel de riesgo",
 };
 
 export function dashboardGreeting(role: string) {

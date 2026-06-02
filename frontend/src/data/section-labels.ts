@@ -1,22 +1,19 @@
 import type { AppSection } from "@/data/navigation";
 
 export const SECTION_LABELS: Record<AppSection, string> = {
-  Dashboard: "Panel principal",
-  "Estructura académica": "Estructura académica",
-  Alertas: "Alertas",
-  "Seguimiento psicológico": "Seguimiento psicológico",
+  Dashboard: "Dashboard",
   Estudiantes: "Estudiantes",
   Profesores: "Profesores",
   Cursos: "Cursos",
   Matrículas: "Matrículas",
   Notas: "Notas",
   Asistencia: "Asistencia",
-  "Actividad LMS": "Actividad en plataforma",
-  Predicción: "Predicción IA",
+  "Actividad LMS": "Actividad LMS",
+  Predicción: "Predicción de riesgo",
   "Historial predicciones": "Historial de predicciones",
-  Chat: "Chat interno",
+  Alertas: "Alertas tempranas",
+  "Mensajería Académica": "Mensajería Académica",
   Reportes: "Reportes",
-  "Monitoreo docentes": "Monitoreo docentes",
 };
 
 export function getSectionLabel(section: AppSection): string {
@@ -25,12 +22,10 @@ export function getSectionLabel(section: AppSection): string {
 
 export const ENTIDAD_LABELS: Record<string, string> = {
   Student: "Estudiante",
-  Course: "Curso",
-  Enrollment: "Matrícula",
-  Grade: "Nota",
   Teacher: "Profesor",
-  User: "Usuario",
+  Course: "Curso",
   Alert: "Alerta",
+  Prediction: "Predicción",
 };
 
 export function getEntidadLabel(entidad: string): string {

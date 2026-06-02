@@ -1,14 +1,13 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { api } from "@/services/api";
 import { AppShell } from "@/components/layout/AppShell";
-import { BentoDashboard } from "@/components/dashboard/bento/BentoDashboard";
-import { AcademicStructureView } from "@/components/views/AcademicStructureView";
+import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
 import { EmptyState } from "@/components/EmptyState";
 import { useAcademicStructure } from "@/hooks/useAcademicStructure";
 import { AlertsView } from "@/components/views/AlertsView";
-import { ChatView } from "@/components/views/ChatView";
+import { MensajeriaAcademicaView } from "@/components/views/MensajeriaAcademicaView";
 import { EnrollmentsView, type NewEnrollmentForm } from "@/components/views/EnrollmentsView";
 import { LMSView } from "@/components/views/LMSView";
 import { PredictionView } from "@/components/views/PredictionView";
@@ -25,62 +24,51 @@ import {
   defaultCourseForm,
   type NewCourseForm,
 } from "@/components/views/CoursesView";
-import { PsychFollowUpView } from "@/components/views/PsychFollowUpView";
 import { GradesView } from "@/components/views/GradesView";
 import { AttendanceView } from "@/components/views/AttendanceView";
-import { TeacherMonitoringView } from "@/components/views/TeacherMonitoringView";
 import { APP_SECTIONS, type AppSection } from "@/data/navigation";
 import { earlyAlertCount } from "@/lib/aggregates";
 import { useAcademicData } from "@/hooks/useAcademicData";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/contexts/AuthProvider";
 
+/** Director, Profesor, Estudiante — permisos según tesis ML deserción */
 const ROLE_SECTIONS: Record<string, AppSection[]> = {
-  admin: [...APP_SECTIONS],
+  admin: [
+    "Dashboard",
+    "Estudiantes",
+    "Profesores",
+    "Cursos",
+    "Matrículas",
+    "Notas",
+    "Asistencia",
+    "Actividad LMS",
+    "Predicción",
+    "Historial predicciones",
+    "Alertas",
+    "Mensajería Académica",
+    "Reportes",
+  ],
   docente: [
     "Dashboard",
-    "Estructura académica",
-    "Alertas",
     "Estudiantes",
     "Cursos",
-    "Matrículas",
     "Notas",
     "Asistencia",
     "Actividad LMS",
     "Predicción",
     "Historial predicciones",
-    "Chat",
-    "Reportes",
-  ],
-  tutor: [
-    "Dashboard",
-    "Estructura académica",
     "Alertas",
-    "Seguimiento psicológico",
-    "Estudiantes",
-    "Cursos",
-    "Matrículas",
+    "Mensajería Académica",
+  ],
+  estudiante: [
+    "Dashboard",
     "Notas",
     "Asistencia",
     "Actividad LMS",
     "Predicción",
-    "Historial predicciones",
-    "Chat",
-    "Reportes",
+    "Mensajería Académica",
   ],
-  psicologo: [
-    "Dashboard",
-    "Alertas",
-    "Seguimiento psicológico",
-    "Estudiantes",
-    "Actividad LMS",
-    "Predicción",
-    "Historial predicciones",
-    "Chat",
-    "Reportes",
-  ],
-  estudiante: ["Dashboard", "Actividad LMS", "Predicción", "Historial predicciones"],
-  apoderado: ["Dashboard", "Actividad LMS", "Alertas", "Predicción", "Historial predicciones"],
 };
 
 const initialEnrollment: NewEnrollmentForm = {
@@ -92,31 +80,41 @@ const initialEnrollment: NewEnrollmentForm = {
 
 function sectionSubtitle(section: AppSection): string {
   switch (section) {
-    case "Dashboard": return "Indicadores globales, tendencia histórica y ranking de riesgo.";
-    case "Estructura académica": return "Niveles Primaria/Secundaria, grados y secciones del colegio.";
-    case "Alertas": return "Priorización automática y recomendaciones de intervención.";
-    case "Seguimiento psicológico": return "Registro de entrevistas y planes de apoyo emocional.";
-    case "Estudiantes": return "Registro y vista consolidada con puntaje de deserción.";
-    case "Profesores": return "Registro de docentes, especialidad y cursos que dictan.";
-    case "Cursos": return "Oferta académica y asignación.";
-    case "Matrículas": return "Vínculo estudiante–curso por periodo académico.";
-    case "Notas": return "Calificaciones por bimestre (escala 0–20) y recálculo de promedio.";
-    case "Asistencia": return "Registro diario: asistió, tardanza, falta o falta justificada.";
-    case "Actividad LMS": return "Uso de la plataforma virtual: tiempo conectado, tareas y nivel de compromiso.";
-    case "Predicción": return "Puntaje de riesgo, simulación de escenarios y métricas del modelo.";
-    case "Historial predicciones": return "Registro histórico de scores, factores y recomendaciones.";
-    case "Chat": return "Coordinación entre tutoría, docentes y psicología.";
-    case "Reportes": return "Tableros analíticos y exportación PDF / Excel.";
-    case "Monitoreo docentes":
-      return "Cree correos de acceso y supervise la actividad de cada profesor en el sistema.";
-    default: return "";
+    case "Dashboard":
+      return "Indicadores de riesgo de deserción y rendimiento académico.";
+    case "Estudiantes":
+      return "Registro y seguimiento con puntaje predictivo.";
+    case "Profesores":
+      return "Docentes y cursos asignados.";
+    case "Cursos":
+      return "Oferta académica por sección.";
+    case "Matrículas":
+      return "Vínculo estudiante–curso.";
+    case "Notas":
+      return "Calificaciones 0–20 y promedio.";
+    case "Asistencia":
+      return "Registro de asistencia diaria.";
+    case "Actividad LMS":
+      return "Participación en plataforma virtual.";
+    case "Predicción":
+      return "Modelo ensemble — riesgo de deserción.";
+    case "Historial predicciones":
+      return "Historial de scores y factores.";
+    case "Alertas":
+      return "Alertas tempranas con recomendación automática.";
+    case "Mensajería Académica":
+      return "Comunicados y mensajes institucionales.";
+    case "Reportes":
+      return "Exportación y analítica.";
+    default:
+      return "";
   }
 }
 
 export default function Home() {
   const { user } = useAuth();
   const role = user?.role ?? "estudiante";
-  const visibleSections = ROLE_SECTIONS[role] ?? [...ROLE_SECTIONS.estudiante];
+  const visibleSections = ROLE_SECTIONS[role] ?? ROLE_SECTIONS.estudiante;
 
   const [activeSection, setActiveSection] = useState<AppSection>(visibleSections[0]);
   const {
@@ -144,8 +142,14 @@ export default function Home() {
   const [enrollmentForm, setEnrollmentForm] = useState<NewEnrollmentForm>(initialEnrollment);
 
   const useApi = dataSource === "api";
-  const canManageStaff = role === "admin";
+  const isDirector = role === "admin";
   const [alertCount, setAlertCount] = useState(0);
+
+  useEffect(() => {
+    if (!visibleSections.includes(activeSection)) {
+      setActiveSection(visibleSections[0]);
+    }
+  }, [role, visibleSections, activeSection]);
 
   useEffect(() => {
     if (!useApi || !api.hasToken) {
@@ -187,10 +191,7 @@ export default function Home() {
       profesorId,
       seccionId: newCourse.seccionId,
     });
-    setNewCourse({
-      ...defaultCourseForm,
-      profesorId: user?.teacherId ?? "",
-    });
+    setNewCourse({ ...defaultCourseForm, profesorId: user?.teacherId ?? "" });
   }
 
   function renderSection() {
@@ -205,8 +206,8 @@ export default function Home() {
 
     switch (activeSection) {
       case "Dashboard":
-        return students.length > 0 ? (
-          <BentoDashboard
+        return students.length > 0 || role === "estudiante" ? (
+          <RoleDashboard
             role={role}
             students={students}
             courses={courses}
@@ -216,16 +217,12 @@ export default function Home() {
         ) : (
           <EmptyState
             title="Sin estudiantes registrados"
-            description="Cree el usuario administrador (npm run db:bootstrap), inicie sesión y registre estudiantes reales por sección."
+            description="Inicie sesión como director y registre estudiantes para activar el modelo predictivo."
             showLogin={!useApi}
           />
         );
-      case "Estructura académica":
-        return <AcademicStructureView />;
       case "Alertas":
         return <AlertsView students={students} useApi={useApi} />;
-      case "Seguimiento psicológico":
-        return <PsychFollowUpView students={students} useApi={useApi} />;
       case "Estudiantes":
         return (
           <StudentsView
@@ -234,6 +231,7 @@ export default function Home() {
             newStudent={newStudent}
             setNewStudent={setNewStudent}
             onAddStudent={handleAddStudent}
+            canEdit={isDirector}
           />
         );
       case "Profesores":
@@ -247,7 +245,7 @@ export default function Home() {
             onUpdate={updateTeacher}
             onDeactivate={deactivateTeacher}
             onCreateAccount={createTeacherAccount}
-            canEdit={canManageStaff}
+            canEdit={isDirector}
           />
         );
       case "Cursos":
@@ -260,13 +258,22 @@ export default function Home() {
             setForm={setNewCourse}
             onSubmit={handleAddCourse}
             onReassignProfesor={(courseId, profesorId) => updateCourse(courseId, { profesorId })}
-            canEdit={canManageStaff || role === "docente"}
-            canReassign={canManageStaff}
+            canEdit={isDirector || role === "docente"}
+            canReassign={isDirector}
             lockProfesorId={role === "docente" ? user?.teacherId ?? undefined : undefined}
           />
         );
       case "Matrículas":
-        return <EnrollmentsView enrollments={enrollments} students={students} courses={courses} form={enrollmentForm} setForm={setEnrollmentForm} onAdd={handleAddEnrollment} />;
+        return (
+          <EnrollmentsView
+            enrollments={enrollments}
+            students={students}
+            courses={courses}
+            form={enrollmentForm}
+            setForm={setEnrollmentForm}
+            onAdd={handleAddEnrollment}
+          />
+        );
       case "Notas":
         return <GradesView students={students} courses={courses} />;
       case "Asistencia":
@@ -274,13 +281,11 @@ export default function Home() {
       case "Actividad LMS":
         return <LMSView students={students} />;
       case "Predicción":
-        return <PredictionView students={students} useApi={dataSource === "api"} />;
+        return <PredictionView students={students} useApi={useApi} />;
       case "Historial predicciones":
-        return <PredictionHistoryView students={students} />;
-      case "Chat":
-        return <ChatView />;
-      case "Monitoreo docentes":
-        return <TeacherMonitoringView teachers={teachers} />;
+        return role === "estudiante" ? null : <PredictionHistoryView students={students} />;
+      case "Mensajería Académica":
+        return <MensajeriaAcademicaView />;
       case "Reportes":
         return <ReportsView students={students} courses={courses} enrollments={enrollments} />;
       default:

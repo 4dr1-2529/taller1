@@ -113,7 +113,7 @@ export async function getSystemStats(_req: Request, res: Response, next: NextFun
       prisma.student.count({ where: { activo: true } }),
       prisma.teacher.count({ where: { activo: true } }),
       prisma.prediction.count(),
-      prisma.alert.count({ where: { status: "abierta" } }),
+      prisma.alert.count({ where: { status: { in: ["nueva", "en_seguimiento"] } } }),
       prisma.session.count({ where: { expiresAt: { gt: new Date() } } }),
     ]);
     res.json({ ok: true, stats: { totalUsers, totalStudents, totalTeachers, totalPredictions, totalAlerts, totalSessions } });

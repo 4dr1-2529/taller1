@@ -5,7 +5,7 @@ export type AuthUser = {
   email: string;
   nombres: string;
   apellidos: string;
-  role: "admin" | "docente" | "tutor" | "psicologo" | "estudiante" | "apoderado";
+  role: "admin" | "docente" | "estudiante";
   teacherId?: string | null;
 };
 
@@ -112,9 +112,19 @@ export type Alert = {
   descripcion: string;
   factorKey: string | null;
   level: "bajo" | "medio" | "alto";
-  status: "abierta" | "en_seguimiento" | "resuelta";
+  status: "nueva" | "en_seguimiento" | "resuelta";
+  score?: number | null;
+  probability?: number | null;
+  factorsJson?: string | null;
+  recommendation?: string | null;
+  nivel_riesgo?: string;
+  estado_label?: string;
+  factores_riesgo?: { key: string; label: string; contribution: number }[];
+  fecha?: string;
   createdAt: string;
   student: { id: string; nombres: string; apellidos: string; codigo: string };
+  curso?: { id: string; nombre: string } | null;
+  profesor?: string | null;
 };
 
 export type Teacher = {
@@ -147,14 +157,23 @@ export type Enrollment = {
   course?: Course;
 };
 
-export type ChatMessage = {
+export type AcademicMessage = {
   id: string;
   roomId: string;
-  senderId: string;
-  senderName: string;
-  senderRole: string;
+  scope?: string;
+  remitente?: { id: string; nombre: string; rol: string };
+  destinatarioId?: string | null;
   contenido: string;
-  createdAt: string;
+  fecha?: string;
+  leida?: boolean;
+  readAt?: string | null;
+  createdAt?: string;
+};
+
+export type MessageRoom = {
+  roomId: string;
+  label: string;
+  scope: "global" | "profesores" | "curso" | "directo";
 };
 
 export type ApiNotification = {
@@ -164,16 +183,6 @@ export type ApiNotification = {
   mensaje: string;
   leida: boolean;
   createdAt: string;
-};
-
-export type ApiPsychFollowUp = {
-  id: string;
-  studentId: string;
-  fecha: string;
-  resumen: string;
-  acciones: string | null;
-  profesional: string | null;
-  student: { id: string; nombres: string; apellidos: string; codigo: string };
 };
 
 export type AuditLog = {
@@ -355,8 +364,11 @@ class ApiClient {
     return this.request<{
       kpis: {
         totalStudents: number;
+        totalTeachers?: number;
         openAlerts: number;
         avgRisk: number;
+        avgGrade?: number;
+        avgAttendance?: number;
         byLevel: { bajo: number; medio: number; alto: number };
         alertsByLevel?: Record<string, number>;
       };
@@ -400,7 +412,7 @@ class ApiClient {
     return this.request<{ items: Alert[]; total?: number }>("/alerts");
   }
 
-  async updateAlertStatus(id: string, status: "abierta" | "en_seguimiento" | "resuelta") {
+  async updateAlertStatus(id: string, status: "nueva" | "en_seguimiento" | "resuelta") {
     return this.request<{ item: Alert }>(`/alerts/${id}`, {
       method: "PATCH",
       body: JSON.stringify({ status }),
@@ -415,26 +427,31 @@ class ApiClient {
     return this.request<{ updated: number }>(`/notifications/${id}/read`, { method: "PATCH" });
   }
 
-  async getPsychFollowUps(studentId?: string) {
-    const q = studentId ? `?studentId=${encodeURIComponent(studentId)}` : "";
-    return this.request<{ items: ApiPsychFollowUp[] }>(`/psych-followups${q}`);
+  async getMessageRooms() {
+    return this.request<{ rooms: MessageRoom[] }>("/messages/rooms");
   }
 
-  async createPsychFollowUp(payload: { studentId: string; resumen: string; acciones?: string; profesional?: string }) {
-    return this.request<{ item: ApiPsychFollowUp }>("/psych-followups", {
+  async getMessages(roomId: string) {
+    return this.request<{ items: AcademicMessage[] }>(`/messages/${encodeURIComponent(roomId)}`);
+  }
+
+  async sendMessage(payload: {
+    roomId?: string;
+    contenido: string;
+    scope?: MessageRoom["scope"];
+    recipientUserId?: string;
+    courseId?: string;
+    parentMessageId?: string;
+  }) {
+    return this.request<{ message: AcademicMessage }>("/messages", {
       method: "POST",
       body: JSON.stringify(payload),
     });
   }
 
-  async getChatMessages(roomId: string) {
-    return this.request<{ items: ChatMessage[] }>(`/chat/${encodeURIComponent(roomId)}`);
-  }
-
-  async sendChat(roomId: string, contenido: string) {
-    return this.request<{ message: ChatMessage }>("/chat", {
-      method: "POST",
-      body: JSON.stringify({ roomId, contenido }),
+  async markMessagesRead(roomId: string) {
+    return this.request<{ marked: number }>(`/messages/${encodeURIComponent(roomId)}/read`, {
+      method: "PATCH",
     });
   }
 

@@ -1,10 +1,7 @@
 export const ROLE_LABEL: Record<string, string> = {
-  admin: "Administrador",
-  docente: "Docente",
-  tutor: "Tutor",
-  psicologo: "Psicólogo",
+  admin: "Director",
+  docente: "Profesor",
   estudiante: "Estudiante",
-  apoderado: "Apoderado",
 };
 
 export function getRoleLabel(role: string): string {

@@ -130,10 +130,7 @@ export type RiskHistoryPoint = {
 export type UserRole =
   | "admin"
   | "docente"
-  | "tutor"
-  | "psicologo"
-  | "estudiante"
-  | "apoderado";
+  | "estudiante";
 
 export type AuditLog = {
   id: string;

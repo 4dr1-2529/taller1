@@ -21,8 +21,6 @@ type AuthContextValue = {
   hasRole: (roles: string[]) => boolean;
   isAdmin: boolean;
   isDocente: boolean;
-  isTutor: boolean;
-  isPsicologo: boolean;
   isEstudiante: boolean;
 };
 
@@ -130,8 +128,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       hasRole,
       isAdmin: user?.role === "admin",
       isDocente: user?.role === "docente",
-      isTutor: user?.role === "tutor",
-      isPsicologo: user?.role === "psicologo",
       isEstudiante: user?.role === "estudiante",
     }),
     [user, token, loading, login, logout, refresh, hasRole],

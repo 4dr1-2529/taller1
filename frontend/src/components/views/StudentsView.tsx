@@ -63,6 +63,7 @@ type StudentsViewProps = {
   newStudent: NewStudentForm;
   setNewStudent: (v: NewStudentForm | ((p: NewStudentForm) => NewStudentForm)) => void;
   onAddStudent: (e: FormEvent<HTMLFormElement>) => void;
+  canEdit?: boolean;
 };
 
 export function StudentsView({
@@ -71,6 +72,7 @@ export function StudentsView({
   newStudent,
   setNewStudent,
   onAddStudent,
+  canEdit = true,
 }: StudentsViewProps) {
   const withPred = attachPredictions(students);
   const [search, setSearch] = useState("");
@@ -88,8 +90,8 @@ export function StudentsView({
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 xl:grid-cols-2">
-        {/* Registration Form */}
+      <div className={canEdit ? "grid gap-6 xl:grid-cols-2" : ""}>
+        {canEdit && (
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <PageSection
             variant="form"
@@ -276,8 +278,8 @@ export function StudentsView({
             </form>
           </PageSection>
         </motion.div>
+        )}
 
-        {/* Students Table */}
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <DataTablePanel
             title="Estudiantes y riesgo"

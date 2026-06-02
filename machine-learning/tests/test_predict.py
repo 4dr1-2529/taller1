@@ -7,7 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from app.features import build_feature_vector, proba_to_score
-from app.main import PredictInput, heuristic_predict, _normalize_input
+from app.main import PredictInput, heuristic_predict, _normalize_input, predict
+from utils.validators import validate_predict_payload
 
 
 class TestPredict(unittest.TestCase):
@@ -56,6 +57,33 @@ class TestPredict(unittest.TestCase):
 
         score = proba_to_score(np.array([0.1, 0.2, 0.7]))
         self.assertGreaterEqual(score, 60)
+
+    def test_validate_with_null_optional_fields(self):
+        """Pydantic model_dump incluye None explícito en campos opcionales."""
+        payload = {
+            "promedio_general": 16,
+            "asistencia_general": 95,
+            "actividad_lms_prom": 85,
+            "frecuencia_acceso_lms": None,
+            "participacion_actividades": None,
+            "tareas_ratio": 0.9,
+            "estado": "activo",
+        }
+        out = validate_predict_payload(payload)
+        self.assertEqual(out["frecuencia_acceso_lms"], 85.0)
+        self.assertEqual(out["participacion_actividades"], 85.0)
+
+    def test_predict_endpoint_payload(self):
+        data = PredictInput(
+            promedio_general=16,
+            asistencia_general=95,
+            actividad_lms_prom=85,
+            tareas_ratio=0.9,
+            estado="activo",
+        )
+        out = predict(data)
+        self.assertIn(out.level, ("bajo", "medio", "alto"))
+        self.assertIsNotNone(out.probabilidad_abandono)
 
 
 if __name__ == "__main__":

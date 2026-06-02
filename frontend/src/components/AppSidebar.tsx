@@ -34,9 +34,7 @@ import { getRoleLabel } from "@/lib/role-labels";
 
 const ICONS: Record<AppSection, React.ComponentType<{ className?: string }>> = {
   Dashboard: LayoutDashboard,
-  "Estructura académica": Layers,
   Alertas: AlertTriangle,
-  "Seguimiento psicológico": HeartHandshake,
   Estudiantes: Users,
   Profesores: GraduationCap,
   Cursos: BookOpen,
@@ -46,9 +44,8 @@ const ICONS: Record<AppSection, React.ComponentType<{ className?: string }>> = {
   "Actividad LMS": Activity,
   Predicción: Sparkles,
   "Historial predicciones": History,
-  Chat: MessageCircle,
+  "Mensajería Académica": MessageCircle,
   Reportes: LineChart,
-  "Monitoreo docentes": Eye,
 };
 
 type AppSidebarProps = {

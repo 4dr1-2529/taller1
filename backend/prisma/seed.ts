@@ -15,16 +15,12 @@ const PERMISOS = [
   { codigo: "alertas.manage", modulo: "alertas" },
   { codigo: "ia.predict", modulo: "ia" },
   { codigo: "reportes.export", modulo: "reportes" },
-  { codigo: "seguimiento.psico", modulo: "psicologia" },
 ];
 
 const ROLE_PERMS: Record<UserRole, string[]> = {
   admin: PERMISOS.map((p) => p.codigo),
-  docente: ["estudiantes.read", "notas.write", "asistencia.write", "reportes.export"],
-  tutor: ["estudiantes.read", "asistencia.write", "alertas.manage", "ia.predict"],
-  psicologo: ["estudiantes.read", "seguimiento.psico", "alertas.manage"],
+  docente: ["estudiantes.read", "notas.write", "asistencia.write", "alertas.manage", "ia.predict", "reportes.export"],
   estudiante: ["estudiantes.read"],
-  apoderado: ["estudiantes.read"],
 };
 
 const CURSOS_PRIMARIA = [

@@ -28,7 +28,7 @@ def validate_predict_payload(data: dict[str, Any]) -> dict[str, Any]:
     tiempo = num("tiempo_plataforma", 4, 0, 24)
     tareas = num("tareas_ratio", 0.75, 0, 1)
     cursos_des = num("cursos_desaprobados", 0, 0, 12)
-    lms = data.get("frecuencia_acceso_lms", data.get("actividad_lms_prom", 55))
+    lms = data.get("frecuencia_acceso_lms") or data.get("actividad_lms_prom") or 55
     try:
         frecuencia = float(lms)
         if frecuencia < 0 or frecuencia > 100:
@@ -37,7 +37,8 @@ def validate_predict_payload(data: dict[str, Any]) -> dict[str, Any]:
         errors.append("frecuencia_acceso_lms inválida")
         frecuencia = 55.0
 
-    participacion = float(data.get("participacion_actividades", frecuencia))
+    participacion_raw = data.get("participacion_actividades")
+    participacion = float(participacion_raw if participacion_raw is not None else frecuencia)
     uso_foros = num("uso_foros", 0.5, 0, 1)
     disminucion = num("disminucion_actividad", 0, 0, 100)
 

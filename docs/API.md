@@ -1,41 +1,56 @@
-# API REST v1
+# API REST
 
-Base URL: `http://localhost:4000/api/v1`
+Base: `http://localhost:4000/api/v1`
 
-## Autenticación
-
-```http
-POST /auth/login
-Content-Type: application/json
-
-{ "email": "admin@iep-huancayo.edu.pe", "password": "Tesis2026!" }
-```
-
-Respuesta: `{ "ok": true, "token": "...", "user": { ... } }`
-
-Cabecera en rutas protegidas: `Authorization: Bearer <token>`
-
-## Endpoints principales
+## Auth
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | /health | Estado del servicio |
-| GET | /auth/me | Usuario actual |
-| GET | /students | Listado paginado (`?q=&page=&limit=`) |
-| POST | /students | Crear estudiante |
-| GET | /students/:id | Detalle con predicciones |
-| GET | /teachers | Profesores |
-| GET | /courses | Cursos |
-| GET | /enrollments | Matrículas |
-| POST | /enrollments | Nueva matrícula |
-| POST | /predict | Predicción IA (`studentId` o `metrics`) |
-| GET | /dashboard/kpis | KPIs globales |
-| GET | /alerts | Alertas abiertas |
-| GET | /notifications | Notificaciones del usuario |
-| GET | /ml/metrics | Métricas de modelos (RF, XGB, Stacking) |
-| GET | /chat/:roomId | Mensajes de sala |
-| POST | /chat | Enviar mensaje |
+| POST | `/auth/login` | Login → JWT |
+| GET | `/auth/me` | Perfil |
+| POST | `/auth/refresh` | Renovar token |
 
-## ML Service
+## Académico (Director)
 
-`POST http://localhost:5000/predict` — ver OpenAPI en `/docs`
+| Método | Ruta | Roles |
+|--------|------|-------|
+| GET/POST | `/students` | admin |
+| GET/POST | `/teachers` | admin |
+| GET/POST/PUT | `/courses` | admin, docente |
+| GET/POST | `/enrollments` | admin |
+| GET/POST | `/grades` | admin, docente |
+| GET/POST | `/attendance` | admin, docente |
+
+## Predicción
+
+| Método | Ruta | Respuesta tesis |
+|--------|------|-----------------|
+| POST | `/predict` | `score_predictivo`, `probabilidad_abandono`, `nivel_riesgo`, `factores_riesgo`, `recomendacion`, `modelo_usado`, `fecha_prediccion` |
+| GET | `/predictions` | Historial |
+| GET | `/dashboard/kpis` | Analytics |
+
+## Alertas
+
+| Método | Ruta |
+|--------|------|
+| GET | `/alerts` |
+| PATCH | `/alerts/:id` — body: `{ "status": "nueva" \| "en_seguimiento" \| "resuelta" }` |
+
+## Mensajería académica
+
+| Método | Ruta |
+|--------|------|
+| GET | `/messages/rooms` |
+| GET | `/messages/:roomId` |
+| POST | `/messages` |
+| PATCH | `/messages/:roomId/read` |
+
+## ML (puerto 5000)
+
+| Método | Ruta |
+|--------|------|
+| POST | `/predict` |
+| GET | `/metrics` |
+| GET | `/health` |
+
+Colección Postman: `docs/postman/tesis-dashboard.postman_collection.json`
