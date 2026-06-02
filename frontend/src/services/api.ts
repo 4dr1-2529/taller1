@@ -72,6 +72,39 @@ export type Prediction = {
   createdAt: string;
 };
 
+export type ApiPredictionResult = {
+  id?: string;
+  studentId?: string;
+  score: number;
+  level: "bajo" | "medio" | "alto";
+  probability: number;
+  probabilityAbandono?: number;
+  factors: { key: string; label: string; contribution: number }[];
+  modelName: string;
+  recommendation: string;
+  predictedAt: string;
+  inputData?: Record<string, unknown>;
+  /** Formato tesis */
+  probabilidad_abandono?: number;
+  score_predictivo?: number;
+  nivel_riesgo?: string;
+  factores_riesgo?: { key: string; label: string; contribution: number }[];
+  recomendacion?: string;
+  modelo_usado?: string;
+  fecha_prediccion?: string;
+  datos_ingresados?: Record<string, unknown>;
+};
+
+export type ApiPredictionHistoryItem = Prediction & {
+  factors: { key: string; label: string; contribution: number }[];
+  meta?: {
+    recommendation?: string;
+    inputData?: Record<string, unknown>;
+    source?: string;
+  } | null;
+  student?: { id: string; codigo: string; nombres: string; apellidos: string };
+};
+
 export type Alert = {
   id: string;
   studentId: string;
@@ -319,14 +352,44 @@ class ApiClient {
   }
 
   async getDashboardKpis() {
-    return this.request<{ kpis: Record<string, unknown> }>("/dashboard/kpis");
+    return this.request<{
+      kpis: {
+        totalStudents: number;
+        openAlerts: number;
+        avgRisk: number;
+        byLevel: { bajo: number; medio: number; alto: number };
+        alertsByLevel?: Record<string, number>;
+      };
+      riskTrend: { periodo: string; riesgoGlobal: number; count?: number }[];
+      riskBySection: { label: string; alto: number; medio: number; bajo: number; total: number }[];
+      modelComparison: { modelo: string; f1: number; accuracy: number }[];
+      featureImportance: { variable: string; peso: number }[];
+    }>("/dashboard/kpis");
   }
 
-  async predict(studentId: string) {
-    return this.request<{ prediction: unknown; source: string }>("/predict", {
+  async predict(studentId: string, metrics?: Record<string, unknown>) {
+    return this.request<{
+      prediction: ApiPredictionResult;
+      source: string;
+      alert?: Alert | null;
+    }>("/predict", {
       method: "POST",
-      body: JSON.stringify({ studentId }),
+      body: JSON.stringify({ studentId, metrics }),
     });
+  }
+
+  async getPredictions(params?: { studentId?: string; page?: number; limit?: number }) {
+    const q = new URLSearchParams();
+    if (params?.studentId) q.set("studentId", params.studentId);
+    if (params?.page) q.set("page", String(params.page));
+    if (params?.limit) q.set("limit", String(params.limit));
+    const query = q.toString() ? `?${q}` : "";
+    return this.request<{
+      items: ApiPredictionHistoryItem[];
+      total: number;
+      page: number;
+      pages: number;
+    }>(`/predictions${query}`);
   }
 
   async getMlMetrics() {
@@ -334,7 +397,7 @@ class ApiClient {
   }
 
   async getAlerts() {
-    return this.request<{ items: Alert[] }>("/alerts");
+    return this.request<{ items: Alert[]; total?: number }>("/alerts");
   }
 
   async updateAlertStatus(id: string, status: "abierta" | "en_seguimiento" | "resuelta") {

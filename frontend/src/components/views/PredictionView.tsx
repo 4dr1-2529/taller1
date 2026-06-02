@@ -7,7 +7,7 @@ import { BrainCircuit, FlaskConical, Server } from "lucide-react";
 import { MlMetricsSection } from "@/components/views/MlMetricsSection";
 import { RiskGauge } from "@/components/ui/RiskGauge";
 import { toast } from "sonner";
-import { api } from "@/services/api";
+import { api, type ApiPredictionResult } from "@/services/api";
 import { computePrediction, simulateScenario } from "@/lib/risk-engine";
 import { toRiskEngineStatus } from "@/lib/status";
 import type { ScenarioDeltas, Student } from "@/types/academic";
@@ -33,7 +33,11 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
   const [deltaAsistencia, setDeltaAsistencia] = useState(0);
   const [deltaLms, setDeltaLms] = useState(0);
   const [tareasExtra, setTareasExtra] = useState(0);
-  const [apiJson, setApiJson] = useState<string | null>(null);
+  const [apiResult, setApiResult] = useState<{
+    prediction: ApiPredictionResult;
+    source: string;
+    alertCreated?: boolean;
+  } | null>(null);
   const [apiLoading, setApiLoading] = useState(false);
 
   const student = useMemo(
@@ -72,14 +76,21 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
       return;
     }
     setApiLoading(true);
-    setApiJson(null);
+    setApiResult(null);
     try {
       const res = await api.predict(student.id);
-      setApiJson(JSON.stringify(res, null, 2));
-      toast.success(`Predicción (${res.source})`);
+      setApiResult({
+        prediction: res.prediction,
+        source: res.source,
+        alertCreated: !!res.alert,
+      });
+      toast.success(
+        res.alert
+          ? `Predicción guardada — alerta temprana generada (${res.source})`
+          : `Predicción guardada (${res.source})`,
+      );
     } catch (e) {
-      setApiJson(String(e));
-      toast.error("Error en predicción");
+      toast.error(e instanceof Error ? e.message : "Error en predicción");
     } finally {
       setApiLoading(false);
     }
@@ -284,10 +295,60 @@ export function PredictionView({ students, useApi = false }: PredictionViewProps
             {apiLoading ? "Consultando…" : "Ejecutar predicción en servidor"}
           </button>
         </div>
-        {apiJson ? (
-          <pre className="mt-4 max-h-64 overflow-auto rounded-xl bg-[var(--surface-deep)] p-4 text-xs text-emerald-300">
-            {apiJson}
-          </pre>
+        {apiResult ? (
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <article className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 p-4">
+              <p className="text-xs font-semibold uppercase text-[var(--text-muted)]">Resultado</p>
+              <p
+                className={clsx(
+                  "mt-1 text-2xl font-bold capitalize",
+                  levelStyles(apiResult.prediction.level),
+                )}
+              >
+                Riesgo {apiResult.prediction.nivel_riesgo ?? apiResult.prediction.level}
+              </p>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Score predictivo:{" "}
+                <strong>
+                  {apiResult.prediction.score_predictivo ?? apiResult.prediction.score}
+                </strong>
+                /100 · Prob. abandono:{" "}
+                {(
+                  (apiResult.prediction.probabilidad_abandono ??
+                    apiResult.prediction.probabilityAbandono ??
+                    apiResult.prediction.probability) * 100
+                ).toFixed(1)}
+                %
+              </p>
+              <p className="mt-2 text-xs text-[var(--text-muted)]">
+                Modelo: {apiResult.prediction.modelo_usado ?? apiResult.prediction.modelName} · Fuente:{" "}
+                {apiResult.source}
+              </p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
+                {new Date(apiResult.prediction.predictedAt).toLocaleString("es-PE")}
+              </p>
+            </article>
+            <article className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4">
+              <p className="text-xs font-semibold uppercase text-violet-300">Recomendación automática</p>
+              <p className="mt-2 text-sm text-violet-100/90">
+                {apiResult.prediction.recomendacion ?? apiResult.prediction.recommendation}
+              </p>
+              {apiResult.alertCreated ? (
+                <p className="mt-2 text-xs text-amber-400">Se generó alerta temprana en el sistema.</p>
+              ) : null}
+            </article>
+            <article className="lg:col-span-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-deep)]/50 p-4">
+              <p className="text-xs font-semibold uppercase text-[var(--text-muted)]">Factores principales</p>
+              <ul className="mt-2 space-y-2">
+                {(apiResult.prediction.factores_riesgo ?? apiResult.prediction.factors ?? []).map((f) => (
+                  <li key={f.key} className="flex justify-between text-sm">
+                    <span>{f.label}</span>
+                    <span className="font-semibold tabular-nums">{f.contribution.toFixed(1)}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </div>
         ) : null}
       </motion.section>
 

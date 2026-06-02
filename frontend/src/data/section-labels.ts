@@ -13,6 +13,7 @@ export const SECTION_LABELS: Record<AppSection, string> = {
   Asistencia: "Asistencia",
   "Actividad LMS": "Actividad en plataforma",
   Predicción: "Predicción IA",
+  "Historial predicciones": "Historial de predicciones",
   Chat: "Chat interno",
   Reportes: "Reportes",
   "Monitoreo docentes": "Monitoreo docentes",

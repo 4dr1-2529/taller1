@@ -32,6 +32,15 @@ export type Student = {
   estado: StudentStatus;
   metrics: StudentAcademicMetrics;
   prediction?: { score: number; level: RiskLevel; probability?: number };
+  /** Última predicción persistida en BD (prioridad sobre cálculo local) */
+  storedPrediction?: {
+    score: number;
+    level: RiskLevel;
+    probability?: number;
+    factors?: { key: string; label: string; contribution: number }[];
+    modelName?: string;
+    createdAt?: string;
+  };
 };
 
 export type TeacherCourse = {

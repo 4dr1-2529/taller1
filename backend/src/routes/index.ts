@@ -11,6 +11,9 @@ import {
 } from "../controllers/teachers.controller.js";
 import { listCourses, createCourse, updateCourse, deleteCourse } from "../controllers/courses.controller.js";
 import { dashboardStats, predict } from "../controllers/predict.controller.js";
+import { listPredictions, getPrediction } from "../controllers/predictions.controller.js";
+import { listAlerts, patchAlertStatus } from "../controllers/alerts.controller.js";
+import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 import {
   listNiveles,
   listSecciones,
@@ -67,9 +70,11 @@ router.post("/courses", authenticate, authorize("admin", "docente"), createCours
 router.put("/courses/:id", authenticate, authorize("admin", "docente"), updateCourse);
 router.delete("/courses/:id", authenticate, authorize("admin"), deleteCourse);
 
-router.get("/enrollments", authenticate, async (_req, res, next) => {
+router.get("/enrollments", authenticate, async (req, res, next) => {
   try {
+    const scope = await resolveStudentScope(req.user!);
     const items = await prisma.enrollment.findMany({
+      where: { student: scope },
       include: { student: true, course: true },
     });
     res.json({ ok: true, items });
@@ -80,6 +85,7 @@ router.get("/enrollments", authenticate, async (_req, res, next) => {
 router.post("/enrollments", authenticate, authorize("admin", "docente"), async (req, res, next) => {
   try {
     const data = enrollmentSchema.parse(req.body);
+    await assertStudentInScope(req.user!, data.studentId);
     const [student, course] = await Promise.all([
       prisma.student.findUnique({ where: { id: data.studentId }, select: { seccionId: true } }),
       prisma.course.findUnique({ where: { id: data.courseId }, select: { seccionId: true, nombre: true } }),
@@ -101,40 +107,23 @@ router.post("/enrollments", authenticate, authorize("admin", "docente"), async (
 });
 
 router.post("/predict", authenticate, predict);
+router.get("/predictions", authenticate, listPredictions);
+router.get("/predictions/:id", authenticate, getPrediction);
 router.get("/dashboard/kpis", authenticate, dashboardStats);
 
-router.get("/alerts", authenticate, async (_req, res, next) => {
-  try {
-    const items = await prisma.alert.findMany({
-      where: { status: { in: ["abierta", "en_seguimiento"] } },
-      include: { student: true },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json({ ok: true, items });
-  } catch (e) {
-    next(e);
-  }
-});
-router.patch("/alerts/:id", authenticate, authorize("admin", "tutor", "psicologo"), async (req, res, next) => {
-  try {
-    const { status } = alertStatusSchema.parse(req.body);
-    const item = await prisma.alert.update({
-      where: { id: paramId(req) },
-      data: { status },
-      include: { student: true },
-    });
-    await logAudit({ entidad: "Alert", entidadId: item.id, accion: "UPDATE_STATUS", detalle: status, studentId: item.studentId });
-    res.json({ ok: true, item });
-  } catch (e) {
-    next(e);
-  }
-});
+router.get("/alerts", authenticate, listAlerts);
+router.patch("/alerts/:id", authenticate, authorize("admin", "tutor", "psicologo"), patchAlertStatus);
 
 router.get("/psych-followups", authenticate, async (req, res, next) => {
   try {
     const studentId = req.query.studentId as string | undefined;
+    const scope = await resolveStudentScope(req.user!);
+    if (studentId) await assertStudentInScope(req.user!, studentId);
     const items = await prisma.psychologicalFollowUp.findMany({
-      where: studentId ? { studentId } : undefined,
+      where: {
+        student: scope,
+        ...(studentId ? { studentId } : {}),
+      },
       include: { student: true },
       orderBy: { fecha: "desc" },
       take: 50,
@@ -147,6 +136,7 @@ router.get("/psych-followups", authenticate, async (req, res, next) => {
 router.post("/psych-followups", authenticate, authorize("admin", "psicologo", "tutor"), async (req, res, next) => {
   try {
     const data = psychFollowUpSchema.parse(req.body);
+    await assertStudentInScope(req.user!, data.studentId);
     const item = await prisma.psychologicalFollowUp.create({
       data: { studentId: data.studentId, resumen: data.resumen, acciones: data.acciones, profesional: data.profesional, fecha: data.fecha ? new Date(data.fecha) : new Date() },
       include: { student: true },

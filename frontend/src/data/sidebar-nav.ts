@@ -31,7 +31,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     id: "ai",
     label: "IA y analítica",
-    items: ["Predicción", "Alertas"],
+    items: ["Predicción", "Historial predicciones", "Alertas"],
   },
   {
     id: "admin",
@@ -61,6 +61,7 @@ export const SECTION_BREADCRUMB: Record<AppSection, string[]> = {
   Asistencia: ["Académico", "Asistencia"],
   "Actividad LMS": ["Académico", "Plataforma"],
   Predicción: ["IA", "Predicción"],
+  "Historial predicciones": ["IA", "Historial"],
   Chat: ["General", "Mensajes"],
   Reportes: ["Administración", "Reportes"],
   "Monitoreo docentes": ["Administración", "Monitoreo"],

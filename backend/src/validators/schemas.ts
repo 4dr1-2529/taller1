@@ -77,12 +77,12 @@ export const predictSchema = z.object({
       promedioGeneral: gradeField,
       asistenciaGeneral: percentageField,
       lms: z.object({
-        engagement: z.enum(["alto", "medio", "bajo"]),
+        engagement: z.enum(["alto", "medio", "bajo"]).optional(),
         actividadSemanalPct: z.array(percentageField),
-        minutosPorSemana: z.array(z.number().min(0)),
+        minutosPorSemana: z.array(z.number().min(0)).optional(),
         tareasEntregadas: z.number().min(0),
         tareasTotales: z.number().min(1),
-        horasPlataformaSemana: z.number().min(0),
+        horasPlataformaSemana: z.number().min(0).optional(),
       }),
     })
     .optional(),

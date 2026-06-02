@@ -1,6 +1,7 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { api } from "@/services/api";
 import { AppShell } from "@/components/layout/AppShell";
 import { BentoDashboard } from "@/components/dashboard/bento/BentoDashboard";
 import { AcademicStructureView } from "@/components/views/AcademicStructureView";
@@ -11,6 +12,7 @@ import { ChatView } from "@/components/views/ChatView";
 import { EnrollmentsView, type NewEnrollmentForm } from "@/components/views/EnrollmentsView";
 import { LMSView } from "@/components/views/LMSView";
 import { PredictionView } from "@/components/views/PredictionView";
+import { PredictionHistoryView } from "@/components/views/PredictionHistoryView";
 import { ReportsView } from "@/components/views/ReportsView";
 import { defaultStudentForm, StudentsView, type NewStudentForm } from "@/components/views/StudentsView";
 import {
@@ -46,6 +48,7 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Asistencia",
     "Actividad LMS",
     "Predicción",
+    "Historial predicciones",
     "Chat",
     "Reportes",
   ],
@@ -61,6 +64,7 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Asistencia",
     "Actividad LMS",
     "Predicción",
+    "Historial predicciones",
     "Chat",
     "Reportes",
   ],
@@ -71,11 +75,12 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Estudiantes",
     "Actividad LMS",
     "Predicción",
+    "Historial predicciones",
     "Chat",
     "Reportes",
   ],
-  estudiante: ["Dashboard", "Actividad LMS", "Predicción"],
-  apoderado: ["Dashboard", "Actividad LMS", "Alertas", "Predicción"],
+  estudiante: ["Dashboard", "Actividad LMS", "Predicción", "Historial predicciones"],
+  apoderado: ["Dashboard", "Actividad LMS", "Alertas", "Predicción", "Historial predicciones"],
 };
 
 const initialEnrollment: NewEnrollmentForm = {
@@ -99,6 +104,7 @@ function sectionSubtitle(section: AppSection): string {
     case "Asistencia": return "Registro diario: asistió, tardanza, falta o falta justificada.";
     case "Actividad LMS": return "Uso de la plataforma virtual: tiempo conectado, tareas y nivel de compromiso.";
     case "Predicción": return "Puntaje de riesgo, simulación de escenarios y métricas del modelo.";
+    case "Historial predicciones": return "Registro histórico de scores, factores y recomendaciones.";
     case "Chat": return "Coordinación entre tutoría, docentes y psicología.";
     case "Reportes": return "Tableros analíticos y exportación PDF / Excel.";
     case "Monitoreo docentes":
@@ -139,7 +145,18 @@ export default function Home() {
 
   const useApi = dataSource === "api";
   const canManageStaff = role === "admin";
-  const alertCount = useMemo(() => earlyAlertCount(students), [students]);
+  const [alertCount, setAlertCount] = useState(0);
+
+  useEffect(() => {
+    if (!useApi || !api.hasToken) {
+      setAlertCount(earlyAlertCount(students));
+      return;
+    }
+    void api
+      .getAlerts()
+      .then((r) => setAlertCount(r.total ?? r.items.length))
+      .catch(() => setAlertCount(earlyAlertCount(students)));
+  }, [useApi, students.length, loading]);
 
   async function handleAddStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -258,6 +275,8 @@ export default function Home() {
         return <LMSView students={students} />;
       case "Predicción":
         return <PredictionView students={students} useApi={dataSource === "api"} />;
+      case "Historial predicciones":
+        return <PredictionHistoryView students={students} />;
       case "Chat":
         return <ChatView />;
       case "Monitoreo docentes":

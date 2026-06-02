@@ -26,6 +26,15 @@ type ApiLmsActivity = {
   horasPlataforma: number;
 };
 
+type ApiStoredPrediction = {
+  score: number;
+  level: "bajo" | "medio" | "alto";
+  probability?: number | null;
+  modelName?: string;
+  factorsJson?: string;
+  createdAt?: string;
+};
+
 type ApiStudent = {
   id: string;
   codigo: string;
@@ -41,6 +50,7 @@ type ApiStudent = {
   asistenciaGeneral: number;
   lmsEngagement: string;
   lmsActivities?: ApiLmsActivity[];
+  predictions?: ApiStoredPrediction[];
 };
 
 type ApiTeacherCourse = {
@@ -105,10 +115,21 @@ function mapEngagement(v: string): LmsEngagement {
   return "medio";
 }
 
+function parseFactorsJson(raw?: string) {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as { key: string; label: string; contribution: number }[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export function mapStudentFromApi(row: ApiStudent): Student {
   const acts = row.lmsActivities ?? [];
   const last = acts[acts.length - 1];
   const nivelLabel = formatSeccionLabel(row.seccion, row.nivel);
+  const lastPred = row.predictions?.[0];
   return {
     id: row.id,
     codigo: row.codigo,
@@ -131,6 +152,16 @@ export function mapStudentFromApi(row: ApiStudent): Student {
         horasPlataformaSemana: last?.horasPlataforma ?? 0,
       },
     },
+    storedPrediction: lastPred
+      ? {
+          score: lastPred.score,
+          level: lastPred.level,
+          probability: lastPred.probability ?? undefined,
+          factors: parseFactorsJson(lastPred.factorsJson),
+          modelName: lastPred.modelName,
+          createdAt: lastPred.createdAt,
+        }
+      : undefined,
   };
 }
 

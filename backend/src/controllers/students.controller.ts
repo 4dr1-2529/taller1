@@ -4,6 +4,7 @@ import { studentSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramId } from "../utils/params.js";
+import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 
 
 export async function listStudents(req: Request, res: Response, next: NextFunction) {
@@ -14,7 +15,8 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
     const limit = Math.min(200, Number(req.query.limit) || 100);
     const skip = (page - 1) * limit;
 
-    const where: Record<string, unknown> = { activo: true };
+    const scope = await resolveStudentScope(req.user!);
+    const where: Record<string, unknown> = { ...scope };
     if (seccionId) where.seccionId = seccionId;
     if (q) {
       where.OR = [
@@ -86,8 +88,10 @@ export async function createStudent(req: Request, res: Response, next: NextFunct
 
 export async function getStudent(req: Request, res: Response, next: NextFunction) {
   try {
+    const id = paramId(req);
+    await assertStudentInScope(req.user!, id);
     const student = await prisma.student.findUnique({
-      where: { id: paramId(req) },
+      where: { id },
       include: {
         seccion: { include: { grado: { include: { nivel: true } } } },
         enrollments: { include: { course: true } },
@@ -107,9 +111,11 @@ export async function getStudent(req: Request, res: Response, next: NextFunction
 
 export async function updateStudent(req: Request, res: Response, next: NextFunction) {
   try {
+    const id = paramId(req);
+    await assertStudentInScope(req.user!, id);
     const data = req.body as Record<string, unknown>;
     const student = await prisma.student.update({
-      where: { id: paramId(req) },
+      where: { id },
       data: {
         nombres: data.nombres as string | undefined,
         apellidos: data.apellidos as string | undefined,
@@ -139,8 +145,10 @@ export async function updateStudent(req: Request, res: Response, next: NextFunct
 
 export async function deleteStudent(req: Request, res: Response, next: NextFunction) {
   try {
+    const id = paramId(req);
+    await assertStudentInScope(req.user!, id);
     await prisma.student.update({
-      where: { id: paramId(req) },
+      where: { id },
       data: { activo: false },
     });
     await logAudit({

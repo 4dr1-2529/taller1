@@ -3,12 +3,14 @@ import { prisma } from "../utils/prisma.js";
 import { gradeSchema } from "../validators/schemas.js";
 import { logAudit } from "../utils/audit.js";
 import { paramId } from "../utils/params.js";
+import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 
 
 export async function listGrades(req: Request, res: Response, next: NextFunction) {
   try {
     const { studentId, courseId, periodo } = req.query;
-    const where: Record<string, unknown> = {};
+    const scope = await resolveStudentScope(req.user!);
+    const where: Record<string, unknown> = { student: scope };
     if (studentId) where.studentId = studentId as string;
     if (courseId) where.courseId = courseId as string;
     if (periodo) where.periodo = periodo as string;
@@ -31,6 +33,7 @@ export async function listGrades(req: Request, res: Response, next: NextFunction
 export async function createGrade(req: Request, res: Response, next: NextFunction) {
   try {
     const data = gradeSchema.parse(req.body);
+    await assertStudentInScope(req.user!, data.studentId);
     const item = await prisma.grade.upsert({
       where: {
         studentId_courseId_periodo_bimestre: {

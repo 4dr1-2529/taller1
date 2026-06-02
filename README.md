@@ -19,6 +19,14 @@
 tesis-dashboard/
 ├── frontend/               # Next.js (src vía enlace a /src durante migración)
 ├── machine-learning/       # FastAPI + scikit-learn (ensemble)
+│   ├── app/                # API inferencia
+│   ├── data/               # Datasets CSV
+│   ├── models/             # Artefactos .joblib
+│   ├── training/           # Guía entrenamiento
+│   ├── evaluation/         # Métricas y evaluación
+│   ├── reports/            # Reportes exportados
+│   ├── utils/              # Validadores de entrada
+│   └── train.py            # Script principal
 ├── src/                    # Código UI (App Router)
 │   ├── app/                # Pages + API routes
 │   ├── components/         # UI components + views
@@ -182,9 +190,17 @@ npm run dev
 - `DELETE /api/v1/students/:id` — Eliminar (admin)
 
 ### IA / Predicción
-- `POST /api/v1/predict` — Predecir riesgo
-- `GET /api/v1/dashboard/kpis` — Estadísticas globales
-- `GET /api/v1/ml/metrics` — Métricas del modelo
+- `POST /api/v1/predict` — Predecir riesgo (guarda historial + alerta si medio/alto)
+- `GET /api/v1/predictions` — Historial de predicciones (filtro por estudiante)
+- `GET /api/v1/predictions/:id` — Detalle de predicción
+- `GET /api/v1/dashboard/kpis` — Estadísticas globales y tendencia
+- `GET /api/v1/alerts` — Alertas tempranas (alcance por rol)
+- `GET /api/v1/ml/metrics` — Métricas del modelo (RF, XGBoost/HGB, Stacking)
+
+### ML Service (puerto 5000)
+- `POST /predict` — Probabilidad de abandono, score, nivel, factores, recomendación
+- `GET /metrics` — Comparación Accuracy, Precision, Recall, F1, matrices de confusión
+- `GET /health` — Estado del servicio
 
 ### Administración (solo admin)
 - `GET /api/v1/admin/users` — Listar usuarios
@@ -200,20 +216,63 @@ Ver [API.md](docs/API.md) para documentación completa.
 
 ## Machine Learning
 
-### Modelos
-- **Random Forest** (150 estimadores)
-- **XGBoost** (150 estimadores, learning rate 0.1)
-- **Stacking Ensemble** (RF + XGBoost → RF meta)
+### Modelos (ensemble learning)
+- **Random Forest** — 150 árboles, `class_weight=balanced`
+- **XGBoost** (o HistGradientBoosting si hay incompatibilidad de versiones)
+- **Stacking** — RF + HGB con meta-clasificador RF
+- **Selección automática** del mejor modelo por **F1-score** → se guarda en `models/best_model.joblib`
 
-### Features
-- `promedio_general` — Promedio académico (0-20)
-- `asistencia_general` — Porcentaje de asistencia
-- `actividad_lms_prom` — Actividad promedio en LMS
-- `tareas_ratio` — Ratio de tareas entregadas
-- `estado` — Estado administrativo
+### Variables de la tesis (10 features)
+| Variable | Descripción |
+|----------|-------------|
+| `promedio_general` | Promedio académico (0–20) |
+| `cursos_desaprobados` | Cantidad de cursos con nota &lt; 11 |
+| `asistencia_general` | Porcentaje de asistencia (0–100) |
+| `frecuencia_acceso_lms` | Actividad promedio semanal en LMS |
+| `tiempo_plataforma` | Horas semanales en plataforma |
+| `tareas_ratio` | Tareas entregadas / totales |
+| `participacion_actividades` | Participación en actividades |
+| `uso_foros` | Uso de foros (0–1) |
+| `disminucion_actividad` | Caída de actividad entre semanas |
+| `estado` | activo / en_riesgo / retirado |
 
-### Métricas
-Las métricas se generan automáticamente al entrenar y están disponibles en `/api/v1/ml/metrics`.
+### Salida de `/predict` (formato tesis + compatibilidad)
+
+```json
+{
+  "probabilidad_abandono": 0.85,
+  "score_predictivo": 85,
+  "nivel_riesgo": "Alto",
+  "factores_riesgo": [],
+  "recomendacion": "",
+  "modelo_usado": "stacking",
+  "fecha_prediccion": "2026-06-02T12:00:00.000Z"
+}
+```
+
+También se devuelven alias en inglés/camelCase (`score`, `level`, `factors`, etc.) para el frontend.
+
+### Flujo del sistema
+
+```
+Frontend (3029) → Backend API (4000) → ML Service (5000)
+                      ↓
+            Historial (Prediction)
+                      ↓
+         Alerta temprana (medio/alto) → Dashboard + Notificaciones
+```
+
+### Entrenamiento y métricas
+```bash
+npm run ml:train
+```
+Genera `models/metrics.json` y `models/metrics_comparison.csv` con Accuracy, Precision, Recall, F1 y matriz de confusión por modelo.
+
+### Pruebas
+```bash
+npm run ml:test          # unit tests Python
+npm run test:smoke       # API + ML (servicios en ejecución)
+```
 
 ---
 
@@ -264,6 +323,10 @@ NODE_ENV="development"
 | `npm run db:seed` | Poblar datos demo |
 | `npm run db:studio` | Abrir Prisma Studio |
 | `npm run ml:train` | Entrenar modelos IA |
+| `npm run ml:test` | Pruebas unitarias ML |
+| `npm run test:unit` | Formato respuesta tesis (Node) |
+| `npm run test:smoke` | Pruebas smoke API/ML |
+| `npm run test` | unit + ml + smoke |
 | `npm run lint` | Lint código |
 
 ---

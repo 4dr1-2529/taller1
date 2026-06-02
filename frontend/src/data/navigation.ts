@@ -11,6 +11,7 @@ export const APP_SECTIONS = [
   "Asistencia",
   "Actividad LMS",
   "Predicción",
+  "Historial predicciones",
   "Chat",
   "Reportes",
   "Monitoreo docentes",

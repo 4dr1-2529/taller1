@@ -1,4 +1,4 @@
-import type { Course, Enrollment, RiskHistoryPoint, RiskLevel, Student } from "@/types/academic";
+import type { Course, Enrollment, RiskFactor, RiskHistoryPoint, RiskLevel, Student } from "@/types/academic";
 import { computePrediction } from "@/lib/risk-engine";
 import { toRiskEngineStatus } from "@/lib/status";
 
@@ -6,10 +6,32 @@ export type StudentWithPrediction = Student & {
   prediction: ReturnType<typeof computePrediction>;
 };
 
+function mapStoredFactors(factors?: { key: string; label: string; contribution: number }[]): RiskFactor[] {
+  if (!factors?.length) return [];
+  return factors.map((f) => ({
+    ...f,
+    severity: (f.contribution >= 20 ? "alta" : f.contribution >= 10 ? "media" : "baja") as RiskFactor["severity"],
+  }));
+}
+
+function predictionFromStored(s: Student): StudentWithPrediction["prediction"] {
+  const sp = s.storedPrediction;
+  if (!sp) return computePrediction(s.metrics, toRiskEngineStatus(s.estado));
+  const factors = mapStoredFactors(sp.factors);
+  const fallback = computePrediction(s.metrics, toRiskEngineStatus(s.estado));
+  return {
+    score: sp.score,
+    level: sp.level,
+    probability: sp.probability ?? sp.score / 100,
+    factors: factors.length ? factors : fallback.factors,
+    modelName: sp.modelName ?? fallback.modelName,
+  };
+}
+
 export function attachPredictions(students: Student[]): StudentWithPrediction[] {
   return students.map((s) => ({
     ...s,
-    prediction: computePrediction(s.metrics, toRiskEngineStatus(s.estado)),
+    prediction: predictionFromStored(s),
   }));
 }
 
