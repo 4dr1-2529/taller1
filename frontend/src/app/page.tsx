@@ -206,7 +206,7 @@ export default function Home() {
 
     switch (activeSection) {
       case "Dashboard":
-        return students.length > 0 || role === "estudiante" ? (
+        return useApi || students.length > 0 || role === "estudiante" ? (
           <RoleDashboard
             role={role}
             students={students}

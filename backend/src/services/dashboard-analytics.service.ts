@@ -98,6 +98,15 @@ export async function buildDashboardAnalytics(scope: Scope) {
   const featureImportance = extractFeatureImportance(mlMetrics);
   const modelComparison = extractModelComparison(mlMetrics);
 
+  const [instConfig, directorUser] = await Promise.all([
+    prisma.systemConfig.findUnique({ where: { clave: "institucion.nombre" } }),
+    prisma.user.findFirst({
+      where: { activo: true, rol: { codigo: "admin" } },
+      orderBy: { id: "asc" },
+      select: { nombres: true, apellidos: true, email: true },
+    }),
+  ]);
+
   return {
     kpis: {
       totalStudents,
@@ -108,6 +117,11 @@ export async function buildDashboardAnalytics(scope: Scope) {
       avgAttendance: Math.round(Number(avgGrade._avg.asistenciaGeneral ?? 0) * 10) / 10,
       byLevel,
       alertsByLevel: Object.fromEntries(alertsByLevel.map((a) => [a.nivelRiesgo, a._count])),
+      institutionName: instConfig?.valor ?? "I.E.P. Blenkir",
+      directorName: directorUser
+        ? `${directorUser.nombres} ${directorUser.apellidos}`.trim()
+        : null,
+      directorEmail: directorUser?.email ?? null,
     },
     riskTrend,
     riskBySection,

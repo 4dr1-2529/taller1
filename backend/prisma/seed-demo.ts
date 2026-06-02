@@ -79,6 +79,21 @@ async function main() {
     },
   });
 
+  // Alias legacy (README / docs anteriores)
+  for (const legacyEmail of ["director@iep-huancayo.edu.pe", "admin@iep-huancayo.edu.pe"]) {
+    await prisma.user.upsert({
+      where: { email: legacyEmail },
+      update: { passwordHash: hash, rolId: rolAdmin, activo: true },
+      create: {
+        email: legacyEmail,
+        passwordHash: hash,
+        nombres: "Carlos",
+        apellidos: "Ramírez Vargas",
+        rolId: rolAdmin,
+      },
+    });
+  }
+
   const teacherIds: bigint[] = [];
   for (let i = 0; i < PROFESORES.length; i++) {
     const p = PROFESORES[i];

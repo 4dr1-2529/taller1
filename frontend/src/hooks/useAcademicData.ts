@@ -45,7 +45,7 @@ export function useAcademicData() {
     try {
       await api.health();
       const [st, te, co, en] = await Promise.all([
-        api.getStudents(200),
+        api.getStudents(1, 200),
         api.getTeachers(),
         api.getCourses(),
         api.getEnrollments(),
@@ -63,7 +63,7 @@ export function useAcademicData() {
         await refreshAuth();
         if (!api.hasToken) throw firstError;
         const [st, te, co, en] = await Promise.all([
-          api.getStudents(200),
+          api.getStudents(1, 200),
           api.getTeachers(),
           api.getCourses(),
           api.getEnrollments(),

@@ -371,6 +371,9 @@ class ApiClient {
         avgAttendance?: number;
         byLevel: { bajo: number; medio: number; alto: number };
         alertsByLevel?: Record<string, number>;
+        institutionName?: string;
+        directorName?: string | null;
+        directorEmail?: string | null;
       };
       riskTrend: { periodo: string; riesgoGlobal: number; count?: number }[];
       riskBySection: { label: string; alto: number; medio: number; bajo: number; total: number }[];

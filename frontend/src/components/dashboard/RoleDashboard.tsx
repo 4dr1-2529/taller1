@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, BookOpen, GraduationCap, TrendingUp, Users } from "lucide-react";
 import { BentoDashboard } from "@/components/dashboard/bento/BentoDashboard";
-import { attachPredictions, averageAttendance, globalRiskScore } from "@/lib/aggregates";
+import { InstitutionOverview } from "@/components/dashboard/InstitutionOverview";
+import { attachPredictions, globalRiskScore } from "@/lib/aggregates";
 import { api } from "@/services/api";
+import { useAuth } from "@/contexts/AuthProvider";
 import type { Course, Enrollment, Student } from "@/types/academic";
 import { RiskGauge } from "@/components/ui/RiskGauge";
 import { RiskBadge } from "@/components/ui/RiskBadge";
@@ -33,11 +35,16 @@ function KpiCard({ label, value, suffix = "", icon: Icon }: { label: string; val
 }
 
 export function RoleDashboard({ role, students, courses, enrollments, useApi = false }: Props) {
+  const { user } = useAuth();
   const [kpis, setKpis] = useState<{
+    totalStudents?: number;
     totalTeachers?: number;
     openAlerts?: number;
     avgGrade?: number;
     avgAttendance?: number;
+    institutionName?: string;
+    directorName?: string | null;
+    directorEmail?: string | null;
   } | null>(null);
 
   useEffect(() => {
@@ -50,10 +57,22 @@ export function RoleDashboard({ role, students, courses, enrollments, useApi = f
   const selfPred = withPred[0]?.prediction;
 
   if (role === "admin") {
+    const totalStudents = kpis?.totalStudents ?? students.length;
+    const directorName =
+      kpis?.directorName ??
+      (user ? `${user.nombres ?? ""} ${user.apellidos ?? ""}`.trim() : "Director institucional");
+
     return (
       <div className="space-y-6">
+        <InstitutionOverview
+          institutionName={kpis?.institutionName ?? "I.E.P. Blenkir"}
+          directorName={directorName || "Director institucional"}
+          directorEmail={kpis?.directorEmail ?? user?.email}
+          totalStudents={totalStudents}
+          totalTeachers={kpis?.totalTeachers ?? 0}
+        />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <KpiCard label="Total estudiantes" value={students.length} icon={Users} />
+          <KpiCard label="Total estudiantes" value={totalStudents} icon={Users} />
           <KpiCard label="Total profesores" value={kpis?.totalTeachers ?? "—"} icon={GraduationCap} />
           <KpiCard label="Alertas activas" value={kpis?.openAlerts ?? 0} icon={AlertTriangle} />
           <KpiCard label="Promedio institucional" value={kpis?.avgGrade ?? globalRiskScore(students)} suffix="/20" icon={BookOpen} />

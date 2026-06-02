@@ -8,6 +8,16 @@ import type {
   Teacher,
 } from "@/types/academic";
 
+/** Prisma Decimal llega como string en JSON — normalizar a number. */
+function toNumber(value: unknown, fallback = 0): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
+  return fallback;
+}
+
 type ApiSeccion = {
   id: string;
   nombre: string;
@@ -46,8 +56,8 @@ type ApiStudent = {
   correo: string | null;
   telefono: string | null;
   estado: string;
-  promedioGeneral: number;
-  asistenciaGeneral: number;
+  promedioGeneral: number | string;
+  asistenciaGeneral: number | string;
   lmsEngagement: string;
   lmsActivities?: ApiLmsActivity[];
   predictions?: ApiStoredPrediction[];
@@ -94,8 +104,8 @@ type ApiEnrollment = {
   studentId: string;
   courseId: string;
   periodo?: string;
-  promedio?: number;
-  asistenciaPct?: number;
+  promedio?: number | string;
+  asistenciaPct?: number | string;
 };
 
 export function formatSeccionLabel(seccion?: ApiSeccion | null, fallbackNivel?: string): string {
@@ -141,22 +151,22 @@ export function mapStudentFromApi(row: ApiStudent): Student {
     telefono: row.telefono ?? "",
     estado: mapEstado(row.estado),
     metrics: {
-      promedioGeneral: row.promedioGeneral,
-      asistenciaGeneral: row.asistenciaGeneral,
+      promedioGeneral: toNumber(row.promedioGeneral),
+      asistenciaGeneral: toNumber(row.asistenciaGeneral),
       lms: {
         engagement: mapEngagement(row.lmsEngagement),
-        actividadSemanalPct: acts.map((a) => a.actividadPct),
-        minutosPorSemana: acts.map((a) => a.minutos),
-        tareasEntregadas: last?.tareasEntregadas ?? 0,
-        tareasTotales: last?.tareasTotales ?? 0,
-        horasPlataformaSemana: last?.horasPlataforma ?? 0,
+        actividadSemanalPct: acts.map((a) => toNumber(a.actividadPct)),
+        minutosPorSemana: acts.map((a) => toNumber(a.minutos)),
+        tareasEntregadas: toNumber(last?.tareasEntregadas),
+        tareasTotales: toNumber(last?.tareasTotales),
+        horasPlataformaSemana: toNumber(last?.horasPlataforma),
       },
     },
     storedPrediction: lastPred
       ? {
-          score: lastPred.score,
+          score: toNumber(lastPred.score),
           level: lastPred.level,
-          probability: lastPred.probability ?? undefined,
+          probability: lastPred.probability != null ? toNumber(lastPred.probability) : undefined,
           factors: parseFactorsJson(lastPred.factorsJson),
           modelName: lastPred.modelName,
           createdAt: lastPred.createdAt,
@@ -210,8 +220,8 @@ export function mapEnrollmentFromApi(row: ApiEnrollment): Enrollment {
     id: row.id,
     studentId: row.studentId,
     courseId: row.courseId,
-    promedio: row.promedio ?? 0,
-    asistenciaPct: row.asistenciaPct ?? 0,
+    promedio: toNumber(row.promedio),
+    asistenciaPct: toNumber(row.asistenciaPct),
     periodo: row.periodo,
   };
 }

@@ -10,7 +10,11 @@ import {
 } from "./fields.js";
 
 export const loginSchema = z.object({
-  email: z.string().email("Correo inválido").max(255),
+  email: z
+    .string()
+    .email("Correo inválido")
+    .max(255)
+    .transform((v) => v.trim().toLowerCase()),
   password: z.string().min(6, "Mínimo 6 caracteres").max(128),
 });
 
