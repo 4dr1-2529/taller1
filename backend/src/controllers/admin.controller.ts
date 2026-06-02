@@ -1,16 +1,29 @@
 import type { Request, Response, NextFunction } from "express";
+import type { RolCodigo } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
-import { paramId } from "../utils/params.js";
-
+import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
+import { getRolId, mapUserWithRole } from "../utils/rol.js";
 
 export async function listUsers(_req: Request, res: Response, next: NextFunction) {
   try {
-    const items = await prisma.user.findMany({
-      select: { id: true, email: true, nombres: true, apellidos: true, role: true, activo: true, createdAt: true },
+    const rows = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        nombres: true,
+        apellidos: true,
+        activo: true,
+        createdAt: true,
+        rol: { select: { codigo: true } },
+      },
       orderBy: { createdAt: "desc" },
     });
+    const items = rows.map((u) => ({
+      ...mapUserWithRole(u),
+      id: idToString(u.id),
+    }));
     res.json({ ok: true, items });
   } catch (e) {
     next(e);
@@ -25,12 +38,27 @@ export async function createUser(req: Request, res: Response, next: NextFunction
 
     const bcrypt = await import("bcryptjs");
     const hash = await bcrypt.hash(password, 12);
+    const rolId = await getRolId((role ?? "estudiante") as RolCodigo);
     const user = await prisma.user.create({
-      data: { email, passwordHash: hash, nombres, apellidos, role: role ?? "estudiante" },
-      select: { id: true, email: true, nombres: true, apellidos: true, role: true, activo: true },
+      data: { email, passwordHash: hash, nombres, apellidos, rolId },
+      select: {
+        id: true,
+        email: true,
+        nombres: true,
+        apellidos: true,
+        activo: true,
+        rol: { select: { codigo: true } },
+      },
     });
-    await logAudit({ entidad: "User", entidadId: user.id, accion: "CREATE", usuarioId: req.user!.sub, detalle: `Role: ${user.role}` });
-    res.status(201).json({ ok: true, user });
+    const mapped = { ...mapUserWithRole(user), id: idToString(user.id) };
+    await logAudit({
+      entidad: "User",
+      entidadId: user.id,
+      accion: "CREATE",
+      usuarioId: req.user!.sub,
+      detalle: `Role: ${mapped.role}`,
+    });
+    res.status(201).json({ ok: true, user: mapped });
   } catch (e) {
     next(e);
   }
@@ -39,13 +67,32 @@ export async function createUser(req: Request, res: Response, next: NextFunction
 export async function updateUser(req: Request, res: Response, next: NextFunction) {
   try {
     const { nombres, apellidos, role, activo } = req.body;
+    const data: { nombres?: string; apellidos?: string; activo?: boolean; rolId?: bigint } = {
+      nombres,
+      apellidos,
+      activo,
+    };
+    if (role) data.rolId = await getRolId(role as RolCodigo);
+
     const user = await prisma.user.update({
-      where: { id: paramId(req) },
-      data: { nombres, apellidos, role, activo },
-      select: { id: true, email: true, nombres: true, apellidos: true, role: true, activo: true },
+      where: { id: paramBigIntId(req) },
+      data,
+      select: {
+        id: true,
+        email: true,
+        nombres: true,
+        apellidos: true,
+        activo: true,
+        rol: { select: { codigo: true } },
+      },
     });
-    await logAudit({ entidad: "User", entidadId: user.id, accion: "UPDATE", usuarioId: req.user!.sub });
-    res.json({ ok: true, user });
+    await logAudit({
+      entidad: "User",
+      entidadId: user.id,
+      accion: "UPDATE",
+      usuarioId: req.user!.sub,
+    });
+    res.json({ ok: true, user: { ...mapUserWithRole(user), id: idToString(user.id) } });
   } catch (e) {
     next(e);
   }
@@ -53,8 +100,9 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
 
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
   try {
-    await prisma.user.delete({ where: { id: paramId(req) } });
-    await logAudit({ entidad: "User", entidadId: paramId(req), accion: "DELETE", usuarioId: req.user!.sub });
+    const id = paramBigIntId(req);
+    await prisma.user.delete({ where: { id } });
+    await logAudit({ entidad: "User", entidadId: id, accion: "DELETE", usuarioId: req.user!.sub });
     res.json({ ok: true, message: "Usuario eliminado" });
   } catch (e) {
     next(e);
@@ -71,18 +119,18 @@ export async function getAuditLogs(req: Request, res: Response, next: NextFuncti
     const entidad = req.query.entidad as string | undefined;
 
     const where: {
-      teacherId?: string;
+      profesorId?: bigint;
       entidad?: string;
-      usuario?: { role: "docente" };
+      usuario?: { rol: { codigo: "docente" } };
     } = {};
 
-    if (teacherId) where.teacherId = teacherId;
+    if (teacherId) where.profesorId = toDbId(teacherId);
     if (entidad) where.entidad = entidad;
     if (role === "docente") {
-      where.usuario = { role: "docente" };
+      where.usuario = { rol: { codigo: "docente" } };
     }
 
-    const [items, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       prisma.auditLog.findMany({
         where,
         skip,
@@ -90,16 +138,36 @@ export async function getAuditLogs(req: Request, res: Response, next: NextFuncti
         orderBy: { createdAt: "desc" },
         include: {
           usuario: {
-            select: { id: true, email: true, nombres: true, apellidos: true, role: true },
+            select: {
+              id: true,
+              email: true,
+              nombres: true,
+              apellidos: true,
+              rol: { select: { codigo: true } },
+            },
           },
-          teacher: {
-            select: { id: true, codigo: true, nombres: true, apellidos: true, correo: true },
-          },
-          student: { select: { nombres: true, apellidos: true, codigo: true } },
+          profesor: { select: { id: true, codigo: true, nombres: true, apellidos: true, email: true } },
+          estudiante: { select: { nombres: true, apellidos: true, codigo: true } },
         },
       }),
       prisma.auditLog.count({ where }),
     ]);
+
+    const items = rows.map((row) => ({
+      ...row,
+      id: idToString(row.id),
+      usuario: row.usuario
+        ? {
+            ...mapUserWithRole(row.usuario),
+            id: idToString(row.usuario.id),
+          }
+        : null,
+      teacher: row.profesor
+        ? { ...row.profesor, id: idToString(row.profesor.id) }
+        : null,
+      student: row.estudiante,
+    }));
+
     res.json({ ok: true, items, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
   } catch (e) {
     next(e);
@@ -108,15 +176,19 @@ export async function getAuditLogs(req: Request, res: Response, next: NextFuncti
 
 export async function getSystemStats(_req: Request, res: Response, next: NextFunction) {
   try {
-    const [totalUsers, totalStudents, totalTeachers, totalPredictions, totalAlerts, totalSessions] = await Promise.all([
-      prisma.user.count(),
-      prisma.student.count({ where: { activo: true } }),
-      prisma.teacher.count({ where: { activo: true } }),
-      prisma.prediction.count(),
-      prisma.alert.count({ where: { status: { in: ["nueva", "en_seguimiento"] } } }),
-      prisma.session.count({ where: { expiresAt: { gt: new Date() } } }),
-    ]);
-    res.json({ ok: true, stats: { totalUsers, totalStudents, totalTeachers, totalPredictions, totalAlerts, totalSessions } });
+    const [totalUsers, totalStudents, totalTeachers, totalPredictions, totalAlerts, totalSessions] =
+      await Promise.all([
+        prisma.user.count(),
+        prisma.student.count({ where: { activo: true } }),
+        prisma.teacher.count({ where: { activo: true } }),
+        prisma.prediction.count(),
+        prisma.alert.count({ where: { estado: { in: ["nueva", "en_seguimiento"] } } }),
+        prisma.session.count({ where: { expiresAt: { gt: new Date() } } }),
+      ]);
+    res.json({
+      ok: true,
+      stats: { totalUsers, totalStudents, totalTeachers, totalPredictions, totalAlerts, totalSessions },
+    });
   } catch (e) {
     next(e);
   }

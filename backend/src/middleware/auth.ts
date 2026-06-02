@@ -1,13 +1,13 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import type { RolCodigo } from "@prisma/client";
 import { env } from "../config/env.js";
 import { AppError } from "./errorHandler.js";
-import type { UserRole } from "@prisma/client";
 
 export type AuthPayload = {
   sub: string;
   email: string;
-  role: UserRole;
+  role: RolCodigo;
 };
 
 export function authenticate(req: Request, _res: Response, next: NextFunction) {
@@ -43,7 +43,7 @@ export function authenticateOrOptional(req: Request, _res: Response, next: NextF
   next();
 }
 
-export function authorize(...roles: UserRole[]) {
+export function authorize(...roles: RolCodigo[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) return next(new AppError(401, "No autenticado"));
     if (!roles.includes(req.user.role)) {

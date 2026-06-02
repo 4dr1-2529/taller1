@@ -105,11 +105,13 @@ Contraseña para todos: **`Tesis2026!`**
 
 | Rol (UI) | Email | Rol sistema |
 |----------|-------|-------------|
-| Director | `director@iep-huancayo.edu.pe` | `admin` |
-| Profesor | `profesor1@iep-huancayo.edu.pe` | `docente` |
-| Estudiante | `estudiante01@iep-huancayo.edu.pe` | `estudiante` |
+| Director | `director@blenkir.edu.pe` | `admin` |
+| Profesor | `profesor1@blenkir.edu.pe` | `docente` |
+| Estudiante | `estudiante0001@blenkir.edu.pe` | `estudiante` |
 
-También válido: `admin@iep-huancayo.edu.pe` (mismo password, rol `admin`).
+Tras `db:seed:demo`: **660 estudiantes** (`estudiante0001` … `estudiante0660`), **15 profesores**, **22 secciones**.
+
+Legacy: `director@iep-huancayo.edu.pe`, `admin@iep-huancayo.edu.pe`
 
 ---
 
@@ -264,6 +266,8 @@ Copie desde `backend/.env.example`.
 | [docs/pruebas-no-funcionales.md](docs/pruebas-no-funcionales.md) | Seguridad y rendimiento |
 | [docs/postman.md](docs/postman.md) | Colección Postman |
 | [docs/sonarqube.md](docs/sonarqube.md) | Análisis estático |
+| [database/blenkir-v3/DER-BLENKIR.md](database/blenkir-v3/DER-BLENKIR.md) | **Rediseño BD v3** — 51 tablas Primaria Blenkir |
+| [database/blenkir-v3/README.md](database/blenkir-v3/README.md) | Scripts SQL e instalación |
 | [database/mysql/README.md](database/mysql/README.md) | XAMPP / MySQL |
 
 ---

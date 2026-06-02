@@ -2,19 +2,15 @@ import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
-import { paramId } from "../utils/params.js";
+import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { courseSchema } from "../validators/schemas.js";
 import { getTeacherIdForUser } from "../utils/teacher.js";
 import {
   buildCourseCodigoForSeccion,
   requireActiveSeccion,
 } from "../utils/course-section.js";
-
-const courseInclude = {
-  profesor: { select: { id: true, nombres: true, apellidos: true } },
-  cursoCatalogo: true,
-  seccion: { include: { grado: { include: { nivel: true } } } },
-};
+import { getActiveAnioLectivoId } from "../utils/academic-period.js";
+import { courseListInclude, mapCourseForApi } from "../utils/course-label.js";
 
 export async function listCourses(req: Request, res: Response, next: NextFunction) {
   try {
@@ -29,14 +25,18 @@ export async function listCourses(req: Request, res: Response, next: NextFunctio
       profesorId = tid;
     }
 
-    const items = await prisma.course.findMany({
+    const rows = await prisma.course.findMany({
       where: {
         activo: true,
-        ...(seccionId ? { seccionId } : {}),
-        ...(profesorId ? { profesorId } : {}),
+        ...(seccionId ? { seccionId: toDbId(seccionId) } : {}),
+        ...(profesorId ? { profesorId: toDbId(profesorId) } : {}),
       },
-      include: courseInclude,
+      include: courseListInclude,
     });
+    const items = rows.map((c) => ({
+      ...mapCourseForApi(c),
+      id: idToString(c.id),
+    }));
     res.json({ ok: true, items });
   } catch (e) {
     next(e);
@@ -45,7 +45,7 @@ export async function listCourses(req: Request, res: Response, next: NextFunctio
 
 export async function createCourse(req: Request, res: Response, next: NextFunction) {
   try {
-    const { codigo, nombre, profesorId, seccionId, cursoCatalogoId, periodo } = courseSchema.parse(req.body);
+    const { codigo, nombre, profesorId, seccionId, cursoCatalogoId } = courseSchema.parse(req.body);
 
     if (req.user?.role === "docente") {
       const tid = await getTeacherIdForUser(req.user.sub);
@@ -56,6 +56,18 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
 
     const seccion = await requireActiveSeccion(seccionId);
     const codigoFinal = buildCourseCodigoForSeccion(codigo, seccion);
+    const anioLectivoId = await getActiveAnioLectivoId();
+
+    let cursoId: bigint;
+    if (cursoCatalogoId) {
+      cursoId = toDbId(cursoCatalogoId);
+    } else {
+      const catalog = await prisma.cursoCatalogo.findFirst({
+        where: { nombre },
+      });
+      if (!catalog) throw new AppError(400, "cursoCatalogoId requerido o catálogo no encontrado por nombre");
+      cursoId = catalog.id;
+    }
 
     const existing = await prisma.course.findUnique({ where: { codigo: codigoFinal } });
     if (existing) {
@@ -67,11 +79,11 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
 
     const dupSeccion = await prisma.course.findFirst({
       where: {
-        seccionId,
-        nombre,
-        profesorId,
+        seccionId: toDbId(seccionId),
+        cursoId,
+        profesorId: toDbId(profesorId),
+        anioLectivoId,
         activo: true,
-        periodo: periodo ?? "2026",
       },
     });
     if (dupSeccion) {
@@ -84,13 +96,12 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
     const course = await prisma.course.create({
       data: {
         codigo: codigoFinal,
-        nombre,
-        profesorId,
-        seccionId,
-        cursoCatalogoId: cursoCatalogoId ?? null,
-        periodo: periodo ?? "2026",
+        cursoId,
+        profesorId: toDbId(profesorId),
+        seccionId: toDbId(seccionId),
+        anioLectivoId,
       },
-      include: courseInclude,
+      include: courseListInclude,
     });
     await logAudit({
       entidad: "Course",
@@ -98,7 +109,7 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
       accion: "CREATE",
       usuarioId: req.user?.sub,
     });
-    res.status(201).json({ ok: true, course });
+    res.status(201).json({ ok: true, course: { ...mapCourseForApi(course), id: idToString(course.id) } });
   } catch (e) {
     next(e);
   }
@@ -106,12 +117,16 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
 
 export async function updateCourse(req: Request, res: Response, next: NextFunction) {
   try {
-    const { nombre, profesorId, seccionId, activo } = req.body;
+    const { profesorId, seccionId, activo } = req.body;
     if (seccionId) await requireActiveSeccion(seccionId);
     const course = await prisma.course.update({
-      where: { id: paramId(req) },
-      data: { nombre, profesorId, seccionId, activo },
-      include: courseInclude,
+      where: { id: paramBigIntId(req) },
+      data: {
+        profesorId: profesorId != null ? toDbId(profesorId) : undefined,
+        seccionId: seccionId != null ? toDbId(seccionId) : undefined,
+        activo,
+      },
+      include: courseListInclude,
     });
     await logAudit({
       entidad: "Course",
@@ -119,7 +134,7 @@ export async function updateCourse(req: Request, res: Response, next: NextFuncti
       accion: "UPDATE",
       usuarioId: req.user?.sub,
     });
-    res.json({ ok: true, course });
+    res.json({ ok: true, course: { ...mapCourseForApi(course), id: idToString(course.id) } });
   } catch (e) {
     next(e);
   }
@@ -127,13 +142,14 @@ export async function updateCourse(req: Request, res: Response, next: NextFuncti
 
 export async function deleteCourse(req: Request, res: Response, next: NextFunction) {
   try {
+    const id = paramBigIntId(req);
     await prisma.course.update({
-      where: { id: paramId(req) },
+      where: { id },
       data: { activo: false },
     });
     await logAudit({
       entidad: "Course",
-      entidadId: paramId(req),
+      entidadId: id,
       accion: "DELETE",
       usuarioId: req.user?.sub,
     });

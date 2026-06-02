@@ -1,10 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
+import type { NivelRiesgo } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
 import { alertStatusSchema } from "../validators/schemas.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 import { logAudit } from "../utils/audit.js";
-import { paramId } from "../utils/params.js";
+import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { AppError } from "../middleware/errorHandler.js";
+import { courseDisplayName } from "../utils/course-label.js";
 
 const STATUS_LABEL: Record<string, string> = {
   nueva: "Nueva",
@@ -18,54 +20,71 @@ const LEVEL_LABEL: Record<string, string> = {
   alto: "Alto",
 };
 
-function parseFactors(json: string | null) {
-  if (!json) return [];
-  try {
-    const p = JSON.parse(json);
-    return Array.isArray(p) ? p : [];
-  } catch {
-    return [];
-  }
+function mapFactors(
+  factores: { factorKey: string; etiqueta: string; contribucion: unknown }[],
+) {
+  return factores.map((f) => ({
+    key: f.factorKey,
+    label: f.etiqueta,
+    contribution: Number(f.contribucion),
+  }));
 }
 
 function enrichAlert(a: {
-  id: string;
+  id: bigint;
   titulo: string;
   descripcion: string;
-  level: string;
-  status: string;
-  score: number | null;
-  probability: number | null;
-  factorsJson: string | null;
-  recommendation: string | null;
+  nivelRiesgo: NivelRiesgo;
+  estado: string;
+  score: unknown;
+  probabilidad: unknown;
+  recomendacion: string | null;
   createdAt: Date;
   updatedAt: Date;
-  factorKey: string | null;
+  factores: { factorKey: string; etiqueta: string; contribucion: unknown }[];
   student: {
-    id: string;
+    id: bigint;
     codigo: string;
     nombres: string;
     apellidos: string;
-    seccionId: string | null;
-    enrollments?: {
+    seccionId: bigint | null;
+    inscripciones?: {
       course: {
-        id: string;
-        nombre: string;
+        id: bigint;
+        codigo: string;
+        cursoCatalogo: { nombre: string } | null;
         profesor: { nombres: string; apellidos: string };
       };
     }[];
   };
 }) {
-  const en = a.student.enrollments?.[0];
+  const en = a.student.inscripciones?.[0];
+  const course = en?.course;
   return {
-    ...a,
-    nivel_riesgo: LEVEL_LABEL[a.level] ?? a.level,
-    estado_label: STATUS_LABEL[a.status] ?? a.status,
-    factores_riesgo: parseFactors(a.factorsJson),
+    id: idToString(a.id),
+    titulo: a.titulo,
+    descripcion: a.descripcion,
+    level: a.nivelRiesgo,
+    status: a.estado,
+    score: a.score != null ? Number(a.score) : null,
+    probability: a.probabilidad != null ? Number(a.probabilidad) : null,
+    recommendation: a.recomendacion,
+    createdAt: a.createdAt,
+    updatedAt: a.updatedAt,
+    student: {
+      ...a.student,
+      id: idToString(a.student.id),
+      seccionId: a.student.seccionId ? idToString(a.student.seccionId) : null,
+    },
+    nivel_riesgo: LEVEL_LABEL[a.nivelRiesgo] ?? a.nivelRiesgo,
+    estado_label: STATUS_LABEL[a.estado] ?? a.estado,
+    factores_riesgo: mapFactors(a.factores),
     fecha: a.createdAt,
-    curso: en?.course ? { id: en.course.id, nombre: en.course.nombre } : null,
-    profesor: en?.course?.profesor
-      ? `${en.course.profesor.nombres} ${en.course.profesor.apellidos}`
+    curso: course
+      ? { id: idToString(course.id), nombre: courseDisplayName(course) }
+      : null,
+    profesor: course?.profesor
+      ? `${course.profesor.nombres} ${course.profesor.apellidos}`
       : null,
   };
 }
@@ -79,12 +98,13 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
     const items = await prisma.alert.findMany({
       where: {
         student: scope,
-        ...(all ? {} : { status: { in: ["nueva", "en_seguimiento"] } }),
+        ...(all ? {} : { estado: { in: ["nueva", "en_seguimiento"] } }),
         ...(level && ["bajo", "medio", "alto"].includes(level)
-          ? { level: level as "bajo" | "medio" | "alto" }
+          ? { nivelRiesgo: level as NivelRiesgo }
           : {}),
       },
       include: {
+        factores: true,
         student: {
           select: {
             id: true,
@@ -92,13 +112,14 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
             nombres: true,
             apellidos: true,
             seccionId: true,
-            enrollments: {
+            inscripciones: {
               take: 1,
               include: {
                 course: {
                   select: {
                     id: true,
-                    nombre: true,
+                    codigo: true,
+                    cursoCatalogo: { select: { nombre: true } },
                     profesor: { select: { nombres: true, apellidos: true } },
                   },
                 },
@@ -107,7 +128,7 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
           },
         },
       },
-      orderBy: [{ level: "desc" }, { createdAt: "desc" }],
+      orderBy: [{ nivelRiesgo: "desc" }, { createdAt: "desc" }],
       take: 100,
     });
 
@@ -121,19 +142,20 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
 export async function patchAlertStatus(req: Request, res: Response, next: NextFunction) {
   try {
     const { status } = alertStatusSchema.parse(req.body);
-    const id = paramId(req);
+    const id = paramBigIntId(req);
     const scope = await resolveStudentScope(req.user!);
 
     const existing = await prisma.alert.findFirst({
       where: { id, student: scope },
-      include: { student: true },
+      include: { student: true, factores: true },
     });
     if (!existing) throw new AppError(404, "Alerta no encontrada o sin permiso");
 
     const item = await prisma.alert.update({
       where: { id },
-      data: { status },
+      data: { estado: status },
       include: {
+        factores: true,
         student: {
           select: {
             id: true,
@@ -141,13 +163,14 @@ export async function patchAlertStatus(req: Request, res: Response, next: NextFu
             nombres: true,
             apellidos: true,
             seccionId: true,
-            enrollments: {
+            inscripciones: {
               take: 1,
               include: {
                 course: {
                   select: {
                     id: true,
-                    nombre: true,
+                    codigo: true,
+                    cursoCatalogo: { select: { nombre: true } },
                     profesor: { select: { nombres: true, apellidos: true } },
                   },
                 },

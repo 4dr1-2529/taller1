@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { AppError } from "../middleware/errorHandler.js";
 import { prisma } from "./prisma.js";
+import { toDbId } from "./ids.js";
 
 export type SeccionWithGrado = Prisma.SeccionGetPayload<{
   include: { grado: { include: { nivel: true } } };
@@ -13,7 +14,7 @@ export async function requireActiveSeccion(
   db: Db = prisma,
 ): Promise<SeccionWithGrado> {
   const seccion = await db.seccion.findFirst({
-    where: { id: seccionId, activo: true },
+    where: { id: toDbId(seccionId), activo: true },
     include: { grado: { include: { nivel: true } } },
   });
   if (!seccion) throw new AppError(400, "Sección no encontrada o inactiva");

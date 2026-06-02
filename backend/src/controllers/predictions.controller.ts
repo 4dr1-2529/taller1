@@ -2,7 +2,36 @@ import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { resolveStudentScope } from "../utils/student-scope.js";
 import { AppError } from "../middleware/errorHandler.js";
-import { paramId } from "../utils/params.js";
+import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
+
+function mapPrediction(p: {
+  id: bigint;
+  studentId: bigint;
+  score: unknown;
+  nivelRiesgo: string;
+  probabilidad: unknown;
+  probabilidadAbandono: unknown;
+  createdAt: Date;
+  factores: { factorKey: string; etiqueta: string; contribucion: unknown }[];
+  student?: unknown;
+}) {
+  const factors = p.factores.map((f) => ({
+    key: f.factorKey,
+    label: f.etiqueta,
+    contribution: Number(f.contribucion),
+  }));
+  return {
+    ...p,
+    id: idToString(p.id),
+    studentId: idToString(p.studentId),
+    level: p.nivelRiesgo,
+    score: Number(p.score),
+    probability: Number(p.probabilidadAbandono),
+    probabilityAbandono: Number(p.probabilidadAbandono),
+    factors,
+    meta: null,
+  };
+}
 
 /** Historial de predicciones con filtros y paginación. */
 export async function listPredictions(req: Request, res: Response, next: NextFunction) {
@@ -16,13 +45,14 @@ export async function listPredictions(req: Request, res: Response, next: NextFun
 
     const where = {
       student: scope,
-      ...(studentId ? { studentId } : {}),
+      ...(studentId ? { studentId: toDbId(studentId) } : {}),
     };
 
-    const [items, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       prisma.prediction.findMany({
         where,
         include: {
+          factores: true,
           student: {
             select: { id: true, codigo: true, nombres: true, apellidos: true, seccionId: true },
           },
@@ -34,15 +64,11 @@ export async function listPredictions(req: Request, res: Response, next: NextFun
       prisma.prediction.count({ where }),
     ]);
 
-    const parsed = items.map((p) => ({
-      ...p,
-      factors: safeParseJson(p.factorsJson, []),
-      meta: p.metaJson ? safeParseJson(p.metaJson, null) : null,
-    }));
+    const items = rows.map(mapPrediction);
 
     res.json({
       ok: true,
-      items: parsed,
+      items,
       total,
       page,
       pages: Math.ceil(total / limit) || 1,
@@ -54,30 +80,18 @@ export async function listPredictions(req: Request, res: Response, next: NextFun
 
 export async function getPrediction(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = paramId(req);
+    const id = paramBigIntId(req);
     const scope = await resolveStudentScope(req.user!);
     const item = await prisma.prediction.findFirst({
       where: { id, student: scope },
-      include: { student: true },
+      include: { student: true, factores: true },
     });
     if (!item) throw new AppError(404, "Predicción no encontrada");
     res.json({
       ok: true,
-      item: {
-        ...item,
-        factors: safeParseJson(item.factorsJson, []),
-        meta: item.metaJson ? safeParseJson(item.metaJson, null) : null,
-      },
+      item: mapPrediction(item),
     });
   } catch (e) {
     next(e);
-  }
-}
-
-function safeParseJson<T>(raw: string, fallback: T): T {
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
   }
 }

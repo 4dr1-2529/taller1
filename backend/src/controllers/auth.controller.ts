@@ -6,6 +6,8 @@ import { prisma } from "../utils/prisma.js";
 import { loginSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
+import { toDbId, idToString } from "../utils/ids.js";
+import { mapUserWithRole } from "../utils/rol.js";
 
 const loginAttempts = new Map<string, { count: number; lastAttempt: number }>();
 const MAX_ATTEMPTS = 5;
@@ -27,7 +29,10 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { teacher: { select: { id: true, codigo: true } } },
+      include: {
+        rol: { select: { codigo: true } },
+        profesor: { select: { id: true, codigo: true } },
+      },
     });
     if (!user || !user.activo) {
       trackAttempt(ip);
@@ -42,22 +47,23 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
     loginAttempts.delete(ip);
 
+    const role = user.rol.codigo;
     const signOpts: SignOptions = { expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"] };
     const token = jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
+      { sub: idToString(user.id), email: user.email, role },
       env.JWT_SECRET,
       signOpts,
     );
 
     const refreshToken = jwt.sign(
-      { sub: user.id, type: "refresh" },
+      { sub: idToString(user.id), type: "refresh" },
       env.JWT_SECRET,
       { expiresIn: "7d" },
     );
 
     await prisma.session.create({
       data: {
-        userId: user.id,
+        usuarioId: user.id,
         tokenHash: refreshToken,
         ipAddress: ip,
         userAgent: req.headers["user-agent"] ?? null,
@@ -78,12 +84,12 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       token,
       refreshToken,
       user: {
-        id: user.id,
+        id: idToString(user.id),
         email: user.email,
         nombres: user.nombres,
         apellidos: user.apellidos,
-        role: user.role,
-        teacherId: user.teacher?.id ?? null,
+        role,
+        teacherId: user.profesor ? idToString(user.profesor.id) : null,
       },
     });
   } catch (e) {
@@ -100,16 +106,23 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
     if (decoded.type !== "refresh") throw new AppError(401, "Token inválido");
 
     const session = await prisma.session.findFirst({
-      where: { userId: decoded.sub, tokenHash: refreshToken, expiresAt: { gt: new Date() } },
+      where: {
+        usuarioId: toDbId(decoded.sub),
+        tokenHash: refreshToken,
+        expiresAt: { gt: new Date() },
+      },
     });
     if (!session) throw new AppError(401, "Sesión inválida o expirada");
 
-    const user = await prisma.user.findUnique({ where: { id: decoded.sub } });
+    const user = await prisma.user.findUnique({
+      where: { id: toDbId(decoded.sub) },
+      include: { rol: { select: { codigo: true } } },
+    });
     if (!user || !user.activo) throw new AppError(401, "Usuario no encontrado");
 
     const signOpts: SignOptions = { expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"] };
     const newToken = jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
+      { sub: idToString(user.id), email: user.email, role: user.rol.codigo },
       env.JWT_SECRET,
       signOpts,
     );
@@ -123,20 +136,27 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
 export async function me(req: Request, res: Response, next: NextFunction) {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: req.user!.sub },
+      where: { id: toDbId(req.user!.sub) },
       select: {
         id: true,
         email: true,
         nombres: true,
         apellidos: true,
-        role: true,
         activo: true,
         createdAt: true,
-        teacher: { select: { id: true, codigo: true, especialidad: true } },
+        rol: { select: { codigo: true } },
+        profesor: { select: { id: true, codigo: true, especialidad: true } },
       },
     });
     if (!user) throw new AppError(404, "Usuario no encontrado");
-    res.json({ ok: true, user });
+    res.json({
+      ok: true,
+      user: {
+        ...mapUserWithRole(user),
+        id: idToString(user.id),
+        teacherId: user.profesor ? idToString(user.profesor.id) : null,
+      },
+    });
   } catch (e) {
     next(e);
   }
@@ -148,7 +168,7 @@ export async function changePassword(req: Request, res: Response, next: NextFunc
     if (!currentPassword || !newPassword) throw new AppError(400, "Campos requeridos");
     if (newPassword.length < 8) throw new AppError(400, "Mínimo 8 caracteres");
 
-    const user = await prisma.user.findUnique({ where: { id: req.user!.sub } });
+    const user = await prisma.user.findUnique({ where: { id: toDbId(req.user!.sub) } });
     if (!user) throw new AppError(404, "Usuario no encontrado");
 
     const valid = await bcrypt.compare(currentPassword, user.passwordHash);

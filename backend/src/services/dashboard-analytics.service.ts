@@ -18,11 +18,11 @@ export async function buildDashboardAnalytics(scope: Scope) {
     prisma.student.count({ where: scope }),
     prisma.teacher.count({ where: { activo: true } }),
     prisma.alert.count({
-      where: { status: { in: ["nueva", "en_seguimiento"] }, student: scope },
+      where: { estado: { in: ["nueva", "en_seguimiento"] }, student: scope },
     }),
     prisma.alert.groupBy({
-      by: ["level"],
-      where: { status: { in: ["nueva", "en_seguimiento"] }, student: scope },
+      by: ["nivelRiesgo"],
+      where: { estado: { in: ["nueva", "en_seguimiento"] }, student: scope },
       _count: true,
     }),
     prisma.prediction.findMany({
@@ -31,7 +31,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
       take: 120,
       select: {
         score: true,
-        level: true,
+        nivelRiesgo: true,
         createdAt: true,
         studentId: true,
         student: {
@@ -61,7 +61,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
             grado: { select: { nombre: true, nivel: { select: { nombre: true } } } },
           },
         },
-        predictions: { orderBy: { createdAt: "desc" }, take: 1, select: { level: true, score: true } },
+        predicciones: { orderBy: { createdAt: "desc" }, take: 1, select: { nivelRiesgo: true, score: true } },
       },
     }),
     prisma.student.aggregate({ where: scope, _avg: { promedioGeneral: true, asistenciaGeneral: true } }),
@@ -69,7 +69,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
 
   const byLevel = { bajo: 0, medio: 0, alto: 0 };
   for (const st of studentsWithSection) {
-    const lvl = st.predictions[0]?.level;
+    const lvl = st.predicciones[0]?.nivelRiesgo;
     if (lvl) byLevel[lvl]++;
   }
 
@@ -81,7 +81,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
       : "Sin sección";
     const row = riskBySectionMap.get(label) ?? { label, alto: 0, medio: 0, bajo: 0, total: 0 };
     row.total++;
-    const lvl = st.predictions[0]?.level;
+    const lvl = st.predicciones[0]?.nivelRiesgo;
     if (lvl === "alto") row.alto++;
     else if (lvl === "medio") row.medio++;
     else if (lvl === "bajo") row.bajo++;
@@ -90,7 +90,9 @@ export async function buildDashboardAnalytics(scope: Scope) {
 
   const riskBySection = [...riskBySectionMap.values()].sort((a, b) => b.alto - a.alto);
 
-  const riskTrend = buildRiskTrendSeries(recentPredictions);
+  const riskTrend = buildRiskTrendSeries(
+    recentPredictions.map((p) => ({ score: Number(p.score), createdAt: p.createdAt })),
+  );
 
   const mlMetrics = await getMlMetrics();
   const featureImportance = extractFeatureImportance(mlMetrics);
@@ -101,11 +103,11 @@ export async function buildDashboardAnalytics(scope: Scope) {
       totalStudents,
       totalTeachers,
       openAlerts,
-      avgRisk: Math.round((avgRisk._avg.score ?? 0) * 10) / 10,
-      avgGrade: Math.round((avgGrade._avg.promedioGeneral ?? 0) * 10) / 10,
-      avgAttendance: Math.round((avgGrade._avg.asistenciaGeneral ?? 0) * 10) / 10,
+      avgRisk: Math.round(Number(avgRisk._avg.score ?? 0) * 10) / 10,
+      avgGrade: Math.round(Number(avgGrade._avg.promedioGeneral ?? 0) * 10) / 10,
+      avgAttendance: Math.round(Number(avgGrade._avg.asistenciaGeneral ?? 0) * 10) / 10,
       byLevel,
-      alertsByLevel: Object.fromEntries(alertsByLevel.map((a) => [a.level, a._count])),
+      alertsByLevel: Object.fromEntries(alertsByLevel.map((a) => [a.nivelRiesgo, a._count])),
     },
     riskTrend,
     riskBySection,

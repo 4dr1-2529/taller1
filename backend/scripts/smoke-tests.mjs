@@ -52,21 +52,29 @@ async function main() {
     }
   });
 
-  await test("login admin (si existe seed)", async () => {
-    const r = await fetch(`${API}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: "admin@iep-huancayo.edu.pe",
-        password: "Tesis2026!",
-      }),
-    });
-    if (!r.ok) {
-      console.warn("  (login omitido — ejecute db:seed)");
+  await test("login director (si existe seed)", async () => {
+    const creds = [
+      { email: "director@blenkir.edu.pe", password: "Tesis2026!" },
+      { email: "director@iep-huancayo.edu.pe", password: "Tesis2026!" },
+      { email: "admin@iep-huancayo.edu.pe", password: "Tesis2026!" },
+    ];
+    let token = null;
+    for (const body of creds) {
+      const r = await fetch(`${API}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (r.ok) {
+        const j = await r.json();
+        token = j.token;
+        break;
+      }
+    }
+    if (!token) {
+      console.warn("  (login omitido — ejecute db:seed:demo)");
       return;
     }
-    const { token } = await r.json();
-    if (!token) throw new Error("sin token");
 
     const pred = await fetch(`${API}/predict`, {
       method: "POST",
@@ -115,10 +123,10 @@ async function main() {
         if (!predRes.ok) throw new Error(`predict student ${predRes.status}`);
         const pj = await predRes.json();
         const p = pj.prediction;
-        if (p?.probabilidad_abandono == null && p?.probabilityAbandono == null) {
+        if (p?.probabilidad_abandono == null && p?.probabilityAbandono == null && p?.probabilidad == null) {
           throw new Error("predicción sin probabilidad");
         }
-        if (!p?.nivel_riesgo && !p?.level) throw new Error("predicción sin nivel");
+        if (!p?.nivel_riesgo && !p?.level && !p?.nivelRiesgo) throw new Error("predicción sin nivel");
       }
     }
   });

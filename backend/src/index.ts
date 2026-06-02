@@ -1,3 +1,7 @@
+(BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function () {
+  return this.toString();
+};
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";

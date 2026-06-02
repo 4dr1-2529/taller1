@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { RiskLevel } from "@prisma/client";
+import type { NivelRiesgo } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
 import { predictSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
@@ -9,8 +9,9 @@ import { recommendationsForFactor } from "../services/recommendations.js";
 import { assertStudentInScope, resolveStudentScope } from "../utils/student-scope.js";
 import { buildPredictionApiPayload } from "../utils/prediction-format.js";
 import { buildDashboardAnalytics } from "../services/dashboard-analytics.service.js";
+import { toDbId, idToString } from "../utils/ids.js";
 
-function alertPriority(level: RiskLevel): "alta" | "media" | "baja" {
+function alertPriority(level: NivelRiesgo): "alta" | "media" | "baja" {
   if (level === "alto") return "alta";
   if (level === "medio") return "media";
   return "baja";
@@ -28,12 +29,10 @@ function buildRecommendation(level: string, factors: { label: string }[], mlRec?
   return "Riesgo bajo. Mantener monitoreo rutinario.";
 }
 
-/** Cuenta cursos desaprobados (nota < 11) del estudiante. */
-async function countFailedCourses(studentId: string): Promise<number> {
-  const failed = await prisma.grade.count({
+async function countFailedCourses(studentId: bigint): Promise<number> {
+  return prisma.grade.count({
     where: { studentId, nota: { lt: 11 } },
   });
-  return failed;
 }
 
 export async function predict(req: Request, res: Response, next: NextFunction) {
@@ -43,9 +42,9 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
 
     const student = body.studentId
       ? await prisma.student.findUnique({
-          where: { id: body.studentId },
+          where: { id: toDbId(body.studentId) },
           include: {
-            lmsActivities: { orderBy: { semana: "asc" } },
+            lmsActividades: { orderBy: { anioSemana: "asc" } },
             seccion: { include: { grado: { include: { nivel: true } } } },
           },
         })
@@ -53,24 +52,24 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
 
     if (body.studentId) {
       if (!student) throw new AppError(404, "Estudiante no encontrado");
-      await assertStudentInScope(user, student.id);
+      await assertStudentInScope(user, idToString(student.id));
     }
 
-    const lmsRows = student?.lmsActivities ?? [];
+    const lmsRows = student?.lmsActividades ?? [];
     const latestLms = lmsRows[lmsRows.length - 1];
     const metrics = body.metrics ?? {
-      promedioGeneral: student!.promedioGeneral,
-      asistenciaGeneral: student!.asistenciaGeneral,
+      promedioGeneral: Number(student!.promedioGeneral),
+      asistenciaGeneral: Number(student!.asistenciaGeneral),
       lms: {
-        actividadSemanalPct: lmsRows.map((a) => a.actividadPct),
-        tareasEntregadas: latestLms?.tareasEntregadas ?? 5,
-        tareasTotales: latestLms?.tareasTotales ?? 10,
+        actividadSemanalPct: lmsRows.map((a) => Number(a.actividadPct)),
+        tareasEntregadas: 5,
+        tareasTotales: 10,
       },
     };
 
     const estado = body.estado ?? student?.estado ?? "activo";
     const cursosDesaprobados = student ? await countFailedCourses(student.id) : 0;
-    const tiempoPlataforma = latestLms?.horasPlataforma ?? 4;
+    const tiempoPlataforma = latestLms ? Number(latestLms.horasPlataforma) : 4;
     const usoForos = latestLms ? Math.min(1, latestLms.conexiones / 20) : 0.5;
     const actividad = metrics.lms.actividadSemanalPct;
     const disminucion =
@@ -87,7 +86,7 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
           probability: ml.probability_abandono ?? ml.probability,
           probabilityAbandono: ml.probability_abandono ?? ml.probability,
           factors: ml.factors ?? local.factors,
-          modelName: ml.model_name,
+          modelName: ml.model_name ?? "ml-service",
           recommendation: buildRecommendation(ml.level, ml.factors ?? [], ml.recommendation),
           predictedAt: ml.predicted_at ?? new Date().toISOString(),
           inputData: ml.input_data ?? buildMlPayload(metrics, estado, mlExtra),
@@ -104,36 +103,33 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
     let alertCreated = null;
 
     if (student) {
-      const level = result.level as RiskLevel;
-      const factorsJson = JSON.stringify(result.factors);
-      const metaJson = JSON.stringify({
-        inputData: result.inputData,
-        recommendation: result.recommendation,
-        source: ml ? "machine-learning" : "local-engine",
-        probabilityAbandono: result.probabilityAbandono,
-      });
+      const nivelRiesgo = result.level as NivelRiesgo;
+      const factorRows = (result.factors ?? []).map((f) => ({
+        factorKey: String(f.key),
+        etiqueta: f.label,
+        contribucion: f.contribution,
+      }));
 
       savedPrediction = await prisma.prediction.create({
         data: {
           studentId: student.id,
           score: result.score,
-          level,
-          probability: result.probabilityAbandono,
-          modelVersion: "2.1",
-          modelName: result.modelName,
-          factorsJson,
-          metaJson,
+          nivelRiesgo,
+          probabilidad: result.probabilityAbandono,
+          probabilidadAbandono: result.probabilityAbandono,
+          factores: factorRows.length ? { createMany: { data: factorRows } } : undefined,
         },
+        include: { factores: true },
       });
 
-      if (level !== "bajo") {
-        const priority = alertPriority(level);
+      if (nivelRiesgo !== "bajo") {
+        const priority = alertPriority(nivelRiesgo);
         const top = result.factors[0];
         const openDuplicate = await prisma.alert.findFirst({
           where: {
             studentId: student.id,
-            status: { in: ["nueva", "en_seguimiento"] },
-            level,
+            estado: { in: ["nueva", "en_seguimiento"] },
+            nivelRiesgo,
           },
         });
 
@@ -141,19 +137,31 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
           alertCreated = await prisma.alert.create({
             data: {
               studentId: student.id,
-              titulo: `[${priority.toUpperCase()}] Alerta temprana — riesgo ${level}`,
+              prediccionId: savedPrediction.id,
+              titulo: `[${priority.toUpperCase()}] Alerta temprana — riesgo ${nivelRiesgo}`,
               descripcion: [
                 `Score predictivo: ${result.score}/100.`,
                 `Probabilidad de abandono: ${(result.probabilityAbandono * 100).toFixed(1)}%.`,
                 `Motivo principal: ${top?.label ?? "Indicadores compuestos"}.`,
               ].join(" "),
-              factorKey: top?.key ?? "general",
-              level,
+              nivelRiesgo,
               score: result.score,
-              probability: result.probabilityAbandono,
-              factorsJson,
-              recommendation: result.recommendation,
-              status: "nueva",
+              probabilidad: result.probabilityAbandono,
+              recomendacion: result.recommendation,
+              estado: "nueva",
+              factores: top
+                ? {
+                    createMany: {
+                      data: [
+                        {
+                          factorKey: String(top.key),
+                          etiqueta: top.label,
+                          contribucion: top.contribution,
+                        },
+                      ],
+                    },
+                  }
+                : undefined,
             },
           });
 
@@ -162,7 +170,8 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
             await prisma.aiRecommendation.create({
               data: {
                 studentId: student.id,
-                factorKey: top?.key ?? "general",
+                prediccionId: savedPrediction.id,
+                factorKey: top ? String(top.key) : "general",
                 titulo: r.titulo,
                 detalle: r.detalle,
               },
@@ -170,16 +179,16 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
           }
 
           const staff = await prisma.user.findMany({
-            where: { role: { in: ["admin", "docente"] }, activo: true },
+            where: { activo: true, rol: { codigo: { in: ["admin", "docente"] } } },
             select: { id: true },
             take: 20,
           });
           for (const u of staff) {
             await prisma.notification.create({
               data: {
-                userId: u.id,
+                usuarioId: u.id,
                 tipo: "alerta",
-                titulo: `Alerta ${level} — ${student.nombres} ${student.apellidos}`,
+                titulo: `Alerta ${nivelRiesgo} — ${student.nombres} ${student.apellidos}`,
                 mensaje: result.recommendation.slice(0, 500),
                 leida: false,
               },
@@ -199,14 +208,16 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
       recommendation: result.recommendation,
       predictedAt: result.predictedAt,
       inputData: result.inputData as Record<string, unknown>,
-      id: savedPrediction?.id,
-      studentId: student?.id,
+      id: savedPrediction ? idToString(savedPrediction.id) : undefined,
+      studentId: student ? idToString(student.id) : undefined,
     });
 
     res.json({
       ok: true,
       prediction: predictionPayload,
-      alert: alertCreated,
+      alert: alertCreated
+        ? { ...alertCreated, id: idToString(alertCreated.id) }
+        : null,
       source: ml ? "machine-learning" : "local-engine",
     });
   } catch (e) {

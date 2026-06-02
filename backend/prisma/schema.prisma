@@ -1,6 +1,6 @@
 // =============================================================================
-// I.E.P. Huancayo — Modelo educativo peruano (Primaria + Secundaria)
-// Riesgo de deserción · Ensemble learning + LMS
+// I.E.P. BLENKIR — Esquema v3.0 (51 tablas)
+// Sistema de predicción de riesgo de deserción estudiantil (Primaria)
 // =============================================================================
 
 generator client {
@@ -14,43 +14,38 @@ datasource db {
 
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
-enum UserRole {
+enum RolCodigo {
   admin
   docente
   estudiante
 }
 
-enum NivelCodigo {
-  primaria
-  secundaria
-}
-
-enum StudentStatus {
+enum EstudianteEstado {
   activo
   en_riesgo
   retirado
 }
 
-enum RiskLevel {
+enum NivelRiesgo {
   bajo
   medio
   alto
 }
 
-enum AlertStatus {
+enum AlertaEstado {
   nueva
   en_seguimiento
   resuelta
 }
 
-enum MessageScope {
+enum MensajeAlcance {
   global
   profesores
   curso
   directo
 }
 
-enum NotificationType {
+enum NotificacionTipo {
   alerta
   prediccion
   sistema
@@ -66,485 +61,930 @@ enum DiaSemana {
   sabado
 }
 
-// ─── RBAC ────────────────────────────────────────────────────────────────────
-
-model Role {
-  id          Int              @id @default(autoincrement())
-  codigo      UserRole         @unique
-  nombre      String
-  descripcion String?
-  permisos    RolePermission[]
-  createdAt   DateTime         @default(now())
+enum MatriculaEstado {
+  activa
+  retirada
+  trasladada
 }
 
-model Permission {
-  id       Int              @id @default(autoincrement())
-  codigo   String           @unique
-  modulo   String
-  roles    RolePermission[]
+enum InscripcionEstado {
+  activa
+  retirada
 }
 
-model RolePermission {
-  roleId       Int
-  permissionId Int
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  @@id([roleId, permissionId])
+enum MlEntrenamientoEstado {
+  pendiente
+  ejecutando
+  completado
+  fallido
 }
 
-// ─── Usuarios y sesiones ─────────────────────────────────────────────────────
+// ─── Módulo 1: Institución ───────────────────────────────────────────────────
 
-model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  passwordHash String
-  nombres      String
-  apellidos    String
-  role         UserRole  @default(estudiante)
-  dni          String?   @unique
-  telefono     String?
-  activo       Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  sessions     Session[]
-  notifications Notification[]
-  auditLogs    AuditLog[] @relation("AuditUser")
-  teacher      Teacher?
-  student      Student?
-  apoderado    Apoderado?
-  messageReads MessageRead[]
-  @@index([role])
-  @@index([activo])
+model Institucion {
+  id        BigInt   @id @default(autoincrement())
+  codigo    String   @db.VarChar(20)
+  nombre    String   @db.VarChar(200)
+  ruc       String?  @db.VarChar(11)
+  direccion String?  @db.VarChar(255)
+  ubigeo    String?  @db.VarChar(6)
+  telefono  String?  @db.VarChar(20)
+  email     String?  @db.VarChar(120)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  aniosLectivos AnioLectivo[]
+
+  @@unique([codigo], map: "uk_institucion_codigo")
+  @@map("institucion")
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokenHash    String
-  refreshHash  String?
-  ipAddress    String?
-  userAgent    String?
-  expiresAt    DateTime
-  refreshExpiresAt DateTime?
-  createdAt    DateTime @default(now())
-  @@index([userId])
-  @@index([expiresAt])
+model AnioLectivo {
+  id             BigInt   @id @default(autoincrement())
+  institucionId  BigInt   @map("institucion_id")
+  anio           Int      @db.SmallInt
+  nombre         String   @db.VarChar(50)
+  fechaInicio    DateTime @map("fecha_inicio") @db.Date
+  fechaFin       DateTime @map("fecha_fin") @db.Date
+  activo         Boolean  @default(false)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  institucion       Institucion        @relation(fields: [institucionId], references: [id], onDelete: Cascade)
+  periodos          PeriodoAcademico[]
+  tutoresSeccion    TutorSeccion[]
+  cursosOferta      Course[]
+  matriculas        Matricula[]
+  dashboardSnapshots DashboardSnapshot[]
+
+  @@unique([institucionId, anio], map: "uk_anio_inst")
+  @@map("anio_lectivo")
 }
 
-// ─── Estructura educativa Perú ───────────────────────────────────────────────
+model PeriodoAcademico {
+  id            BigInt   @id @default(autoincrement())
+  anioLectivoId BigInt   @map("anio_lectivo_id")
+  numero        Int      @db.TinyInt
+  nombre        String   @db.VarChar(40)
+  fechaInicio   DateTime @map("fecha_inicio") @db.Date
+  fechaFin      DateTime @map("fecha_fin") @db.Date
+  activo        Boolean  @default(false)
+
+  anioLectivo          AnioLectivo            @relation(fields: [anioLectivoId], references: [id], onDelete: Cascade)
+  calificaciones       Grade[]
+  historialesAcademicos AcademicHistory[]
+  resumenesAsistencia  ResumenAsistencia[]
+  lmsEntregasTarea     LmsEntregaTarea[]
+  lmsIndicadores       LmsIndicadorEstudiante[]
+  predicciones         Prediction[]
+  dashboardSnapshots   DashboardSnapshot[]
+
+  @@unique([anioLectivoId, numero], map: "uk_periodo_anio")
+  @@map("periodo_academico")
+}
+
+// ─── Módulo 2: Estructura académica ────────────────────────────────────────
 
 model NivelEducativo {
-  id        Int      @id @default(autoincrement())
-  codigo    NivelCodigo @unique
-  nombre    String
-  grados    Grado[]
-  createdAt DateTime @default(now())
+  id     BigInt @id @default(autoincrement())
+  codigo String @db.VarChar(20)
+  nombre String @db.VarChar(80)
+
+  grados Grado[]
+
+  @@unique([codigo], map: "uk_nivel_codigo")
+  @@map("nivel_educativo")
 }
 
 model Grado {
-  id        Int            @id @default(autoincrement())
-  nivelId   Int
-  nivel     NivelEducativo @relation(fields: [nivelId], references: [id], onDelete: Cascade)
-  numero    Int
-  nombre    String
-  secciones Seccion[]
-  cursosGrado CursoPorGrado[]
-  @@unique([nivelId, numero])
-  @@index([nivelId])
+  id      BigInt @id @default(autoincrement())
+  nivelId BigInt @map("nivel_id")
+  numero  Int    @db.TinyInt
+  nombre  String @db.VarChar(60)
+
+  nivel       NivelEducativo @relation(fields: [nivelId], references: [id], onDelete: Cascade)
+  secciones   Seccion[]
+  cursosGrado CursoGrado[]
+
+  @@unique([nivelId, numero], map: "uk_grado_nivel_num")
+  @@index([nivelId], map: "idx_grado_nivel")
+  @@map("grado")
 }
 
 model Seccion {
-  id          String    @id @default(cuid())
-  gradoId     Int
-  grado       Grado     @relation(fields: [gradoId], references: [id], onDelete: Cascade)
-  nombre      String
-  capacidad   Int       @default(30)
-  tutorId     String?
-  tutor       Teacher?  @relation("SeccionTutor", fields: [tutorId], references: [id])
-  activo      Boolean   @default(true)
-  estudiantes Student[]
-  courses     Course[]
-  horarios    Horario[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  @@unique([gradoId, nombre])
-  @@index([gradoId])
-  @@index([tutorId])
+  id        BigInt   @id @default(autoincrement())
+  gradoId   BigInt   @map("grado_id")
+  nombre    String   @db.Char(1)
+  capacidad Int      @default(30) @db.SmallInt
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  grado          Grado          @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+  estudiantes    Student[]
+  tutoresSeccion TutorSeccion[]
+  cursosOferta   Course[]
+  matriculas     Matricula[]
+
+  @@unique([gradoId, nombre], map: "uk_seccion_grado_nombre")
+  @@index([gradoId], map: "idx_seccion_grado")
+  @@map("seccion")
+}
+
+model AreaCurricular {
+  id     BigInt @id @default(autoincrement())
+  codigo String @db.VarChar(20)
+  nombre String @db.VarChar(80)
+
+  cursos CursoCatalogo[]
+
+  @@unique([codigo], map: "uk_area_codigo")
+  @@map("area_curricular")
 }
 
 model CursoCatalogo {
-  id          String          @id @default(cuid())
-  codigo      String          @unique
-  nombre      String
-  area        String
-  descripcion String?
-  activo      Boolean         @default(true)
-  porGrado    CursoPorGrado[]
-  cursos      Course[]
-  createdAt   DateTime        @default(now())
+  id             BigInt  @id @default(autoincrement())
+  areaId         BigInt  @map("area_id")
+  codigo         String  @db.VarChar(20)
+  nombre         String  @db.VarChar(100)
+  descripcion    String? @db.VarChar(255)
+  horasSemanales Int     @default(2) @map("horas_semanales") @db.TinyInt
+  activo         Boolean @default(true)
+
+  area         AreaCurricular @relation(fields: [areaId], references: [id], onDelete: Restrict)
+  cursosGrado  CursoGrado[]
+  cursosOferta Course[]
+
+  @@unique([codigo], map: "uk_curso_codigo")
+  @@index([areaId], map: "idx_curso_area")
+  @@map("curso_catalogo")
 }
 
-model CursoPorGrado {
-  id              String        @id @default(cuid())
-  gradoId         Int
-  grado           Grado         @relation(fields: [gradoId], references: [id], onDelete: Cascade)
-  cursoCatalogoId String
-  cursoCatalogo   CursoCatalogo @relation(fields: [cursoCatalogoId], references: [id], onDelete: Cascade)
-  horasSemanales  Int           @default(2)
-  @@unique([gradoId, cursoCatalogoId])
+model CursoGrado {
+  id          BigInt  @id @default(autoincrement())
+  gradoId     BigInt  @map("grado_id")
+  cursoId     BigInt  @map("curso_id")
+  obligatorio Boolean @default(true)
+
+  grado  Grado         @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+  curso  CursoCatalogo @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  @@unique([gradoId, cursoId], map: "uk_curso_grado")
+  @@map("curso_grado")
 }
 
-// ─── Personal ────────────────────────────────────────────────────────────────
+// ─── Módulo 3: Seguridad ─────────────────────────────────────────────────────
+
+model Role {
+  id          BigInt    @id @default(autoincrement())
+  codigo      RolCodigo @unique(map: "uk_rol_codigo")
+  nombre      String    @db.VarChar(50)
+  descripcion String?   @db.VarChar(255)
+
+  usuarios    User[]
+  permisos    RolePermission[]
+
+  @@map("rol")
+}
+
+model Permission {
+  id          BigInt  @id @default(autoincrement())
+  codigo      String  @db.VarChar(60)
+  modulo      String  @db.VarChar(40)
+  descripcion String? @db.VarChar(255)
+
+  roles RolePermission[]
+
+  @@unique([codigo], map: "uk_permiso_codigo")
+  @@map("permiso")
+}
+
+model RolePermission {
+  rolId      BigInt @map("rol_id")
+  permisoId  BigInt @map("permiso_id")
+
+  rol      Role       @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso  Permission @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+  @@map("rol_permiso")
+}
+
+model User {
+  id           BigInt    @id @default(autoincrement())
+  rolId        BigInt    @map("rol_id")
+  email        String    @db.VarChar(120)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  nombres      String    @db.VarChar(80)
+  apellidos    String    @db.VarChar(80)
+  dni          String?   @db.VarChar(8)
+  telefono     String?   @db.VarChar(20)
+  activo       Boolean   @default(true)
+  ultimoAcceso DateTime? @map("ultimo_acceso")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  rol                  Role              @relation(fields: [rolId], references: [id], onDelete: Restrict)
+  sesiones             Session[]
+  profesor             Teacher?
+  estudiante           Student?
+  mensajesEnviados     ChatMessage[]     @relation("MensajeRemitente")
+  mensajesRecibidos    ChatMessage[]     @relation("MensajeDestinatario")
+  mensajesLectura      MessageRead[]
+  alertasHistorial     AlertaHistorial[]
+  auditorias           AuditLog[]
+  reportes             Report[]
+  notificaciones       Notification[]
+
+  @@unique([email], map: "uk_usuario_email")
+  @@unique([dni], map: "uk_usuario_dni")
+  @@index([rolId], map: "idx_usuario_rol")
+  @@index([activo], map: "idx_usuario_activo")
+  @@map("usuario")
+}
+
+model Session {
+  id              BigInt    @id @default(autoincrement())
+  usuarioId       BigInt    @map("usuario_id")
+  tokenHash       String    @map("token_hash") @db.VarChar(128)
+  refreshHash     String?   @map("refresh_hash") @db.VarChar(128)
+  ipAddress       String?   @map("ip_address") @db.VarChar(45)
+  userAgent       String?   @map("user_agent") @db.VarChar(255)
+  expiresAt       DateTime  @map("expires_at")
+  refreshExpires  DateTime? @map("refresh_expires")
+  revocada        Boolean   @default(false)
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  usuario User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId], map: "idx_sesion_usuario")
+  @@index([expiresAt], map: "idx_sesion_expira")
+  @@map("sesion")
+}
+
+model IntentoLogin {
+  id         BigInt   @id @default(autoincrement())
+  email      String   @db.VarChar(120)
+  ipAddress  String?  @map("ip_address") @db.VarChar(45)
+  exitoso    Boolean  @default(false)
+  motivo     String?  @db.VarChar(100)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([email, createdAt], map: "idx_intento_email_fecha")
+  @@map("intento_login")
+}
+
+// ─── Módulo 4: Personas ──────────────────────────────────────────────────────
 
 model Teacher {
-  id            String    @id @default(cuid())
-  userId        String?   @unique
-  user          User?     @relation(fields: [userId], references: [id])
-  codigo        String    @unique
-  nombres       String
-  apellidos     String
-  especialidad  String
-  correo        String
-  telefono      String?
-  activo        Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  courses       Course[]
-  seccionesTutor Seccion[] @relation("SeccionTutor")
-  auditLogs     AuditLog[]
-  @@index([activo])
+  id           BigInt   @id @default(autoincrement())
+  usuarioId    BigInt?  @unique @map("usuario_id")
+  codigo       String   @db.VarChar(20)
+  nombres      String   @db.VarChar(80)
+  apellidos    String   @db.VarChar(80)
+  especialidad String   @db.VarChar(80)
+  email        String   @db.VarChar(120)
+  telefono     String?  @db.VarChar(20)
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  usuario        User?          @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  tutoresSeccion TutorSeccion[]
+  cursosOferta   Course[]
+  auditorias     AuditLog[]
+
+  @@unique([codigo], map: "uk_profesor_codigo")
+  @@index([activo], map: "idx_profesor_activo")
+  @@map("profesor")
+}
+
+model Student {
+  id                 BigInt            @id @default(autoincrement())
+  usuarioId          BigInt?           @unique @map("usuario_id")
+  codigo             String            @db.VarChar(20)
+  nombres            String            @db.VarChar(80)
+  apellidos          String            @db.VarChar(80)
+  dni                String?           @db.VarChar(8)
+  email              String?           @db.VarChar(120)
+  telefono           String?           @db.VarChar(20)
+  seccionId          BigInt?           @map("seccion_id")
+  estado             EstudianteEstado  @default(activo)
+  promedioGeneral    Decimal           @default(0) @map("promedio_general") @db.Decimal(4, 2)
+  asistenciaGeneral  Decimal           @default(0) @map("asistencia_general") @db.Decimal(5, 2)
+  activo             Boolean           @default(true)
+  fechaIngreso       DateTime          @map("fecha_ingreso") @db.Date
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  usuario              User?                    @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  seccion              Seccion?                 @relation(fields: [seccionId], references: [id], onDelete: SetNull)
+  apoderados           StudentApoderado[]
+  matriculas           Matricula[]
+  inscripciones        Enrollment[]
+  calificaciones       Grade[]
+  historialesAcademicos AcademicHistory[]
+  asistencias          Attendance[]
+  resumenesAsistencia  ResumenAsistencia[]
+  lmsActividades       LmsActivity[]
+  lmsEntregasTarea     LmsEntregaTarea[]
+  lmsIndicadores       LmsIndicadorEstudiante[]
+  predicciones         Prediction[]
+  recomendaciones      AiRecommendation[]
+  alertas              Alert[]
+  auditorias           AuditLog[]
+
+  @@unique([codigo], map: "uk_estudiante_codigo")
+  @@unique([dni], map: "uk_estudiante_dni")
+  @@index([seccionId], map: "idx_estudiante_seccion")
+  @@index([estado, activo], map: "idx_estudiante_estado")
+  @@map("estudiante")
 }
 
 model Apoderado {
-  id         String            @id @default(cuid())
-  userId     String?           @unique
-  user       User?             @relation(fields: [userId], references: [id])
-  dni        String            @unique
-  nombres    String
-  apellidos  String
-  correo     String?
-  telefono   String
-  createdAt  DateTime          @default(now())
+  id        BigInt   @id @default(autoincrement())
+  dni       String   @db.VarChar(8)
+  nombres   String   @db.VarChar(80)
+  apellidos String   @db.VarChar(80)
+  email     String?  @db.VarChar(120)
+  telefono  String   @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at")
+
   estudiantes StudentApoderado[]
+
+  @@unique([dni], map: "uk_apoderado_dni")
+  @@map("apoderado")
 }
 
 model StudentApoderado {
-  studentId   String
-  apoderadoId String
-  parentesco  String    @default("apoderado")
-  principal   Boolean   @default(false)
-  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  apoderado   Apoderado @relation(fields: [apoderadoId], references: [id], onDelete: Cascade)
-  @@id([studentId, apoderadoId])
+  estudianteId BigInt  @map("estudiante_id")
+  apoderadoId  BigInt  @map("apoderado_id")
+  parentesco   String  @default("apoderado") @db.VarChar(30)
+  esPrincipal  Boolean @default(false) @map("es_principal")
+
+  estudiante Student  @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+  apoderado  Apoderado @relation(fields: [apoderadoId], references: [id], onDelete: Cascade)
+
+  @@id([estudianteId, apoderadoId])
+  @@map("estudiante_apoderado")
 }
 
-// ─── Estudiantes ─────────────────────────────────────────────────────────────
+// ─── Módulo 5: Oferta y matrícula ────────────────────────────────────────────
 
-model Student {
-  id                String              @id @default(cuid())
-  userId            String?             @unique
-  user              User?               @relation(fields: [userId], references: [id])
-  codigo            String              @unique
-  nombres           String
-  apellidos         String
-  dni               String?             @unique
-  correo            String?
-  telefono          String?
-  seccionId         String?
-  seccion           Seccion?            @relation(fields: [seccionId], references: [id])
-  estado            StudentStatus       @default(activo)
-  promedioGeneral   Float               @default(0)
-  asistenciaGeneral Float               @default(0)
-  lmsEngagement     String              @default("medio")
-  activo            Boolean             @default(true)
-  fechaIngreso      DateTime            @default(now())
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  apoderados        StudentApoderado[]
-  enrollments       Enrollment[]
-  academicHistory   AcademicHistory[]
-  lmsActivities     LmsActivity[]
-  attendances       Attendance[]
-  grades            Grade[]
-  predictions       Prediction[]
-  alerts            Alert[]
-  riskRecords       StudentRisk[]
-  recommendations   AiRecommendation[]
-  psychFollowUps    PsychologicalFollowUp[]
-  auditLogs         AuditLog[]
-  @@index([estado])
-  @@index([activo])
-  @@index([seccionId])
+model TutorSeccion {
+  id            BigInt  @id @default(autoincrement())
+  seccionId     BigInt  @map("seccion_id")
+  profesorId    BigInt  @map("profesor_id")
+  anioLectivoId BigInt  @map("anio_lectivo_id")
+  activo        Boolean @default(true)
+
+  seccion     Seccion     @relation(fields: [seccionId], references: [id], onDelete: Cascade)
+  profesor    Teacher     @relation(fields: [profesorId], references: [id], onDelete: Restrict)
+  anioLectivo AnioLectivo @relation(fields: [anioLectivoId], references: [id], onDelete: Cascade)
+
+  @@unique([seccionId, anioLectivoId], map: "uk_tutor_seccion_anio")
+  @@map("tutor_seccion")
 }
-
-// ─── Cursos y matrícula ──────────────────────────────────────────────────────
 
 model Course {
-  id              String         @id @default(cuid())
-  codigo          String         @unique
-  cursoCatalogoId String?
-  cursoCatalogo   CursoCatalogo? @relation(fields: [cursoCatalogoId], references: [id])
-  nombre          String
-  profesorId      String
-  profesor        Teacher        @relation(fields: [profesorId], references: [id])
-  seccionId       String?
-  seccion         Seccion?       @relation(fields: [seccionId], references: [id])
-  periodo         String         @default("2026")
-  activo          Boolean        @default(true)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  enrollments     Enrollment[]
-  horarios        Horario[]
-  grades          Grade[]
-  @@index([profesorId])
-  @@index([seccionId])
-  @@index([activo])
+  id            BigInt   @id @default(autoincrement())
+  cursoId       BigInt   @map("curso_id")
+  seccionId     BigInt   @map("seccion_id")
+  profesorId    BigInt   @map("profesor_id")
+  anioLectivoId BigInt   @map("anio_lectivo_id")
+  codigo        String   @db.VarChar(30)
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  cursoCatalogo  CursoCatalogo @relation(fields: [cursoId], references: [id], onDelete: Restrict)
+  seccion        Seccion       @relation(fields: [seccionId], references: [id], onDelete: Cascade)
+  profesor       Teacher       @relation(fields: [profesorId], references: [id], onDelete: Restrict)
+  anioLectivo    AnioLectivo   @relation(fields: [anioLectivoId], references: [id], onDelete: Cascade)
+  inscripciones  Enrollment[]
+  horarios       HorarioClase[]
+  calificaciones Grade[]
+  lmsEntregasTarea LmsEntregaTarea[]
+  salasMensaje   MensajeSala[]
+
+  @@unique([codigo], map: "uk_oferta_codigo")
+  @@unique([cursoId, seccionId, anioLectivoId], map: "uk_oferta_curso_sec_anio")
+  @@index([seccionId], map: "idx_oferta_seccion")
+  @@index([profesorId], map: "idx_oferta_profesor")
+  @@map("curso_oferta")
+}
+
+model Matricula {
+  id            BigInt          @id @default(autoincrement())
+  estudianteId  BigInt          @map("estudiante_id")
+  seccionId     BigInt          @map("seccion_id")
+  anioLectivoId BigInt          @map("anio_lectivo_id")
+  codigo        String          @db.VarChar(30)
+  estado        MatriculaEstado @default(activa)
+  fechaMatricula DateTime       @map("fecha_matricula") @db.Date
+
+  estudiante  Student     @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+  seccion     Seccion     @relation(fields: [seccionId], references: [id], onDelete: Restrict)
+  anioLectivo AnioLectivo @relation(fields: [anioLectivoId], references: [id], onDelete: Cascade)
+
+  @@unique([codigo], map: "uk_matricula_codigo")
+  @@unique([estudianteId, anioLectivoId], map: "uk_matricula_est_anio")
+  @@index([seccionId, anioLectivoId], map: "idx_matricula_seccion")
+  @@map("matricula")
 }
 
 model Enrollment {
-  id            String   @id @default(cuid())
-  studentId     String
-  courseId      String
-  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  course        Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  periodo       String   @default("2026-I")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  @@unique([studentId, courseId, periodo])
-  @@index([studentId])
-  @@index([courseId])
+  id             BigInt            @id @default(autoincrement())
+  studentId      BigInt            @map("estudiante_id")
+  cursoOfertaId  BigInt            @map("curso_oferta_id")
+  estado         InscripcionEstado @default(activa)
+  createdAt      DateTime          @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course  Course  @relation(fields: [cursoOfertaId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, cursoOfertaId], map: "uk_insc_est_oferta")
+  @@index([cursoOfertaId], map: "idx_insc_oferta")
+  @@map("inscripcion_curso")
 }
 
-model Horario {
-  id        String    @id @default(cuid())
-  seccionId String
-  courseId  String
-  seccion   Seccion   @relation(fields: [seccionId], references: [id], onDelete: Cascade)
-  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  dia       DiaSemana
-  horaInicio String
-  horaFin    String
-  aula       String?
-  @@index([seccionId])
-  @@index([courseId])
+model HorarioClase {
+  id            BigInt    @id @default(autoincrement())
+  cursoOfertaId BigInt    @map("curso_oferta_id")
+  diaSemana     DiaSemana @map("dia_semana")
+  horaInicio    DateTime  @map("hora_inicio") @db.Time(0)
+  horaFin       DateTime  @map("hora_fin") @db.Time(0)
+  aula          String?   @db.VarChar(20)
+
+  cursoOferta Course @relation(fields: [cursoOfertaId], references: [id], onDelete: Cascade)
+
+  @@index([cursoOfertaId], map: "idx_horario_oferta")
+  @@map("horario_clase")
 }
 
-// ─── Académico ─────────────────────────────────────────────────────────────
+// ─── Módulo 6: Académico ─────────────────────────────────────────────────────
 
 model Grade {
-  id          String   @id @default(cuid())
-  studentId   String
-  courseId    String
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  periodo     String
-  bimestre    Int
-  nota        Float
-  observacion String?
-  createdAt   DateTime @default(now())
-  @@unique([studentId, courseId, periodo, bimestre])
-  @@index([studentId])
-  @@index([courseId])
+  id            BigInt   @id @default(autoincrement())
+  studentId     BigInt   @map("estudiante_id")
+  cursoOfertaId BigInt   @map("curso_oferta_id")
+  periodoId     BigInt   @map("periodo_id")
+  nota          Decimal  @db.Decimal(4, 2)
+  observacion   String?  @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  student     Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  cursoOferta Course           @relation(fields: [cursoOfertaId], references: [id], onDelete: Cascade)
+  periodo     PeriodoAcademico @relation(fields: [periodoId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, cursoOfertaId, periodoId], map: "uk_calif")
+  @@index([studentId], map: "idx_calif_estudiante")
+  @@map("calificacion")
 }
 
 model AcademicHistory {
-  id          String   @id @default(cuid())
-  studentId   String
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  periodo     String
-  promedio    Float
-  asistencia  Float
-  observacion String?
-  createdAt   DateTime @default(now())
-  @@index([studentId, periodo])
+  id                 BigInt   @id @default(autoincrement())
+  studentId          BigInt   @map("estudiante_id")
+  periodoId          BigInt   @map("periodo_id")
+  promedio           Decimal  @db.Decimal(4, 2)
+  cursosDesaprobados Int      @default(0) @map("cursos_desaprobados") @db.TinyInt
+  asistenciaPct      Decimal  @default(0) @map("asistencia_pct") @db.Decimal(5, 2)
+  observacion        String?  @db.VarChar(255)
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  student Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  periodo PeriodoAcademico @relation(fields: [periodoId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, periodoId], map: "uk_hist_est_periodo")
+  @@map("historial_academico")
 }
 
-model LmsActivity {
-  id               String   @id @default(cuid())
-  studentId        String
-  student          Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  semana           String
-  actividadPct     Float
-  minutos          Int
-  tareasEntregadas Int
-  tareasTotales    Int
-  horasPlataforma  Float
-  conexiones       Int      @default(0)
-  createdAt        DateTime @default(now())
-  @@index([studentId, semana])
-}
+// ─── Módulo 7: Asistencia ────────────────────────────────────────────────────
 
 model Attendance {
-  id          String   @id @default(cuid())
-  studentId   String
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id          BigInt   @id @default(autoincrement())
+  studentId   BigInt   @map("estudiante_id")
   fecha       DateTime @db.Date
-  presente    Boolean
-  justificado Boolean  @default(false)
+  presente    Boolean  @default(true)
   tardanza    Boolean  @default(false)
-  observacion String?
-  createdAt   DateTime @default(now())
-  @@unique([studentId, fecha])
-  @@index([studentId, fecha])
+  justificado Boolean  @default(false)
+  observacion String?  @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, fecha], map: "uk_asistencia_est_fecha")
+  @@index([fecha], map: "idx_asistencia_fecha")
+  @@map("asistencia")
 }
 
-// ─── IA y riesgo ─────────────────────────────────────────────────────────────
+model ResumenAsistencia {
+  id               BigInt  @id @default(autoincrement())
+  studentId        BigInt  @map("estudiante_id")
+  periodoId        BigInt  @map("periodo_id")
+  diasRegistrados  Int     @default(0) @map("dias_registrados") @db.SmallInt
+  diasPresentes    Int     @default(0) @map("dias_presentes") @db.SmallInt
+  porcentaje       Decimal @default(0) @db.Decimal(5, 2)
+
+  student Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  periodo PeriodoAcademico @relation(fields: [periodoId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, periodoId], map: "uk_res_asist_est_per")
+  @@map("resumen_asistencia")
+}
+
+// ─── Módulo 8: LMS ───────────────────────────────────────────────────────────
+
+model LmsActivity {
+  id               BigInt   @id @default(autoincrement())
+  studentId        BigInt   @map("estudiante_id")
+  anioSemana       String   @map("anio_semana") @db.VarChar(8)
+  actividadPct     Decimal  @default(0) @map("actividad_pct") @db.Decimal(5, 2)
+  minutos          Int      @default(0)
+  horasPlataforma  Decimal  @default(0) @map("horas_plataforma") @db.Decimal(4, 1)
+  conexiones       Int      @default(0)
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, anioSemana], map: "uk_lms_act_est_sem")
+  @@map("lms_actividad_semanal")
+}
+
+model LmsEntregaTarea {
+  id               BigInt  @id @default(autoincrement())
+  studentId        BigInt  @map("estudiante_id")
+  cursoOfertaId    BigInt  @map("curso_oferta_id")
+  periodoId        BigInt  @map("periodo_id")
+  tareasTotales    Int     @default(0) @map("tareas_totales") @db.SmallInt
+  tareasEntregadas Int     @default(0) @map("tareas_entregadas") @db.SmallInt
+  ratio            Decimal @default(0) @db.Decimal(4, 3)
+
+  student     Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  cursoOferta Course           @relation(fields: [cursoOfertaId], references: [id], onDelete: Cascade)
+  periodo     PeriodoAcademico @relation(fields: [periodoId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, cursoOfertaId, periodoId], map: "uk_lms_tarea")
+  @@map("lms_entrega_tarea")
+}
+
+model LmsIndicadorEstudiante {
+  id                    BigInt   @id @default(autoincrement())
+  studentId             BigInt   @map("estudiante_id")
+  periodoId             BigInt   @map("periodo_id")
+  frecuenciaAcceso      Decimal  @default(0) @map("frecuencia_acceso") @db.Decimal(5, 2)
+  tiempoPlataforma      Decimal  @default(0) @map("tiempo_plataforma") @db.Decimal(4, 1)
+  tareasRatio           Decimal  @default(0) @map("tareas_ratio") @db.Decimal(4, 3)
+  participacion         Decimal  @default(0) @db.Decimal(5, 2)
+  usoForos              Decimal  @default(0) @map("uso_foros") @db.Decimal(4, 3)
+  disminucionActividad  Decimal  @default(0) @map("disminucion_actividad") @db.Decimal(5, 2)
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  student Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  periodo PeriodoAcademico @relation(fields: [periodoId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, periodoId], map: "uk_lms_ind_est_per")
+  @@map("lms_indicador_estudiante")
+}
+
+// ─── Módulo 9: Machine Learning ──────────────────────────────────────────────
+
+model MlFeatureDef {
+  id          BigInt   @id @default(autoincrement())
+  codigo      String   @db.VarChar(40)
+  nombre      String   @db.VarChar(100)
+  tipoDato    String   @map("tipo_dato") @db.VarChar(20)
+  rangoMin    Decimal? @map("rango_min") @db.Decimal(10, 4)
+  rangoMax    Decimal? @map("rango_max") @db.Decimal(10, 4)
+  descripcion String?  @db.VarChar(255)
+  orden       Int      @db.TinyInt
+
+  @@unique([codigo], map: "uk_ml_feature_codigo")
+  @@map("ml_feature_def")
+}
+
+model MlDataset {
+  id           BigInt   @id @default(autoincrement())
+  codigo       String   @db.VarChar(40)
+  version      String   @db.VarChar(20)
+  rutaArchivo  String?  @map("ruta_archivo") @db.VarChar(500)
+  hashSha256   String?  @map("hash_sha256") @db.VarChar(64)
+  registros    Int      @default(0)
+  descripcion  String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  entrenamientos MlEntrenamiento[]
+
+  @@unique([codigo, version], map: "uk_ml_dataset_ver")
+  @@map("ml_dataset")
+}
+
+model MlEntrenamiento {
+  id              BigInt                @id @default(autoincrement())
+  datasetId       BigInt                @map("dataset_id")
+  codigo          String                @db.VarChar(40)
+  algoritmos      Json
+  hiperparametros Json?
+  duracionSeg     Int?                  @map("duracion_seg")
+  estado          MlEntrenamientoEstado @default(pendiente)
+  iniciadoAt      DateTime?             @map("iniciado_at")
+  finalizadoAt    DateTime?             @map("finalizado_at")
+  logTexto        String?               @map("log_texto") @db.Text
+
+  dataset MlDataset  @relation(fields: [datasetId], references: [id], onDelete: Restrict)
+  modelos MlModelo[]
+
+  @@index([datasetId], map: "idx_ml_train_dataset")
+  @@map("ml_entrenamiento")
+}
+
+model MlModelo {
+  id              BigInt   @id @default(autoincrement())
+  entrenamientoId BigInt   @map("entrenamiento_id")
+  codigo          String   @db.VarChar(40)
+  nombre          String   @db.VarChar(80)
+  rutaArtifact    String   @map("ruta_artifact") @db.VarChar(500)
+  version         String   @db.VarChar(20)
+  esProduccion    Boolean  @default(false) @map("es_produccion")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  entrenamiento MlEntrenamiento @relation(fields: [entrenamientoId], references: [id], onDelete: Restrict)
+  metricas      MlMetrica[]
+  predicciones  Prediction[]
+
+  @@unique([codigo], map: "uk_ml_modelo_codigo")
+  @@index([esProduccion], map: "idx_ml_modelo_prod")
+  @@map("ml_modelo")
+}
+
+model MlMetrica {
+  id              BigInt   @id @default(autoincrement())
+  modeloId        BigInt   @map("modelo_id")
+  accuracy        Decimal? @db.Decimal(6, 4)
+  precisionMacro  Decimal? @map("precision_macro") @db.Decimal(6, 4)
+  recallMacro     Decimal? @map("recall_macro") @db.Decimal(6, 4)
+  f1Macro         Decimal? @map("f1_macro") @db.Decimal(6, 4)
+  matrizConfusion Json?    @map("matriz_confusion")
+  metricasJson    Json?    @map("metricas_json")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  modelo MlModelo @relation(fields: [modeloId], references: [id], onDelete: Cascade)
+
+  @@index([modeloId], map: "idx_ml_metrica_modelo")
+  @@map("ml_metrica")
+}
+
+// ─── Módulo 10: Predicción ───────────────────────────────────────────────────
 
 model Prediction {
-  id           String    @id @default(cuid())
-  studentId    String
-  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  score        Float
-  level        RiskLevel
-  probability  Float?
-  modelVersion String
-  modelName    String
-  factorsJson  String    @db.Text
-  metaJson     String?   @db.Text
-  createdAt    DateTime  @default(now())
-  @@index([studentId, createdAt])
-  @@index([level])
+  id                   BigInt      @id @default(autoincrement())
+  studentId            BigInt      @map("estudiante_id")
+  modeloId             BigInt?     @map("modelo_id")
+  score                Decimal     @db.Decimal(5, 2)
+  nivelRiesgo          NivelRiesgo @map("nivel_riesgo")
+  probabilidad         Decimal     @db.Decimal(6, 4)
+  probabilidadAbandono Decimal     @map("probabilidad_abandono") @db.Decimal(6, 4)
+  periodoId            BigInt?     @map("periodo_id")
+  createdAt            DateTime    @default(now()) @map("created_at")
+
+  student   Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  modelo    MlModelo?         @relation(fields: [modeloId], references: [id], onDelete: SetNull)
+  periodo   PeriodoAcademico? @relation(fields: [periodoId], references: [id], onDelete: SetNull)
+  features  PrediccionFeatureSnapshot[]
+  factores  PrediccionFactor[]
+  recomendaciones AiRecommendation[]
+  alertas   Alert[]
+
+  @@index([studentId, createdAt], map: "idx_pred_est_fecha")
+  @@index([nivelRiesgo], map: "idx_pred_nivel")
+  @@map("prediccion")
 }
 
-model StudentRisk {
-  id        String    @id @default(cuid())
-  studentId String
-  student   Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  score     Float
-  level     RiskLevel
-  periodo   String
-  createdAt DateTime  @default(now())
-  @@index([studentId, periodo])
+model PrediccionFeatureSnapshot {
+  id             BigInt   @id @default(autoincrement())
+  prediccionId   BigInt   @map("prediccion_id")
+  featureCodigo  String   @map("feature_codigo") @db.VarChar(40)
+  valorNumerico  Decimal? @map("valor_numerico") @db.Decimal(12, 4)
+  valorTexto     String?  @map("valor_texto") @db.VarChar(50)
+
+  prediccion Prediction @relation(fields: [prediccionId], references: [id], onDelete: Cascade)
+
+  @@index([prediccionId], map: "idx_pfs_prediccion")
+  @@map("prediccion_feature_snapshot")
 }
 
-model Alert {
-  id             String      @id @default(cuid())
-  studentId      String
-  student        Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  titulo         String
-  descripcion    String      @db.Text
-  factorKey      String?
-  level          RiskLevel
-  score          Float?
-  probability    Float?
-  factorsJson    String?     @db.Text
-  recommendation String?     @db.Text
-  status         AlertStatus @default(nueva)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  @@index([status, level])
-  @@index([studentId])
+model PrediccionFactor {
+  id           BigInt  @id @default(autoincrement())
+  prediccionId BigInt  @map("prediccion_id")
+  factorKey    String  @map("factor_key") @db.VarChar(40)
+  etiqueta     String  @db.VarChar(120)
+  contribucion Decimal @default(0) @db.Decimal(6, 2)
+
+  prediccion Prediction @relation(fields: [prediccionId], references: [id], onDelete: Cascade)
+
+  @@index([prediccionId], map: "idx_pf_prediccion")
+  @@map("prediccion_factor")
 }
 
 model AiRecommendation {
-  id        String   @id @default(cuid())
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  factorKey String
-  titulo    String
-  detalle   String   @db.Text
-  aplicada  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  @@index([studentId])
+  id           BigInt   @id @default(autoincrement())
+  studentId    BigInt   @map("estudiante_id")
+  prediccionId BigInt?  @map("prediccion_id")
+  factorKey    String?  @map("factor_key") @db.VarChar(40)
+  titulo       String   @db.VarChar(150)
+  detalle      String   @db.Text
+  aplicada     Boolean  @default(false)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  student    Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  prediccion Prediction? @relation(fields: [prediccionId], references: [id], onDelete: SetNull)
+
+  @@index([studentId], map: "idx_rec_estudiante")
+  @@map("recomendacion")
 }
 
-model PsychologicalFollowUp {
-  id          String   @id @default(cuid())
-  studentId   String
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  fecha       DateTime
-  resumen     String   @db.Text
-  acciones    String?  @db.Text
-  profesional String?
-  createdAt   DateTime @default(now())
-  @@index([studentId])
+// ─── Módulo 11: Alertas ──────────────────────────────────────────────────────
+
+model Alert {
+  id             BigInt       @id @default(autoincrement())
+  studentId      BigInt       @map("estudiante_id")
+  prediccionId   BigInt?      @map("prediccion_id")
+  titulo         String       @db.VarChar(150)
+  descripcion    String       @db.Text
+  nivelRiesgo    NivelRiesgo  @map("nivel_riesgo")
+  score          Decimal?     @db.Decimal(5, 2)
+  probabilidad   Decimal?     @db.Decimal(6, 4)
+  estado         AlertaEstado @default(nueva)
+  recomendacion  String?      @db.Text
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  student    Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  prediccion Prediction?      @relation(fields: [prediccionId], references: [id], onDelete: SetNull)
+  historial  AlertaHistorial[]
+  factores   AlertaFactor[]
+
+  @@index([estado, nivelRiesgo], map: "idx_alerta_estado")
+  @@index([studentId], map: "idx_alerta_estudiante")
+  @@map("alerta")
 }
 
-// ─── Sistema ─────────────────────────────────────────────────────────────────
+model AlertaHistorial {
+  id              BigInt        @id @default(autoincrement())
+  alertaId        BigInt        @map("alerta_id")
+  estadoAnterior  AlertaEstado? @map("estado_anterior")
+  estadoNuevo     AlertaEstado  @map("estado_nuevo")
+  usuarioId       BigInt?       @map("usuario_id")
+  comentario      String?       @db.VarChar(255)
+  createdAt       DateTime      @default(now()) @map("created_at")
 
-model Notification {
-  id        String           @id @default(cuid())
-  userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tipo      NotificationType
-  titulo    String
-  mensaje   String           @db.Text
-  leida     Boolean          @default(false)
-  createdAt DateTime         @default(now())
-  @@index([userId, leida])
+  alerta  Alert @relation(fields: [alertaId], references: [id], onDelete: Cascade)
+  usuario User? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([alertaId], map: "idx_ah_alerta")
+  @@map("alerta_historial")
 }
 
-model Report {
-  id          String   @id @default(cuid())
-  titulo      String
-  tipo        String
-  generadoPor String?
-  archivoPath String?
-  metaJson    String?  @db.Text
-  createdAt   DateTime @default(now())
+model AlertaFactor {
+  id           BigInt  @id @default(autoincrement())
+  alertaId     BigInt  @map("alerta_id")
+  factorKey    String  @map("factor_key") @db.VarChar(40)
+  etiqueta     String  @db.VarChar(120)
+  contribucion Decimal @default(0) @db.Decimal(6, 2)
+
+  alerta Alert @relation(fields: [alertaId], references: [id], onDelete: Cascade)
+
+  @@index([alertaId], map: "idx_af_alerta")
+  @@map("alerta_factor")
 }
 
-model DashboardSnapshot {
-  id               String   @id @default(cuid())
-  periodo          String   @unique
-  riesgoGlobal     Float
-  totalEstudiantes Int
-  alertasAbiertas  Int
-  metaJson         String?  @db.Text
-  createdAt        DateTime @default(now())
-}
+// ─── Módulo 12: Mensajería ───────────────────────────────────────────────────
 
-model SystemConfig {
-  id        String   @id @default(cuid())
-  clave     String   @unique
-  valor     String   @db.Text
-  updatedAt DateTime @updatedAt
-}
+model MensajeSala {
+  id            BigInt         @id @default(autoincrement())
+  roomId        String         @map("room_id") @db.VarChar(60)
+  alcance       MensajeAlcance
+  titulo        String?        @db.VarChar(150)
+  cursoOfertaId BigInt?        @map("curso_oferta_id")
+  createdAt     DateTime       @default(now()) @map("created_at")
 
-model AuditLog {
-  id        String   @id @default(cuid())
-  entidad   String
-  entidadId String?
-  accion    String
-  usuarioId String?
-  usuario   User?    @relation("AuditUser", fields: [usuarioId], references: [id])
-  detalle   String?  @db.Text
-  ipAddress String?
-  createdAt DateTime @default(now())
-  studentId String?
-  student   Student? @relation(fields: [studentId], references: [id])
-  teacherId String?
-  teacher   Teacher? @relation(fields: [teacherId], references: [id])
-  @@index([entidad, createdAt])
-  @@index([usuarioId])
+  cursoOferta Course?       @relation(fields: [cursoOfertaId], references: [id], onDelete: SetNull)
+  mensajes    ChatMessage[]
+
+  @@unique([roomId], map: "uk_mensaje_sala_room")
+  @@index([cursoOfertaId], map: "idx_ms_curso")
+  @@map("mensaje_sala")
 }
 
 model ChatMessage {
-  id              String       @id @default(cuid())
-  roomId          String
-  scope           MessageScope @default(directo)
-  senderId        String
-  senderName      String
-  senderRole      UserRole
-  recipientUserId String?
-  courseId        String?
-  parentMessageId String?
-  contenido       String       @db.Text
-  createdAt       DateTime     @default(now())
-  reads           MessageRead[]
-  @@index([roomId, createdAt])
-  @@index([recipientUserId])
-  @@index([courseId])
+  id              BigInt   @id @default(autoincrement())
+  salaId          BigInt   @map("sala_id")
+  remitenteId     BigInt   @map("remitente_id")
+  destinatarioId  BigInt?  @map("destinatario_id")
+  contenido       String   @db.Text
+  mensajePadreId  BigInt?  @map("mensaje_padre_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  sala          MensajeSala   @relation(fields: [salaId], references: [id], onDelete: Cascade)
+  remitente     User          @relation("MensajeRemitente", fields: [remitenteId], references: [id], onDelete: Cascade)
+  destinatario  User?         @relation("MensajeDestinatario", fields: [destinatarioId], references: [id], onDelete: SetNull)
+  mensajePadre  ChatMessage?  @relation("MensajeHilo", fields: [mensajePadreId], references: [id], onDelete: SetNull)
+  respuestas    ChatMessage[] @relation("MensajeHilo")
+  lecturas      MessageRead[]
+
+  @@index([salaId, createdAt], map: "idx_mensaje_sala_fecha")
+  @@index([destinatarioId], map: "idx_mensaje_dest")
+  @@map("mensaje")
 }
 
 model MessageRead {
-  messageId String
-  userId    String
-  leida     Boolean    @default(false)
-  readAt    DateTime?
-  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@id([messageId, userId])
-  @@index([userId, leida])
+  mensajeId BigInt    @map("mensaje_id")
+  usuarioId BigInt    @map("usuario_id")
+  leido     Boolean   @default(false)
+  leidoAt   DateTime? @map("leido_at")
+
+  mensaje ChatMessage @relation(fields: [mensajeId], references: [id], onDelete: Cascade)
+  usuario User        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@id([mensajeId, usuarioId])
+  @@index([usuarioId, leido], map: "idx_ml_usuario")
+  @@map("mensaje_lectura")
+}
+
+// ─── Módulo 13: Auditoría, reportes, sistema ─────────────────────────────────
+
+model AuditLog {
+  id           BigInt   @id @default(autoincrement())
+  entidad      String   @db.VarChar(60)
+  entidadId    String?  @map("entidad_id") @db.VarChar(40)
+  accion       String   @db.VarChar(40)
+  usuarioId    BigInt?  @map("usuario_id")
+  estudianteId BigInt?  @map("estudiante_id")
+  profesorId   BigInt?  @map("profesor_id")
+  detalle      String?  @db.Text
+  ipAddress    String?  @map("ip_address") @db.VarChar(45)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  usuario    User?    @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  estudiante Student? @relation(fields: [estudianteId], references: [id], onDelete: SetNull)
+  profesor   Teacher? @relation(fields: [profesorId], references: [id], onDelete: SetNull)
+
+  @@index([entidad, createdAt], map: "idx_audit_entidad")
+  @@index([usuarioId], map: "idx_audit_usuario")
+  @@map("auditoria")
+}
+
+model Report {
+  id           BigInt   @id @default(autoincrement())
+  titulo       String   @db.VarChar(150)
+  tipo         String   @db.VarChar(40)
+  generadoPor  BigInt?  @map("generado_por")
+  rutaArchivo  String?  @map("ruta_archivo") @db.VarChar(500)
+  metaJson     Json?    @map("meta_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  usuario User? @relation(fields: [generadoPor], references: [id], onDelete: SetNull)
+
+  @@index([tipo], map: "idx_reporte_tipo")
+  @@map("reporte")
+}
+
+model Notification {
+  id        BigInt           @id @default(autoincrement())
+  usuarioId BigInt           @map("usuario_id")
+  tipo      NotificacionTipo
+  titulo    String           @db.VarChar(150)
+  mensaje   String           @db.Text
+  leida     Boolean          @default(false)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  usuario User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, leida], map: "idx_notif_usuario")
+  @@map("notificacion")
+}
+
+model DashboardSnapshot {
+  id               BigInt   @id @default(autoincrement())
+  anioLectivoId    BigInt   @map("anio_lectivo_id")
+  periodoId        BigInt?  @map("periodo_id")
+  totalEstudiantes Int      @default(0) @map("total_estudiantes")
+  riesgoBajo       Int      @default(0) @map("riesgo_bajo")
+  riesgoMedio      Int      @default(0) @map("riesgo_medio")
+  riesgoAlto       Int      @default(0) @map("riesgo_alto")
+  alertasAbiertas  Int      @default(0) @map("alertas_abiertas")
+  metaJson         Json?    @map("meta_json")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  anioLectivo AnioLectivo        @relation(fields: [anioLectivoId], references: [id], onDelete: Cascade)
+  periodo     PeriodoAcademico?  @relation(fields: [periodoId], references: [id], onDelete: SetNull)
+
+  @@index([anioLectivoId], map: "idx_dash_anio")
+  @@map("dashboard_snapshot")
+}
+
+model SystemConfig {
+  id        BigInt   @id @default(autoincrement())
+  clave     String   @db.VarChar(80)
+  valor     String   @db.Text
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([clave], map: "uk_config_clave")
+  @@map("configuracion_sistema")
 }

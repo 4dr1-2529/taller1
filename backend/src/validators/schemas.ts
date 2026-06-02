@@ -1,6 +1,5 @@
 import { z } from "zod";
 import {
-  bimestreField,
   codigoField,
   gradeField,
   optionalDniField,
@@ -41,20 +40,18 @@ export const studentSchema = z.object({
   estado: z.enum(["activo", "en_riesgo", "retirado"]).optional(),
   promedioGeneral: gradeField.optional(),
   asistenciaGeneral: percentageField.optional(),
-  lmsEngagement: z.enum(["alto", "medio", "bajo"]).optional(),
 });
 
 export const enrollmentSchema = z.object({
   studentId: z.string().min(1),
   courseId: z.string().min(1),
-  periodo: z.string().default("2026-I"),
 });
 
 export const gradeSchema = z.object({
   studentId: z.string().min(1),
   courseId: z.string().min(1),
-  periodo: z.string().min(4).default("2026-I"),
-  bimestre: bimestreField,
+  periodoId: z.string().optional(),
+  periodoNumero: z.coerce.number().int().min(1).max(4).optional(),
   nota: gradeField,
   observacion: z.string().max(500).optional(),
 });

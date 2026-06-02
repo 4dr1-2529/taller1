@@ -33,7 +33,8 @@ import { listReports, createReport, deleteReport, saveDashboardSnapshot, getDash
 import { prisma } from "../utils/prisma.js";
 import { enrollmentSchema } from "../validators/schemas.js";
 import { logAudit } from "../utils/audit.js";
-import { paramId } from "../utils/params.js";
+import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
+import { courseDisplayName } from "../utils/course-label.js";
 import { AppError } from "../middleware/errorHandler.js";
 
 import { getMlMetrics } from "../services/ml-client.js";
@@ -88,8 +89,14 @@ router.post("/enrollments", authenticate, authorize("admin"), async (req, res, n
     const data = enrollmentSchema.parse(req.body);
     await assertStudentInScope(req.user!, data.studentId);
     const [student, course] = await Promise.all([
-      prisma.student.findUnique({ where: { id: data.studentId }, select: { seccionId: true } }),
-      prisma.course.findUnique({ where: { id: data.courseId }, select: { seccionId: true, nombre: true } }),
+      prisma.student.findUnique({
+        where: { id: toDbId(data.studentId) },
+        select: { seccionId: true },
+      }),
+      prisma.course.findUnique({
+        where: { id: toDbId(data.courseId) },
+        select: { seccionId: true, codigo: true, cursoCatalogo: { select: { nombre: true } } },
+      }),
     ]);
     if (!student || !course) {
       throw new AppError(404, "Estudiante o curso no encontrado");
@@ -97,10 +104,16 @@ router.post("/enrollments", authenticate, authorize("admin"), async (req, res, n
     if (course.seccionId && student.seccionId && course.seccionId !== student.seccionId) {
       throw new AppError(
         400,
-        `El curso "${course.nombre}" no pertenece a la sección del estudiante`,
+        `El curso "${courseDisplayName(course)}" no pertenece a la sección del estudiante`,
       );
     }
-    const item = await prisma.enrollment.create({ data });
+    const item = await prisma.enrollment.create({
+      data: {
+        studentId: toDbId(data.studentId),
+        cursoOfertaId: toDbId(data.courseId),
+      },
+      include: { student: true, course: { include: { cursoCatalogo: true } } },
+    });
     res.status(201).json({ ok: true, item });
   } catch (e) {
     next(e);
@@ -123,7 +136,7 @@ router.post("/messages", authenticate, sendMessage);
 router.get("/notifications", authenticate, async (req, res, next) => {
   try {
     const items = await prisma.notification.findMany({
-      where: { userId: req.user!.sub },
+      where: { usuarioId: toDbId(req.user!.sub) },
       orderBy: { createdAt: "desc" },
       take: 30,
     });
@@ -135,7 +148,7 @@ router.get("/notifications", authenticate, async (req, res, next) => {
 router.patch("/notifications/:id/read", authenticate, async (req, res, next) => {
   try {
     const item = await prisma.notification.updateMany({
-      where: { id: paramId(req), userId: req.user!.sub },
+      where: { id: paramBigIntId(req), usuarioId: toDbId(req.user!.sub) },
       data: { leida: true },
     });
     res.json({ ok: true, updated: item.count });
