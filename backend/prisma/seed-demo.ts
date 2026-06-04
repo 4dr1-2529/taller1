@@ -236,13 +236,8 @@ async function main() {
         },
       });
 
-      for (const oferta of ofertas) {
-        await prisma.enrollment.upsert({
-          where: { studentId_cursoOfertaId: { studentId: student.id, cursoOfertaId: oferta.id } },
-          update: {},
-          create: { studentId: student.id, cursoOfertaId: oferta.id },
-        });
-      }
+      // Inscripciones a curso: no se generan masivamente (evita ~15× estudiantes registros).
+      // Las notas y el LMS usan datos del estudiante; inscribir a curso es opcional vía API.
 
       await prisma.lmsIndicadorEstudiante.upsert({
         where: { studentId_periodoId: { studentId: student.id, periodoId: periodo.id } },

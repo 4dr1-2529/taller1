@@ -24,7 +24,7 @@ function KpiCard({ label, value, suffix = "", icon: Icon }: { label: string; val
     <div className="premium-card rounded-xl p-4">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
-        <Icon className="h-4 w-4 text-violet-400" />
+        <Icon className="h-4 w-4 text-[var(--brand-orange)]" />
       </div>
       <p className="mt-2 text-2xl font-bold text-[var(--text-primary)]">
         {value}
@@ -39,6 +39,7 @@ export function RoleDashboard({ role, students, courses, enrollments, useApi = f
   const [kpis, setKpis] = useState<{
     totalStudents?: number;
     totalTeachers?: number;
+    totalSalones?: number;
     openAlerts?: number;
     avgGrade?: number;
     avgAttendance?: number;
@@ -71,9 +72,10 @@ export function RoleDashboard({ role, students, courses, enrollments, useApi = f
           totalStudents={totalStudents}
           totalTeachers={kpis?.totalTeachers ?? 0}
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <KpiCard label="Total estudiantes" value={totalStudents} icon={Users} />
           <KpiCard label="Total profesores" value={kpis?.totalTeachers ?? "—"} icon={GraduationCap} />
+          <KpiCard label="Total salones" value={kpis?.totalSalones ?? "—"} icon={BookOpen} />
           <KpiCard label="Alertas activas" value={kpis?.openAlerts ?? 0} icon={AlertTriangle} />
           <KpiCard label="Promedio institucional" value={kpis?.avgGrade ?? globalRiskScore(students)} suffix="/20" icon={BookOpen} />
         </div>

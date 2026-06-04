@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middleware/errorHandler.js";
@@ -20,7 +21,7 @@ export async function listCourses(req: Request, res: Response, next: NextFunctio
     if (req.user?.role === "docente") {
       const tid = await getTeacherIdForUser(req.user.sub);
       if (!tid) {
-        return res.json({ ok: true, items: [] });
+        return sendSuccess(res, { items: [] });
       }
       profesorId = tid;
     }
@@ -37,7 +38,7 @@ export async function listCourses(req: Request, res: Response, next: NextFunctio
       ...mapCourseForApi(c),
       id: idToString(c.id),
     }));
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -109,7 +110,7 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
       accion: "CREATE",
       usuarioId: req.user?.sub,
     });
-    res.status(201).json({ ok: true, course: { ...mapCourseForApi(course), id: idToString(course.id) } });
+    sendCreated(res, { course: { ...mapCourseForApi(course), id: idToString(course.id) } });
   } catch (e) {
     next(e);
   }
@@ -134,7 +135,7 @@ export async function updateCourse(req: Request, res: Response, next: NextFuncti
       accion: "UPDATE",
       usuarioId: req.user?.sub,
     });
-    res.json({ ok: true, course: { ...mapCourseForApi(course), id: idToString(course.id) } });
+    sendSuccess(res, { course: { ...mapCourseForApi(course), id: idToString(course.id) } });
   } catch (e) {
     next(e);
   }
@@ -153,7 +154,7 @@ export async function deleteCourse(req: Request, res: Response, next: NextFuncti
       accion: "DELETE",
       usuarioId: req.user?.sub,
     });
-    res.json({ ok: true, message: "Curso desactivado" });
+    sendSuccess(res, {}, "Curso desactivado");
   } catch (e) {
     next(e);
   }

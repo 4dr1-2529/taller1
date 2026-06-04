@@ -1,9 +1,11 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { gradeSchema } from "../validators/schemas.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
+import { assertTeacherCourseAccess } from "../utils/course-authorization.js";
 import { resolvePeriodoId } from "../utils/academic-period.js";
 import { courseListInclude, courseDisplayName } from "../utils/course-label.js";
 
@@ -43,7 +45,7 @@ export async function listGrades(req: Request, res: Response, next: NextFunction
         : null,
     }));
 
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -53,6 +55,7 @@ export async function createGrade(req: Request, res: Response, next: NextFunctio
   try {
     const data = gradeSchema.parse(req.body);
     await assertStudentInScope(req.user!, data.studentId);
+    await assertTeacherCourseAccess(req.user!, data.courseId);
     const periodoId = await resolvePeriodoId(data.periodoId, data.periodoNumero);
     const studentId = toDbId(data.studentId);
     const cursoOfertaId = toDbId(data.courseId);
@@ -95,14 +98,11 @@ export async function createGrade(req: Request, res: Response, next: NextFunctio
       usuarioId: req.user?.sub,
       studentId,
     });
-    res.status(201).json({
-      ok: true,
-      item: {
+    sendCreated(res, { item: {
         ...item,
         id: idToString(item.id),
         courseId: idToString(item.cursoOfertaId),
-      },
-    });
+      }, });
   } catch (e) {
     next(e);
   }
@@ -118,7 +118,7 @@ export async function deleteGrade(req: Request, res: Response, next: NextFunctio
       usuarioId: req.user?.sub,
       studentId: item.studentId,
     });
-    res.json({ ok: true, message: "Nota eliminada" });
+    sendSuccess(res, {}, "Nota eliminada");
   } catch (e) {
     next(e);
   }

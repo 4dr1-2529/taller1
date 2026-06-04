@@ -7,6 +7,8 @@ import {
   optionalPhoneField,
   percentageField,
   personNameField,
+  roleCodeField,
+  securePasswordField,
 } from "./fields.js";
 
 export const loginSchema = z.object({
@@ -19,18 +21,18 @@ export const loginSchema = z.object({
 });
 
 export const createUserSchema = z.object({
-  email: z.string().email("Correo inválido").max(255),
-  password: z.string().min(8, "Mínimo 8 caracteres").max(128),
+  email: z.string().email("Correo inválido").max(255).transform((v) => v.trim().toLowerCase()),
+  password: securePasswordField,
   nombres: personNameField,
   apellidos: personNameField,
-  role: z.enum(["admin", "docente", "estudiante"]).default("estudiante"),
+  role: roleCodeField.default("estudiante"),
   dni: optionalDniField,
   telefono: optionalPhoneField,
 });
 
 export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1),
-  newPassword: z.string().min(8, "Mínimo 8 caracteres").max(128),
+  currentPassword: z.string().min(1, "Contraseña actual requerida"),
+  newPassword: securePasswordField,
 });
 
 export const studentSchema = z.object({
@@ -46,9 +48,23 @@ export const studentSchema = z.object({
   asistenciaGeneral: percentageField.optional(),
 });
 
+export const updateStudentSchema = studentSchema.partial().refine(
+  (d) => Object.keys(d).length > 0,
+  { message: "Debe enviar al menos un campo para actualizar" },
+);
+
 export const enrollmentSchema = z.object({
   studentId: z.string().min(1),
   courseId: z.string().min(1),
+});
+
+export const matriculaSchema = z.object({
+  estudianteId: z.string().min(1, "Seleccione estudiante"),
+  seccionId: z.string().min(1, "Seleccione sección"),
+  anioLectivoId: z.string().min(1, "Seleccione año lectivo"),
+  codigo: z.string().max(30).optional(),
+  fechaMatricula: z.string().optional(),
+  estado: z.enum(["activa", "retirada", "trasladada"]).optional(),
 });
 
 export const gradeSchema = z.object({
@@ -69,24 +85,34 @@ export const attendanceSchema = z.object({
   observacion: z.string().max(500).optional(),
 });
 
-export const predictSchema = z.object({
-  studentId: z.string().optional(),
-  metrics: z
-    .object({
-      promedioGeneral: gradeField,
-      asistenciaGeneral: percentageField,
-      lms: z.object({
-        engagement: z.enum(["alto", "medio", "bajo"]).optional(),
-        actividadSemanalPct: z.array(percentageField),
-        minutosPorSemana: z.array(z.number().min(0)).optional(),
-        tareasEntregadas: z.number().min(0),
-        tareasTotales: z.number().min(1),
-        horasPlataformaSemana: z.number().min(0).optional(),
-      }),
-    })
-    .optional(),
-  estado: z.enum(["activo", "en_riesgo", "retirado"]).optional(),
+export const lmsMetricsSchema = z.object({
+  engagement: z.enum(["alto", "medio", "bajo"]).optional(),
+  actividadSemanalPct: z.array(percentageField).min(1, "Indique actividad semanal LMS"),
+  minutosPorSemana: z.array(z.number().min(0)).optional(),
+  tareasEntregadas: z.number().min(0, "tareas_entregadas >= 0"),
+  tareasTotales: z.number().min(1, "tareas_totales >= 1"),
+  horasPlataformaSemana: z.number().min(0, "tiempo_plataforma >= 0").optional(),
+  frecuenciaAccesoLms: z.number().min(0).optional(),
+  participacionActividades: z.number().min(0).optional(),
+  usoForos: z.number().min(0).max(1).optional(),
+  disminucionActividad: z.number().min(0).max(100).optional(),
 });
+
+export const predictSchema = z
+  .object({
+    studentId: z.string().min(1).optional(),
+    metrics: z
+      .object({
+        promedioGeneral: gradeField,
+        asistenciaGeneral: percentageField,
+        lms: lmsMetricsSchema,
+      })
+      .optional(),
+    estado: z.enum(["activo", "en_riesgo", "retirado"]).optional(),
+  })
+  .refine((d) => d.studentId || d.metrics, {
+    message: "Indique studentId o métricas académicas/LMS completas",
+  });
 
 export const messageSchema = z.object({
   roomId: z.string().min(1).optional(),
@@ -147,4 +173,31 @@ export const courseSchema = z.object({
   seccionId: z.string().min(1, "Seleccione grado y sección"),
   cursoCatalogoId: z.string().optional(),
   periodo: z.string().max(16).default("2026"),
+});
+
+export const seccionSchema = z.object({
+  nombre: z.string().min(1).max(8),
+  gradoId: z.coerce.number().int().positive(),
+  capacidad: z.coerce.number().int().min(1).max(60).default(30),
+});
+
+export const bulkAttendanceSchema = z.object({
+  fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida (YYYY-MM-DD)"),
+  records: z
+    .array(
+      z.object({
+        studentId: z.string().min(1),
+        presente: z.boolean().default(true),
+        justificado: z.boolean().default(false),
+        tardanza: z.boolean().default(false),
+        observacion: z.string().max(500).optional(),
+      }),
+    )
+    .min(1, "Debe enviar al menos un registro")
+    .max(200),
+});
+
+export const updateAttendanceSchema = attendanceSchema.partial().extend({
+  studentId: z.string().min(1).optional(),
+  fecha: z.string().optional(),
 });

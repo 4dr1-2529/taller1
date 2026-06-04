@@ -29,20 +29,6 @@ export function authenticate(req: Request, _res: Response, next: NextFunction) {
   }
 }
 
-export function authenticateOrOptional(req: Request, _res: Response, next: NextFunction) {
-  const header = req.headers.authorization;
-  if (!header?.startsWith("Bearer ")) {
-    return next();
-  }
-  try {
-    const token = header.slice(7);
-    req.user = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
-  } catch {
-    // Ignore invalid tokens for optional auth
-  }
-  next();
-}
-
 export function authorize(...roles: RolCodigo[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) return next(new AppError(401, "No autenticado"));

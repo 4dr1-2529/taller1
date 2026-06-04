@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import type { NivelRiesgo } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
@@ -212,14 +213,11 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
       studentId: student ? idToString(student.id) : undefined,
     });
 
-    res.json({
-      ok: true,
-      prediction: predictionPayload,
+    sendSuccess(res, { prediction: predictionPayload,
       alert: alertCreated
         ? { ...alertCreated, id: idToString(alertCreated.id) }
         : null,
-      source: ml ? "machine-learning" : "local-engine",
-    });
+      source: ml ? "machine-learning" : "local-engine", });
   } catch (e) {
     next(e);
   }
@@ -229,7 +227,7 @@ export async function dashboardStats(req: Request, res: Response, next: NextFunc
   try {
     const scope = await resolveStudentScope(req.user!);
     const analytics = await buildDashboardAnalytics(scope);
-    res.json({ ok: true, ...analytics });
+    sendSuccess(res, { ...analytics });
   } catch (e) {
     next(e);
   }

@@ -13,7 +13,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:demo": "tsx prisma/seed-demo.ts",
     "db:legacy-users": "tsx scripts/upsert-legacy-users.ts",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/*.test.mjs && tsx --test tests/schemas.test.ts",
     "db:bootstrap": "tsx prisma/bootstrap-admin.ts",
     "db:studio": "prisma studio",
     "type-check": "tsc --noEmit"

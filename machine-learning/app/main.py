@@ -69,6 +69,7 @@ class PredictOutput(BaseModel):
     recomendacion: str | None = None
     modelo_usado: str | None = None
     fecha_prediccion: str | None = None
+    fecha: str | None = None
 
 
 def _with_thesis_fields(out: PredictOutput) -> PredictOutput:
@@ -80,6 +81,7 @@ def _with_thesis_fields(out: PredictOutput) -> PredictOutput:
     out.recomendacion = out.recommendation
     out.modelo_usado = out.model_name
     out.fecha_prediccion = out.predicted_at
+    out.fecha = out.predicted_at
     return out
 
 

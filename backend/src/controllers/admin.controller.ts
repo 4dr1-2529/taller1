@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import type { RolCodigo } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
@@ -5,6 +6,7 @@ import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { getRolId, mapUserWithRole } from "../utils/rol.js";
+import { createUserSchema } from "../validators/schemas.js";
 
 export async function listUsers(_req: Request, res: Response, next: NextFunction) {
   try {
@@ -24,7 +26,7 @@ export async function listUsers(_req: Request, res: Response, next: NextFunction
       ...mapUserWithRole(u),
       id: idToString(u.id),
     }));
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -32,7 +34,7 @@ export async function listUsers(_req: Request, res: Response, next: NextFunction
 
 export async function createUser(req: Request, res: Response, next: NextFunction) {
   try {
-    const { email, password, nombres, apellidos, role } = req.body;
+    const { email, password, nombres, apellidos, role } = createUserSchema.parse(req.body);
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) throw new AppError(409, "Email ya registrado");
 
@@ -58,7 +60,7 @@ export async function createUser(req: Request, res: Response, next: NextFunction
       usuarioId: req.user!.sub,
       detalle: `Role: ${mapped.role}`,
     });
-    res.status(201).json({ ok: true, user: mapped });
+    sendCreated(res, { user: mapped });
   } catch (e) {
     next(e);
   }
@@ -92,7 +94,7 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
       accion: "UPDATE",
       usuarioId: req.user!.sub,
     });
-    res.json({ ok: true, user: { ...mapUserWithRole(user), id: idToString(user.id) } });
+    sendSuccess(res, { user: { ...mapUserWithRole(user), id: idToString(user.id) } });
   } catch (e) {
     next(e);
   }
@@ -103,7 +105,7 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
     const id = paramBigIntId(req);
     await prisma.user.delete({ where: { id } });
     await logAudit({ entidad: "User", entidadId: id, accion: "DELETE", usuarioId: req.user!.sub });
-    res.json({ ok: true, message: "Usuario eliminado" });
+    sendSuccess(res, {}, "Usuario eliminado");
   } catch (e) {
     next(e);
   }
@@ -168,7 +170,7 @@ export async function getAuditLogs(req: Request, res: Response, next: NextFuncti
       student: row.estudiante,
     }));
 
-    res.json({ ok: true, items, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
+    sendSuccess(res, { items, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
   } catch (e) {
     next(e);
   }
@@ -185,10 +187,7 @@ export async function getSystemStats(_req: Request, res: Response, next: NextFun
         prisma.alert.count({ where: { estado: { in: ["nueva", "en_seguimiento"] } } }),
         prisma.session.count({ where: { expiresAt: { gt: new Date() } } }),
       ]);
-    res.json({
-      ok: true,
-      stats: { totalUsers, totalStudents, totalTeachers, totalPredictions, totalAlerts, totalSessions },
-    });
+    sendSuccess(res, { stats: { totalUsers, totalStudents, totalTeachers, totalPredictions, totalAlerts, totalSessions }, });
   } catch (e) {
     next(e);
   }

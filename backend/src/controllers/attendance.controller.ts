@@ -1,6 +1,7 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
-import { attendanceSchema } from "../validators/schemas.js";
+import { attendanceSchema, bulkAttendanceSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId } from "../utils/ids.js";
@@ -22,7 +23,7 @@ export async function listAttendance(req: Request, res: Response, next: NextFunc
       orderBy: { fecha: "desc" },
       take: 200,
     });
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -60,7 +61,7 @@ export async function createAttendance(req: Request, res: Response, next: NextFu
       usuarioId: req.user?.sub,
       studentId: data.studentId,
     });
-    res.status(201).json({ ok: true, record });
+    sendCreated(res, { record });
   } catch (e) {
     next(e);
   }
@@ -68,17 +69,52 @@ export async function createAttendance(req: Request, res: Response, next: NextFu
 
 export async function bulkAttendance(req: Request, res: Response, next: NextFunction) {
   try {
-    const { records } = req.body;
-    if (!Array.isArray(records) || records.length === 0) throw new AppError(400, "Array de registros requerido");
-    const created = await prisma.attendance.createMany({
-      data: records.map((r: Record<string, unknown>) => ({
-        studentId: toDbId(r.studentId as string),
-        fecha: new Date(r.fecha as string),
-        presente: r.presente as boolean ?? true,
-        justificado: r.justificado as boolean ?? false,
-      })),
+    const data = bulkAttendanceSchema.parse(req.body);
+    const fecha = new Date(data.fecha);
+    let upserted = 0;
+
+    for (const r of data.records) {
+      const studentId = toDbId(r.studentId);
+      await prisma.attendance.upsert({
+        where: { studentId_fecha: { studentId, fecha } },
+        create: {
+          studentId,
+          fecha,
+          presente: r.presente,
+          justificado: r.justificado,
+          tardanza: r.tardanza,
+          observacion: r.observacion,
+        },
+        update: {
+          presente: r.presente,
+          justificado: r.justificado,
+          tardanza: r.tardanza,
+          observacion: r.observacion,
+        },
+      });
+      upserted++;
+
+      const total = await prisma.attendance.count({ where: { studentId } });
+      const presentes = await prisma.attendance.count({
+        where: { studentId, presente: true },
+      });
+      if (total > 0) {
+        await prisma.student.update({
+          where: { id: studentId },
+          data: { asistenciaGeneral: Math.round((presentes / total) * 1000) / 10 },
+        });
+      }
+    }
+
+    await logAudit({
+      entidad: "Attendance",
+      entidadId: BigInt(0),
+      accion: "BULK",
+      usuarioId: req.user?.sub,
+      detalle: `${upserted} registros · ${data.fecha}`,
     });
-    res.status(201).json({ ok: true, created: created.count });
+
+    sendCreated(res, { upserted, fecha: data.fecha });
   } catch (e) {
     next(e);
   }
@@ -92,7 +128,7 @@ export async function updateAttendance(req: Request, res: Response, next: NextFu
       data: { presente, justificado },
     });
     await logAudit({ entidad: "Attendance", entidadId: record.id, accion: "UPDATE", usuarioId: req.user!.sub, studentId: record.studentId });
-    res.json({ ok: true, record });
+    sendSuccess(res, { record });
   } catch (e) {
     next(e);
   }
@@ -103,7 +139,7 @@ export async function deleteAttendance(req: Request, res: Response, next: NextFu
     const id = paramBigIntId(req);
     await prisma.attendance.delete({ where: { id } });
     await logAudit({ entidad: "Attendance", entidadId: id, accion: "DELETE", usuarioId: req.user!.sub });
-    res.json({ ok: true, message: "Registro eliminado" });
+    sendSuccess(res, {}, "Registro eliminado");
   } catch (e) {
     next(e);
   }

@@ -150,6 +150,32 @@ Detalle: [docs/roles.md](docs/roles.md)
 
 ---
 
+## Respuesta API estándar
+
+**Éxito (200/201):**
+
+```json
+{
+  "success": true,
+  "message": "Operación realizada correctamente",
+  "data": {}
+}
+```
+
+**Error (4xx/5xx):**
+
+```json
+{
+  "success": false,
+  "message": "Error descriptivo",
+  "errors": []
+}
+```
+
+El frontend (`frontend/src/services/api.ts`) desenvuelve automáticamente `data`.
+
+---
+
 ## API (resumen)
 
 ### Auth
@@ -260,12 +286,25 @@ Copie desde `backend/.env.example`.
 | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Capas y flujo de datos |
 | [docs/API.md](docs/API.md) | Endpoints REST |
 | [docs/roles.md](docs/roles.md) | Matriz de permisos |
+| [docs/roles-permisos.md](docs/roles-permisos.md) | Roles Director / Profesor / Estudiante |
+| [docs/pruebas.md](docs/pruebas.md) | Comandos y casos de prueba |
 | [docs/validaciones.md](docs/validaciones.md) | Reglas de formularios |
 | [docs/machine-learning.md](docs/machine-learning.md) | Entrenamiento e inferencia |
 | [docs/pruebas-funcionales.md](docs/pruebas-funcionales.md) | Casos de prueba |
 | [docs/pruebas-no-funcionales.md](docs/pruebas-no-funcionales.md) | Seguridad y rendimiento |
 | [docs/postman.md](docs/postman.md) | Colección Postman |
-| [docs/sonarqube.md](docs/sonarqube.md) | Análisis estático |
+| [docs/sonarqube.md](docs/sonarqube.md) | Análisis estático SonarQube |
+
+### SonarQube (preparación)
+
+```bash
+# Desde tesis-dashboard/ con SonarScanner instalado
+sonar-scanner -Dproject.settings=sonar-project.properties
+```
+
+Exclusiones: `node_modules`, `dist`, `.next`, `coverage`, `venv`, `__pycache__`, `.env`, modelos `.joblib`.
+
+Checklist antes del análisis: ver [docs/sonarqube.md](docs/sonarqube.md).
 | [database/blenkir-v3/DER-BLENKIR.md](database/blenkir-v3/DER-BLENKIR.md) | **Rediseño BD v3** — 51 tablas Primaria Blenkir |
 | [database/blenkir-v3/README.md](database/blenkir-v3/README.md) | Scripts SQL e instalación |
 | [database/mysql/README.md](database/mysql/README.md) | XAMPP / MySQL |

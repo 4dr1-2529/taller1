@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import type { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -116,7 +117,7 @@ export async function listTeachers(req: Request, res: Response, next: NextFuncti
       user: t.usuario ? { ...t.usuario, id: idToString(t.usuario.id) } : null,
       userId: t.usuarioId ? idToString(t.usuarioId) : null,
     }));
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -190,16 +191,13 @@ export async function createTeacher(req: Request, res: Response, next: NextFunct
         .filter(Boolean)
         .join(" · "),
     });
-    res.status(201).json({
-      ok: true,
-      teacher: {
+    sendCreated(res, { teacher: {
         ...teacher,
         id: idToString(teacher.id),
         correo: teacher.email,
         courses: mapTeacherCourses(teacher.cursosOferta),
         userId: teacher.usuarioId ? idToString(teacher.usuarioId) : null,
-      },
-    });
+      }, });
   } catch (e) {
     next(e);
   }
@@ -249,15 +247,12 @@ export async function createTeacherAccount(req: Request, res: Response, next: Ne
       detalle: `Cuenta creada: ${teacher.email}`,
       ipAddress: req.ip ?? req.socket.remoteAddress ?? undefined,
     });
-    res.status(201).json({
-      ok: true,
-      teacher: {
+    sendCreated(res, { teacher: {
         ...updated,
         id: idToString(updated.id),
         correo: updated.email,
         courses: mapTeacherCourses(updated.cursosOferta),
-      },
-    });
+      }, });
   } catch (e) {
     next(e);
   }
@@ -308,15 +303,12 @@ export async function updateTeacher(req: Request, res: Response, next: NextFunct
       usuarioId: req.user!.sub,
       teacherId: teacher.id,
     });
-    res.json({
-      ok: true,
-      teacher: {
+    sendSuccess(res, { teacher: {
         ...teacher,
         id: idToString(teacher.id),
         correo: teacher.email,
         courses: mapTeacherCourses(teacher.cursosOferta),
-      },
-    });
+      }, });
   } catch (e) {
     next(e);
   }
@@ -341,7 +333,7 @@ export async function deleteTeacher(req: Request, res: Response, next: NextFunct
       accion: "DELETE",
       usuarioId: req.user!.sub,
     });
-    res.json({ ok: true, message: "Profesor desactivado" });
+    sendSuccess(res, {}, "Profesor desactivado");
   } catch (e) {
     next(e);
   }

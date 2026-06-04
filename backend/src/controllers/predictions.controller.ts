@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { resolveStudentScope } from "../utils/student-scope.js";
@@ -66,13 +67,10 @@ export async function listPredictions(req: Request, res: Response, next: NextFun
 
     const items = rows.map(mapPrediction);
 
-    res.json({
-      ok: true,
-      items,
+    sendSuccess(res, { items,
       total,
       page,
-      pages: Math.ceil(total / limit) || 1,
-    });
+      pages: Math.ceil(total / limit) || 1, });
   } catch (e) {
     next(e);
   }
@@ -87,10 +85,7 @@ export async function getPrediction(req: Request, res: Response, next: NextFunct
       include: { student: true, factores: true },
     });
     if (!item) throw new AppError(404, "Predicción no encontrada");
-    res.json({
-      ok: true,
-      item: mapPrediction(item),
-    });
+    sendSuccess(res, { item: mapPrediction(item), });
   } catch (e) {
     next(e);
   }

@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import type { MensajeAlcance, RolCodigo } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
@@ -218,7 +219,7 @@ export async function listMessageRooms(req: Request, res: Response, next: NextFu
       }
     }
 
-    res.json({ ok: true, rooms });
+    sendSuccess(res, { rooms });
   } catch (e) {
     next(e);
   }
@@ -232,7 +233,7 @@ export async function listMessages(req: Request, res: Response, next: NextFuncti
 
     const sala = await prisma.mensajeSala.findUnique({ where: { roomId } });
     if (!sala) {
-      return res.json({ ok: true, items: [] });
+      return sendSuccess(res, { items: [] });
     }
 
     const rows = await prisma.chatMessage.findMany({
@@ -247,7 +248,7 @@ export async function listMessages(req: Request, res: Response, next: NextFuncti
     });
 
     const items = rows.map((m) => mapMessage(m, user.sub));
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -261,7 +262,7 @@ export async function markRoomRead(req: Request, res: Response, next: NextFuncti
 
     const sala = await prisma.mensajeSala.findUnique({ where: { roomId } });
     if (!sala) {
-      return res.json({ ok: true, marked: 0 });
+      return sendSuccess(res, { marked: 0 });
     }
 
     const messages = await prisma.chatMessage.findMany({
@@ -279,7 +280,7 @@ export async function markRoomRead(req: Request, res: Response, next: NextFuncti
       });
     }
 
-    res.json({ ok: true, marked: messages.length });
+    sendSuccess(res, { marked: messages.length });
   } catch (e) {
     next(e);
   }
@@ -373,10 +374,7 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
       update: { leido: true, leidoAt: new Date() },
     });
 
-    res.status(201).json({
-      ok: true,
-      message: mapMessage(msg, user.sub),
-    });
+    sendCreated(res, { message: mapMessage(msg, user.sub), });
   } catch (e) {
     next(e);
   }

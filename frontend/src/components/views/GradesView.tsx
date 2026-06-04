@@ -1,17 +1,28 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { ClipboardList, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { useAuth } from "@/contexts/AuthProvider";
-import type { Course, Student } from "@/types/academic";
+import type { Course, Student, Teacher } from "@/types/academic";
+import type { SeccionOption } from "@/hooks/useAcademicStructure";
+import { useAcademicFilters } from "@/hooks/useAcademicFilters";
+import { AcademicFiltersBar } from "@/components/academic/AcademicFiltersBar";
+import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { EmptyState } from "@/components/EmptyState";
 import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { INPUT_CLASS } from "@/lib/ui";
+import { FILTER_HINTS } from "@/constants/blenkir";
+import {
+  notaEstado,
+  parseGradoNumero,
+  parseSeccionLetra,
+  salónLabel,
+  teachersForSelect,
+} from "@/lib/student-filters";
 import {
   type FieldErrors,
   firstError,
@@ -36,9 +47,11 @@ type GradeRow = {
 type GradesViewProps = {
   students: Student[];
   courses: Course[];
+  teachers: Teacher[];
+  secciones: SeccionOption[];
 };
 
-export function GradesView({ students, courses }: GradesViewProps) {
+export function GradesView({ students, courses, teachers, secciones }: GradesViewProps) {
   const { isAuthenticated } = useAuth();
   const [items, setItems] = useState<GradeRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,13 +65,49 @@ export function GradesView({ students, courses }: GradesViewProps) {
   });
   const [errors, setErrors] = useState<FieldErrors>({});
 
-  const selectedStudent = students.find((s) => s.id === form.studentId);
-  const coursesForStudent = useMemo(() => {
-    if (!selectedStudent?.seccionId) return courses;
-    return courses.filter(
-      (c) => !c.seccionId || c.seccionId === selectedStudent.seccionId,
-    );
-  }, [courses, selectedStudent]);
+  const {
+    filters,
+    updateFilter,
+    resetFilters,
+    grados,
+    seccionOptions,
+    filteredStudents,
+    filteredCourses,
+  } = useAcademicFilters(students, courses, secciones, teachers);
+
+  const studentMap = useMemo(() => new Map(students.map((s) => [s.id, s])), [students]);
+
+  const displayRows = useMemo(() => {
+    const ids = new Set(filteredStudents.map((s) => s.id));
+    return items.filter((g) => {
+      if (!ids.has(g.studentId)) return false;
+      if (filters.courseId && g.courseId !== filters.courseId) return false;
+      if (filters.bimestre && String(g.bimestre) !== filters.bimestre) return false;
+      return true;
+    });
+  }, [items, filteredStudents, filters.courseId, filters.bimestre]);
+
+  const summary = useMemo(() => {
+    const notas = displayRows.map((r) => r.nota);
+    const avg = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
+    let aprob = 0;
+    let riesgo = 0;
+    let desap = 0;
+    for (const s of filteredStudents) {
+      const e = notaEstado(s.metrics.promedioGeneral);
+      if (e === "Aprobado") aprob++;
+      else if (e === "En riesgo") riesgo++;
+      else desap++;
+    }
+    return {
+      total: filteredStudents.length,
+      registros: displayRows.length,
+      promedio: avg.toFixed(1),
+      aprob,
+      riesgo,
+      desap,
+    };
+  }, [displayRows, filteredStudents]);
 
   const load = useCallback(async () => {
     if (!api.hasToken) return;
@@ -89,6 +138,10 @@ export function GradesView({ students, courses }: GradesViewProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!filters.seccionId && !form.studentId) {
+      toast.error(FILTER_HINTS.selectSeccion);
+      return;
+    }
     const nextErrors = validateGradeForm(form);
     setErrors(nextErrors);
     const msg = firstError(nextErrors);
@@ -98,7 +151,7 @@ export function GradesView({ students, courses }: GradesViewProps) {
     }
     const nota = parseGrade(form.nota);
     if (nota === null) {
-      toast.error("Nota inválida (0–20, solo números)");
+      toast.error("Nota fuera de rango (0–20)");
       return;
     }
     try {
@@ -110,7 +163,7 @@ export function GradesView({ students, courses }: GradesViewProps) {
         nota,
         observacion: form.observacion || undefined,
       });
-      toast.success("Nota registrada — promedio del estudiante actualizado");
+      toast.success("Nota registrada correctamente");
       setForm((p) => ({ ...p, nota: "", observacion: "" }));
       void load();
     } catch (err) {
@@ -118,49 +171,69 @@ export function GradesView({ students, courses }: GradesViewProps) {
     }
   }
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
-  };
+  const coursesForForm = useMemo(() => {
+    const sel = students.find((s) => s.id === form.studentId);
+    if (!sel?.seccionId) return filteredCourses;
+    return filteredCourses.filter((c) => !c.seccionId || c.seccionId === sel.seccionId);
+  }, [form.studentId, filteredCourses, students]);
 
   return (
-    <div className="space-y-8">
-      {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
-      >
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-muted)] ring-1 ring-[var(--brand-orange)]/30">
+          <GraduationCap className="h-5 w-5 text-[var(--brand-orange)]" />
+        </div>
         <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
-              <GraduationCap className="h-4 w-4 text-violet-400" />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Registro de notas
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Registre y consulte calificaciones por bimestre (escala 0–20)
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">Registro de notas</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Filtre por grado, sección y salón · escala vigente 0–20
           </p>
         </div>
-        <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {items.length} registros
-        </span>
-      </motion.div>
+      </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        {/* Grade Form */}
-        <motion.div variants={cardVariants} initial="hidden" animate="visible">
+      <AcademicFiltersBar
+        filters={filters}
+        onChange={updateFilter}
+        onReset={resetFilters}
+        grados={grados}
+        secciones={seccionOptions}
+        courses={filteredCourses.map((c) => ({ id: c.id, nombre: c.nombre }))}
+        teachers={teachersForSelect(teachers)}
+        show={{ grado: true, seccion: true, course: true, bimestre: true, search: true }}
+      />
+
+      <SummaryStatsRow
+        stats={[
+          { label: "Estudiantes (filtro)", value: summary.total, tone: "brand" },
+          { label: "Registros notas", value: summary.registros },
+          { label: "Promedio salón", value: summary.promedio },
+          { label: "Aprobados", value: summary.aprob, tone: "success" },
+          { label: "En riesgo", value: summary.riesgo, tone: "warning" },
+          { label: "Desaprobados", value: summary.desap, tone: "danger" },
+        ]}
+      />
+
+      {!filters.seccionId ? (
+        <p className="rounded-lg border border-[var(--brand-navy)]/20 bg-[var(--accent-muted)] px-4 py-3 text-sm text-[var(--text-secondary)]">
+          {FILTER_HINTS.selectSeccion} Los estudiantes del salón se cargan al elegir la sección.
+        </p>
+      ) : null}
+
+      {filters.seccionId && filteredStudents.length === 0 ? (
+        <EmptyState
+          title="Sin estudiantes en este salón"
+          description={FILTER_HINTS.noStudents}
+        />
+      ) : filteredStudents.length > 0 ? (
+        <div className="grid gap-6 xl:grid-cols-3">
           <PageSection
             variant="form"
             icon={ClipboardList}
             title="Registrar nota"
-            description="Escala vigente en Perú: 0 a 20 por bimestre. El promedio general se recalcula automáticamente."
+            description="Complete estudiante, curso y bimestre. El promedio se actualiza en el backend."
           >
             <form className="form-grid" onSubmit={(e) => void handleSubmit(e)}>
-              <FormField label="Estudiante" className="form-grid-full sm:col-span-2" error={errors.studentId}>
+              <FormField label="Estudiante" className="form-grid-full" error={errors.studentId}>
                 <select
                   className={INPUT_CLASS}
                   value={form.studentId}
@@ -171,14 +244,14 @@ export function GradesView({ students, courses }: GradesViewProps) {
                   required
                 >
                   <option value="">Seleccione</option>
-                  {students.map((s) => (
+                  {filteredStudents.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.codigo} — {s.nombres} {s.apellidos} ({s.nivel})
+                      {s.codigo} — {s.nombres} {s.apellidos}
                     </option>
                   ))}
                 </select>
               </FormField>
-              <FormField label="Curso" className="form-grid-full sm:col-span-2" error={errors.courseId}>
+              <FormField label="Curso" className="form-grid-full" error={errors.courseId}>
                 <select
                   className={INPUT_CLASS}
                   value={form.courseId}
@@ -189,22 +262,13 @@ export function GradesView({ students, courses }: GradesViewProps) {
                   required
                   disabled={!form.studentId}
                 >
-                  <option value="">
-                    {form.studentId ? "Curso de su sección" : "Primero elija estudiante"}
-                  </option>
-                  {coursesForStudent.map((c) => (
+                  <option value="">Seleccione curso</option>
+                  {coursesForForm.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.nombre} — {c.nivel}
+                      {c.nombre}
                     </option>
                   ))}
                 </select>
-              </FormField>
-              <FormField label="Periodo">
-                <input
-                  className={INPUT_CLASS}
-                  value={form.periodo}
-                  onChange={(e) => setForm((p) => ({ ...p, periodo: e.target.value }))}
-                />
               </FormField>
               <FormField label="Bimestre">
                 <select
@@ -219,11 +283,10 @@ export function GradesView({ students, courses }: GradesViewProps) {
                   ))}
                 </select>
               </FormField>
-              <FormField label="Nota (0–20)" error={errors.nota} hint="Solo números, máximo 20">
+              <FormField label="Nota (0–20)" error={errors.nota}>
                 <input
                   className={INPUT_CLASS}
                   inputMode="decimal"
-                  placeholder="0–20"
                   value={form.nota}
                   onChange={(e) => {
                     setErrors((p) => clearFieldError(p, "nota"));
@@ -232,55 +295,75 @@ export function GradesView({ students, courses }: GradesViewProps) {
                   required
                 />
               </FormField>
-              <FormField label="Observación" className="form-grid-full">
-                <input
-                  className={INPUT_CLASS}
-                  value={form.observacion}
-                  onChange={(e) => setForm((p) => ({ ...p, observacion: e.target.value }))}
-                />
-              </FormField>
               <button type="submit" className="btn-primary form-grid-full">
                 Guardar nota
               </button>
             </form>
           </PageSection>
-        </motion.div>
 
-        {/* Grades Table */}
-        <motion.div variants={cardVariants} initial="hidden" animate="visible">
-          <DataTablePanel
-            title="Historial de notas"
-            description={loading ? "Cargando…" : `${items.length} registro(s)`}
-            isEmpty={!loading && items.length === 0}
-            emptyMessage="Sin notas registradas."
-          >
-            <TableWrap>
-              <thead>
-                <tr>
-                  <th>Estudiante</th>
-                  <th>Curso</th>
-                  <th>Periodo</th>
-                  <th>Bim.</th>
-                  <th>Nota</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((g) => (
-                  <tr key={g.id}>
-                    <td>
-                      {g.student ? `${g.student.nombres} ${g.student.apellidos}` : g.studentId.slice(0, 8)}
-                    </td>
-                    <td>{g.course?.nombre ?? "—"}</td>
-                    <td>{g.periodo}</td>
-                    <td>{g.bimestre}</td>
-                    <td className="font-semibold">{g.nota.toFixed(1)}</td>
+          <div className="xl:col-span-2">
+            <DataTablePanel
+              title="Notas por salón"
+              description={loading ? "Cargando…" : `${displayRows.length} registro(s)`}
+              isEmpty={!loading && displayRows.length === 0}
+              emptyMessage={FILTER_HINTS.noGrades}
+            >
+              <TableWrap>
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Estudiante</th>
+                    <th>Grado</th>
+                    <th>Sección</th>
+                    <th>Salón</th>
+                    <th>Curso</th>
+                    <th>Bim.</th>
+                    <th>Nota</th>
+                    <th>Estado</th>
                   </tr>
-                ))}
-              </tbody>
-            </TableWrap>
-          </DataTablePanel>
-        </motion.div>
-      </div>
+                </thead>
+                <tbody>
+                  {displayRows.map((g) => {
+                    const st = studentMap.get(g.studentId);
+                    const grado = st ? parseGradoNumero(st.nivel) : null;
+                    const sec = st ? parseSeccionLetra(st.nivel) : "";
+                    const estado = notaEstado(g.nota, st?.metrics.promedioGeneral);
+                    return (
+                      <tr key={g.id}>
+                        <td className="font-mono text-xs">{g.student?.codigo ?? st?.codigo}</td>
+                        <td>
+                          {g.student
+                            ? `${g.student.nombres} ${g.student.apellidos}`
+                            : "—"}
+                        </td>
+                        <td>{grado ? `${grado}°` : "—"}</td>
+                        <td>{sec || "—"}</td>
+                        <td>{salónLabel(grado, sec)}</td>
+                        <td>{g.course?.nombre ?? "—"}</td>
+                        <td>{g.bimestre}</td>
+                        <td className="font-semibold">{g.nota.toFixed(1)}</td>
+                        <td>
+                          <span
+                            className={
+                              estado === "Aprobado"
+                                ? "text-emerald-600"
+                                : estado === "En riesgo"
+                                  ? "text-amber-600"
+                                  : "text-rose-600"
+                            }
+                          >
+                            {estado}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </TableWrap>
+            </DataTablePanel>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

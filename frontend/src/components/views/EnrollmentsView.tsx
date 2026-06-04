@@ -1,57 +1,89 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { motion } from "framer-motion";
-import { UserPlus, FileUser } from "lucide-react";
+import { FileUser, UserPlus } from "lucide-react";
 import { toast } from "sonner";
-import type { Course, Enrollment, Student } from "@/types/academic";
+import type { Student } from "@/types/academic";
+import type { SeccionOption } from "@/hooks/useAcademicStructure";
+import { useAcademicFilters } from "@/hooks/useAcademicFilters";
+import { AcademicFiltersBar } from "@/components/academic/AcademicFiltersBar";
+import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { INPUT_CLASS } from "@/lib/ui";
-import {
-  type FieldErrors,
-  firstError,
-  sanitizeGradeInput,
-  sanitizePercentInput,
-  validateGradeString,
-  validatePercentString,
-  clearFieldError,
-} from "@/lib/validation";
+import { api, type MatriculaRow } from "@/services/api";
+import { BLENKIR_COLORS } from "@/constants/blenkir";
 
 export type NewEnrollmentForm = {
-  studentId: string;
-  courseId: string;
-  promedio: string;
-  asistenciaPct: string;
+  estudianteId: string;
+  seccionId: string;
+  anioLectivoId: string;
 };
 
 type EnrollmentsViewProps = {
-  enrollments: Enrollment[];
   students: Student[];
-  courses: Course[];
+  secciones: SeccionOption[];
+  matriculaStats: {
+    matriculasInstitucionales: number;
+    matriculasActivas: number;
+    inscripcionesCurso: number;
+  } | null;
   form: NewEnrollmentForm;
   setForm: (v: NewEnrollmentForm | ((p: NewEnrollmentForm) => NewEnrollmentForm)) => void;
   onAdd: (e: FormEvent<HTMLFormElement>) => void;
 };
 
 export function EnrollmentsView({
-  enrollments,
   students,
-  courses,
+  secciones,
+  matriculaStats,
   form,
   setForm,
   onAdd,
 }: EnrollmentsViewProps) {
-  const [errors, setErrors] = useState<FieldErrors>({});
-  const selectedStudent = students.find((s) => s.id === form.studentId);
-  const coursesForStudent = useMemo(() => {
-    if (!selectedStudent?.seccionId) return courses;
-    return courses.filter(
-      (c) => !c.seccionId || c.seccionId === selectedStudent.seccionId,
-    );
-  }, [courses, selectedStudent]);
+  const [items, setItems] = useState<MatriculaRow[]>([]);
+  const [anios, setAnios] = useState<{ id: string; anio: number; nombre: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const { filters, updateFilter, resetFilters, grados, seccionOptions, filteredStudents } =
+    useAcademicFilters(students, [], secciones);
+
+  const load = useCallback(async () => {
+    if (!api.hasToken) return;
+    setLoading(true);
+    try {
+      const [mat, an] = await Promise.all([
+        api.getMatriculas({
+          seccionId: filters.seccionId || undefined,
+          limit: 200,
+        }),
+        api.getAniosLectivos(),
+      ]);
+      setItems(mat.items);
+      setAnios(an.items);
+      if (!form.anioLectivoId && an.items[0]) {
+        setForm((p) => ({ ...p, anioLectivoId: an.items.find((a) => a.activo)?.id ?? an.items[0].id }));
+      }
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters.seccionId, form.anioLectivoId, setForm]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const studentsForForm = useMemo(() => {
+    if (filters.seccionId) {
+      return filteredStudents;
+    }
+    return students;
+  }, [filters.seccionId, filteredStudents, students]);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
@@ -59,170 +91,157 @@ export function EnrollmentsView({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Section Header */}
+    <div className="space-y-6">
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
+        className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
       >
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 ring-1 ring-white/10">
-              <FileUser className="h-4 w-4 text-emerald-400" />
+            <div
+              className="flex h-8 w-8 items-center justify-center rounded-lg ring-1"
+              style={{ background: `${BLENKIR_COLORS.orange}22`, borderColor: `${BLENKIR_COLORS.orange}44` }}
+            >
+              <FileUser className="h-4 w-4" style={{ color: BLENKIR_COLORS.orange }} />
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Gestión de matrículas
-            </h2>
+            <h2 className="text-xl font-bold text-[var(--text-primary)]">Matrículas institucionales</h2>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Vincule estudiantes con cursos y registre su rendimiento
+            Una matrícula activa por estudiante y año: alumno + año lectivo + grado + sección.
           </p>
         </div>
-        <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {enrollments.length} matrículas
-        </span>
       </motion.div>
 
+      <SummaryStatsRow
+        stats={[
+          {
+            label: "Matrículas activas",
+            value: matriculaStats?.matriculasActivas ?? items.filter((m) => m.estado === "activa").length,
+            tone: "brand",
+          },
+          {
+            label: "Total matrículas",
+            value: matriculaStats?.matriculasInstitucionales ?? items.length,
+          },
+          {
+            label: "Inscripciones a curso (hist.)",
+            value: matriculaStats?.inscripcionesCurso ?? "—",
+            tone: "warning",
+          },
+          { label: "En pantalla", value: loading ? "…" : items.length },
+        ]}
+      />
+
+      {matriculaStats && matriculaStats.inscripcionesCurso > 500 ? (
+        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          Se detectaron {matriculaStats.inscripcionesCurso.toLocaleString("es-PE")} inscripciones a curso
+          (estudiante × cada materia). Eso no equivale a matrículas de salón. Las matrículas institucionales
+          son {matriculaStats.matriculasInstitucionales.toLocaleString("es-PE")}.
+        </p>
+      ) : null}
+
+      <AcademicFiltersBar
+        filters={filters}
+        onChange={updateFilter}
+        onReset={resetFilters}
+        grados={grados}
+        secciones={seccionOptions}
+        show={{ grado: true, seccion: true, search: true }}
+      />
+
       <div className="grid gap-6 xl:grid-cols-2">
-        {/* Enrollment Form */}
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <PageSection
             variant="form"
             icon={UserPlus}
             title="Nueva matrícula"
-            description="Vincule estudiante y curso; alimenta reportes de desaprobados y comparativas."
+            description="Registre al estudiante en un salón para el año lectivo. No se permiten duplicados por año."
           >
-            <form
-              className="form-grid"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const nextErrors: FieldErrors = {};
-                if (!form.studentId) nextErrors.studentId = "Seleccione un estudiante";
-                if (!form.courseId) nextErrors.courseId = "Seleccione un curso";
-                const promedioErr = validateGradeString(form.promedio, true);
-                if (promedioErr) nextErrors.promedio = promedioErr;
-                const asistErr = validatePercentString(form.asistenciaPct, true);
-                if (asistErr) nextErrors.asistenciaPct = asistErr;
-                setErrors(nextErrors);
-                const msg = firstError(nextErrors);
-                if (msg) {
-                  toast.error(msg);
-                  return;
-                }
-                onAdd(e);
-              }}
-            >
-              <FormField label="Estudiante" className="form-grid-full sm:col-span-2" error={errors.studentId}>
+            <form className="form-grid" onSubmit={onAdd}>
+              <FormField label="Año lectivo" className="form-grid-full">
                 <select
                   className={INPUT_CLASS}
-                  value={form.studentId}
-                  onChange={(e) => {
-                    setErrors((p) => clearFieldError(p, "studentId"));
-                    setForm((p) => ({ ...p, studentId: e.target.value, courseId: "" }));
-                  }}
+                  value={form.anioLectivoId}
+                  onChange={(e) => setForm((p) => ({ ...p, anioLectivoId: e.target.value }))}
+                  required
+                >
+                  <option value="">Seleccione año</option>
+                  {anios.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.nombre} ({a.anio})
+                    </option>
+                  ))}
+                </select>
+              </FormField>
+              <FormField label="Estudiante" className="form-grid-full">
+                <select
+                  className={INPUT_CLASS}
+                  value={form.estudianteId}
+                  onChange={(e) => setForm((p) => ({ ...p, estudianteId: e.target.value }))}
                   required
                 >
                   <option value="">Seleccione estudiante</option>
-                  {students.map((s) => (
+                  {studentsForForm.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.nombres} {s.apellidos} — {s.nivel}
+                      {s.codigo} — {s.nombres} {s.apellidos}
                     </option>
                   ))}
                 </select>
               </FormField>
-              <FormField label="Curso" className="form-grid-full sm:col-span-2" error={errors.courseId}>
+              <FormField label="Sección (salón)" className="form-grid-full">
                 <select
                   className={INPUT_CLASS}
-                  value={form.courseId}
-                  onChange={(e) => {
-                    setErrors((p) => clearFieldError(p, "courseId"));
-                    setForm((p) => ({ ...p, courseId: e.target.value }));
-                  }}
+                  value={form.seccionId}
+                  onChange={(e) => setForm((p) => ({ ...p, seccionId: e.target.value }))}
                   required
-                  disabled={!form.studentId}
                 >
-                  <option value="">
-                    {form.studentId ? "Seleccione curso de su sección" : "Primero elija estudiante"}
-                  </option>
-                  {coursesForStudent.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nombre} — {c.nivel}
+                  <option value="">Seleccione sección</option>
+                  {seccionOptions.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
                     </option>
                   ))}
                 </select>
-                {form.studentId && coursesForStudent.length === 0 ? (
-                  <p className="mt-1 text-xs text-amber-400">
-                    No hay cursos registrados para la sección de este estudiante.
-                  </p>
-                ) : null}
-              </FormField>
-              <FormField label="Promedio (0–20)" error={errors.promedio} hint="Solo números">
-                <input
-                  className={INPUT_CLASS}
-                  inputMode="decimal"
-                  placeholder="0–20"
-                  value={form.promedio}
-                  onChange={(e) => {
-                    setErrors((p) => clearFieldError(p, "promedio"));
-                    setForm((p) => ({ ...p, promedio: sanitizeGradeInput(e.target.value) }));
-                  }}
-                  required
-                />
-              </FormField>
-              <FormField label="Asistencia %" error={errors.asistenciaPct} hint="0–100, solo números">
-                <input
-                  className={INPUT_CLASS}
-                  inputMode="numeric"
-                  placeholder="0–100"
-                  value={form.asistenciaPct}
-                  onChange={(e) => {
-                    setErrors((p) => clearFieldError(p, "asistenciaPct"));
-                    setForm((p) => ({ ...p, asistenciaPct: sanitizePercentInput(e.target.value) }));
-                  }}
-                  required
-                />
               </FormField>
               <button type="submit" className="btn-primary form-grid-full">
-                Guardar matrícula
+                Registrar matrícula
               </button>
             </form>
           </PageSection>
         </motion.div>
 
-        {/* Enrollments Table */}
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <DataTablePanel
-            title={`Matrículas registradas (${enrollments.length})`}
-            description="Vínculos estudiante–curso del periodo actual."
-            isEmpty={enrollments.length === 0}
-            emptyMessage="Sin matrículas. Registre estudiantes y cursos primero."
+            title="Matrículas del periodo"
+            description="Alumno + año + grado + sección"
+            isEmpty={!loading && items.length === 0}
+            emptyMessage="Sin matrículas para el filtro seleccionado."
           >
             <TableWrap>
               <thead>
                 <tr>
+                  <th>Código</th>
                   <th>Estudiante</th>
-                  <th>Curso</th>
-                  <th>Promedio</th>
-                  <th>Asistencia</th>
+                  <th>Salón</th>
+                  <th>Año</th>
+                  <th>Estado</th>
                 </tr>
               </thead>
               <tbody>
-                {enrollments.map((e) => {
-                  const st = students.find((s) => s.id === e.studentId);
-                  const c = courses.find((x) => x.id === e.courseId);
-                  return (
-                    <tr key={e.id}>
-                      <td>{st ? `${st.nombres} ${st.apellidos}` : e.studentId}</td>
-                      <td>
-                        {c ? `${c.nombre} (${c.nivel})` : e.courseId}
-                      </td>
-                      <td>{e.promedio.toFixed(1)}</td>
-                      <td>{e.asistenciaPct}%</td>
-                    </tr>
-                  );
-                })}
+                {items.map((m) => (
+                  <tr key={m.id}>
+                    <td className="font-mono text-xs">{m.codigo}</td>
+                    <td>
+                      {m.estudiante.nombres} {m.estudiante.apellidos}
+                    </td>
+                    <td>{m.seccion.label}</td>
+                    <td>{m.anioLectivo.nombre}</td>
+                    <td>
+                      <span className="badge-info capitalize">{m.estado}</span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </TableWrap>
           </DataTablePanel>

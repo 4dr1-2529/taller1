@@ -1,3 +1,4 @@
+import { sendSuccess } from "./utils/response.js";
 (BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function () {
   return this.toString();
 };
@@ -33,16 +34,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(sanitizeBody);
 
 app.get("/", (_req, res) => {
-  res.json({
-    ok: true,
-    service: "tesis-dashboard-api",
+  sendSuccess(res, { service: "tesis-dashboard-api",
     version: "v1",
-    basePath: "/api/v1",
-  });
+    basePath: "/api/v1", });
 });
 
 app.get("/api/v1", (_req, res) => {
-  res.json({ ok: true, message: "Use /api/v1/auth/login, /api/v1/students, etc." });
+  sendSuccess(res, { message: "Use /api/v1/auth/login, /api/v1/students, etc." });
 });
 
 app.use(
@@ -52,7 +50,11 @@ app.use(
     max: 300,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: "Demasiadas solicitudes. Intente más tarde." },
+    message: {
+      success: false,
+      message: "Demasiadas solicitudes. Intente más tarde.",
+      errors: ["RATE_LIMIT"],
+    },
   }),
   apiRoutes,
 );

@@ -72,10 +72,9 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
 };
 
 const initialEnrollment: NewEnrollmentForm = {
-  studentId: "",
-  courseId: "",
-  promedio: "0",
-  asistenciaPct: "0",
+  estudianteId: "",
+  seccionId: "",
+  anioLectivoId: "",
 };
 
 function sectionSubtitle(section: AppSection): string {
@@ -89,7 +88,7 @@ function sectionSubtitle(section: AppSection): string {
     case "Cursos":
       return "Oferta académica por sección.";
     case "Matrículas":
-      return "Vínculo estudiante–curso.";
+      return "Matrícula institucional: estudiante + año + grado + sección (una por periodo).";
     case "Notas":
       return "Calificaciones 0–20 y promedio.";
     case "Asistencia":
@@ -122,6 +121,7 @@ export default function Home() {
     teachers,
     courses,
     enrollments,
+    matriculaStats,
     dataSource,
     loading,
     refresh,
@@ -172,7 +172,7 @@ export default function Home() {
   async function handleAddEnrollment(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await addEnrollment(enrollmentForm);
-    setEnrollmentForm({ studentId: enrollmentForm.studentId, courseId: "", promedio: "0", asistenciaPct: "0" });
+    setEnrollmentForm({ ...enrollmentForm, seccionId: enrollmentForm.seccionId });
   }
 
   async function handleAddTeacher(event: FormEvent<HTMLFormElement>) {
@@ -221,8 +221,6 @@ export default function Home() {
             showLogin={!useApi}
           />
         );
-      case "Alertas":
-        return <AlertsView students={students} useApi={useApi} />;
       case "Estudiantes":
         return (
           <StudentsView
@@ -266,22 +264,40 @@ export default function Home() {
       case "Matrículas":
         return (
           <EnrollmentsView
-            enrollments={enrollments}
             students={students}
-            courses={courses}
+            secciones={secciones}
+            matriculaStats={matriculaStats}
             form={enrollmentForm}
             setForm={setEnrollmentForm}
             onAdd={handleAddEnrollment}
           />
         );
       case "Notas":
-        return <GradesView students={students} courses={courses} />;
+        return (
+          <GradesView
+            students={students}
+            courses={courses}
+            teachers={teachers}
+            secciones={secciones}
+          />
+        );
       case "Asistencia":
-        return <AttendanceView students={students} />;
+        return (
+          <AttendanceView
+            students={students}
+            courses={courses}
+            teachers={teachers}
+            secciones={secciones}
+          />
+        );
       case "Actividad LMS":
-        return <LMSView students={students} />;
+        return <LMSView students={students} secciones={secciones} />;
       case "Predicción":
-        return <PredictionView students={students} useApi={useApi} />;
+        return <PredictionView students={students} secciones={secciones} useApi={useApi} />;
+      case "Alertas":
+        return (
+          <AlertsView students={students} teachers={teachers} secciones={secciones} useApi={useApi} />
+        );
       case "Historial predicciones":
         return role === "estudiante" ? null : <PredictionHistoryView students={students} />;
       case "Mensajería Académica":

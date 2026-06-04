@@ -157,6 +157,19 @@ export type Enrollment = {
   course?: Course;
 };
 
+export type MatriculaRow = {
+  id: string;
+  codigo: string;
+  estado: string;
+  fechaMatricula: string;
+  estudianteId: string;
+  seccionId: string;
+  anioLectivoId: string;
+  estudiante: { id: string; codigo: string; nombres: string; apellidos: string; seccionId: string | null };
+  seccion: { id: string; nombre: string; gradoNumero: number; gradoNombre: string; nivel: string; label: string };
+  anioLectivo: { id: string; anio: number; nombre: string };
+};
+
 export type AcademicMessage = {
   id: string;
   roomId: string;
@@ -211,7 +224,14 @@ export type AuditLog = {
   student?: { nombres: string; apellidos: string; codigo: string };
 };
 
-export type ApiResponse<T> = { ok: boolean } & T;
+export type ApiEnvelope<T> = {
+  success: boolean;
+  message: string;
+  data?: T;
+  errors?: string[];
+};
+
+export type ApiResponse<T> = T;
 
 class ApiClient {
   private token: string | null = null;
@@ -232,13 +252,24 @@ class ApiClient {
     if (this.token) headers.Authorization = `Bearer ${this.token}`;
 
     const res = await fetch(`${BASE}${path}`, { ...options, headers });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error ?? "Error de API");
-    return data as ApiResponse<T>;
+    const body = (await res.json()) as ApiEnvelope<T> & Record<string, unknown>;
+
+    if (!res.ok || body.success === false) {
+      const msg = body.message ?? (body.error as string) ?? "Error de API";
+      const errs = body.errors ?? [];
+      throw new Error(errs.length ? `${msg}: ${errs.join("; ")}` : msg);
+    }
+
+    if (body.success === true && body.data !== undefined) {
+      return body.data as T;
+    }
+
+    const { success: _s, message: _m, data: _d, errors: _e, ok: _ok, ...legacy } = body;
+    return legacy as T;
   }
 
   async health() {
-    return this.request<{ ok: boolean }>("/health");
+    return this.request<{ service: string; version: string }>("/health");
   }
 
   async login(email: string, password: string) {
@@ -331,8 +362,55 @@ class ApiClient {
     return this.request<{ ok: boolean }>(`/courses/${id}`, { method: "DELETE" });
   }
 
-  async getEnrollments() {
-    return this.request<{ items: Enrollment[] }>("/enrollments");
+  async getEnrollments(page = 1, limit = 50) {
+    return this.request<{
+      items: Enrollment[];
+      total: number;
+      page: number;
+      pages: number;
+    }>(`/enrollments?page=${page}&limit=${limit}`);
+  }
+
+  async getMatriculas(params?: { seccionId?: string; page?: number; limit?: number }) {
+    const q = new URLSearchParams();
+    if (params?.seccionId) q.set("seccionId", params.seccionId);
+    if (params?.page) q.set("page", String(params.page));
+    if (params?.limit) q.set("limit", String(params.limit));
+    const query = q.toString() ? `?${q}` : "";
+    return this.request<{
+      items: MatriculaRow[];
+      total: number;
+      page: number;
+      pages: number;
+      activas: number;
+    }>(`/matriculas${query}`);
+  }
+
+  async getMatriculaStats() {
+    return this.request<{
+      matriculasInstitucionales: number;
+      matriculasActivas: number;
+      inscripcionesCurso: number;
+    }>("/matriculas/stats");
+  }
+
+  async createMatricula(payload: {
+    estudianteId: string;
+    seccionId: string;
+    anioLectivoId: string;
+    codigo?: string;
+    fechaMatricula?: string;
+  }) {
+    return this.request<{ item: MatriculaRow }>("/matriculas", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async getAniosLectivos() {
+    return this.request<{ items: { id: string; anio: number; nombre: string; activo: boolean }[] }>(
+      "/academic/anios-lectivos",
+    );
   }
 
   async createEnrollment(payload: Record<string, unknown>) {
@@ -360,11 +438,28 @@ class ApiClient {
     return this.request<{ record: unknown }>("/attendance", { method: "POST", body: JSON.stringify(payload) });
   }
 
+  async bulkAttendance(payload: {
+    fecha: string;
+    records: {
+      studentId: string;
+      presente: boolean;
+      justificado: boolean;
+      tardanza: boolean;
+      observacion?: string;
+    }[];
+  }) {
+    return this.request<{ upserted: number; fecha: string }>("/attendance/bulk", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
   async getDashboardKpis() {
     return this.request<{
       kpis: {
         totalStudents: number;
         totalTeachers?: number;
+        totalSalones?: number;
         openAlerts: number;
         avgRisk: number;
         avgGrade?: number;
@@ -377,6 +472,10 @@ class ApiClient {
       };
       riskTrend: { periodo: string; riesgoGlobal: number; count?: number }[];
       riskBySection: { label: string; alto: number; medio: number; bajo: number; total: number }[];
+      riskByGrado?: { grado: string; alto: number; medio: number; bajo: number }[];
+      attendanceByGrado?: { grado: string; asistencia: number }[];
+      lmsActivityByGrado?: { grado: string; alta: number; media: number; baja: number; sin: number }[];
+      alertsBySalonShort?: { salon: string; count: number }[];
       modelComparison: { modelo: string; f1: number; accuracy: number }[];
       featureImportance: { variable: string; peso: number }[];
     }>("/dashboard/kpis");
@@ -411,8 +510,27 @@ class ApiClient {
     return this.request<{ metrics: unknown }>("/ml/metrics");
   }
 
-  async getAlerts() {
-    return this.request<{ items: Alert[]; total?: number }>("/alerts");
+  async getAlerts(params?: {
+    seccionId?: string;
+    gradoId?: string;
+    profesorId?: string;
+    status?: string;
+    riskLevel?: string;
+    all?: boolean;
+  }) {
+    const q = new URLSearchParams();
+    if (params?.seccionId) q.set("seccionId", params.seccionId);
+    if (params?.gradoId) q.set("gradoId", params.gradoId);
+    if (params?.profesorId) q.set("profesorId", params.profesorId);
+    if (params?.status) q.set("status", params.status);
+    if (params?.riskLevel) q.set("riskLevel", params.riskLevel);
+    if (params?.all) q.set("all", "true");
+    const query = q.toString() ? `?${q}` : "";
+    return this.request<{
+      items: Alert[];
+      total?: number;
+      salonSummary?: { salon: string; count: number }[];
+    }>(`/alerts${query}`);
   }
 
   async updateAlertStatus(id: string, status: "nueva" | "en_seguimiento" | "resuelta") {

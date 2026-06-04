@@ -40,6 +40,7 @@ export type ThesisPredictionResponse = {
   recomendacion: string;
   modelo_usado: string;
   fecha_prediccion: string;
+  fecha: string;
   datos_ingresados?: Record<string, unknown>;
 };
 
@@ -52,6 +53,7 @@ export function toThesisPrediction(p: InternalPrediction): ThesisPredictionRespo
     recomendacion: p.recommendation,
     modelo_usado: p.modelName,
     fecha_prediccion: p.predictedAt,
+    fecha: p.predictedAt,
     datos_ingresados: p.inputData,
   };
 }

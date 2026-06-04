@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 import { Clock3, MonitorSmartphone, Send, BarChart3 } from "lucide-react";
@@ -18,7 +18,13 @@ import {
   YAxis,
 } from "recharts";
 import type { Student } from "@/types/academic";
+import type { SeccionOption } from "@/hooks/useAcademicStructure";
+import { useAcademicFilters } from "@/hooks/useAcademicFilters";
+import { AcademicFiltersBar } from "@/components/academic/AcademicFiltersBar";
+import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
+import { lmsActivityTier } from "@/lib/student-filters";
 import { SELECT_CLASS } from "@/lib/ui";
+import { BLENKIR_COLORS } from "@/constants/blenkir";
 
 const ENGAGEMENT_LABELS: Record<string, string> = {
   alto: "Alto",
@@ -37,14 +43,39 @@ function engagementBadge(eng: string) {
 
 type LMSViewProps = {
   students: Student[];
+  secciones?: SeccionOption[];
 };
 
-export function LMSView({ students }: LMSViewProps) {
-  const [studentId, setStudentId] = useState(students[0]?.id ?? "");
+export function LMSView({ students, secciones = [] }: LMSViewProps) {
+  const { filters, updateFilter, resetFilters, grados, seccionOptions, filteredStudents } =
+    useAcademicFilters(students, [], secciones);
+
+  const [studentId, setStudentId] = useState("");
+
+  useEffect(() => {
+    if (filteredStudents.length && !filteredStudents.some((s) => s.id === studentId)) {
+      setStudentId(filteredStudents[0].id);
+    }
+  }, [filteredStudents, studentId]);
+
+  const lmsSummary = useMemo(() => {
+    let alta = 0;
+    let media = 0;
+    let baja = 0;
+    let sin = 0;
+    for (const s of filteredStudents) {
+      const t = lmsActivityTier(s);
+      if (t === "alta") alta++;
+      else if (t === "media") media++;
+      else if (t === "baja") baja++;
+      else sin++;
+    }
+    return { total: filteredStudents.length, alta, media, baja, sin };
+  }, [filteredStudents]);
 
   const student = useMemo(
-    () => students.find((s) => s.id === studentId) ?? students[0],
-    [students, studentId],
+    () => filteredStudents.find((s) => s.id === studentId) ?? filteredStudents[0],
+    [filteredStudents, studentId],
   );
 
   const weekly = useMemo(() => {
@@ -75,13 +106,35 @@ export function LMSView({ students }: LMSViewProps) {
     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
   };
 
-  if (!student) {
-    return <p className="text-sm text-[var(--text-muted)]">No hay estudiantes para analizar LMS.</p>;
+  if (!student && filteredStudents.length === 0) {
+    return (
+      <p className="text-sm text-[var(--text-muted)]">
+        Seleccione grado y sección para ver actividad LMS del salón.
+      </p>
+    );
   }
 
   return (
     <div className="space-y-6">
-      {/* Student Selector */}
+      <AcademicFiltersBar
+        filters={filters}
+        onChange={updateFilter}
+        onReset={resetFilters}
+        grados={grados}
+        secciones={seccionOptions}
+        show={{ grado: true, seccion: true, search: true }}
+      />
+      <SummaryStatsRow
+        stats={[
+          { label: "Total alumnos", value: lmsSummary.total, tone: "brand" },
+          { label: "Alta actividad", value: lmsSummary.alta, tone: "success" },
+          { label: "Media actividad", value: lmsSummary.media, tone: "warning" },
+          { label: "Baja actividad", value: lmsSummary.baja, tone: "danger" },
+          { label: "Sin actividad", value: lmsSummary.sin },
+        ]}
+      />
+
+      {student ? (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
         <div className="premium-card flex flex-col gap-3 rounded-2xl p-5 md:flex-row md:items-center md:justify-between md:p-6">
           <div>
@@ -95,16 +148,18 @@ export function LMSView({ students }: LMSViewProps) {
             value={student.id}
             onChange={(e) => setStudentId(e.target.value)}
           >
-            {students.map((s) => (
+            {filteredStudents.map((s) => (
               <option key={s.id} value={s.id}>
-                {s.nombres} {s.apellidos}
+                {s.codigo} — {s.nombres} {s.apellidos}
               </option>
             ))}
           </select>
         </div>
       </motion.div>
+      ) : null}
 
-      {/* KPI Cards */}
+      {student ? (
+      <>
       <section className="grid gap-4 lg:grid-cols-3">
         <motion.article
           variants={cardVariants}
@@ -113,8 +168,11 @@ export function LMSView({ students }: LMSViewProps) {
           className="premium-card rounded-2xl p-5 md:p-6"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
-              <MonitorSmartphone className="h-4 w-4 text-violet-400" aria-hidden />
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1"
+              style={{ background: `${BLENKIR_COLORS.navy}33`, borderColor: `${BLENKIR_COLORS.orange}44` }}
+            >
+              <MonitorSmartphone className="h-4 w-4" style={{ color: BLENKIR_COLORS.orange }} aria-hidden />
             </div>
             <h4 className="font-semibold text-[var(--text-primary)]">Nivel de compromiso</h4>
           </div>
@@ -265,6 +323,8 @@ export function LMSView({ students }: LMSViewProps) {
           </div>
         </motion.article>
       </section>
+      </>
+      ) : null}
     </div>
   );
 }

@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack -p 3029",
+    "dev": "next dev --turbopack -p 3029",
     "build": "next build",
     "start": "next start -p 3029",
     "lint": "eslint .",

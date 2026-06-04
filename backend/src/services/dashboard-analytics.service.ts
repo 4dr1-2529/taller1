@@ -8,15 +8,19 @@ export async function buildDashboardAnalytics(scope: Scope) {
   const [
     totalStudents,
     totalTeachers,
+    totalSalones,
     openAlerts,
     alertsByLevel,
     recentPredictions,
     avgRisk,
     studentsWithSection,
     avgGrade,
+    seccionesActivas,
+    lmsIndicadores,
   ] = await Promise.all([
     prisma.student.count({ where: scope }),
     prisma.teacher.count({ where: { activo: true } }),
+    prisma.seccion.count({ where: { activo: true } }),
     prisma.alert.count({
       where: { estado: { in: ["nueva", "en_seguimiento"] }, student: scope },
     }),
@@ -65,6 +69,28 @@ export async function buildDashboardAnalytics(scope: Scope) {
       },
     }),
     prisma.student.aggregate({ where: scope, _avg: { promedioGeneral: true, asistenciaGeneral: true } }),
+    prisma.seccion.findMany({
+      where: { activo: true },
+      select: {
+        id: true,
+        nombre: true,
+        grado: { select: { numero: true, nombre: true, nivel: { select: { nombre: true } } } },
+        _count: { select: { estudiantes: true } },
+      },
+    }),
+    prisma.lmsIndicadorEstudiante.findMany({
+      where: { student: scope },
+      select: {
+        frecuenciaAcceso: true,
+        student: {
+          select: {
+            seccion: {
+              select: { grado: { select: { numero: true } } },
+            },
+          },
+        },
+      },
+    }),
   ]);
 
   const byLevel = { bajo: 0, medio: 0, alto: 0 };
@@ -90,6 +116,90 @@ export async function buildDashboardAnalytics(scope: Scope) {
 
   const riskBySection = [...riskBySectionMap.values()].sort((a, b) => b.alto - a.alto);
 
+  const openAlertsRows = await prisma.alert.findMany({
+    where: { estado: { in: ["nueva", "en_seguimiento"] }, student: scope },
+    select: {
+      student: {
+        select: {
+          seccion: {
+            select: {
+              nombre: true,
+              grado: { select: { numero: true } },
+            },
+          },
+        },
+      },
+    },
+  });
+  const salonAlertMap = new Map<string, number>();
+  for (const a of openAlertsRows) {
+    const g = a.student.seccion?.grado?.numero;
+    const sec = a.student.seccion?.nombre ?? "";
+    if (!g || !sec) continue;
+    const key = `${g}°${sec}`;
+    salonAlertMap.set(key, (salonAlertMap.get(key) ?? 0) + 1);
+  }
+  const alertsBySalonShort = [...salonAlertMap.entries()]
+    .map(([salon, count]) => ({ salon, count }))
+    .sort((a, b) => a.salon.localeCompare(b.salon, "es"));
+
+  const riskByGradoMap = new Map<number, { grado: string; alto: number; medio: number; bajo: number }>();
+  for (const st of studentsWithSection) {
+    const num = st.seccion?.grado?.nombre?.match(/(\d+)/)?.[1];
+    const gradoNum = num ? Number(num) : 0;
+    if (!gradoNum) continue;
+    const row = riskByGradoMap.get(gradoNum) ?? {
+      grado: `${gradoNum}°`,
+      alto: 0,
+      medio: 0,
+      bajo: 0,
+    };
+    const lvl = st.predicciones[0]?.nivelRiesgo;
+    if (lvl === "alto") row.alto++;
+    else if (lvl === "medio") row.medio++;
+    else if (lvl === "bajo") row.bajo++;
+    riskByGradoMap.set(gradoNum, row);
+  }
+  const riskByGrado = [...riskByGradoMap.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([, v]) => v);
+
+  const attendanceByGradoMap = new Map<number, { grado: string; promedio: number; count: number }>();
+  for (const st of studentsWithSection) {
+    const num = st.seccion?.grado?.nombre?.match(/(\d+)/)?.[1];
+    const gradoNum = num ? Number(num) : 0;
+    if (!gradoNum) continue;
+    const row = attendanceByGradoMap.get(gradoNum) ?? { grado: `${gradoNum}°`, promedio: 0, count: 0 };
+    row.promedio += Number(st.asistenciaGeneral);
+    row.count++;
+    attendanceByGradoMap.set(gradoNum, row);
+  }
+  const attendanceByGrado = [...attendanceByGradoMap.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([, v]) => ({
+      grado: v.grado,
+      asistencia: v.count ? Math.round((v.promedio / v.count) * 10) / 10 : 0,
+    }));
+
+  const lmsByGradoMap = new Map<
+    number,
+    { grado: string; alta: number; media: number; baja: number; sin: number }
+  >();
+  for (const row of lmsIndicadores) {
+    const num = row.student.seccion?.grado?.numero ?? 0;
+    if (!num) continue;
+    const g = lmsByGradoMap.get(num) ?? { grado: `${num}°`, alta: 0, media: 0, baja: 0, sin: 0 };
+    const f = Number(row.frecuenciaAcceso);
+    if (f >= 70) g.alta++;
+    else if (f >= 40) g.media++;
+    else if (f > 0) g.baja++;
+    else g.sin++;
+    lmsByGradoMap.set(num, g);
+  }
+  const lmsActivityByGrado = [...lmsByGradoMap.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([, v]) => v);
+
   const riskTrend = buildRiskTrendSeries(
     recentPredictions.map((p) => ({ score: Number(p.score), createdAt: p.createdAt })),
   );
@@ -111,6 +221,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
     kpis: {
       totalStudents,
       totalTeachers,
+      totalSalones,
       openAlerts,
       avgRisk: Math.round(Number(avgRisk._avg.score ?? 0) * 10) / 10,
       avgGrade: Math.round(Number(avgGrade._avg.promedioGeneral ?? 0) * 10) / 10,
@@ -125,6 +236,10 @@ export async function buildDashboardAnalytics(scope: Scope) {
     },
     riskTrend,
     riskBySection,
+    riskByGrado,
+    attendanceByGrado,
+    lmsActivityByGrado,
+    alertsBySalonShort,
     modelComparison,
     featureImportance,
   };

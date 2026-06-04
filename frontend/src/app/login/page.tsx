@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import {
   Brain,
   GraduationCap,
@@ -16,10 +15,10 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthProvider";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { BlenkirLogo } from "@/components/branding/BlenkirLogo";
 
 export default function LoginPage() {
   const { login, isAuthenticated, loading: authLoading } = useAuth();
-  const router = useRouter();
   const [email, setEmail] = useState("director@blenkir.edu.pe");
   const [password, setPassword] = useState("Tesis2026!");
   const [loading, setLoading] = useState(false);
@@ -28,14 +27,14 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      router.replace("/");
+      window.location.replace("/");
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated]);
 
   if (authLoading || isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-violet-400" aria-label="Cargando" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--brand-orange)]" aria-label="Cargando" />
       </div>
     );
   }
@@ -57,7 +56,7 @@ export default function LoginPage() {
     try {
       await login(email.trim().toLowerCase(), password);
       toast.success("Sesión iniciada correctamente");
-      router.push("/");
+      window.location.href = "/";
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al iniciar sesión");
     } finally {
@@ -71,9 +70,9 @@ export default function LoginPage() {
         className="pointer-events-none absolute inset-0"
         animate={{
           background: [
-            "radial-gradient(circle at 20% 20%, rgba(99,102,241,0.25), transparent 50%)",
-            "radial-gradient(circle at 80% 30%, rgba(6,182,212,0.2), transparent 45%)",
-            "radial-gradient(circle at 40% 80%, rgba(168,85,247,0.2), transparent 50%)",
+            "radial-gradient(circle at 20% 20%, rgba(244,124,32,0.2), transparent 50%)",
+            "radial-gradient(circle at 80% 30%, rgba(31,58,95,0.25), transparent 45%)",
+            "radial-gradient(circle at 40% 80%, rgba(244,124,32,0.12), transparent 50%)",
           ],
         }}
         transition={{ duration: 12, repeat: Infinity, repeatType: "reverse" }}
@@ -85,34 +84,27 @@ export default function LoginPage() {
 
       {/* Panel ilustración */}
       <motion.aside
-        className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-12 text-white lg:flex"
+        className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-[#1f3a5f] via-[#162d4a] to-[#0f172a] p-12 text-white lg:flex"
         initial={{ opacity: 0, x: -24 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
       >
         <motion.div
-          className="absolute -left-20 top-20 h-64 w-64 rounded-full bg-indigo-500/30 blur-3xl"
+          className="absolute -left-20 top-20 h-64 w-64 rounded-full bg-[#f47c20]/25 blur-3xl"
           animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
           transition={{ duration: 8, repeat: Infinity }}
         />
         <motion.div
-          className="absolute -right-10 bottom-20 h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl"
+          className="absolute -right-10 bottom-20 h-72 w-72 rounded-full bg-white/10 blur-3xl"
           animate={{ scale: [1.1, 1, 1.1] }}
           transition={{ duration: 10, repeat: Infinity }}
         />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-3">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 shadow-lg shadow-indigo-500/40">
-              <BarChart3 className="h-6 w-6" />
-            </span>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-widest text-indigo-300">
-                I.E.P. Huancayo · Perú
-              </p>
-              <h1 className="text-2xl font-bold">I.E.P. Huancayo</h1>
-            </div>
-          </div>
+          <BlenkirLogo size="lg" />
+          <p className="mt-4 text-xs font-medium uppercase tracking-widest text-orange-200/90">
+            Huancayo · Perú
+          </p>
           <p className="mt-8 max-w-md text-lg leading-relaxed text-slate-300">
             Plataforma inteligente de predicción de{" "}
             <span className="gradient-text font-semibold">riesgo de deserción</span> estudiantil
@@ -136,7 +128,7 @@ export default function LoginPage() {
               variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
               className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur"
             >
-              <item.icon className="h-8 w-8 text-cyan-400" />
+              <item.icon className="h-8 w-8 text-[#f47c20]" />
               <div>
                 <p className="font-semibold">{item.label}</p>
                 <p className="text-sm text-slate-400">{item.desc}</p>
@@ -155,7 +147,7 @@ export default function LoginPage() {
       >
         <div className="glass-card w-full max-w-md rounded-3xl p-8 md:p-10">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 p-3 text-white shadow-lg">
+            <div className="rounded-xl bg-[#f47c20] p-3 text-white shadow-lg">
               <GraduationCap className="h-7 w-7" />
             </div>
             <div>
@@ -242,7 +234,7 @@ export default function LoginPage() {
                     setPassword("Tesis2026!");
                     setErrors({});
                   }}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--accent-muted)] px-2 py-2 text-[10px] font-medium text-[var(--text-secondary)] hover:border-violet-500/40 hover:text-[var(--text-primary)]"
+                  className="rounded-xl border border-[var(--border)] bg-[var(--accent-muted)] px-2 py-2 text-[10px] font-medium text-[var(--text-secondary)] hover:border-[var(--brand-orange)]/40 hover:text-[var(--text-primary)]"
                 >
                   {demo.label}
                 </button>

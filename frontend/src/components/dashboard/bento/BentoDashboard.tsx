@@ -46,6 +46,10 @@ export function BentoDashboard({
   const [apiAnalytics, setApiAnalytics] = useState<{
     riskTrend: { periodo: string; riesgoGlobal: number }[];
     riskBySection: { label: string; alto: number; medio: number; bajo: number; total: number }[];
+    riskByGrado: { grado: string; alto: number; medio: number; bajo: number }[];
+    attendanceByGrado: { grado: string; asistencia: number }[];
+    lmsActivityByGrado: { grado: string; alta: number; media: number; baja: number; sin: number }[];
+    alertsBySalonShort: { salon: string; count: number }[];
     modelComparison: { modelo: string; f1: number; accuracy: number }[];
     featureImportance: { variable: string; peso: number }[];
   } | null>(null);
@@ -67,6 +71,17 @@ export function BentoDashboard({
           riskBySection:
             (r.riskBySection as { label: string; alto: number; medio: number; bajo: number; total: number }[]) ??
             [],
+          riskByGrado: (r.riskByGrado as { grado: string; alto: number; medio: number; bajo: number }[]) ?? [],
+          attendanceByGrado: (r.attendanceByGrado as { grado: string; asistencia: number }[]) ?? [],
+          lmsActivityByGrado:
+            (r.lmsActivityByGrado as {
+              grado: string;
+              alta: number;
+              media: number;
+              baja: number;
+              sin: number;
+            }[]) ?? [],
+          alertsBySalonShort: (r.alertsBySalonShort as { salon: string; count: number }[]) ?? [],
           modelComparison:
             (r.modelComparison as { modelo: string; f1: number; accuracy: number }[]) ?? [],
           featureImportance:
@@ -185,6 +200,10 @@ export function BentoDashboard({
           <BentoAnalyticsPanels
             riskTrend={apiAnalytics.riskTrend}
             riskBySection={apiAnalytics.riskBySection}
+            riskByGrado={apiAnalytics.riskByGrado}
+            attendanceByGrado={apiAnalytics.attendanceByGrado}
+            lmsActivityByGrado={apiAnalytics.lmsActivityByGrado}
+            alertsBySalonShort={apiAnalytics.alertsBySalonShort}
             modelComparison={apiAnalytics.modelComparison}
             featureImportance={apiAnalytics.featureImportance}
             alertsByLevel={apiKpis?.alertsByLevel}

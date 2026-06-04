@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
 import { login, refresh, me, changePassword } from "../controllers/auth.controller.js";
@@ -24,10 +25,12 @@ import {
   listNiveles,
   listSecciones,
   listCursosCatalogo,
+  listAniosLectivos,
   createSeccion,
 } from "../controllers/academic-structure.controller.js";
 import { listUsers, createUser, updateUser, deleteUser, getAuditLogs, getSystemStats } from "../controllers/admin.controller.js";
 import { listAttendance, createAttendance, bulkAttendance, updateAttendance, deleteAttendance } from "../controllers/attendance.controller.js";
+import { listMatriculas, createMatricula, matriculaStats } from "../controllers/matriculas.controller.js";
 import { listGrades, createGrade, deleteGrade } from "../controllers/grades.controller.js";
 import { listReports, createReport, deleteReport, saveDashboardSnapshot, getDashboardSnapshot, listStudentRisks, createStudentRisk, applyRecommendation } from "../controllers/reports.controller.js";
 import { prisma } from "../utils/prisma.js";
@@ -42,7 +45,7 @@ import { getMlMetrics } from "../services/ml-client.js";
 const router = Router();
 
 router.get("/health", (_req, res) => {
-  res.json({ ok: true, service: "tesis-api", version: "2.0.0" });
+  sendSuccess(res, { service: "tesis-api", version: "2.0.0" });
 });
 
 router.post("/auth/login", login);
@@ -52,6 +55,7 @@ router.post("/auth/change-password", authenticate, changePassword);
 
 router.get("/academic/niveles", authenticate, listNiveles);
 router.get("/academic/secciones", authenticate, listSecciones);
+router.get("/academic/anios-lectivos", authenticate, listAniosLectivos);
 router.post("/academic/secciones", authenticate, authorize("admin"), createSeccion);
 router.get("/academic/cursos-catalogo", authenticate, listCursosCatalogo);
 
@@ -72,14 +76,43 @@ router.post("/courses", authenticate, authorize("admin", "docente"), createCours
 router.put("/courses/:id", authenticate, authorize("admin", "docente"), updateCourse);
 router.delete("/courses/:id", authenticate, authorize("admin"), deleteCourse);
 
+router.get("/matriculas", authenticate, listMatriculas);
+router.get("/matriculas/stats", authenticate, matriculaStats);
+router.post("/matriculas", authenticate, authorize("admin"), createMatricula);
+
 router.get("/enrollments", authenticate, async (req, res, next) => {
   try {
     const scope = await resolveStudentScope(req.user!);
-    const items = await prisma.enrollment.findMany({
-      where: { student: scope },
-      include: { student: true, course: true },
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(100, Number(req.query.limit) || 50);
+    const skip = (page - 1) * limit;
+    const where = { student: scope };
+    const [items, total] = await Promise.all([
+      prisma.enrollment.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          student: { select: { id: true, codigo: true, nombres: true, apellidos: true, seccionId: true } },
+          course: { include: { cursoCatalogo: { select: { nombre: true } } } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.enrollment.count({ where }),
+    ]);
+    sendSuccess(res, {
+      items: items.map((e) => ({
+        ...e,
+        id: idToString(e.id),
+        studentId: idToString(e.studentId),
+        student: { ...e.student, id: idToString(e.student.id), seccionId: e.student.seccionId ? idToString(e.student.seccionId) : null },
+        course: e.course ? { ...e.course, id: idToString(e.course.id) } : e.course,
+      })),
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      note: "Inscripción a curso (oferta). La matrícula institucional está en /matriculas.",
     });
-    res.json({ ok: true, items });
   } catch (e) {
     next(e);
   }
@@ -107,6 +140,17 @@ router.post("/enrollments", authenticate, authorize("admin"), async (req, res, n
         `El curso "${courseDisplayName(course)}" no pertenece a la sección del estudiante`,
       );
     }
+    const exists = await prisma.enrollment.findUnique({
+      where: {
+        studentId_cursoOfertaId: {
+          studentId: toDbId(data.studentId),
+          cursoOfertaId: toDbId(data.courseId),
+        },
+      },
+    });
+    if (exists) {
+      throw new AppError(409, "El estudiante ya está inscrito en este curso");
+    }
     const item = await prisma.enrollment.create({
       data: {
         studentId: toDbId(data.studentId),
@@ -114,7 +158,7 @@ router.post("/enrollments", authenticate, authorize("admin"), async (req, res, n
       },
       include: { student: true, course: { include: { cursoCatalogo: true } } },
     });
-    res.status(201).json({ ok: true, item });
+    sendCreated(res, { item });
   } catch (e) {
     next(e);
   }
@@ -140,7 +184,7 @@ router.get("/notifications", authenticate, async (req, res, next) => {
       orderBy: { createdAt: "desc" },
       take: 30,
     });
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -151,7 +195,7 @@ router.patch("/notifications/:id/read", authenticate, async (req, res, next) => 
       where: { id: paramBigIntId(req), usuarioId: toDbId(req.user!.sub) },
       data: { leida: true },
     });
-    res.json({ ok: true, updated: item.count });
+    sendSuccess(res, { updated: item.count });
   } catch (e) {
     next(e);
   }
@@ -159,7 +203,7 @@ router.patch("/notifications/:id/read", authenticate, async (req, res, next) => 
 
 router.get("/ml/metrics", authenticate, authorize("admin", "docente"), async (_req, res) => {
   const metrics = await getMlMetrics();
-  res.json({ ok: true, metrics: metrics ?? { message: "ML service no disponible" } });
+  sendSuccess(res, { metrics: metrics ?? { message: "ML service no disponible" } });
 });
 
 router.get("/grades", authenticate, listGrades);

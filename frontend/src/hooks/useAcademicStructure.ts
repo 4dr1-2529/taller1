@@ -36,7 +36,7 @@ export function useAcademicStructure() {
         return {
           id: s.id,
           nombre: s.nombre,
-          gradoId: grado?.id ?? 0,
+          gradoId: Number(grado?.id ?? 0),
           nivelCodigo: grado?.nivel?.codigo ?? "primaria",
           gradoLabel,
           label: `${gradoLabel} ${s.nombre}`,

@@ -25,7 +25,8 @@
                 "exec": [
                   "if (pm.response.code === 200) {",
                   "  const j = pm.response.json();",
-                  "  pm.collectionVariables.set('token', j.token);",
+                  "  pm.test('success true', () => pm.expect(j.success).to.eql(true));",
+                  "  pm.collectionVariables.set('token', j.data.token);",
                   "}"
                 ]
               }
@@ -238,6 +239,30 @@
           }
         },
         {
+          "name": "ML Predict riesgo medio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promedio_general\": 12,\n  \"asistencia_general\": 72,\n  \"frecuencia_acceso_lms\": 45,\n  \"tareas_ratio\": 0.55,\n  \"disminucion_actividad\": 25,\n  \"estado\": \"activo\"\n}"
+            },
+            "url": "http://localhost:5000/predict"
+          }
+        },
+        {
+          "name": "ML Predict riesgo alto",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promedio_general\": 8,\n  \"asistencia_general\": 45,\n  \"frecuencia_acceso_lms\": 15,\n  \"tareas_ratio\": 0.2,\n  \"cursos_desaprobados\": 4,\n  \"disminucion_actividad\": 60,\n  \"estado\": \"en_riesgo\"\n}"
+            },
+            "url": "http://localhost:5000/predict"
+          }
+        },
+        {
           "name": "ML Metrics",
           "request": {
             "method": "GET",
@@ -268,6 +293,30 @@
             ],
             "body": { "mode": "raw", "raw": "{\n  \"status\": \"en_seguimiento\"\n}" },
             "url": "{{baseUrl}}/alerts/{{alertId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ERRORES (ejemplos)",
+      "item": [
+        {
+          "name": "401 Sin token",
+          "request": { "method": "GET", "url": "{{baseUrl}}/students" }
+        },
+        {
+          "name": "400 Validación nota",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"1\",\n  \"courseId\": \"1\",\n  \"nota\": 25\n}"
+            },
+            "url": "{{baseUrl}}/grades"
           }
         }
       ]

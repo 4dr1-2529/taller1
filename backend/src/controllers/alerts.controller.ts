@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import type { NivelRiesgo } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
@@ -92,13 +93,31 @@ function enrichAlert(a: {
 export async function listAlerts(req: Request, res: Response, next: NextFunction) {
   try {
     const scope = await resolveStudentScope(req.user!);
-    const level = req.query.level as string | undefined;
+    const level = (req.query.level ?? req.query.riskLevel) as string | undefined;
     const all = req.query.all === "true";
+    const seccionId = req.query.seccionId as string | undefined;
+    const gradoId = req.query.gradoId as string | undefined;
+    const status = req.query.status as string | undefined;
+    const profesorId = req.query.profesorId as string | undefined;
+
+    const studentWhere: Record<string, unknown> = { ...scope };
+    if (seccionId) studentWhere.seccionId = toDbId(seccionId);
+    if (gradoId) {
+      studentWhere.seccion = { gradoId: toDbId(gradoId) };
+    }
+    if (profesorId) {
+      studentWhere.inscripciones = {
+        some: { course: { profesorId: toDbId(profesorId) } },
+      };
+    }
 
     const items = await prisma.alert.findMany({
       where: {
-        student: scope,
+        student: studentWhere,
         ...(all ? {} : { estado: { in: ["nueva", "en_seguimiento"] } }),
+        ...(status && ["nueva", "en_seguimiento", "resuelta"].includes(status)
+          ? { estado: status as "nueva" | "en_seguimiento" | "resuelta" }
+          : {}),
         ...(level && ["bajo", "medio", "alto"].includes(level)
           ? { nivelRiesgo: level as NivelRiesgo }
           : {}),
@@ -112,6 +131,12 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
             nombres: true,
             apellidos: true,
             seccionId: true,
+            seccion: {
+              select: {
+                nombre: true,
+                grado: { select: { numero: true } },
+              },
+            },
             inscripciones: {
               take: 1,
               include: {
@@ -133,7 +158,20 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
     });
 
     const enriched = items.map((a) => enrichAlert(a));
-    res.json({ ok: true, items: enriched, total: enriched.length });
+    const summaryBySalon = new Map<string, number>();
+    for (const a of items) {
+      const g = a.student.seccion?.grado?.numero;
+      const sec = a.student.seccion?.nombre;
+      if (g && sec) {
+        const key = `${g}°${sec}`;
+        summaryBySalon.set(key, (summaryBySalon.get(key) ?? 0) + 1);
+      }
+    }
+    const salonSummary = [...summaryBySalon.entries()]
+      .map(([salon, count]) => ({ salon, count }))
+      .sort((a, b) => a.salon.localeCompare(b.salon, "es"));
+
+    sendSuccess(res, { items: enriched, total: enriched.length, salonSummary });
   } catch (e) {
     next(e);
   }
@@ -190,7 +228,7 @@ export async function patchAlertStatus(req: Request, res: Response, next: NextFu
       usuarioId: req.user?.sub,
     });
 
-    res.json({ ok: true, item: enrichAlert(item) });
+    sendSuccess(res, { item: enrichAlert(item) });
   } catch (e) {
     next(e);
   }

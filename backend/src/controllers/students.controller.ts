@@ -1,6 +1,7 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
-import { studentSchema } from "../validators/schemas.js";
+import { studentSchema, updateStudentSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
@@ -11,7 +12,7 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
     const q = String(req.query.q ?? "").trim();
     const seccionId = req.query.seccionId as string | undefined;
     const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.min(200, Number(req.query.limit) || 100);
+    const limit = Math.min(800, Number(req.query.limit) || 200);
     const skip = (page - 1) * limit;
 
     const scope = await resolveStudentScope(req.user!);
@@ -49,7 +50,7 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
       alerts: s.alertas,
     }));
 
-    res.json({ ok: true, items, total, page, pages: Math.ceil(total / limit) });
+    sendSuccess(res, { items, total, page, pages: Math.ceil(total / limit) });
   } catch (e) {
     next(e);
   }
@@ -87,7 +88,7 @@ export async function createStudent(req: Request, res: Response, next: NextFunct
       ipAddress: req.ip,
     });
 
-    res.status(201).json({ ok: true, student: { ...student, id: idToString(student.id) } });
+    sendCreated(res, { student: { ...student, id: idToString(student.id) } });
   } catch (e) {
     next(e);
   }
@@ -110,9 +111,7 @@ export async function getStudent(req: Request, res: Response, next: NextFunction
       },
     });
     if (!student) throw new AppError(404, "Estudiante no encontrado");
-    res.json({
-      ok: true,
-      student: {
+    sendSuccess(res, { student: {
         ...student,
         id: idToString(student.id),
         enrollments: student.inscripciones,
@@ -120,8 +119,7 @@ export async function getStudent(req: Request, res: Response, next: NextFunction
         lmsActivities: student.lmsActividades,
         predictions: student.predicciones,
         recommendations: student.recomendaciones,
-      },
-    });
+      }, });
   } catch (e) {
     next(e);
   }
@@ -131,19 +129,18 @@ export async function updateStudent(req: Request, res: Response, next: NextFunct
   try {
     const id = paramBigIntId(req);
     await assertStudentInScope(req.user!, idToString(id));
-    const data = req.body as Record<string, unknown>;
+    const data = updateStudentSchema.parse(req.body);
     const student = await prisma.student.update({
       where: { id },
       data: {
-        nombres: data.nombres as string | undefined,
-        apellidos: data.apellidos as string | undefined,
-        seccionId: data.seccionId != null ? toDbId(String(data.seccionId)) : undefined,
-        email: (data.correo ?? data.email) as string | undefined,
-        telefono: data.telefono as string | undefined,
-        estado: data.estado as "activo" | "en_riesgo" | "retirado" | undefined,
-        promedioGeneral: data.promedioGeneral as number | undefined,
-        asistenciaGeneral: data.asistenciaGeneral as number | undefined,
-        activo: data.activo as boolean | undefined,
+        nombres: data.nombres,
+        apellidos: data.apellidos,
+        seccionId: data.seccionId != null ? toDbId(data.seccionId) : undefined,
+        email: data.correo,
+        telefono: data.telefono,
+        estado: data.estado,
+        promedioGeneral: data.promedioGeneral,
+        asistenciaGeneral: data.asistenciaGeneral,
       },
     });
     await logAudit({
@@ -154,7 +151,7 @@ export async function updateStudent(req: Request, res: Response, next: NextFunct
       studentId: student.id,
       ipAddress: req.ip,
     });
-    res.json({ ok: true, student: { ...student, id: idToString(student.id) } });
+    sendSuccess(res, { student: { ...student, id: idToString(student.id) } });
   } catch (e) {
     next(e);
   }
@@ -175,7 +172,7 @@ export async function deleteStudent(req: Request, res: Response, next: NextFunct
       usuarioId: req.user?.sub,
       ipAddress: req.ip,
     });
-    res.json({ ok: true, message: "Estudiante desactivado" });
+    sendSuccess(res, {}, "Estudiante desactivado");
   } catch (e) {
     next(e);
   }

@@ -1,5 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { env } from "../config/env.js";
+import { errorPayload, zodToErrorList } from "../utils/response.js";
 
 export class AppError extends Error {
   constructor(
@@ -18,15 +20,14 @@ export function errorHandler(
   _next: NextFunction, // eslint-disable-line @typescript-eslint/no-unused-vars
 ) {
   if (err instanceof ZodError) {
-    return res.status(400).json({
-      ok: false,
-      error: "Validación fallida",
-      details: err.flatten().fieldErrors,
-    });
+    return res.status(400).json(errorPayload("Validación fallida", zodToErrorList(err)));
   }
   if (err instanceof AppError) {
-    return res.status(err.statusCode).json({ ok: false, error: err.message, code: err.code });
+    const errors = err.code ? [err.code] : [];
+    return res.status(err.statusCode).json(errorPayload(err.message, errors));
   }
-  console.error(err);
-  return res.status(500).json({ ok: false, error: "Error interno del servidor" });
+  if (env.NODE_ENV !== "production") {
+    console.error(err);
+  }
+  return res.status(500).json(errorPayload("Error interno del servidor"));
 }

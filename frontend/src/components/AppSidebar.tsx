@@ -31,6 +31,7 @@ import type { AppSection } from "@/data/navigation";
 import { groupsForSections } from "@/data/sidebar-nav";
 import { getSectionLabel } from "@/data/section-labels";
 import { getRoleLabel } from "@/lib/role-labels";
+import { BlenkirLogo } from "@/components/branding/BlenkirLogo";
 
 const ICONS: Record<AppSection, React.ComponentType<{ className?: string }>> = {
   Dashboard: LayoutDashboard,
@@ -84,35 +85,13 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
     <div className="flex h-full flex-col">
       {/* Brand Section */}
       <div className="relative border-b border-[var(--border-subtle)] px-5 py-5">
-        <div className="flex items-center gap-3.5">
-          <motion.div
-            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl overflow-hidden"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            aria-label="Panel institucional I.E.P. Huancayo"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-500 to-cyan-400" />
-            <BarChart3 className="relative h-5 w-5 text-white drop-shadow-lg" aria-hidden />
-          </motion.div>
-
-          <AnimatePresence mode="wait">
-            {!collapsed && (
-              <motion.div
-                className="min-w-0"
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -8 }}
-                transition={{ duration: 0.2 }}
-              >
-                <p className="truncate text-[15px] font-bold tracking-tight text-[var(--sidebar-text)]">
-                  I.E.P. Huancayo
-                </p>
-                <p className="truncate text-[11px] font-medium text-[var(--sidebar-muted)]">
-                  Riesgo de deserción · LMS
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        <div className={clsx(collapsed && "justify-center")}>
+          <BlenkirLogo size="sm" showText={!collapsed} />
+          {!collapsed ? (
+            <p className="mt-2 text-[10px] font-medium text-[var(--sidebar-muted)]">
+              Riesgo de deserción · LMS
+            </p>
+          ) : null}
         </div>
 
         {/* Alert Banner */}
@@ -159,11 +138,11 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  <div className="h-px flex-1 bg-gradient-to-r from-violet-500/30 via-purple-500/20 to-transparent" />
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400/60">
+                  <div className="h-px flex-1 bg-gradient-to-r from-[var(--brand-orange)]/40 to-transparent" />
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-orange)]/80">
                     {group.label}
                   </p>
-                  <div className="h-px flex-1 bg-gradient-to-l from-violet-500/30 via-purple-500/20 to-transparent" />
+                  <div className="h-px flex-1 bg-gradient-to-l from-[var(--brand-orange)]/40 to-transparent" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -189,7 +168,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                       className={clsx(
                         "group relative flex w-full items-center gap-3.5 rounded-xl px-3.5 py-3 text-left text-[14px] font-medium transition-all duration-200",
                         isActive
-                          ? "bg-gradient-to-r from-cyan-500/15 via-teal-500/10 to-transparent text-[var(--sidebar-text)] ring-1 ring-cyan-500/25 shadow-[0_0_16px_rgba(34,211,238,0.08)]"
+                          ? "bg-[var(--sidebar-hover)] text-[var(--sidebar-text)] ring-1 ring-[var(--brand-orange)]/50 shadow-[inset_3px_0_0_0_var(--brand-orange)]"
                           : "text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]",
                         collapsed && "justify-center px-0",
                       )}

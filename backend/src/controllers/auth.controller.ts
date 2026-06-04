@@ -1,9 +1,10 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import { env } from "../config/env.js";
 import { prisma } from "../utils/prisma.js";
-import { loginSchema } from "../validators/schemas.js";
+import { changePasswordSchema, loginSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { toDbId, idToString } from "../utils/ids.js";
@@ -79,9 +80,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       ipAddress: ip,
     });
 
-    res.json({
-      ok: true,
-      token,
+    sendSuccess(res, { token,
       refreshToken,
       user: {
         id: idToString(user.id),
@@ -90,8 +89,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         apellidos: user.apellidos,
         role,
         teacherId: user.profesor ? idToString(user.profesor.id) : null,
-      },
-    });
+      }, });
   } catch (e) {
     next(e);
   }
@@ -127,7 +125,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
       signOpts,
     );
 
-    res.json({ ok: true, token: newToken });
+    sendSuccess(res, { token: newToken });
   } catch (e) {
     next(e);
   }
@@ -149,14 +147,11 @@ export async function me(req: Request, res: Response, next: NextFunction) {
       },
     });
     if (!user) throw new AppError(404, "Usuario no encontrado");
-    res.json({
-      ok: true,
-      user: {
+    sendSuccess(res, { user: {
         ...mapUserWithRole(user),
         id: idToString(user.id),
         teacherId: user.profesor ? idToString(user.profesor.id) : null,
-      },
-    });
+      }, });
   } catch (e) {
     next(e);
   }
@@ -164,9 +159,7 @@ export async function me(req: Request, res: Response, next: NextFunction) {
 
 export async function changePassword(req: Request, res: Response, next: NextFunction) {
   try {
-    const { currentPassword, newPassword } = req.body;
-    if (!currentPassword || !newPassword) throw new AppError(400, "Campos requeridos");
-    if (newPassword.length < 8) throw new AppError(400, "Mínimo 8 caracteres");
+    const { currentPassword, newPassword } = changePasswordSchema.parse(req.body);
 
     const user = await prisma.user.findUnique({ where: { id: toDbId(req.user!.sub) } });
     if (!user) throw new AppError(404, "Usuario no encontrado");
@@ -178,7 +171,7 @@ export async function changePassword(req: Request, res: Response, next: NextFunc
     await prisma.user.update({ where: { id: user.id }, data: { passwordHash: hash } });
 
     await logAudit({ entidad: "User", entidadId: user.id, accion: "CHANGE_PASSWORD", usuarioId: user.id });
-    res.json({ ok: true, message: "Contraseña actualizada" });
+    sendSuccess(res, {}, "Contraseña actualizada");
   } catch (e) {
     next(e);
   }

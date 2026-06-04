@@ -20,6 +20,7 @@ import {
   firstError,
 } from "@/lib/validation";
 import { api } from "@/services/api";
+import { fetchAllStudents } from "@/lib/fetch-all-students";
 import type { Course, Enrollment, Student, Teacher } from "@/types/academic";
 import type { NewStudentForm } from "@/components/views/StudentsView";
 import type { NewEnrollmentForm } from "@/components/views/EnrollmentsView";
@@ -35,6 +36,11 @@ export function useAcademicData() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [matriculaStats, setMatriculaStats] = useState<{
+    matriculasInstitucionales: number;
+    matriculasActivas: number;
+    inscripcionesCurso: number;
+  } | null>(null);
 
   const loadFromApi = useCallback(async () => {
     if (!api.hasToken) {
@@ -44,36 +50,34 @@ export function useAcademicData() {
     setLoading(true);
     try {
       await api.health();
-      const [st, te, co, en] = await Promise.all([
-        api.getStudents(1, 200),
+      const [st, te, co] = await Promise.all([
+        fetchAllStudents(),
         api.getTeachers(),
         api.getCourses(),
-        api.getEnrollments(),
       ]);
-      setStudents(st.items.map((r) => mapStudentFromApi(r as Parameters<typeof mapStudentFromApi>[0])));
+      setStudents(st);
       setTeachers(te.items.map((r) => mapTeacherFromApi(r as Parameters<typeof mapTeacherFromApi>[0])));
       setCourses(co.items.map((r) => mapCourseFromApi(r as Parameters<typeof mapCourseFromApi>[0])));
-      setEnrollments(
-        en.items.map((r) => mapEnrollmentFromApi(r as Parameters<typeof mapEnrollmentFromApi>[0])),
-      );
+      setEnrollments([]);
+      const matStats = await api.getMatriculaStats().catch(() => null);
+      setMatriculaStats(matStats);
       setDataSource("api");
       return true;
     } catch (firstError) {
       try {
         await refreshAuth();
         if (!api.hasToken) throw firstError;
-        const [st, te, co, en] = await Promise.all([
-          api.getStudents(1, 200),
+        const [st, te, co] = await Promise.all([
+          fetchAllStudents(),
           api.getTeachers(),
           api.getCourses(),
-          api.getEnrollments(),
         ]);
-        setStudents(st.items.map((r) => mapStudentFromApi(r as Parameters<typeof mapStudentFromApi>[0])));
+        setStudents(st);
         setTeachers(te.items.map((r) => mapTeacherFromApi(r as Parameters<typeof mapTeacherFromApi>[0])));
         setCourses(co.items.map((r) => mapCourseFromApi(r as Parameters<typeof mapCourseFromApi>[0])));
-        setEnrollments(
-          en.items.map((r) => mapEnrollmentFromApi(r as Parameters<typeof mapEnrollmentFromApi>[0])),
-        );
+        setEnrollments([]);
+        const matStats = await api.getMatriculaStats().catch(() => null);
+        setMatriculaStats(matStats);
         setDataSource("api");
         return true;
       } catch {
@@ -290,20 +294,23 @@ export function useAcademicData() {
   }
 
   async function addEnrollment(form: NewEnrollmentForm): Promise<void> {
-    if (!form.studentId || !form.courseId) return;
+    if (!form.estudianteId || !form.seccionId || !form.anioLectivoId) {
+      toast.error("Complete estudiante, sección y año lectivo");
+      return;
+    }
     if (!api.hasToken) {
       toast.error("Inicie sesión para matricular");
       return;
     }
     try {
-      const res = await api.createEnrollment({
-        studentId: form.studentId,
-        courseId: form.courseId,
-        periodo: "2026-I",
+      await api.createMatricula({
+        estudianteId: form.estudianteId,
+        seccionId: form.seccionId,
+        anioLectivoId: form.anioLectivoId,
       });
-      const row = mapEnrollmentFromApi(res.item as Parameters<typeof mapEnrollmentFromApi>[0]);
-      setEnrollments((prev) => [...prev, row]);
-      toast.success("Matrícula registrada");
+      const stats = await api.getMatriculaStats();
+      setMatriculaStats(stats);
+      toast.success("Matrícula institucional registrada");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al matricular");
     }
@@ -314,6 +321,7 @@ export function useAcademicData() {
     teachers,
     courses,
     enrollments,
+    matriculaStats,
     dataSource,
     loading: loading || authLoading,
     refresh: loadFromApi,

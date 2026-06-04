@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import type { NivelRiesgo } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
@@ -11,7 +12,7 @@ export async function listReports(req: Request, res: Response, next: NextFunctio
   try {
     const rows = await prisma.report.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
     const items = rows.map((r) => ({ ...r, id: idToString(r.id) }));
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -36,7 +37,7 @@ export async function createReport(req: Request, res: Response, next: NextFuncti
       usuarioId: req.user!.sub,
       detalle: tipo,
     });
-    res.status(201).json({ ok: true, report: { ...report, id: idToString(report.id) } });
+    sendCreated(res, { report: { ...report, id: idToString(report.id) } });
   } catch (e) {
     next(e);
   }
@@ -45,7 +46,7 @@ export async function createReport(req: Request, res: Response, next: NextFuncti
 export async function deleteReport(req: Request, res: Response, next: NextFunction) {
   try {
     await prisma.report.delete({ where: { id: paramBigIntId(req) } });
-    res.json({ ok: true, message: "Reporte eliminado" });
+    sendSuccess(res, {}, "Reporte eliminado");
   } catch (e) {
     next(e);
   }
@@ -78,7 +79,7 @@ export async function saveDashboardSnapshot(req: Request, res: Response, next: N
         metaJson: metaJson ?? null,
       },
     });
-    res.json({ ok: true, snapshot: { ...snapshot, id: idToString(snapshot.id) } });
+    sendSuccess(res, { snapshot: { ...snapshot, id: idToString(snapshot.id) } });
   } catch (e) {
     next(e);
   }
@@ -93,7 +94,7 @@ export async function getDashboardSnapshot(req: Request, res: Response, next: Ne
       orderBy: { createdAt: "desc" },
     });
     if (!snapshot) throw new AppError(404, "Snapshot no encontrado");
-    res.json({ ok: true, snapshot: { ...snapshot, id: idToString(snapshot.id) } });
+    sendSuccess(res, { snapshot: { ...snapshot, id: idToString(snapshot.id) } });
   } catch (e) {
     next(e);
   }
@@ -139,7 +140,7 @@ export async function listStudentRisks(req: Request, res: Response, next: NextFu
       };
     });
 
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -170,16 +171,13 @@ export async function createStudentRisk(req: Request, res: Response, next: NextF
       });
     }
 
-    res.status(201).json({
-      ok: true,
-      record: {
+    sendCreated(res, { record: {
         id: idToString(record.id),
         studentId: idToString(record.studentId),
         score: Number(record.score),
         level: record.nivelRiesgo,
         periodo: periodoId ?? null,
-      },
-    });
+      }, });
   } catch (e) {
     next(e);
   }
@@ -201,10 +199,7 @@ export async function applyRecommendation(req: Request, res: Response, next: Nex
       usuarioId: req.user!.sub,
       studentId: rec.studentId,
     });
-    res.json({
-      ok: true,
-      recommendation: { ...updated, id: idToString(updated.id) },
-    });
+    sendSuccess(res, { recommendation: { ...updated, id: idToString(updated.id) }, });
   } catch (e) {
     next(e);
   }

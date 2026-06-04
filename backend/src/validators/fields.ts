@@ -60,7 +60,17 @@ export const percentageField = z.coerce
   .min(0, "Mínimo 0%")
   .max(PERCENT_MAX, `Máximo ${PERCENT_MAX}%`);
 
-export const bimestreField = z.coerce.number().int().min(1).max(4);
+export const securePasswordField = z
+  .string()
+  .min(8, "Mínimo 8 caracteres")
+  .max(128)
+  .regex(/[A-Z]/, "Debe incluir al menos una mayúscula")
+  .regex(/[a-z]/, "Debe incluir al menos una minúscula")
+  .regex(/\d/, "Debe incluir al menos un número");
+
+export const roleCodeField = z.enum(["admin", "docente", "estudiante"], {
+  errorMap: () => ({ message: "Rol inválido. Use admin, docente o estudiante" }),
+});
 
 export const optionalEmailField = z
   .string()

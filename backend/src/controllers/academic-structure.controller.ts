@@ -1,3 +1,4 @@
+import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { toDbId, idToString } from "../utils/ids.js";
@@ -15,7 +16,7 @@ export async function listNiveles(_req: Request, res: Response, next: NextFuncti
         },
       },
     });
-    res.json({ ok: true, items });
+    sendSuccess(res, { items });
   } catch (e) {
     next(e);
   }
@@ -32,10 +33,7 @@ export async function listSecciones(req: Request, res: Response, next: NextFunct
       },
       orderBy: [{ grado: { numero: "asc" } }, { nombre: "asc" }],
     });
-    res.json({
-      ok: true,
-      items: items.map((s) => ({ ...s, id: idToString(s.id), gradoId: idToString(s.gradoId) })),
-    });
+    sendSuccess(res, { items: items.map((s) => ({ ...s, id: idToString(s.id), gradoId: idToString(s.gradoId) })), });
   } catch (e) {
     next(e);
   }
@@ -49,22 +47,30 @@ export async function listCursosCatalogo(req: Request, res: Response, next: Next
         where: { gradoId: toDbId(gradoId) },
         include: { curso: true, grado: true },
       });
-      return res.json({
-        ok: true,
-        items: items.map((row) => ({
+      return sendSuccess(res, { items: items.map((row) => ({
           ...row,
           id: idToString(row.id),
           cursoCatalogo: row.curso,
-        })),
-      });
+        })), });
     }
     const items = await prisma.cursoCatalogo.findMany({
       where: { activo: true },
       orderBy: { nombre: "asc" },
     });
-    res.json({
-      ok: true,
-      items: items.map((c) => ({ ...c, id: idToString(c.id) })),
+    sendSuccess(res, { items: items.map((c) => ({ ...c, id: idToString(c.id) })), });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function listAniosLectivos(_req: Request, res: Response, next: NextFunction) {
+  try {
+    const items = await prisma.anioLectivo.findMany({
+      orderBy: { anio: "desc" },
+      select: { id: true, anio: true, nombre: true, activo: true },
+    });
+    sendSuccess(res, {
+      items: items.map((a) => ({ ...a, id: idToString(a.id) })),
     });
   } catch (e) {
     next(e);
@@ -86,7 +92,7 @@ export async function createSeccion(req: Request, res: Response, next: NextFunct
       },
       include: { grado: { include: { nivel: true } } },
     });
-    res.status(201).json({ ok: true, item: { ...item, id: idToString(item.id) } });
+    sendCreated(res, { item: { ...item, id: idToString(item.id) } });
   } catch (e) {
     next(e);
   }
