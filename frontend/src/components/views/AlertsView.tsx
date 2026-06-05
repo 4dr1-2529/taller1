@@ -13,6 +13,7 @@ import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { salonShortFromSeccion, teachersForSelect } from "@/lib/student-filters";
 import { PageSection } from "@/components/ui/PageSection";
 import { RiskBadge } from "@/components/ui/RiskBadge";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const STATUS_LABEL: Record<string, string> = {
   nueva: "Nueva",
@@ -33,6 +34,7 @@ export function AlertsView({
   secciones = [],
   useApi = false,
 }: AlertsViewProps) {
+  const { isDocente } = useAuth();
   const [apiAlerts, setApiAlerts] = useState<ApiAlert[]>([]);
   const [salonSummary, setSalonSummary] = useState<{ salon: string; count: number }[]>([]);
   const [viewSalon, setViewSalon] = useState<string | "all">("all");
@@ -48,14 +50,19 @@ export function AlertsView({
   const loadApi = useCallback(async () => {
     if (!useApi) return;
     try {
-      const res = await api.getAlerts({
+      const alertParams = {
         seccionId: filters.seccionId || undefined,
         gradoId: filters.gradoId || undefined,
-        profesorId: filters.profesorId || undefined,
         status: filters.alertStatus || undefined,
         riskLevel: filters.riskLevel || undefined,
         all: includeResolved,
-      });
+      };
+      const res = isDocente
+        ? await api.getProfesorAlertas(alertParams)
+        : await api.getAlerts({
+            ...alertParams,
+            profesorId: filters.profesorId || undefined,
+          });
       setApiAlerts(res.items);
       setSalonSummary(res.salonSummary ?? []);
     } catch {
@@ -67,6 +74,7 @@ export function AlertsView({
     filters.seccionId,
     filters.gradoId,
     filters.profesorId,
+    isDocente,
     filters.alertStatus,
     filters.riskLevel,
     includeResolved,
@@ -115,7 +123,7 @@ export function AlertsView({
         show={{
           grado: true,
           seccion: true,
-          profesor: true,
+          profesor: !isDocente,
           alertStatus: true,
           risk: true,
         }}

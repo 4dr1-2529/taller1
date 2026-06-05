@@ -1,4 +1,5 @@
 import { toApiStatus, toUiStatus } from "@/lib/status";
+import { deriveLmsEngagementLevel, type LmsIndicadorInput } from "@/lib/lms-engagement";
 import type {
   Course,
   Enrollment,
@@ -31,9 +32,18 @@ type ApiSeccion = {
 type ApiLmsActivity = {
   actividadPct: number;
   minutos: number;
-  tareasEntregadas: number;
-  tareasTotales: number;
+  conexiones?: number;
+  tareasEntregadas?: number;
+  tareasTotales?: number;
   horasPlataforma: number;
+  anioSemana?: string;
+};
+
+type ApiLmsIndicador = {
+  frecuenciaAcceso?: number | string;
+  tiempoPlataforma?: number | string;
+  tareasRatio?: number | string;
+  participacion?: number | string;
 };
 
 type ApiStoredPrediction = {
@@ -58,8 +68,9 @@ type ApiStudent = {
   estado: string;
   promedioGeneral: number | string;
   asistenciaGeneral: number | string;
-  lmsEngagement: string;
+  lmsEngagement?: string;
   lmsActivities?: ApiLmsActivity[];
+  lmsIndicador?: ApiLmsIndicador | null;
   predictions?: ApiStoredPrediction[];
 };
 
@@ -120,9 +131,22 @@ function mapEstado(estado: string): StudentStatus {
   return toUiStatus(estado);
 }
 
-function mapEngagement(v: string): LmsEngagement {
-  if (v === "alto" || v === "bajo") return v;
-  return "medio";
+function mapEngagement(v: string | undefined, acts: ApiLmsActivity[], ind?: ApiLmsIndicador | null): LmsEngagement {
+  if (v === "alto" || v === "medio" || v === "bajo") return v;
+  const mappedActs = acts.map((a) => ({
+    actividadPct: toNumber(a.actividadPct),
+    minutos: toNumber(a.minutos),
+    conexiones: toNumber(a.conexiones),
+  }));
+  const mappedInd: LmsIndicadorInput = ind
+    ? {
+        frecuenciaAcceso: toNumber(ind.frecuenciaAcceso),
+        tiempoPlataforma: toNumber(ind.tiempoPlataforma),
+        tareasRatio: toNumber(ind.tareasRatio),
+        participacion: toNumber(ind.participacion),
+      }
+    : null;
+  return deriveLmsEngagementLevel(mappedActs, mappedInd);
 }
 
 function parseFactorsJson(raw?: string) {
@@ -137,9 +161,20 @@ function parseFactorsJson(raw?: string) {
 
 export function mapStudentFromApi(row: ApiStudent): Student {
   const acts = row.lmsActivities ?? [];
+  const ind = row.lmsIndicador ?? null;
   const last = acts[acts.length - 1];
   const nivelLabel = formatSeccionLabel(row.seccion, row.nivel);
   const lastPred = row.predictions?.[0];
+  const tareasRatio = ind ? toNumber(ind.tareasRatio) : 0;
+  const tareasTotales = tareasRatio > 0 ? 10 : toNumber(last?.tareasTotales, 10);
+  const tareasEntregadas = ind
+    ? Math.round(tareasRatio * tareasTotales)
+    : toNumber(last?.tareasEntregadas);
+  const horasSemana = ind
+    ? toNumber(ind.tiempoPlataforma)
+    : acts.length
+      ? acts.reduce((s, a) => s + toNumber(a.horasPlataforma), 0) / acts.length
+      : 0;
   return {
     id: row.id,
     codigo: row.codigo,
@@ -154,12 +189,12 @@ export function mapStudentFromApi(row: ApiStudent): Student {
       promedioGeneral: toNumber(row.promedioGeneral),
       asistenciaGeneral: toNumber(row.asistenciaGeneral),
       lms: {
-        engagement: mapEngagement(row.lmsEngagement),
+        engagement: mapEngagement(row.lmsEngagement, acts, ind),
         actividadSemanalPct: acts.map((a) => toNumber(a.actividadPct)),
         minutosPorSemana: acts.map((a) => toNumber(a.minutos)),
-        tareasEntregadas: toNumber(last?.tareasEntregadas),
-        tareasTotales: toNumber(last?.tareasTotales),
-        horasPlataformaSemana: toNumber(last?.horasPlataforma),
+        tareasEntregadas,
+        tareasTotales,
+        horasPlataformaSemana: horasSemana,
       },
     },
     storedPrediction: lastPred

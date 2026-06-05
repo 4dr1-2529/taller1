@@ -10,7 +10,13 @@ import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { INPUT_CLASS } from "@/lib/ui";
-import { sanitizeCodigo, validateCodigo } from "@/lib/validation";
+import {
+  type FieldErrors,
+  firstError,
+  validateCourseForm,
+  clearFieldError,
+} from "@/lib/validation";
+import { CodigoInput, CourseNameInput } from "@/components/ui/ValidatedInputs";
 
 export type NewCourseForm = {
   codigo: string;
@@ -54,6 +60,7 @@ export function CoursesView({
   lockProfesorId,
 }: CoursesViewProps) {
   const [query, setQuery] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   const grados = useMemo(() => {
     const seen = new Map<number, string>();
@@ -81,17 +88,11 @@ export function CoursesView({
 
   function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const codigoErr = validateCodigo(form.codigo);
-    if (codigoErr) {
-      toast.error(codigoErr);
-      return;
-    }
-    if (!form.nombre.trim()) {
-      toast.error("Indique el nombre del curso");
-      return;
-    }
-    if (!form.gradoId || !form.seccionId) {
-      toast.error("Seleccione grado y sección (salón A, B o C)");
+    const nextErrors = validateCourseForm(form);
+    setErrors(nextErrors);
+    const msg = firstError(nextErrors);
+    if (msg) {
+      toast.error(msg);
       return;
     }
     onSubmit(e);
@@ -121,7 +122,9 @@ export function CoursesView({
             </h2>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Administre cursos académicos y asignación de docentes
+            {canEdit
+              ? "Administre cursos académicos y asignación de docentes"
+              : "Cursos asignados a usted por grado y sección"}
           </p>
         </div>
         <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
@@ -138,20 +141,24 @@ export function CoursesView({
             description="Cada curso pertenece a un grado y una sección (A, B o C). No se comparte entre salones del mismo grado."
           >
             <form className="form-grid" onSubmit={handleFormSubmit}>
-              <FormField label="Código" hint="Letras, números, - y _">
-                <input
-                  className={INPUT_CLASS}
+              <FormField label="Código" hint="Letras, números, - y _" error={errors.codigo}>
+                <CodigoInput
                   value={form.codigo}
-                  onChange={(e) => setForm((p) => ({ ...p, codigo: sanitizeCodigo(e.target.value) }))}
+                  onValueChange={(codigo) => {
+                    setErrors((p) => clearFieldError(p, "codigo"));
+                    setForm((p) => ({ ...p, codigo }));
+                  }}
                   required
                 />
               </FormField>
-              <FormField label="Nombre del curso">
-                <input
-                  className={INPUT_CLASS}
-                  placeholder="Comunicación 4° A"
+              <FormField label="Nombre del curso" error={errors.nombre}>
+                <CourseNameInput
+                  placeholder="Comunicación"
                   value={form.nombre}
-                  onChange={(e) => setForm((p) => ({ ...p, nombre: e.target.value }))}
+                  onValueChange={(nombre) => {
+                    setErrors((p) => clearFieldError(p, "nombre"));
+                    setForm((p) => ({ ...p, nombre }));
+                  }}
                   required
                 />
               </FormField>

@@ -5,6 +5,11 @@ import type { Prisma, RolCodigo } from "@prisma/client";
 import { prisma } from "./prisma.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { toDbId } from "./ids.js";
+import {
+  getTeacherIdFromUser,
+  getTeacherSectionIds,
+  studentWhereForSectionIds,
+} from "./teacher-scope.js";
 
 export type ScopeUser = { sub: string; role: RolCodigo };
 
@@ -18,17 +23,10 @@ export async function resolveStudentScope(user: ScopeUser): Promise<Prisma.Stude
   }
 
   if (user.role === "docente") {
-    const teacher = await prisma.teacher.findFirst({
-      where: { usuarioId: toDbId(user.sub), activo: true },
-    });
-    if (!teacher) return NONE;
-    const enrollments = await prisma.enrollment.findMany({
-      where: { course: { profesorId: teacher.id } },
-      select: { studentId: true },
-    });
-    const ids = [...new Set(enrollments.map((e) => e.studentId))];
-    if (!ids.length) return NONE;
-    return { ...base, id: { in: ids } };
+    const teacherId = await getTeacherIdFromUser(user.sub);
+    if (!teacherId) return NONE;
+    const sectionIds = await getTeacherSectionIds(teacherId);
+    return studentWhereForSectionIds(sectionIds, base);
   }
 
   if (user.role === "estudiante") {
@@ -44,23 +42,16 @@ export async function resolveStudentScope(user: ScopeUser): Promise<Prisma.Stude
 export async function resolveCourseScope(user: ScopeUser): Promise<Prisma.CourseWhereInput> {
   if (user.role === "admin") return { activo: true };
   if (user.role === "docente") {
-    const teacher = await prisma.teacher.findFirst({
-      where: { usuarioId: toDbId(user.sub), activo: true },
-    });
-    if (!teacher) return { id: { in: [] } };
-    return { activo: true, profesorId: teacher.id };
+    const teacherId = await getTeacherIdFromUser(user.sub);
+    if (!teacherId) return { id: { in: [] } };
+    return { activo: true, profesorId: teacherId };
   }
   if (user.role === "estudiante") {
     const student = await prisma.student.findFirst({
       where: { usuarioId: toDbId(user.sub), activo: true },
     });
-    if (!student) return { id: { in: [] } };
-    const enrollments = await prisma.enrollment.findMany({
-      where: { studentId: student.id },
-      select: { cursoOfertaId: true },
-    });
-    const ids = enrollments.map((e) => e.cursoOfertaId);
-    return ids.length ? { id: { in: ids }, activo: true } : { id: { in: [] } };
+    if (!student?.seccionId) return { id: { in: [] } };
+    return { activo: true, seccionId: student.seccionId };
   }
   return { id: { in: [] } };
 }
@@ -72,6 +63,6 @@ export async function assertStudentInScope(user: ScopeUser, studentId: string): 
     select: { id: true },
   });
   if (!found) {
-    throw new AppError(403, "Sin permiso para este estudiante", "FORBIDDEN");
+    throw new AppError(403, "No tiene permiso para acceder a este estudiante.", "FORBIDDEN");
   }
 }

@@ -20,10 +20,12 @@ describe("API response envelope", () => {
     assert.deepEqual(body.data, { items: [] });
   });
 
-  it("error incluye success false y errors array", () => {
-    const body = errorPayload("Credenciales incorrectas", ["UNAUTHORIZED"]);
+  it("error incluye success false y errors estructurados", () => {
+    const body = errorPayload("Datos inválidos", [
+      { field: "nota", message: "La nota debe estar entre 0 y 20" },
+    ]);
     assert.equal(body.success, false);
-    assert.equal(body.message, "Credenciales incorrectas");
-    assert.deepEqual(body.errors, ["UNAUTHORIZED"]);
+    assert.equal(body.message, "Datos inválidos");
+    assert.equal(body.errors[0].field, "nota");
   });
 });

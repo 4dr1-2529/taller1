@@ -7,22 +7,38 @@ export type ApiSuccessBody<T = Record<string, unknown>> = {
   data: T;
 };
 
+export type FieldError = {
+  field: string;
+  message: string;
+};
+
 export type ApiErrorBody = {
   success: false;
   message: string;
-  errors: string[];
+  errors: FieldError[];
 };
 
 export const DEFAULT_SUCCESS_MESSAGE = "Operación realizada correctamente";
 
-export function zodToErrorList(err: ZodError): string[] {
+export function zodToFieldErrors(err: ZodError): FieldError[] {
   const flat = err.flatten();
-  const list: string[] = [];
+  const list: FieldError[] = [];
   for (const [field, msgs] of Object.entries(flat.fieldErrors)) {
-    if (msgs?.length) list.push(`${field}: ${msgs.join(", ")}`);
+    if (msgs?.length) {
+      for (const message of msgs) list.push({ field, message: String(message) });
+    }
   }
-  if (flat.formErrors.length) list.push(...flat.formErrors.map(String));
-  return list.length ? list : ["Validación fallida"];
+  for (const message of flat.formErrors) {
+    list.push({ field: "_form", message: String(message) });
+  }
+  return list.length ? list : [{ field: "_form", message: "Validación fallida" }];
+}
+
+/** @deprecated Use zodToFieldErrors for structured API responses */
+export function zodToErrorList(err: ZodError): string[] {
+  return zodToFieldErrors(err).map((e) =>
+    e.field === "_form" ? e.message : `${e.field}: ${e.message}`,
+  );
 }
 
 export function successPayload<T extends Record<string, unknown>>(
@@ -49,6 +65,6 @@ export function sendCreated<T extends Record<string, unknown>>(
   return sendSuccess(res, data, message, 201);
 }
 
-export function errorPayload(message: string, errors: string[] = []): ApiErrorBody {
+export function errorPayload(message: string, errors: FieldError[] = []): ApiErrorBody {
   return { success: false, message, errors };
 }

@@ -7,7 +7,6 @@ import { resolveStudentScope, assertStudentInScope } from "../utils/student-scop
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { AppError } from "../middleware/errorHandler.js";
-import { courseDisplayName } from "../utils/course-label.js";
 
 const STATUS_LABEL: Record<string, string> = {
   nueva: "Nueva",
@@ -49,18 +48,8 @@ function enrichAlert(a: {
     nombres: string;
     apellidos: string;
     seccionId: bigint | null;
-    inscripciones?: {
-      course: {
-        id: bigint;
-        codigo: string;
-        cursoCatalogo: { nombre: string } | null;
-        profesor: { nombres: string; apellidos: string };
-      };
-    }[];
   };
 }) {
-  const en = a.student.inscripciones?.[0];
-  const course = en?.course;
   return {
     id: idToString(a.id),
     titulo: a.titulo,
@@ -76,17 +65,14 @@ function enrichAlert(a: {
       ...a.student,
       id: idToString(a.student.id),
       seccionId: a.student.seccionId ? idToString(a.student.seccionId) : null,
+      seccion: (a.student as { seccion?: { nombre: string; grado?: { numero: number } } }).seccion,
     },
     nivel_riesgo: LEVEL_LABEL[a.nivelRiesgo] ?? a.nivelRiesgo,
     estado_label: STATUS_LABEL[a.estado] ?? a.estado,
     factores_riesgo: mapFactors(a.factores),
     fecha: a.createdAt,
-    curso: course
-      ? { id: idToString(course.id), nombre: courseDisplayName(course) }
-      : null,
-    profesor: course?.profesor
-      ? `${course.profesor.nombres} ${course.profesor.apellidos}`
-      : null,
+    curso: null,
+    profesor: null,
   };
 }
 
@@ -97,6 +83,8 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
     const all = req.query.all === "true";
     const seccionId = req.query.seccionId as string | undefined;
     const gradoId = req.query.gradoId as string | undefined;
+    const cursoId = req.query.cursoId as string | undefined;
+    const search = (req.query.search as string | undefined)?.trim();
     const status = req.query.status as string | undefined;
     const profesorId = req.query.profesorId as string | undefined;
 
@@ -105,10 +93,23 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
     if (gradoId) {
       studentWhere.seccion = { gradoId: toDbId(gradoId) };
     }
-    if (profesorId) {
-      studentWhere.inscripciones = {
-        some: { course: { profesorId: toDbId(profesorId) } },
+    if (cursoId) {
+      studentWhere.seccion = {
+        ...(studentWhere.seccion as object),
+        cursosOferta: { some: { id: toDbId(cursoId) } },
       };
+    }
+    if (profesorId) {
+      studentWhere.seccion = {
+        tutoresSeccion: { some: { profesorId: toDbId(profesorId) } },
+      };
+    }
+    if (search) {
+      studentWhere.OR = [
+        { nombres: { contains: search, mode: "insensitive" } },
+        { apellidos: { contains: search, mode: "insensitive" } },
+        { codigo: { contains: search, mode: "insensitive" } },
+      ];
     }
 
     const items = await prisma.alert.findMany({
@@ -135,19 +136,6 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
               select: {
                 nombre: true,
                 grado: { select: { numero: true } },
-              },
-            },
-            inscripciones: {
-              take: 1,
-              include: {
-                course: {
-                  select: {
-                    id: true,
-                    codigo: true,
-                    cursoCatalogo: { select: { nombre: true } },
-                    profesor: { select: { nombres: true, apellidos: true } },
-                  },
-                },
               },
             },
           },
@@ -201,19 +189,6 @@ export async function patchAlertStatus(req: Request, res: Response, next: NextFu
             nombres: true,
             apellidos: true,
             seccionId: true,
-            inscripciones: {
-              take: 1,
-              include: {
-                course: {
-                  select: {
-                    id: true,
-                    codigo: true,
-                    cursoCatalogo: { select: { nombre: true } },
-                    profesor: { select: { nombres: true, apellidos: true } },
-                  },
-                },
-              },
-            },
           },
         },
       },

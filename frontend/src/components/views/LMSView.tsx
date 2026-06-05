@@ -24,7 +24,8 @@ import { AcademicFiltersBar } from "@/components/academic/AcademicFiltersBar";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { lmsActivityTier } from "@/lib/student-filters";
 import { SELECT_CLASS } from "@/lib/ui";
-import { BLENKIR_COLORS } from "@/constants/blenkir";
+import { BLENKIR_COLORS, FILTER_HINTS } from "@/constants/blenkir";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const ENGAGEMENT_LABELS: Record<string, string> = {
   alto: "Alto",
@@ -47,6 +48,7 @@ type LMSViewProps = {
 };
 
 export function LMSView({ students, secciones = [] }: LMSViewProps) {
+  const { isDocente } = useAuth();
   const { filters, updateFilter, resetFilters, grados, seccionOptions, filteredStudents } =
     useAcademicFilters(students, [], secciones);
 
@@ -108,9 +110,15 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
 
   if (!student && filteredStudents.length === 0) {
     return (
-      <p className="text-sm text-[var(--text-muted)]">
-        Seleccione grado y sección para ver actividad LMS del salón.
-      </p>
+      <div className="space-y-4">
+        <p className="text-sm text-[var(--text-muted)]">
+          {filters.gradoId && filters.seccionId
+            ? isDocente
+              ? FILTER_HINTS.noStudentsProfesor
+              : FILTER_HINTS.noStudents
+            : "Seleccione grado y sección para ver actividad LMS del salón."}
+        </p>
+      </div>
     );
   }
 

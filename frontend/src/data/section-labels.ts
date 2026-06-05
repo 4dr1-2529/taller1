@@ -16,7 +16,16 @@ export const SECTION_LABELS: Record<AppSection, string> = {
   Reportes: "Reportes",
 };
 
-export function getSectionLabel(section: AppSection): string {
+export function getSectionLabel(section: AppSection, role?: string): string {
+  if (role === "estudiante") {
+    const studentLabels: Partial<Record<AppSection, string>> = {
+      Notas: "Mis notas",
+      Asistencia: "Mi asistencia",
+      "Actividad LMS": "Mi actividad LMS",
+      Predicción: "Mi riesgo",
+    };
+    if (studentLabels[section]) return studentLabels[section]!;
+  }
   return SECTION_LABELS[section] ?? section;
 }
 

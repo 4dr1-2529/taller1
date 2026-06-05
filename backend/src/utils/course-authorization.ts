@@ -23,3 +23,20 @@ export async function assertTeacherCourseAccess(user: AuthUser, courseId: string
     throw new AppError(403, "No autorizado para este curso", "FORBIDDEN");
   }
 }
+
+/** El estudiante debe pertenecer al mismo salón que la oferta del curso. */
+export async function assertStudentInCourseSection(studentId: string, courseId: string): Promise<void> {
+  const [course, student] = await Promise.all([
+    prisma.course.findFirst({
+      where: { id: toDbId(courseId), activo: true },
+      select: { seccionId: true },
+    }),
+    prisma.student.findFirst({
+      where: { id: toDbId(studentId), activo: true },
+      select: { seccionId: true },
+    }),
+  ]);
+  if (!course?.seccionId || !student?.seccionId || course.seccionId !== student.seccionId) {
+    throw new AppError(403, "No tiene permiso para acceder a este estudiante.", "FORBIDDEN");
+  }
+}

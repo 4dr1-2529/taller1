@@ -1,5 +1,6 @@
 import type { Course, Student, Teacher } from "@/types/academic";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
+import { lmsActivityTierFromMetrics } from "@/lib/lms-engagement";
 
 export type AcademicFilterState = {
   gradoId: string;
@@ -138,20 +139,23 @@ export function salonShortFromSeccion(s: SeccionOption): string {
   return `${num}°${s.nombre}`;
 }
 
-export type LmsActivityTier = "alta" | "media" | "baja" | "sin";
+export type { LmsActivityTier } from "@/lib/lms-engagement";
 
-export function lmsActivityTier(student: Student): LmsActivityTier {
-  const eng = student.metrics.lms.engagement;
-  if (eng === "alto") return "alta";
-  if (eng === "medio") return "media";
-  if (eng === "bajo") return "baja";
-  const avg =
-    student.metrics.lms.actividadSemanalPct.reduce((a, b) => a + b, 0) /
-    Math.max(student.metrics.lms.actividadSemanalPct.length, 1);
-  if (avg >= 70) return "alta";
-  if (avg >= 40) return "media";
-  if (avg > 0) return "baja";
-  return "sin";
+export function lmsActivityTier(student: Student): import("@/lib/lms-engagement").LmsActivityTier {
+  return lmsActivityTierFromMetrics(
+    student.metrics.lms.engagement,
+    student.metrics.lms.actividadSemanalPct.map((actividadPct, i) => ({
+      actividadPct,
+      minutos: student.metrics.lms.minutosPorSemana[i],
+    })),
+    {
+      tareasRatio:
+        student.metrics.lms.tareasTotales > 0
+          ? student.metrics.lms.tareasEntregadas / student.metrics.lms.tareasTotales
+          : 0,
+      tiempoPlataforma: student.metrics.lms.horasPlataformaSemana,
+    },
+  );
 }
 
 export function notaEstado(nota: number, promedio?: number): GradeStatus {

@@ -49,7 +49,7 @@ export function AttendanceView({
   teachers = [],
   secciones = [],
 }: AttendanceViewProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isDocente } = useAuth();
   const [items, setItems] = useState<AttendanceRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -71,14 +71,16 @@ export function AttendanceView({
     if (!api.hasToken) return;
     setLoading(true);
     try {
-      const res = await api.getAttendance();
+      const res = isDocente
+        ? await api.getProfesorAttendance(undefined, filters.seccionId || undefined)
+        : await api.getAttendance();
       setItems(res.items as AttendanceRow[]);
     } catch {
       setItems([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters.seccionId, isDocente]);
 
   useEffect(() => {
     if (isAuthenticated) void load();
@@ -215,7 +217,10 @@ export function AttendanceView({
       ) : null}
 
       {filters.seccionId && filteredStudents.length === 0 ? (
-        <EmptyState title="Sin estudiantes en este salón" description={FILTER_HINTS.noStudents} />
+        <EmptyState
+          title="Sin estudiantes en este salón"
+          description={isDocente ? FILTER_HINTS.noStudentsProfesor : FILTER_HINTS.noStudents}
+        />
       ) : filters.seccionId ? (
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <PageSection

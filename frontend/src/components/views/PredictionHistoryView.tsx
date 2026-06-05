@@ -5,7 +5,13 @@ import { motion } from "framer-motion";
 import { History, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { api, type ApiPredictionHistoryItem } from "@/services/api";
+import { profesorService } from "@/services/profesorService";
 import { useAuth } from "@/contexts/AuthProvider";
+import { useProfessorFilters } from "@/hooks/useProfessorFilters";
+import { ProfessorFiltersBar } from "@/components/professor/ProfessorFiltersBar";
+import type { SeccionOption } from "@/hooks/useAcademicStructure";
+import type { Course } from "@/types/academic";
+import { PROFESOR_HINTS } from "@/constants/blenkir";
 import { EmptyState } from "@/components/EmptyState";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
@@ -14,10 +20,19 @@ import { SELECT_CLASS } from "@/lib/ui";
 
 type PredictionHistoryViewProps = {
   students: Student[];
+  secciones?: SeccionOption[];
+  courses?: Course[];
+  professorMode?: boolean;
 };
 
-export function PredictionHistoryView({ students }: PredictionHistoryViewProps) {
-  const { isAuthenticated } = useAuth();
+export function PredictionHistoryView({
+  students,
+  secciones = [],
+  courses = [],
+  professorMode = false,
+}: PredictionHistoryViewProps) {
+  const { isAuthenticated, isDocente } = useAuth();
+  const pf = useProfessorFilters(secciones, courses);
   const [items, setItems] = useState<ApiPredictionHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [studentId, setStudentId] = useState("");
@@ -26,22 +41,38 @@ export function PredictionHistoryView({ students }: PredictionHistoryViewProps) 
     if (!api.hasToken) return;
     setLoading(true);
     try {
-      const res = await api.getPredictions({
-        studentId: studentId || undefined,
-        limit: 50,
-      });
-      setItems(res.items);
+      const res = professorMode || isDocente
+        ? await profesorService.getHistorialPredicciones({
+            gradoId: pf.applied.gradoId || undefined,
+            seccionId: pf.applied.seccionId || undefined,
+            cursoId: pf.applied.courseId || undefined,
+            riskLevel: pf.applied.riskLevel || undefined,
+            search: pf.applied.search || undefined,
+            limit: 50,
+          })
+        : await api.getPredictions({
+            studentId: studentId || undefined,
+            limit: 50,
+          });
+      setItems(res.items as ApiPredictionHistoryItem[]);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al cargar historial");
       setItems([]);
     } finally {
       setLoading(false);
     }
-  }, [studentId]);
+  }, [studentId, professorMode, isDocente, pf.applied]);
+
+  const search = () => {
+    if (professorMode || isDocente) {
+      if (!pf.applySearch()) return;
+    }
+    void load();
+  };
 
   useEffect(() => {
-    if (isAuthenticated) void load();
-  }, [isAuthenticated, load]);
+    if (isAuthenticated && !professorMode && !isDocente) void load();
+  }, [isAuthenticated, load, professorMode, isDocente]);
 
   if (!isAuthenticated) {
     return <EmptyState title="Historial de predicciones" description="Inicie sesión." showLogin />;
@@ -63,25 +94,46 @@ export function PredictionHistoryView({ students }: PredictionHistoryViewProps) 
             </p>
           </div>
         </div>
-        <button type="button" className="btn-secondary" onClick={() => void load()} disabled={loading}>
+        <button type="button" className="btn-secondary" onClick={() => search()} disabled={loading}>
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           Actualizar
         </button>
       </motion.div>
 
-      <div className="premium-card rounded-2xl p-4">
-        <label className="block text-sm">
-          <span className="mb-1 text-[var(--text-muted)]">Filtrar por estudiante</span>
-          <select className={SELECT_CLASS} value={studentId} onChange={(e) => setStudentId(e.target.value)}>
-            <option value="">Todos (según su rol)</option>
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.codigo} — {s.nombres} {s.apellidos}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      {professorMode || isDocente ? (
+        <ProfessorFiltersBar
+          filters={pf.draft}
+          onChange={pf.updateDraft}
+          onSearch={search}
+          onClear={() => {
+            pf.clear();
+            setItems([]);
+          }}
+          grados={pf.grados}
+          secciones={pf.seccionOptions}
+          courses={pf.courseOptions.map((c) => ({ id: c.id, nombre: c.nombre }))}
+          loading={loading}
+          show={{ grado: true, seccion: true, course: true, risk: true, search: true }}
+        />
+      ) : (
+        <div className="premium-card rounded-2xl p-4">
+          <label className="block text-sm">
+            <span className="mb-1 text-[var(--text-muted)]">Filtrar por estudiante</span>
+            <select className={SELECT_CLASS} value={studentId} onChange={(e) => setStudentId(e.target.value)}>
+              <option value="">Todos (según su rol)</option>
+              {students.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.codigo} — {s.nombres} {s.apellidos}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
+
+      {(professorMode || isDocente) && !pf.searched ? (
+        <p className="text-sm text-[var(--text-muted)]">{PROFESOR_HINTS.pressSearch}</p>
+      ) : null}
 
       <DataTablePanel
         title={`Registros (${items.length})`}

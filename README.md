@@ -99,6 +99,15 @@ npm run dev
 
 Si aparece `EADDRINUSE` en 3029/4000/5000, cierre instancias previas o termine los procesos que usan esos puertos.
 
+### MySQL no conecta
+
+Si el login devuelve **500** con `Can't reach database server at localhost:3306`:
+
+1. Abra **XAMPP Control Panel** e inicie **MySQL**, o ejecute `C:\xampp\mysql_start.bat`
+2. Verifique `DATABASE_URL` en `backend/.env`
+3. Ejecute `npm run db:push` y `npm run db:seed:demo` si la BD está vacía
+
+
 ### Credenciales demo (`db:seed:demo`)
 
 Contraseña para todos: **`Tesis2026!`**
@@ -142,11 +151,11 @@ Legacy: `director@iep-huancayo.edu.pe`, `admin@iep-huancayo.edu.pe`
 |-------------|-------------|---------|
 | `admin` | **Director** | Gestión total, comunicados globales, predicciones y alertas |
 | `docente` | **Profesor** | Sus cursos y estudiantes; notas, asistencia, LMS, predicción, mensajes |
-| `estudiante` | **Estudiante** | Notas, asistencia, LMS, riesgo propio, mensajería |
+| `estudiante` | **Estudiante** | Dashboard personal, `/estudiante/*`, mensajería recibida |
 
 **Eliminados en v2.0:** tutor, psicólogo, apoderado, seguimiento psicológico, chat genérico.
 
-Detalle: [docs/roles.md](docs/roles.md)
+Detalle: [docs/roles.md](docs/roles.md) · [docs/roles-permisos.md](docs/roles-permisos.md)
 
 ---
 
@@ -181,11 +190,18 @@ El frontend (`frontend/src/services/api.ts`) desenvuelve automáticamente `data`
 ### Auth
 - `POST /auth/login` · `POST /auth/refresh` · `GET /auth/me` · `POST /auth/change-password`
 
-### Académico
-- `GET/POST /students` — solo **admin** crea/elimina
-- `GET/POST /teachers`, `/courses`, `/enrollments`, `/grades`, `/attendance` — según rol
+### Académico (Director / Profesor)
+- `GET/POST /students` — solo **admin** crea/elimina; **docente** listado restringido
+- `GET/POST /teachers`, `/courses`, `/matriculas`, `/grades`, `/attendance` — según rol
 
-### Predicción e IA
+### Profesor (`/profesor/*`)
+- Dashboard, grados, secciones, cursos, estudiantes, notas, asistencia, LMS, predicciones, alertas
+
+### Estudiante (`/estudiante/*`)
+- `GET /estudiante/perfil`, `/dashboard`, `/notas`, `/asistencia`, `/lms`, `/prediccion`, `/alertas`, `/mensajes`
+- `POST /estudiante/prediccion` — actualizar predicción propia (ID desde token)
+
+### Predicción e IA (Director / Profesor)
 - `POST /predict` — riesgo + historial + alerta si medio/alto
 - `GET /predictions` · `GET /dashboard/kpis` · `GET /alerts` · `PATCH /alerts/:id`
 - `GET /ml/metrics`
@@ -245,12 +261,14 @@ Más: [docs/machine-learning.md](docs/machine-learning.md)
 | `npm run build` | Build producción |
 | `npm run db:push` | Sincronizar schema Prisma |
 | `npm run db:seed` | Estructura y permisos |
-| `npm run db:seed:demo` | Datos demo (50 estudiantes, etc.) |
+| `npm run db:seed:demo` | Datos demo (660 estudiantes, 15 profesores) |
 | `npm run db:bootstrap` | Crear admin desde `.env` |
 | `npm run db:studio` | Prisma Studio |
 | `npm run ml:train` | Entrenar modelos |
 | `npm run ml:test` | Tests Python ML |
 | `npm run test` | Unitarios backend + ML |
+| `npm run type-check` | TypeScript frontend + backend |
+| `npm run test:backend` | Solo tests backend |
 | `npm run test:smoke` | Smoke API + ML + login |
 | `npm run lint` | ESLint frontend |
 
@@ -305,9 +323,14 @@ sonar-scanner -Dproject.settings=sonar-project.properties
 Exclusiones: `node_modules`, `dist`, `.next`, `coverage`, `venv`, `__pycache__`, `.env`, modelos `.joblib`.
 
 Checklist antes del análisis: ver [docs/sonarqube.md](docs/sonarqube.md).
-| [database/blenkir-v3/DER-BLENKIR.md](database/blenkir-v3/DER-BLENKIR.md) | **Rediseño BD v3** — 51 tablas Primaria Blenkir |
+
+| Documento BD | Contenido |
+|--------------|-----------|
+| [database/blenkir-v3/DER-BLENKIR.md](database/blenkir-v3/DER-BLENKIR.md) | Rediseño BD v3 — 51 tablas Primaria Blenkir |
 | [database/blenkir-v3/README.md](database/blenkir-v3/README.md) | Scripts SQL e instalación |
 | [database/mysql/README.md](database/mysql/README.md) | XAMPP / MySQL |
+| [backend/README.md](backend/README.md) | API, endpoints por rol, tests |
+| [frontend/README.md](frontend/README.md) | Next.js, menú por rol, servicios |
 
 ---
 

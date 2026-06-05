@@ -1,7 +1,9 @@
 import { z } from "zod";
 import {
   codigoField,
+  courseNameField,
   gradeField,
+  observacionField,
   optionalDniField,
   optionalEmailField,
   optionalPhoneField,
@@ -73,7 +75,7 @@ export const gradeSchema = z.object({
   periodoId: z.string().optional(),
   periodoNumero: z.coerce.number().int().min(1).max(4).optional(),
   nota: gradeField,
-  observacion: z.string().max(500).optional(),
+  observacion: observacionField,
 });
 
 export const attendanceSchema = z.object({
@@ -82,7 +84,7 @@ export const attendanceSchema = z.object({
   presente: z.boolean().default(true),
   justificado: z.boolean().default(false),
   tardanza: z.boolean().default(false),
-  observacion: z.string().max(500).optional(),
+  observacion: observacionField,
 });
 
 export const lmsMetricsSchema = z.object({
@@ -129,7 +131,7 @@ export const alertStatusSchema = z.object({
 
 const teacherCourseInput = z.object({
   codigo: codigoField,
-  nombre: z.string().min(2).max(160),
+  nombre: courseNameField,
   seccionId: z.string().min(1, "Seleccione grado y sección"),
   cursoCatalogoId: z.string().optional(),
   periodo: z.string().max(16).optional(),
@@ -140,7 +142,7 @@ export const teacherSchema = z
     codigo: codigoField,
     nombres: personNameField,
     apellidos: personNameField,
-    especialidad: z.string().min(2).max(120),
+    especialidad: personNameField,
     correo: z.string().email("Correo inválido").max(255),
     telefono: optionalPhoneField,
     password: z.string().min(8).max(128).optional(),
@@ -155,7 +157,7 @@ export const teacherSchema = z
 export const updateTeacherSchema = z.object({
   nombres: personNameField.optional(),
   apellidos: personNameField.optional(),
-  especialidad: z.string().min(2).max(120).optional(),
+  especialidad: personNameField.optional(),
   correo: z.string().email("Correo inválido").max(255).optional(),
   telefono: optionalPhoneField.nullable(),
   activo: z.boolean().optional(),
@@ -168,7 +170,7 @@ export const teacherAccountSchema = z.object({
 
 export const courseSchema = z.object({
   codigo: codigoField,
-  nombre: z.string().min(2).max(160),
+  nombre: courseNameField,
   profesorId: z.string().min(1),
   seccionId: z.string().min(1, "Seleccione grado y sección"),
   cursoCatalogoId: z.string().optional(),

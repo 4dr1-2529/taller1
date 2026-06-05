@@ -13,7 +13,8 @@ import {
 } from "@/lib/aggregates";
 import { dashboardGreeting, buildRiskHistorySeries } from "@/lib/dashboard-data";
 import { BentoAnalyticsPanels } from "./BentoAnalyticsPanels";
-import type { Course, Enrollment, Student } from "@/types/academic";
+import type { MatriculaStats } from "@/hooks/useAcademicData";
+import type { Course, Student } from "@/types/academic";
 import { api } from "@/services/api";
 import { BentoCell } from "./BentoCell";
 import { BentoHero } from "./BentoHero";
@@ -26,7 +27,7 @@ type BentoDashboardProps = {
   role: string;
   students: Student[];
   courses: Course[];
-  enrollments: Enrollment[];
+  matriculaStats?: MatriculaStats | null;
   useApi?: boolean;
 };
 
@@ -34,7 +35,7 @@ export function BentoDashboard({
   role,
   students,
   courses,
-  enrollments,
+  matriculaStats = null,
   useApi = false,
 }: BentoDashboardProps) {
   const [apiKpis, setApiKpis] = useState<{
@@ -114,10 +115,7 @@ export function BentoDashboard({
     return buildRiskHistorySeries(students);
   }, [students, useApi, apiAnalytics]);
   const trend = useMemo(() => riskTrendLabel(riskHistory), [riskHistory]);
-  const courseRows = useMemo(
-    () => riskByCourse(students, courses, enrollments),
-    [students, courses, enrollments],
-  );
+  const courseRows = useMemo(() => riskByCourse(students, courses), [students, courses]);
   const topAtRisk = useMemo(() => rankingAtRisk(students, 5), [students]);
   const alertQueue = useMemo(
     () =>
@@ -154,7 +152,11 @@ export function BentoDashboard({
   const kpis: KpiItem[] = [
     { label: "Estudiantes", value: students.length, icon: Users },
     { label: "Cursos", value: courses.length, icon: BookOpen },
-    { label: "Matrículas", value: enrollments.length, icon: GraduationCap },
+    {
+      label: "Matrículas activas",
+      value: matriculaStats?.matriculasActivas ?? students.length,
+      icon: GraduationCap,
+    },
     { label: "Asistencia prom.", value: avgAtt, suffix: "%", icon: Activity },
   ];
 

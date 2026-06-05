@@ -16,7 +16,8 @@ export type SeccionOption = {
 };
 
 export function useAcademicStructure() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const isDocente = user?.role === "docente";
   const [secciones, setSecciones] = useState<SeccionOption[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +28,7 @@ export function useAcademicStructure() {
     }
     setLoading(true);
     try {
-      const res = await api.getSecciones();
+      const res = isDocente ? await api.getProfesorSecciones() : await api.getSecciones();
       const options: SeccionOption[] = res.items.map((s) => {
         const grado = s.grado;
         const nivel = grado?.nivel?.codigo === "secundaria" ? "Secundaria" : "Primaria";
@@ -48,7 +49,7 @@ export function useAcademicStructure() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isDocente]);
 
   useEffect(() => {
     if (isAuthenticated) void load();

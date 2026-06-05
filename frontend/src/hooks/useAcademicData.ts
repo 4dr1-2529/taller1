@@ -5,42 +5,48 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthProvider";
 import {
   mapCourseFromApi,
-  mapEnrollmentFromApi,
   mapEstadoToApi,
   mapStudentFromApi,
   mapTeacherFromApi,
 } from "@/lib/api-mappers";
 import { buildMetrics } from "@/lib/student-factory";
+import { fetchAllStudents } from "@/lib/fetch-all-students";
 import {
   parseGrade,
   parsePercent,
+  validateCourseForm,
+  validateMatriculaForm,
   validateStudentForm,
   validateTeacherForm,
   validateTeacherProfileFields,
   firstError,
 } from "@/lib/validation";
 import { api } from "@/services/api";
-import { fetchAllStudents } from "@/lib/fetch-all-students";
-import type { Course, Enrollment, Student, Teacher } from "@/types/academic";
+import { profesorService } from "@/services/profesorService";
+import type { Course, Student, Teacher } from "@/types/academic";
 import type { NewStudentForm } from "@/components/views/StudentsView";
-import type { NewEnrollmentForm } from "@/components/views/EnrollmentsView";
+import type { NewMatriculaForm } from "@/components/views/EnrollmentsView";
 import type { NewTeacherForm } from "@/components/views/TeachersView";
 
 export type DataSource = "api" | "none";
 
+export type MatriculaStats = {
+  matriculasActivas: number;
+  matriculasAnioLectivo: number;
+  estudiantesActivos: number;
+  anioLectivo: string | null;
+};
+
 export function useAcademicData() {
-  const { isAuthenticated, loading: authLoading, refresh: refreshAuth } = useAuth();
+  const { isAuthenticated, loading: authLoading, refresh: refreshAuth, user } = useAuth();
+  const isDocente = user?.role === "docente";
+  const isEstudiante = user?.role === "estudiante";
   const [dataSource, setDataSource] = useState<DataSource>("none");
   const [loading, setLoading] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
-  const [matriculaStats, setMatriculaStats] = useState<{
-    matriculasInstitucionales: number;
-    matriculasActivas: number;
-    inscripcionesCurso: number;
-  } | null>(null);
+  const [matriculaStats, setMatriculaStats] = useState<MatriculaStats | null>(null);
 
   const loadFromApi = useCallback(async () => {
     if (!api.hasToken) {
@@ -50,48 +56,62 @@ export function useAcademicData() {
     setLoading(true);
     try {
       await api.health();
-      const [st, te, co] = await Promise.all([
-        fetchAllStudents(),
-        api.getTeachers(),
-        api.getCourses(),
+      if (isEstudiante) {
+        setStudents([]);
+        setTeachers([]);
+        setCourses([]);
+        setMatriculaStats(null);
+        setDataSource("api");
+        return true;
+      }
+      const [st, te, co, stats] = await Promise.all([
+        isDocente ? Promise.resolve([]) : fetchAllStudents(false),
+        isDocente ? Promise.resolve({ items: [] }) : api.getTeachers(),
+        isDocente ? profesorService.getCursos() : api.getCourses(),
+        isDocente ? Promise.resolve(null) : api.getMatriculaStats().catch(() => null),
       ]);
       setStudents(st);
       setTeachers(te.items.map((r) => mapTeacherFromApi(r as Parameters<typeof mapTeacherFromApi>[0])));
       setCourses(co.items.map((r) => mapCourseFromApi(r as Parameters<typeof mapCourseFromApi>[0])));
-      setEnrollments([]);
-      const matStats = await api.getMatriculaStats().catch(() => null);
-      setMatriculaStats(matStats);
+      setMatriculaStats(stats);
       setDataSource("api");
       return true;
     } catch (firstError) {
       try {
         await refreshAuth();
         if (!api.hasToken) throw firstError;
-        const [st, te, co] = await Promise.all([
-          fetchAllStudents(),
-          api.getTeachers(),
-          api.getCourses(),
+        if (isEstudiante) {
+          setStudents([]);
+          setTeachers([]);
+          setCourses([]);
+          setMatriculaStats(null);
+          setDataSource("api");
+          return true;
+        }
+        const [st, te, co, stats] = await Promise.all([
+          isDocente ? Promise.resolve([]) : fetchAllStudents(false),
+          isDocente ? Promise.resolve({ items: [] }) : api.getTeachers(),
+          isDocente ? profesorService.getCursos() : api.getCourses(),
+          isDocente ? Promise.resolve(null) : api.getMatriculaStats().catch(() => null),
         ]);
         setStudents(st);
         setTeachers(te.items.map((r) => mapTeacherFromApi(r as Parameters<typeof mapTeacherFromApi>[0])));
         setCourses(co.items.map((r) => mapCourseFromApi(r as Parameters<typeof mapCourseFromApi>[0])));
-        setEnrollments([]);
-        const matStats = await api.getMatriculaStats().catch(() => null);
-        setMatriculaStats(matStats);
+        setMatriculaStats(stats);
         setDataSource("api");
         return true;
       } catch {
         setStudents([]);
         setTeachers([]);
         setCourses([]);
-        setEnrollments([]);
+        setMatriculaStats(null);
         setDataSource("none");
         return false;
       }
     } finally {
       setLoading(false);
     }
-  }, [refreshAuth]);
+  }, [refreshAuth, isDocente, isEstudiante]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -102,7 +122,7 @@ export function useAcademicData() {
       setStudents([]);
       setTeachers([]);
       setCourses([]);
-      setEnrollments([]);
+      setMatriculaStats(null);
     }
   }, [isAuthenticated, authLoading, loadFromApi]);
 
@@ -119,11 +139,7 @@ export function useAcademicData() {
     }
     const promedioParsed = form.promedioGeneral.trim() ? parseGrade(form.promedioGeneral) : 0;
     const asistenciaParsed = form.asistenciaGeneral.trim() ? parsePercent(form.asistenciaGeneral) : 0;
-    const metrics = buildMetrics(
-      promedioParsed ?? 0,
-      asistenciaParsed ?? 0,
-      form.engagement,
-    );
+    const metrics = buildMetrics(promedioParsed ?? 0, asistenciaParsed ?? 0, form.engagement);
     try {
       const res = await api.createStudent({
         codigo: form.codigo.trim(),
@@ -151,7 +167,7 @@ export function useAcademicData() {
       toast.error("Inicie sesión para registrar docentes");
       return;
     }
-    const fieldErrors = validateTeacherForm(form);
+    const fieldErrors = validateTeacherForm({ ...form, cursos: form.cursos });
     const validationMsg = firstError(fieldErrors);
     if (validationMsg) {
       toast.error(validationMsg);
@@ -179,9 +195,7 @@ export function useAcademicData() {
       });
       await loadFromApi();
       toast.success(
-        cursos.length
-          ? `Docente registrado con ${cursos.length} curso(s)`
-          : "Docente registrado",
+        cursos.length ? `Docente registrado con ${cursos.length} curso(s)` : "Docente registrado",
       );
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al guardar docente");
@@ -274,13 +288,22 @@ export function useAcademicData() {
     nombre: string;
     profesorId: string;
     seccionId: string;
+    gradoId?: string;
   }): Promise<void> {
     if (!api.hasToken) {
       toast.error("Inicie sesión para crear cursos");
       return;
     }
-    if (!payload.seccionId) {
-      toast.error("Seleccione grado y sección del curso");
+    const fieldErrors = validateCourseForm({
+      codigo: payload.codigo,
+      nombre: payload.nombre,
+      profesorId: payload.profesorId,
+      gradoId: payload.gradoId ?? "",
+      seccionId: payload.seccionId,
+    });
+    const validationMsg = firstError(fieldErrors);
+    if (validationMsg) {
+      toast.error(validationMsg);
       return;
     }
     try {
@@ -293,9 +316,11 @@ export function useAcademicData() {
     }
   }
 
-  async function addEnrollment(form: NewEnrollmentForm): Promise<void> {
-    if (!form.estudianteId || !form.seccionId || !form.anioLectivoId) {
-      toast.error("Complete estudiante, sección y año lectivo");
+  async function addMatricula(form: NewMatriculaForm): Promise<void> {
+    const fieldErrors = validateMatriculaForm(form);
+    const validationMsg = firstError(fieldErrors);
+    if (validationMsg) {
+      toast.error(validationMsg);
       return;
     }
     if (!api.hasToken) {
@@ -310,6 +335,7 @@ export function useAcademicData() {
       });
       const stats = await api.getMatriculaStats();
       setMatriculaStats(stats);
+      await loadFromApi();
       toast.success("Matrícula institucional registrada");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al matricular");
@@ -320,7 +346,6 @@ export function useAcademicData() {
     students,
     teachers,
     courses,
-    enrollments,
     matriculaStats,
     dataSource,
     loading: loading || authLoading,
@@ -332,6 +357,6 @@ export function useAcademicData() {
     createTeacherAccount,
     addCourse,
     updateCourse,
-    addEnrollment,
+    addMatricula,
   };
 }

@@ -5,12 +5,15 @@ import { attendanceSchema, bulkAttendanceSchema } from "../validators/schemas.js
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId } from "../utils/ids.js";
-
+import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 
 export async function listAttendance(req: Request, res: Response, next: NextFunction) {
   try {
-    const { studentId, from, to } = req.query;
-    const where: Record<string, unknown> = {};
+    const { studentId, from, to, seccionId } = req.query;
+    const scope = await resolveStudentScope(req.user!);
+    const studentWhere: Record<string, unknown> = { ...scope };
+    if (seccionId) studentWhere.seccionId = toDbId(seccionId as string);
+    const where: Record<string, unknown> = { student: studentWhere };
     if (studentId) where.studentId = toDbId(studentId as string);
     if (from || to) {
       where.fecha = {};
@@ -32,6 +35,7 @@ export async function listAttendance(req: Request, res: Response, next: NextFunc
 export async function createAttendance(req: Request, res: Response, next: NextFunction) {
   try {
     const data = attendanceSchema.parse(req.body);
+    await assertStudentInScope(req.user!, data.studentId);
     const record = await prisma.attendance.create({
       data: {
         studentId: toDbId(data.studentId),
@@ -74,6 +78,7 @@ export async function bulkAttendance(req: Request, res: Response, next: NextFunc
     let upserted = 0;
 
     for (const r of data.records) {
+      await assertStudentInScope(req.user!, r.studentId);
       const studentId = toDbId(r.studentId);
       await prisma.attendance.upsert({
         where: { studentId_fecha: { studentId, fecha } },

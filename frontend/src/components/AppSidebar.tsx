@@ -6,16 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
   AlertTriangle,
-  BarChart3,
   BookOpen,
   CalendarCheck,
   ChevronLeft,
   ClipboardList,
-  Eye,
   GraduationCap,
   History,
-  HeartHandshake,
-  Layers,
   LayoutDashboard,
   LineChart,
   LogOut,
@@ -157,7 +153,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                   <li key={section}>
                     <motion.button
                       type="button"
-                      title={collapsed ? getSectionLabel(section) : undefined}
+                      title={collapsed ? getSectionLabel(section, user?.role) : undefined}
                       onClick={() => {
                         onSelect(section);
                         setMobileOpen(false);
@@ -208,7 +204,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.15 }}
                           >
-                            {getSectionLabel(section)}
+                            {getSectionLabel(section, user?.role)}
                           </motion.span>
                         )}
                       </AnimatePresence>
@@ -362,7 +358,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
 
       {/* Desktop Sidebar */}
       <motion.aside
-        className="glass-sidebar-premium sticky top-0 z-30 hidden h-screen shrink-0 flex-col text-[var(--sidebar-text)] transition-all duration-300 lg:flex"
+        className="glass-sidebar-premium hidden h-screen shrink-0 flex-col text-[var(--sidebar-text)] transition-all duration-300 lg:flex"
         animate={{ width: collapsed ? 88 : 320 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
       >

@@ -94,7 +94,9 @@ html {
 body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  height: 100vh;
   min-height: 100vh;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--background);
@@ -102,9 +104,10 @@ body {
 
 .app-bg {
   position: relative;
+  height: 100vh;
   min-height: 100vh;
   background: var(--background);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .app-bg::before {

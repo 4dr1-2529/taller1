@@ -5,7 +5,7 @@ import { gradeSchema } from "../validators/schemas.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
-import { assertTeacherCourseAccess } from "../utils/course-authorization.js";
+import { assertTeacherCourseAccess, assertStudentInCourseSection } from "../utils/course-authorization.js";
 import { resolvePeriodoId } from "../utils/academic-period.js";
 import { courseListInclude, courseDisplayName } from "../utils/course-label.js";
 
@@ -56,6 +56,7 @@ export async function createGrade(req: Request, res: Response, next: NextFunctio
     const data = gradeSchema.parse(req.body);
     await assertStudentInScope(req.user!, data.studentId);
     await assertTeacherCourseAccess(req.user!, data.courseId);
+    await assertStudentInCourseSection(data.studentId, data.courseId);
     const periodoId = await resolvePeriodoId(data.periodoId, data.periodoNumero);
     const studentId = toDbId(data.studentId);
     const cursoOfertaId = toDbId(data.courseId);

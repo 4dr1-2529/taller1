@@ -25,6 +25,9 @@
 
 ## Reglas de negocio
 
-- Predicción requiere `studentId` existente y en alcance del rol.
+- Predicción requiere `studentId` existente y en alcance del rol (director/profesor).
+- Estudiante: `POST /estudiante/prediccion` — **sin** `studentId` en body; ID inferido del JWT.
+- `rejectClientStudentId()` — 403 si el cliente envía otro `studentId` en query/body.
 - Matrícula: curso debe pertenecer a la sección del estudiante.
 - Mensajes globales: solo director.
+- Estudiante: solo lectura en notas, asistencia, LMS y alertas.

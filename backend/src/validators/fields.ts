@@ -46,19 +46,30 @@ export const optionalPhoneField = z.preprocess(
   emptyToUndefined,
   z
     .string()
-    .regex(PHONE_REGEX, "El teléfono debe tener 9 dígitos (solo números)")
+    .regex(PHONE_REGEX, "Teléfono debe tener 9 dígitos")
     .optional(),
 );
 
+export const observacionField = z.preprocess(
+  emptyToUndefined,
+  z
+    .string()
+    .max(500)
+    .regex(PERSON_NAME_REGEX, "Solo se permiten letras")
+    .optional(),
+);
+
+export const courseNameField = personNameField;
+
 export const gradeField = z.coerce
-  .number({ invalid_type_error: "Ingrese un número válido" })
-  .min(0, "Mínimo 0")
-  .max(GRADE_MAX, `Máximo ${GRADE_MAX}`);
+  .number({ invalid_type_error: "Solo se permiten números" })
+  .min(0, "La nota debe estar entre 0 y 20")
+  .max(GRADE_MAX, "La nota debe estar entre 0 y 20");
 
 export const percentageField = z.coerce
-  .number({ invalid_type_error: "Ingrese un porcentaje válido" })
-  .min(0, "Mínimo 0%")
-  .max(PERCENT_MAX, `Máximo ${PERCENT_MAX}%`);
+  .number({ invalid_type_error: "Solo se permiten números" })
+  .min(0, "La asistencia debe estar entre 0 y 100")
+  .max(PERCENT_MAX, "La asistencia debe estar entre 0 y 100");
 
 export const securePasswordField = z
   .string()

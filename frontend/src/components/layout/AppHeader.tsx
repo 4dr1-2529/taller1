@@ -74,7 +74,7 @@ export function AppHeader({ activeSection, subtitle }: AppHeaderProps) {
             layout
             className="text-2xl font-bold tracking-tight text-[var(--text-primary)] md:text-3xl"
           >
-            {getSectionLabel(activeSection)}
+            {getSectionLabel(activeSection, user?.role)}
           </motion.h1>
 
           <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-[var(--text-secondary)] md:text-base">

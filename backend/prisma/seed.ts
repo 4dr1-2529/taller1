@@ -80,6 +80,8 @@ function seccionesPorGrado(numero: number): string[] {
   return numero <= 4 ? ["A", "B", "C", "D"] : ["A", "B", "C"];
 }
 
+const CAPACIDAD_SALON = 30;
+
 async function main() {
   console.log("Seed Blenkir v3 — estructura primaria (51 tablas)...");
 
@@ -176,8 +178,8 @@ async function main() {
     for (const sec of seccionesPorGrado(n)) {
       await prisma.seccion.upsert({
         where: { gradoId_nombre: { gradoId: grado.id, nombre: sec } },
-        update: { capacidad: 30 },
-        create: { gradoId: grado.id, nombre: sec, capacidad: 30 },
+        update: { capacidad: CAPACIDAD_SALON },
+        create: { gradoId: grado.id, nombre: sec, capacidad: CAPACIDAD_SALON },
       });
     }
   }

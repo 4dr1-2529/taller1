@@ -224,11 +224,13 @@ export type AuditLog = {
   student?: { nombres: string; apellidos: string; codigo: string };
 };
 
+export type FieldError = { field: string; message: string };
+
 export type ApiEnvelope<T> = {
   success: boolean;
   message: string;
   data?: T;
-  errors?: string[];
+  errors?: FieldError[] | string[];
 };
 
 export type ApiResponse<T> = T;
@@ -244,6 +246,11 @@ class ApiClient {
     return !!this.token;
   }
 
+  /** Llamadas autenticadas (p. ej. módulo profesor). */
+  async call<T>(path: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    return this.request<T>(path, options);
+  }
+
   private async request<T>(path: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -257,14 +264,22 @@ class ApiClient {
     if (!res.ok || body.success === false) {
       const msg = body.message ?? (body.error as string) ?? "Error de API";
       const errs = body.errors ?? [];
-      throw new Error(errs.length ? `${msg}: ${errs.join("; ")}` : msg);
+      const detail = errs
+        .map((e) => (typeof e === "string" ? e : `${e.field}: ${e.message}`))
+        .join("; ");
+      throw new Error(detail ? `${msg}: ${detail}` : msg);
     }
 
     if (body.success === true && body.data !== undefined) {
       return body.data as T;
     }
 
-    const { success: _s, message: _m, data: _d, errors: _e, ok: _ok, ...legacy } = body;
+    const legacy = { ...(body as Record<string, unknown>) };
+    delete legacy.success;
+    delete legacy.message;
+    delete legacy.data;
+    delete legacy.errors;
+    delete legacy.ok;
     return legacy as T;
   }
 
@@ -350,6 +365,57 @@ class ApiClient {
     return this.request<{ items: Course[] }>("/courses");
   }
 
+  async getProfesorCursos() {
+    return this.request<{ items: Course[] }>("/profesor/mis-cursos");
+  }
+
+  async getProfesorSecciones() {
+    return this.request<{ items: ApiSeccion[] }>("/profesor/mis-secciones");
+  }
+
+  async getProfesorEstudiantes(page = 1, limit = 100, q = "") {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (q) params.set("q", q);
+    return this.request<{ items: Student[]; total: number; page: number; pages: number }>(
+      `/profesor/mis-estudiantes?${params}`,
+    );
+  }
+
+  async getProfesorGrades(studentId?: string, courseId?: string) {
+    const params = new URLSearchParams();
+    if (studentId) params.set("studentId", studentId);
+    if (courseId) params.set("courseId", courseId);
+    const q = params.toString() ? `?${params}` : "";
+    return this.request<{ items: unknown[] }>(`/profesor/notas${q}`);
+  }
+
+  async getProfesorAttendance(studentId?: string, seccionId?: string) {
+    const params = new URLSearchParams();
+    if (studentId) params.set("studentId", studentId);
+    if (seccionId) params.set("seccionId", seccionId);
+    const q = params.toString() ? `?${params}` : "";
+    return this.request<{ items: unknown[] }>(`/profesor/asistencia${q}`);
+  }
+
+  async getProfesorAlertas(params?: {
+    seccionId?: string;
+    gradoId?: string;
+    status?: string;
+    riskLevel?: string;
+    all?: boolean;
+  }) {
+    const q = new URLSearchParams();
+    if (params?.seccionId) q.set("seccionId", params.seccionId);
+    if (params?.gradoId) q.set("gradoId", params.gradoId);
+    if (params?.status) q.set("status", params.status);
+    if (params?.riskLevel) q.set("riskLevel", params.riskLevel);
+    if (params?.all) q.set("all", "true");
+    const query = q.toString() ? `?${q}` : "";
+    return this.request<{ items: Alert[]; total: number; salonSummary?: { salon: string; count: number }[] }>(
+      `/profesor/alertas${query}`,
+    );
+  }
+
   async createCourse(payload: Record<string, unknown>) {
     return this.request<{ course: Course }>("/courses", { method: "POST", body: JSON.stringify(payload) });
   }
@@ -362,17 +428,13 @@ class ApiClient {
     return this.request<{ ok: boolean }>(`/courses/${id}`, { method: "DELETE" });
   }
 
-  async getEnrollments(page = 1, limit = 50) {
-    return this.request<{
-      items: Enrollment[];
-      total: number;
-      page: number;
-      pages: number;
-    }>(`/enrollments?page=${page}&limit=${limit}`);
-  }
-
-  async getMatriculas(params?: { seccionId?: string; page?: number; limit?: number }) {
-    const q = new URLSearchParams();
+  async getMatriculas(params?: {
+    seccionId?: string;
+    page?: number;
+    limit?: number;
+    estado?: string;
+  }) {
+    const q = new URLSearchParams({ estado: params?.estado ?? "activa" });
     if (params?.seccionId) q.set("seccionId", params.seccionId);
     if (params?.page) q.set("page", String(params.page));
     if (params?.limit) q.set("limit", String(params.limit));
@@ -388,9 +450,10 @@ class ApiClient {
 
   async getMatriculaStats() {
     return this.request<{
-      matriculasInstitucionales: number;
       matriculasActivas: number;
-      inscripcionesCurso: number;
+      matriculasAnioLectivo: number;
+      estudiantesActivos: number;
+      anioLectivo: string | null;
     }>("/matriculas/stats");
   }
 
@@ -411,10 +474,6 @@ class ApiClient {
     return this.request<{ items: { id: string; anio: number; nombre: string; activo: boolean }[] }>(
       "/academic/anios-lectivos",
     );
-  }
-
-  async createEnrollment(payload: Record<string, unknown>) {
-    return this.request<{ item: Enrollment }>("/enrollments", { method: "POST", body: JSON.stringify(payload) });
   }
 
   async getGrades(studentId?: string, courseId?: string) {

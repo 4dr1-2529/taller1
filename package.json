@@ -20,6 +20,8 @@
     "db:push": "npm run db:push --workspace=backend",
     "db:seed": "npm run db:seed --workspace=backend",
     "db:seed:demo": "npm run db:seed:demo --workspace=backend",
+    "db:reset:full": "npm run db:reset:full --workspace=backend",
+    "db:reseed": "npm run db:reseed --workspace=backend",
     "db:legacy-users": "npm run db:legacy-users --workspace=backend",
     "db:bootstrap": "npm run db:bootstrap --workspace=backend",
     "db:studio": "npm run db:studio --workspace=backend",

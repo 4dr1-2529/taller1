@@ -34,7 +34,7 @@ export function AppShell({
 }: AppShellProps) {
   return (
     <motion.div
-      className="app-bg relative flex min-h-screen"
+      className="app-bg relative flex h-screen overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35 }}
@@ -66,12 +66,12 @@ export function AppShell({
       />
 
       <motion.div
-        className="app-main flex min-h-screen min-w-0 flex-1 flex-col"
+        className="app-main flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
         initial={{ opacity: 0, x: 12 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.4, delay: 0.05 }}
       >
-        <div className="app-content sticky top-0 z-20 px-4 pt-4 md:px-8 md:pt-6 lg:pl-0">
+        <div className="app-content z-20 px-4 pt-4 md:px-8 md:pt-6 lg:pl-0">
           <AppHeader activeSection={activeSection} subtitle={subtitle} />
         </div>
 

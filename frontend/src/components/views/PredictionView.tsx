@@ -8,6 +8,7 @@ import { MlMetricsSection } from "@/components/views/MlMetricsSection";
 import { RiskGauge } from "@/components/ui/RiskGauge";
 import { toast } from "sonner";
 import { api, type ApiPredictionResult } from "@/services/api";
+import { profesorService } from "@/services/profesorService";
 import { computePrediction, simulateScenario } from "@/lib/risk-engine";
 import { toRiskEngineStatus } from "@/lib/status";
 import type { ScenarioDeltas, Student } from "@/types/academic";
@@ -15,7 +16,8 @@ import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import { useAcademicFilters } from "@/hooks/useAcademicFilters";
 import { AcademicFiltersBar } from "@/components/academic/AcademicFiltersBar";
 import { FILTER_HINTS } from "@/constants/blenkir";
-import { SELECT_CLASS, INPUT_CLASS } from "@/lib/ui";
+import { useAuth } from "@/contexts/AuthProvider";
+import { SELECT_CLASS } from "@/lib/ui";
 
 function levelStyles(level: string) {
   return clsx(
@@ -30,19 +32,31 @@ type PredictionViewProps = {
   students: Student[];
   secciones?: SeccionOption[];
   useApi?: boolean;
+  /** Estudiantes ya filtrados por búsqueda del profesor */
+  studentsPreFiltered?: boolean;
+  hideAcademicFilters?: boolean;
 };
 
-export function PredictionView({ students, secciones = [], useApi = false }: PredictionViewProps) {
+export function PredictionView({
+  students,
+  secciones = [],
+  useApi = false,
+  studentsPreFiltered = false,
+  hideAcademicFilters = false,
+}: PredictionViewProps) {
+  const { isDocente } = useAuth();
   const { filters, updateFilter, resetFilters, grados, seccionOptions, filteredStudents } =
     useAcademicFilters(students, [], secciones);
+
+  const visibleStudents = studentsPreFiltered ? students : filteredStudents;
 
   const [studentId, setStudentId] = useState("");
 
   useEffect(() => {
-    if (filteredStudents.length && !filteredStudents.some((s) => s.id === studentId)) {
-      setStudentId(filteredStudents[0].id);
+    if (visibleStudents.length && !visibleStudents.some((s) => s.id === studentId)) {
+      setStudentId(visibleStudents[0].id);
     }
-  }, [filteredStudents, studentId]);
+  }, [visibleStudents, studentId]);
   const [deltaPromedio, setDeltaPromedio] = useState(0);
   const [deltaAsistencia, setDeltaAsistencia] = useState(0);
   const [deltaLms, setDeltaLms] = useState(0);
@@ -55,8 +69,8 @@ export function PredictionView({ students, secciones = [], useApi = false }: Pre
   const [apiLoading, setApiLoading] = useState(false);
 
   const student = useMemo(
-    () => filteredStudents.find((s) => s.id === studentId) ?? filteredStudents[0],
-    [filteredStudents, studentId],
+    () => visibleStudents.find((s) => s.id === studentId) ?? visibleStudents[0],
+    [visibleStudents, studentId],
   );
 
   const base = useMemo(() => {
@@ -92,7 +106,9 @@ export function PredictionView({ students, secciones = [], useApi = false }: Pre
     setApiLoading(true);
     setApiResult(null);
     try {
-      const res = await api.predict(student.id);
+      const res = isDocente
+        ? await profesorService.predict(student.id)
+        : await api.predict(student.id);
       setApiResult({
         prediction: res.prediction,
         source: res.source,
@@ -100,8 +116,8 @@ export function PredictionView({ students, secciones = [], useApi = false }: Pre
       });
       toast.success(
         res.alert
-          ? `Predicción guardada — alerta temprana generada (${res.source})`
-          : `Predicción guardada (${res.source})`,
+          ? "Predicción generada correctamente — alerta temprana registrada."
+          : "Predicción generada correctamente.",
       );
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error en predicción");
@@ -115,7 +131,7 @@ export function PredictionView({ students, secciones = [], useApi = false }: Pre
     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
   };
 
-  if (!filters.seccionId) {
+  if (!studentsPreFiltered && !filters.seccionId) {
     return (
       <div className="space-y-4">
         <AcademicFiltersBar
@@ -132,31 +148,46 @@ export function PredictionView({ students, secciones = [], useApi = false }: Pre
   }
 
   if (!student || !base || !simulated) {
+    if (studentsPreFiltered) {
+      return (
+        <p className="text-sm text-[var(--text-muted)]">{FILTER_HINTS.noPredictionData}</p>
+      );
+    }
     return (
       <div className="space-y-4">
-        <AcademicFiltersBar
-          filters={filters}
-          onChange={updateFilter}
-          onReset={resetFilters}
-          grados={grados}
-          secciones={seccionOptions}
-          show={{ grado: true, seccion: true }}
-        />
-        <p className="text-sm text-[var(--text-muted)]">{FILTER_HINTS.noStudents}</p>
+        {!hideAcademicFilters ? (
+          <AcademicFiltersBar
+            filters={filters}
+            onChange={updateFilter}
+            onReset={resetFilters}
+            grados={grados}
+            secciones={seccionOptions}
+            show={{ grado: true, seccion: true }}
+          />
+        ) : null}
+        <p className="text-sm text-[var(--text-muted)]">
+          {visibleStudents.length === 0
+            ? isDocente
+              ? FILTER_HINTS.noStudentsProfesor
+              : FILTER_HINTS.noStudents
+            : FILTER_HINTS.noPredictionData}
+        </p>
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <AcademicFiltersBar
-        filters={filters}
-        onChange={updateFilter}
-        onReset={resetFilters}
-        grados={grados}
-        secciones={seccionOptions}
-        show={{ grado: true, seccion: true, search: true }}
-      />
+      {!hideAcademicFilters ? (
+        <AcademicFiltersBar
+          filters={filters}
+          onChange={updateFilter}
+          onReset={resetFilters}
+          grados={grados}
+          secciones={seccionOptions}
+          show={{ grado: true, seccion: true, search: true }}
+        />
+      ) : null}
       <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -181,7 +212,7 @@ export function PredictionView({ students, secciones = [], useApi = false }: Pre
               setTareasExtra(0);
             }}
           >
-            {filteredStudents.map((s) => (
+            {visibleStudents.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.nombres} {s.apellidos}
               </option>

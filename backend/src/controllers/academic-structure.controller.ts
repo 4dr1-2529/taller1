@@ -2,6 +2,7 @@ import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { toDbId, idToString } from "../utils/ids.js";
+import { getTeacherIdFromUser, getTeacherSectionIds } from "../utils/teacher-scope.js";
 
 export async function listNiveles(_req: Request, res: Response, next: NextFunction) {
   try {
@@ -25,8 +26,21 @@ export async function listNiveles(_req: Request, res: Response, next: NextFuncti
 export async function listSecciones(req: Request, res: Response, next: NextFunction) {
   try {
     const gradoId = req.query.gradoId as string | undefined;
+    let sectionFilter: { id: { in: bigint[] } } | undefined;
+    if (req.user?.role === "docente") {
+      const teacherId = await getTeacherIdFromUser(req.user.sub);
+      const sectionIds = teacherId ? await getTeacherSectionIds(teacherId) : [];
+      if (!sectionIds.length) {
+        return sendSuccess(res, { items: [] });
+      }
+      sectionFilter = { id: { in: sectionIds } };
+    }
     const items = await prisma.seccion.findMany({
-      where: { activo: true, ...(gradoId ? { gradoId: toDbId(gradoId) } : {}) },
+      where: {
+        activo: true,
+        ...sectionFilter,
+        ...(gradoId ? { gradoId: toDbId(gradoId) } : {}),
+      },
       include: {
         grado: { include: { nivel: true } },
         _count: { select: { estudiantes: true } },

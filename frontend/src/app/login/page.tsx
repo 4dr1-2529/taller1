@@ -10,12 +10,12 @@ import {
   EyeOff,
   Sparkles,
   Shield,
-  BarChart3,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthProvider";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { BlenkirLogo } from "@/components/branding/BlenkirLogo";
+import { validateEmail, VALIDATION_MSG } from "@/lib/validation";
 
 export default function LoginPage() {
   const { login, isAuthenticated, loading: authLoading } = useAuth();
@@ -41,9 +41,9 @@ export default function LoginPage() {
 
   function validate(): boolean {
     const newErrors: { email?: string; password?: string } = {};
-    if (!email) newErrors.email = "El correo es requerido";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Correo inválido";
-    if (!password) newErrors.password = "La contraseña es requerida";
+    const emailErr = validateEmail(email, true);
+    if (emailErr) newErrors.email = emailErr;
+    if (!password) newErrors.password = VALIDATION_MSG.required;
     else if (password.length < 6) newErrors.password = "Mínimo 6 caracteres";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

@@ -5,6 +5,7 @@ import { ClipboardList, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { useAuth } from "@/contexts/AuthProvider";
+import { FILTER_HINTS } from "@/constants/blenkir";
 import type { Course, Student, Teacher } from "@/types/academic";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import { useAcademicFilters } from "@/hooks/useAcademicFilters";
@@ -15,18 +16,11 @@ import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { INPUT_CLASS } from "@/lib/ui";
-import { FILTER_HINTS } from "@/constants/blenkir";
-import {
-  notaEstado,
-  parseGradoNumero,
-  parseSeccionLetra,
-  salónLabel,
-  teachersForSelect,
-} from "@/lib/student-filters";
+import { notaEstado, parseGradoNumero, parseSeccionLetra, salónLabel } from "@/lib/student-filters";
+import { GradeInput, ObservacionInput } from "@/components/ui/ValidatedInputs";
 import {
   type FieldErrors,
   firstError,
-  sanitizeGradeInput,
   validateGradeForm,
   parseGrade,
   clearFieldError,
@@ -39,7 +33,6 @@ type GradeRow = {
   periodo: string;
   bimestre: number;
   nota: number;
-  observacion?: string | null;
   student?: { codigo: string; nombres: string; apellidos: string };
   course?: { codigo: string; nombre: string };
 };
@@ -52,14 +45,11 @@ type GradesViewProps = {
 };
 
 export function GradesView({ students, courses, teachers, secciones }: GradesViewProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isDocente } = useAuth();
   const [items, setItems] = useState<GradeRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     studentId: "",
-    courseId: "",
-    periodo: "2026-I",
-    bimestre: "1",
     nota: "",
     observacion: "",
   });
@@ -75,52 +65,64 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
     filteredCourses,
   } = useAcademicFilters(students, courses, secciones, teachers);
 
-  const studentMap = useMemo(() => new Map(students.map((s) => [s.id, s])), [students]);
+  const filtersReady = Boolean(
+    filters.gradoId && filters.seccionId && filters.courseId && filters.bimestre,
+  );
 
-  const displayRows = useMemo(() => {
-    const ids = new Set(filteredStudents.map((s) => s.id));
-    return items.filter((g) => {
-      if (!ids.has(g.studentId)) return false;
-      if (filters.courseId && g.courseId !== filters.courseId) return false;
-      if (filters.bimestre && String(g.bimestre) !== filters.bimestre) return false;
-      return true;
-    });
-  }, [items, filteredStudents, filters.courseId, filters.bimestre]);
+  useEffect(() => {
+    if (filters.bimestre) {
+      setForm((p) => ({ ...p, studentId: "" }));
+    }
+  }, [filters.seccionId, filters.courseId, filters.bimestre]);
+
+  const gradeByStudent = useMemo(() => {
+    const map = new Map<string, GradeRow>();
+    for (const g of items) {
+      if (filters.courseId && g.courseId !== filters.courseId) continue;
+      if (filters.bimestre && String(g.bimestre) !== filters.bimestre) continue;
+      map.set(g.studentId, g);
+    }
+    return map;
+  }, [items, filters.courseId, filters.bimestre]);
 
   const summary = useMemo(() => {
-    const notas = displayRows.map((r) => r.nota);
-    const avg = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
     let aprob = 0;
     let riesgo = 0;
     let desap = 0;
     for (const s of filteredStudents) {
-      const e = notaEstado(s.metrics.promedioGeneral);
+      const g = gradeByStudent.get(s.id);
+      const ref = g?.nota ?? s.metrics.promedioGeneral;
+      const e = notaEstado(ref);
       if (e === "Aprobado") aprob++;
       else if (e === "En riesgo") riesgo++;
       else desap++;
     }
+    const notas = [...gradeByStudent.values()].map((g) => g.nota);
+    const avg = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
     return {
       total: filteredStudents.length,
-      registros: displayRows.length,
+      conNota: notas.length,
       promedio: avg.toFixed(1),
       aprob,
       riesgo,
       desap,
     };
-  }, [displayRows, filteredStudents]);
+  }, [filteredStudents, gradeByStudent]);
 
   const load = useCallback(async () => {
     if (!api.hasToken) return;
     setLoading(true);
     try {
-      const res = await api.getGrades();
+      const res = isDocente
+        ? await api.getProfesorGrades(undefined, filters.courseId || undefined)
+        : await api.getGrades(undefined, filters.courseId || undefined);
       setItems(res.items as GradeRow[]);
     } catch {
       setItems([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters.courseId, isDocente]);
 
   useEffect(() => {
     if (isAuthenticated) void load();
@@ -138,11 +140,19 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!filters.seccionId && !form.studentId) {
-      toast.error(FILTER_HINTS.selectSeccion);
+    if (!filtersReady) {
+      toast.error("Seleccione grado, sección, curso y bimestre");
       return;
     }
-    const nextErrors = validateGradeForm(form);
+    const payload = {
+      studentId: form.studentId,
+      courseId: filters.courseId,
+      periodo: "2026-I",
+      bimestre: filters.bimestre,
+      nota: form.nota,
+      observacion: form.observacion,
+    };
+    const nextErrors = validateGradeForm(payload);
     setErrors(nextErrors);
     const msg = firstError(nextErrors);
     if (msg) {
@@ -157,25 +167,19 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
     try {
       await api.createGrade({
         studentId: form.studentId,
-        courseId: form.courseId,
-        periodo: form.periodo,
-        bimestre: Number(form.bimestre),
+        courseId: filters.courseId,
+        periodo: payload.periodo,
+        bimestre: Number(filters.bimestre),
         nota,
         observacion: form.observacion || undefined,
       });
-      toast.success("Nota registrada correctamente");
+      toast.success("Nota registrada");
       setForm((p) => ({ ...p, nota: "", observacion: "" }));
       void load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al guardar nota");
     }
   }
-
-  const coursesForForm = useMemo(() => {
-    const sel = students.find((s) => s.id === form.studentId);
-    if (!sel?.seccionId) return filteredCourses;
-    return filteredCourses.filter((c) => !c.seccionId || c.seccionId === sel.seccionId);
-  }, [form.studentId, filteredCourses, students]);
 
   return (
     <div className="space-y-6">
@@ -186,7 +190,7 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
         <div>
           <h2 className="text-xl font-bold text-[var(--text-primary)]">Registro de notas</h2>
           <p className="text-sm text-[var(--text-secondary)]">
-            Filtre por grado, sección y salón · escala vigente 0–20
+            Grado → sección → curso → bimestre → alumnos del salón
           </p>
         </div>
       </div>
@@ -198,39 +202,38 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
         grados={grados}
         secciones={seccionOptions}
         courses={filteredCourses.map((c) => ({ id: c.id, nombre: c.nombre }))}
-        teachers={teachersForSelect(teachers)}
+        teachers={[]}
         show={{ grado: true, seccion: true, course: true, bimestre: true, search: true }}
       />
 
       <SummaryStatsRow
         stats={[
-          { label: "Estudiantes (filtro)", value: summary.total, tone: "brand" },
-          { label: "Registros notas", value: summary.registros },
-          { label: "Promedio salón", value: summary.promedio },
+          { label: "Alumnos salón", value: summary.total, tone: "brand" },
+          { label: "Con nota (bimestre)", value: summary.conNota },
+          { label: "Promedio curso", value: summary.promedio },
           { label: "Aprobados", value: summary.aprob, tone: "success" },
           { label: "En riesgo", value: summary.riesgo, tone: "warning" },
           { label: "Desaprobados", value: summary.desap, tone: "danger" },
         ]}
       />
 
-      {!filters.seccionId ? (
+      {!filtersReady ? (
         <p className="rounded-lg border border-[var(--brand-navy)]/20 bg-[var(--accent-muted)] px-4 py-3 text-sm text-[var(--text-secondary)]">
-          {FILTER_HINTS.selectSeccion} Los estudiantes del salón se cargan al elegir la sección.
+          Seleccione grado, sección, curso y bimestre para listar a los alumnos matriculados en el
+          salón.
         </p>
-      ) : null}
-
-      {filters.seccionId && filteredStudents.length === 0 ? (
+      ) : filteredStudents.length === 0 ? (
         <EmptyState
           title="Sin estudiantes en este salón"
-          description={FILTER_HINTS.noStudents}
+          description={isDocente ? FILTER_HINTS.noStudentsProfesor : FILTER_HINTS.noStudents}
         />
-      ) : filteredStudents.length > 0 ? (
+      ) : (
         <div className="grid gap-6 xl:grid-cols-3">
           <PageSection
             variant="form"
             icon={ClipboardList}
             title="Registrar nota"
-            description="Complete estudiante, curso y bimestre. El promedio se actualiza en el backend."
+            description={`${filteredCourses.find((c) => c.id === filters.courseId)?.nombre ?? "Curso"} · Bimestre ${filters.bimestre}`}
           >
             <form className="form-grid" onSubmit={(e) => void handleSubmit(e)}>
               <FormField label="Estudiante" className="form-grid-full" error={errors.studentId}>
@@ -239,7 +242,7 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
                   value={form.studentId}
                   onChange={(e) => {
                     setErrors((p) => clearFieldError(p, "studentId"));
-                    setForm((p) => ({ ...p, studentId: e.target.value, courseId: "" }));
+                    setForm((p) => ({ ...p, studentId: e.target.value }));
                   }}
                   required
                 >
@@ -251,48 +254,24 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
                   ))}
                 </select>
               </FormField>
-              <FormField label="Curso" className="form-grid-full" error={errors.courseId}>
-                <select
-                  className={INPUT_CLASS}
-                  value={form.courseId}
-                  onChange={(e) => {
-                    setErrors((p) => clearFieldError(p, "courseId"));
-                    setForm((p) => ({ ...p, courseId: e.target.value }));
-                  }}
-                  required
-                  disabled={!form.studentId}
-                >
-                  <option value="">Seleccione curso</option>
-                  {coursesForForm.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nombre}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
-              <FormField label="Bimestre">
-                <select
-                  className={INPUT_CLASS}
-                  value={form.bimestre}
-                  onChange={(e) => setForm((p) => ({ ...p, bimestre: e.target.value }))}
-                >
-                  {[1, 2, 3, 4].map((b) => (
-                    <option key={b} value={b}>
-                      Bimestre {b}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
               <FormField label="Nota (0–20)" error={errors.nota}>
-                <input
-                  className={INPUT_CLASS}
-                  inputMode="decimal"
+                <GradeInput
                   value={form.nota}
-                  onChange={(e) => {
+                  onValueChange={(nota) => {
                     setErrors((p) => clearFieldError(p, "nota"));
-                    setForm((p) => ({ ...p, nota: sanitizeGradeInput(e.target.value) }));
+                    setForm((p) => ({ ...p, nota }));
                   }}
                   required
+                />
+              </FormField>
+              <FormField label="Observación (opcional)" className="form-grid-full" error={errors.observacion}>
+                <ObservacionInput
+                  placeholder="Solo letras, sin números"
+                  value={form.observacion}
+                  onValueChange={(observacion) => {
+                    setErrors((p) => clearFieldError(p, "observacion"));
+                    setForm((p) => ({ ...p, observacion }));
+                  }}
                 />
               </FormField>
               <button type="submit" className="btn-primary form-grid-full">
@@ -303,57 +282,51 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
 
           <div className="xl:col-span-2">
             <DataTablePanel
-              title="Notas por salón"
-              description={loading ? "Cargando…" : `${displayRows.length} registro(s)`}
-              isEmpty={!loading && displayRows.length === 0}
-              emptyMessage={FILTER_HINTS.noGrades}
+              title="Alumnos del salón"
+              description={loading ? "Cargando…" : `${filteredStudents.length} estudiante(s)`}
+              isEmpty={false}
             >
               <TableWrap>
                 <thead>
                   <tr>
                     <th>Código</th>
                     <th>Estudiante</th>
-                    <th>Grado</th>
-                    <th>Sección</th>
                     <th>Salón</th>
-                    <th>Curso</th>
-                    <th>Bim.</th>
-                    <th>Nota</th>
+                    <th>Nota bimestre</th>
                     <th>Estado</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {displayRows.map((g) => {
-                    const st = studentMap.get(g.studentId);
-                    const grado = st ? parseGradoNumero(st.nivel) : null;
-                    const sec = st ? parseSeccionLetra(st.nivel) : "";
-                    const estado = notaEstado(g.nota, st?.metrics.promedioGeneral);
+                  {filteredStudents.map((s) => {
+                    const g = gradeByStudent.get(s.id);
+                    const grado = parseGradoNumero(s.nivel);
+                    const sec = parseSeccionLetra(s.nivel);
+                    const ref = g?.nota ?? null;
+                    const estado = ref != null ? notaEstado(ref) : "—";
                     return (
-                      <tr key={g.id}>
-                        <td className="font-mono text-xs">{g.student?.codigo ?? st?.codigo}</td>
+                      <tr key={s.id}>
+                        <td className="font-mono text-xs">{s.codigo}</td>
                         <td>
-                          {g.student
-                            ? `${g.student.nombres} ${g.student.apellidos}`
-                            : "—"}
+                          {s.nombres} {s.apellidos}
                         </td>
-                        <td>{grado ? `${grado}°` : "—"}</td>
-                        <td>{sec || "—"}</td>
                         <td>{salónLabel(grado, sec)}</td>
-                        <td>{g.course?.nombre ?? "—"}</td>
-                        <td>{g.bimestre}</td>
-                        <td className="font-semibold">{g.nota.toFixed(1)}</td>
+                        <td className="font-semibold">{ref != null ? ref.toFixed(1) : "—"}</td>
                         <td>
-                          <span
-                            className={
-                              estado === "Aprobado"
-                                ? "text-emerald-600"
-                                : estado === "En riesgo"
-                                  ? "text-amber-600"
-                                  : "text-rose-600"
-                            }
-                          >
-                            {estado}
-                          </span>
+                          {estado !== "—" ? (
+                            <span
+                              className={
+                                estado === "Aprobado"
+                                  ? "text-emerald-600"
+                                  : estado === "En riesgo"
+                                    ? "text-amber-600"
+                                    : "text-rose-600"
+                              }
+                            >
+                              {estado}
+                            </span>
+                          ) : (
+                            "—"
+                          )}
                         </td>
                       </tr>
                     );
@@ -363,7 +336,7 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
             </DataTablePanel>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
+import { deriveLmsEngagement } from "../utils/lms-engagement.js";
 
 export async function listStudents(req: Request, res: Response, next: NextFunction) {
   try {
@@ -35,6 +36,7 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
         include: {
           seccion: { include: { grado: { include: { nivel: true } } } },
           lmsActividades: { orderBy: { anioSemana: "asc" } },
+          lmsIndicadores: { take: 1, orderBy: { id: "desc" } },
           predicciones: { orderBy: { createdAt: "desc" }, take: 1 },
           alertas: { where: { estado: { in: ["nueva", "en_seguimiento"] } } },
         },
@@ -45,7 +47,10 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
     const items = rows.map((s) => ({
       ...s,
       id: idToString(s.id),
+      seccionId: s.seccionId ? idToString(s.seccionId) : null,
       lmsActivities: s.lmsActividades,
+      lmsEngagement: deriveLmsEngagement(s.lmsActividades, s.lmsIndicadores[0] ?? null),
+      lmsIndicador: s.lmsIndicadores[0] ?? null,
       predictions: s.predicciones,
       alerts: s.alertas,
     }));
@@ -102,7 +107,6 @@ export async function getStudent(req: Request, res: Response, next: NextFunction
       where: { id },
       include: {
         seccion: { include: { grado: { include: { nivel: true } } } },
-        inscripciones: { include: { course: { include: { cursoCatalogo: true } } } },
         calificaciones: { include: { cursoOferta: { include: { cursoCatalogo: true } }, periodo: true } },
         predicciones: { orderBy: { createdAt: "desc" }, take: 10, include: { factores: true } },
         lmsActividades: { orderBy: { anioSemana: "asc" } },
@@ -114,7 +118,6 @@ export async function getStudent(req: Request, res: Response, next: NextFunction
     sendSuccess(res, { student: {
         ...student,
         id: idToString(student.id),
-        enrollments: student.inscripciones,
         grades: student.calificaciones,
         lmsActivities: student.lmsActividades,
         predictions: student.predicciones,

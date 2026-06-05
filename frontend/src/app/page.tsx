@@ -6,11 +6,25 @@ import { AppShell } from "@/components/layout/AppShell";
 import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
 import { EmptyState } from "@/components/EmptyState";
 import { useAcademicStructure } from "@/hooks/useAcademicStructure";
+import { useProfessorStructure } from "@/hooks/useProfessorStructure";
+import { profesorService } from "@/services/profesorService";
+import { directorService } from "@/services/directorService";
+import { estudianteService } from "@/services/estudianteService";
+import { StudentDashboard } from "@/components/student/StudentDashboard";
+import { StudentGradesView } from "@/components/student/StudentGradesView";
+import { StudentAttendanceView } from "@/components/student/StudentAttendanceView";
+import { StudentLMSView } from "@/components/student/StudentLMSView";
+import { StudentPredictionView } from "@/components/student/StudentPredictionView";
+import { StudentMensajeriaView } from "@/components/student/StudentMensajeriaView";
+import { ProfessorStudentsView } from "@/components/views/ProfessorStudentsView";
 import { AlertsView } from "@/components/views/AlertsView";
+import { ProfessorAlertsView } from "@/components/views/ProfessorAlertsView";
 import { MensajeriaAcademicaView } from "@/components/views/MensajeriaAcademicaView";
-import { EnrollmentsView, type NewEnrollmentForm } from "@/components/views/EnrollmentsView";
+import { EnrollmentsView, type NewMatriculaForm } from "@/components/views/EnrollmentsView";
 import { LMSView } from "@/components/views/LMSView";
+import { ProfessorLMSView } from "@/components/views/ProfessorLMSView";
 import { PredictionView } from "@/components/views/PredictionView";
+import { ProfessorPredictionView } from "@/components/views/ProfessorPredictionView";
 import { PredictionHistoryView } from "@/components/views/PredictionHistoryView";
 import { ReportsView } from "@/components/views/ReportsView";
 import { defaultStudentForm, StudentsView, type NewStudentForm } from "@/components/views/StudentsView";
@@ -25,8 +39,10 @@ import {
   type NewCourseForm,
 } from "@/components/views/CoursesView";
 import { GradesView } from "@/components/views/GradesView";
+import { ProfessorGradesView } from "@/components/views/ProfessorGradesView";
 import { AttendanceView } from "@/components/views/AttendanceView";
-import { APP_SECTIONS, type AppSection } from "@/data/navigation";
+import { ProfessorAttendanceView } from "@/components/views/ProfessorAttendanceView";
+import { type AppSection } from "@/data/navigation";
 import { earlyAlertCount } from "@/lib/aggregates";
 import { useAcademicData } from "@/hooks/useAcademicData";
 import { CardSkeleton } from "@/components/ui/Skeleton";
@@ -71,13 +87,31 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
   ],
 };
 
-const initialEnrollment: NewEnrollmentForm = {
+const initialMatricula: NewMatriculaForm = {
   estudianteId: "",
   seccionId: "",
   anioLectivoId: "",
 };
 
-function sectionSubtitle(section: AppSection): string {
+function sectionSubtitle(section: AppSection, role: string): string {
+  if (role === "estudiante") {
+    switch (section) {
+      case "Dashboard":
+        return "Resumen personal de tu rendimiento y riesgo académico.";
+      case "Notas":
+        return "Estas son tus notas registradas.";
+      case "Asistencia":
+        return "Este es tu historial de asistencia.";
+      case "Actividad LMS":
+        return "Esta es tu actividad LMS.";
+      case "Predicción":
+        return "Este es tu riesgo actual.";
+      case "Mensajería Académica":
+        return "Mensajes enviados a tu perfil.";
+      default:
+        return "";
+    }
+  }
   switch (section) {
     case "Dashboard":
       return "Indicadores de riesgo de deserción y rendimiento académico.";
@@ -112,6 +146,7 @@ function sectionSubtitle(section: AppSection): string {
 
 export default function Home() {
   const { user } = useAuth();
+  const isDocente = user?.role === "docente";
   const role = user?.role ?? "estudiante";
   const visibleSections = ROLE_SECTIONS[role] ?? ROLE_SECTIONS.estudiante;
 
@@ -120,7 +155,6 @@ export default function Home() {
     students,
     teachers,
     courses,
-    enrollments,
     matriculaStats,
     dataSource,
     loading,
@@ -132,17 +166,20 @@ export default function Home() {
     createTeacherAccount,
     addCourse,
     updateCourse,
-    addEnrollment,
+    addMatricula,
   } = useAcademicData();
-  const { secciones } = useAcademicStructure();
+  const { secciones: directorSecciones } = useAcademicStructure();
+  const { secciones: professorSecciones } = useProfessorStructure();
+  const secciones = role === "docente" ? professorSecciones : directorSecciones;
 
   const [newStudent, setNewStudent] = useState<NewStudentForm>(defaultStudentForm);
   const [newTeacher, setNewTeacher] = useState<NewTeacherForm>(defaultTeacherForm);
   const [newCourse, setNewCourse] = useState<NewCourseForm>(defaultCourseForm);
-  const [enrollmentForm, setEnrollmentForm] = useState<NewEnrollmentForm>(initialEnrollment);
+  const [matriculaForm, setMatriculaForm] = useState<NewMatriculaForm>(initialMatricula);
 
   const useApi = dataSource === "api";
   const isDirector = role === "admin";
+  const isEstudiante = role === "estudiante";
   const [alertCount, setAlertCount] = useState(0);
 
   useEffect(() => {
@@ -156,11 +193,25 @@ export default function Home() {
       setAlertCount(earlyAlertCount(students));
       return;
     }
-    void api
+    if (isDocente) {
+      void profesorService
+        .getDashboard()
+        .then((d) => setAlertCount(d.kpis.openAlerts))
+        .catch(() => setAlertCount(0));
+      return;
+    }
+    if (isEstudiante) {
+      void estudianteService
+        .getDashboard()
+        .then((d) => setAlertCount(d.kpis.alertasActivas))
+        .catch(() => setAlertCount(0));
+      return;
+    }
+    void directorService
       .getAlerts()
       .then((r) => setAlertCount(r.total ?? r.items.length))
       .catch(() => setAlertCount(earlyAlertCount(students)));
-  }, [useApi, students.length, loading]);
+  }, [useApi, students, loading, isDocente, isEstudiante]);
 
   async function handleAddStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -169,10 +220,10 @@ export default function Home() {
     setNewStudent(defaultStudentForm);
   }
 
-  async function handleAddEnrollment(event: FormEvent<HTMLFormElement>) {
+  async function handleAddMatricula(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    await addEnrollment(enrollmentForm);
-    setEnrollmentForm({ ...enrollmentForm, seccionId: enrollmentForm.seccionId });
+    await addMatricula(matriculaForm);
+    setMatriculaForm({ ...matriculaForm, estudianteId: "" });
   }
 
   async function handleAddTeacher(event: FormEvent<HTMLFormElement>) {
@@ -190,12 +241,13 @@ export default function Home() {
       nombre: newCourse.nombre,
       profesorId,
       seccionId: newCourse.seccionId,
+      gradoId: newCourse.gradoId,
     });
     setNewCourse({ ...defaultCourseForm, profesorId: user?.teacherId ?? "" });
   }
 
   function renderSection() {
-    if (loading && dataSource === "api") {
+    if (loading && dataSource === "api" && !isEstudiante && !isDocente) {
       return (
         <div className="grid gap-4 md:grid-cols-2">
           <CardSkeleton />
@@ -206,12 +258,13 @@ export default function Home() {
 
     switch (activeSection) {
       case "Dashboard":
-        return useApi || students.length > 0 || role === "estudiante" ? (
+        if (isEstudiante) return <StudentDashboard />;
+        return useApi || students.length > 0 ? (
           <RoleDashboard
             role={role}
             students={students}
             courses={courses}
-            enrollments={enrollments}
+            matriculaStats={matriculaStats}
             useApi={useApi}
           />
         ) : (
@@ -222,7 +275,9 @@ export default function Home() {
           />
         );
       case "Estudiantes":
-        return (
+        return role === "docente" ? (
+          <ProfessorStudentsView courses={courses} secciones={secciones} />
+        ) : (
           <StudentsView
             students={students}
             secciones={secciones}
@@ -256,7 +311,7 @@ export default function Home() {
             setForm={setNewCourse}
             onSubmit={handleAddCourse}
             onReassignProfesor={(courseId, profesorId) => updateCourse(courseId, { profesorId })}
-            canEdit={isDirector || role === "docente"}
+            canEdit={isDirector}
             canReassign={isDirector}
             lockProfesorId={role === "docente" ? user?.teacherId ?? undefined : undefined}
           />
@@ -267,22 +322,23 @@ export default function Home() {
             students={students}
             secciones={secciones}
             matriculaStats={matriculaStats}
-            form={enrollmentForm}
-            setForm={setEnrollmentForm}
-            onAdd={handleAddEnrollment}
+            form={matriculaForm}
+            setForm={setMatriculaForm}
+            onAdd={handleAddMatricula}
           />
         );
       case "Notas":
-        return (
-          <GradesView
-            students={students}
-            courses={courses}
-            teachers={teachers}
-            secciones={secciones}
-          />
+        if (isEstudiante) return <StudentGradesView />;
+        return role === "docente" ? (
+          <ProfessorGradesView courses={courses} secciones={secciones} />
+        ) : (
+          <GradesView students={students} courses={courses} teachers={teachers} secciones={secciones} />
         );
       case "Asistencia":
-        return (
+        if (isEstudiante) return <StudentAttendanceView />;
+        return role === "docente" ? (
+          <ProfessorAttendanceView courses={courses} secciones={secciones} />
+        ) : (
           <AttendanceView
             students={students}
             courses={courses}
@@ -291,19 +347,38 @@ export default function Home() {
           />
         );
       case "Actividad LMS":
-        return <LMSView students={students} secciones={secciones} />;
+        if (isEstudiante) return <StudentLMSView />;
+        return role === "docente" ? (
+          <ProfessorLMSView courses={courses} secciones={secciones} />
+        ) : (
+          <LMSView students={students} secciones={secciones} />
+        );
       case "Predicción":
-        return <PredictionView students={students} secciones={secciones} useApi={useApi} />;
+        if (isEstudiante) return <StudentPredictionView />;
+        return role === "docente" ? (
+          <ProfessorPredictionView courses={courses} secciones={secciones} />
+        ) : (
+          <PredictionView students={students} secciones={secciones} useApi={useApi} />
+        );
       case "Alertas":
-        return (
+        return role === "docente" ? (
+          <ProfessorAlertsView courses={courses} secciones={secciones} />
+        ) : (
           <AlertsView students={students} teachers={teachers} secciones={secciones} useApi={useApi} />
         );
       case "Historial predicciones":
-        return role === "estudiante" ? null : <PredictionHistoryView students={students} />;
+        return role === "estudiante" ? null : (
+          <PredictionHistoryView
+            students={students}
+            secciones={secciones}
+            courses={courses}
+            professorMode={role === "docente"}
+          />
+        );
       case "Mensajería Académica":
-        return <MensajeriaAcademicaView />;
+        return isEstudiante ? <StudentMensajeriaView /> : <MensajeriaAcademicaView />;
       case "Reportes":
-        return <ReportsView students={students} courses={courses} enrollments={enrollments} />;
+        return <ReportsView students={students} courses={courses} />;
       default:
         return null;
     }
@@ -315,7 +390,7 @@ export default function Home() {
       activeSection={activeSection}
       onSelectSection={setActiveSection}
       alertCount={alertCount}
-      subtitle={sectionSubtitle(activeSection)}
+      subtitle={sectionSubtitle(activeSection, role)}
       dataSource={dataSource}
       loading={loading}
       onRefresh={refresh}

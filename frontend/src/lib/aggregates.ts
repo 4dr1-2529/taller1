@@ -1,4 +1,4 @@
-import type { Course, Enrollment, RiskFactor, RiskHistoryPoint, RiskLevel, Student } from "@/types/academic";
+import type { Course, RiskFactor, RiskHistoryPoint, RiskLevel, Student } from "@/types/academic";
 import { computePrediction } from "@/lib/risk-engine";
 import { toRiskEngineStatus } from "@/lib/status";
 
@@ -42,7 +42,6 @@ export function globalRiskScore(students: Student[]): number {
   return Math.round((sum / withPred.length) * 10) / 10;
 }
 
-/** Historial mínimo a partir del riesgo actual (sin datos inventados). */
 export function buildRiskHistory(students: Student[]): RiskHistoryPoint[] {
   if (!students.length) return [];
   const now = new Date();
@@ -74,8 +73,7 @@ export function riskTrendLabel(history: RiskHistoryPoint[]): {
 
 export function averageAttendance(students: Student[]): number {
   if (!students.length) return 0;
-  const v =
-    students.reduce((a, s) => a + s.metrics.asistenciaGeneral, 0) / students.length;
+  const v = students.reduce((a, s) => a + s.metrics.asistenciaGeneral, 0) / students.length;
   return Math.round(v * 10) / 10;
 }
 
@@ -89,6 +87,12 @@ export function averageLmsParticipation(students: Student[]): number {
   return Math.round(v * 10) / 10;
 }
 
+/** Estudiantes matriculados en el salón del curso (misma sección). */
+export function studentsInCourseSalon(students: Student[], course: Course): Student[] {
+  if (!course.seccionId) return students;
+  return students.filter((s) => s.seccionId === course.seccionId);
+}
+
 export type CourseRiskRow = {
   courseId: string;
   nombre: string;
@@ -96,41 +100,30 @@ export type CourseRiskRow = {
   estudiantes: number;
 };
 
-export function riskByCourse(
-  students: Student[],
-  courses: Course[],
-  enrollments: Enrollment[],
-): CourseRiskRow[] {
-  const studentMap = new Map(students.map((s) => [s.id, s]));
-  const byCourse = new Map<string, number[]>();
-  for (const e of enrollments) {
-    const st = studentMap.get(e.studentId);
-    if (!st) continue;
-    const pred = computePrediction(st.metrics, toRiskEngineStatus(st.estado));
-    if (!byCourse.has(e.courseId)) byCourse.set(e.courseId, []);
-    byCourse.get(e.courseId)!.push(pred.score);
-  }
+export function riskByCourse(students: Student[], courses: Course[]): CourseRiskRow[] {
   return courses.map((c) => {
-    const scores = byCourse.get(c.id) ?? [];
+    const inSalon = studentsInCourseSalon(students, c);
+    const scores = attachPredictions(inSalon).map((s) => s.prediction.score);
     const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
     return {
       courseId: c.id,
       nombre: c.nombre,
       riesgoPromedio: Math.round(avg * 10) / 10,
-      estudiantes: scores.length,
+      estudiantes: inSalon.length,
     };
   });
 }
 
 export function failCountByCourse(
+  students: Student[],
   courses: Course[],
-  enrollments: Enrollment[],
   umbral = 11,
 ): { courseId: string; nombre: string; desaprobados: number }[] {
   return courses.map((c) => ({
     courseId: c.id,
     nombre: c.nombre,
-    desaprobados: enrollments.filter((e) => e.courseId === c.id && e.promedio < umbral).length,
+    desaprobados: studentsInCourseSalon(students, c).filter((s) => s.metrics.promedioGeneral < umbral)
+      .length,
   }));
 }
 
@@ -157,15 +150,13 @@ export type AtRiskByCourseRow = {
 export function atRiskStudentsByCourse(
   students: Student[],
   courses: Course[],
-  enrollments: Enrollment[],
   minScore = 41,
 ): AtRiskByCourseRow[] {
-  const predList = attachPredictions(students);
-  const predMap = new Map(predList.map((s) => [s.id, s]));
+  const predMap = new Map(attachPredictions(students).map((s) => [s.id, s]));
   return courses.map((c) => {
-    const inCourse = enrollments.filter((e) => e.courseId === c.id);
-    const studentsAtRisk = inCourse
-      .map((e) => predMap.get(e.studentId))
+    const inSalon = studentsInCourseSalon(students, c);
+    const studentsAtRisk = inSalon
+      .map((s) => predMap.get(s.id))
       .filter((s): s is StudentWithPrediction => !!s)
       .filter((s) => s.prediction.score >= minScore)
       .map((s) => ({

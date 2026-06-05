@@ -4,14 +4,10 @@ import { type FormEvent, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 import {
-  BookOpen,
   KeyRound,
-  Mail,
   Pencil,
-  Phone,
   Plus,
   Search,
-  Trash2,
   UserPlus,
   UserX,
   Users,
@@ -21,13 +17,11 @@ import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import type { Teacher } from "@/types/academic";
 import { PageSection } from "@/components/ui/PageSection";
 import { INPUT_CLASS } from "@/lib/ui";
+import { CodigoInput, CourseNameInput, PersonNameInput, PhoneInput } from "@/components/ui/ValidatedInputs";
 import {
   PHONE_MAX_DIGITS,
   type FieldErrors,
   firstError,
-  onlyDigits,
-  sanitizeCodigo,
-  sanitizePersonName,
   validateTeacherForm,
   validateTeacherProfileFields,
   clearFieldError,
@@ -197,7 +191,7 @@ export function TeachersView({
               className="space-y-6"
               onSubmit={(e) => {
                 e.preventDefault();
-                const nextErrors = validateTeacherForm(form);
+                const nextErrors = validateTeacherForm({ ...form, cursos: form.cursos });
                 setFormErrors(nextErrors);
                 const msg = firstError(nextErrors);
                 if (msg) {
@@ -210,13 +204,12 @@ export function TeachersView({
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Código</span>
-                  <input
-                    className={INPUT_CLASS}
+                  <CodigoInput
                     placeholder="DOC-001"
                     value={form.codigo}
-                    onChange={(e) => {
+                    onValueChange={(codigo) => {
                       setFormErrors((p) => clearFieldError(p, "codigo"));
-                      setForm((p) => ({ ...p, codigo: sanitizeCodigo(e.target.value) }));
+                      setForm((p) => ({ ...p, codigo }));
                     }}
                     required
                   />
@@ -224,12 +217,11 @@ export function TeachersView({
                 </label>
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Nombres</span>
-                  <input
-                    className={INPUT_CLASS}
+                  <PersonNameInput
                     value={form.nombres}
-                    onChange={(e) => {
+                    onValueChange={(nombres) => {
                       setFormErrors((p) => clearFieldError(p, "nombres"));
-                      setForm((p) => ({ ...p, nombres: sanitizePersonName(e.target.value) }));
+                      setForm((p) => ({ ...p, nombres }));
                     }}
                     required
                   />
@@ -237,12 +229,11 @@ export function TeachersView({
                 </label>
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Apellidos</span>
-                  <input
-                    className={INPUT_CLASS}
+                  <PersonNameInput
                     value={form.apellidos}
-                    onChange={(e) => {
+                    onValueChange={(apellidos) => {
                       setFormErrors((p) => clearFieldError(p, "apellidos"));
-                      setForm((p) => ({ ...p, apellidos: sanitizePersonName(e.target.value) }));
+                      setForm((p) => ({ ...p, apellidos }));
                     }}
                     required
                   />
@@ -250,13 +241,12 @@ export function TeachersView({
                 </label>
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Especialidad</span>
-                  <input
-                    className={INPUT_CLASS}
+                  <PersonNameInput
                     placeholder="Matemática…"
                     value={form.especialidad}
-                    onChange={(e) => {
+                    onValueChange={(especialidad) => {
                       setFormErrors((p) => clearFieldError(p, "especialidad"));
-                      setForm((p) => ({ ...p, especialidad: sanitizePersonName(e.target.value) }));
+                      setForm((p) => ({ ...p, especialidad }));
                     }}
                     required
                   />
@@ -285,18 +275,12 @@ export function TeachersView({
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">
                     Teléfono ({PHONE_MAX_DIGITS} dígitos)
                   </span>
-                  <input
-                    className={INPUT_CLASS}
-                    inputMode="numeric"
-                    maxLength={PHONE_MAX_DIGITS}
+                  <PhoneInput
                     placeholder="987654321"
                     value={form.telefono}
-                    onChange={(e) => {
+                    onValueChange={(telefono) => {
                       setFormErrors((p) => clearFieldError(p, "telefono"));
-                      setForm((p) => ({
-                        ...p,
-                        telefono: onlyDigits(e.target.value, PHONE_MAX_DIGITS),
-                      }));
+                      setForm((p) => ({ ...p, telefono }));
                     }}
                   />
                   {formErrors.telefono ? <span className="mt-1 block text-xs text-rose-400">{formErrors.telefono}</span> : null}
@@ -397,30 +381,27 @@ export function TeachersView({
                   >
                     <p className="mb-3 text-sm font-semibold text-[var(--text-primary)]">Editar datos</p>
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <input
-                        className={INPUT_CLASS}
+                      <PersonNameInput
                         value={editForm.nombres}
-                        onChange={(e) => {
+                        onValueChange={(nombres) => {
                           setEditErrors((p) => clearFieldError(p, "nombres"));
-                          setEditForm({ ...editForm, nombres: sanitizePersonName(e.target.value) });
+                          setEditForm({ ...editForm, nombres });
                         }}
                         required
                       />
-                      <input
-                        className={INPUT_CLASS}
+                      <PersonNameInput
                         value={editForm.apellidos}
-                        onChange={(e) => {
+                        onValueChange={(apellidos) => {
                           setEditErrors((p) => clearFieldError(p, "apellidos"));
-                          setEditForm({ ...editForm, apellidos: sanitizePersonName(e.target.value) });
+                          setEditForm({ ...editForm, apellidos });
                         }}
                         required
                       />
-                      <input
-                        className={INPUT_CLASS}
+                      <PersonNameInput
                         value={editForm.especialidad}
-                        onChange={(e) => {
+                        onValueChange={(especialidad) => {
                           setEditErrors((p) => clearFieldError(p, "especialidad"));
-                          setEditForm({ ...editForm, especialidad: sanitizePersonName(e.target.value) });
+                          setEditForm({ ...editForm, especialidad });
                         }}
                         required
                       />
@@ -434,17 +415,11 @@ export function TeachersView({
                         }}
                         required
                       />
-                      <input
-                        className={INPUT_CLASS}
-                        inputMode="numeric"
-                        maxLength={PHONE_MAX_DIGITS}
+                      <PhoneInput
                         value={editForm.telefono}
-                        onChange={(e) => {
+                        onValueChange={(telefono) => {
                           setEditErrors((p) => clearFieldError(p, "telefono"));
-                          setEditForm({
-                            ...editForm,
-                            telefono: onlyDigits(e.target.value, PHONE_MAX_DIGITS),
-                          });
+                          setEditForm({ ...editForm, telefono });
                         }}
                       />
                     </div>
@@ -540,18 +515,16 @@ function CourseBlock({
             );
             return (
               <li key={i} className="grid gap-2 sm:grid-cols-5">
-                <input
-                  className={INPUT_CLASS}
+                <CodigoInput
                   placeholder="Código"
                   value={c.codigo}
-                  onChange={(e) => onChange(i, { codigo: sanitizeCodigo(e.target.value) })}
+                  onValueChange={(codigo) => onChange(i, { codigo })}
                   required
                 />
-                <input
-                  className={INPUT_CLASS}
+                <CourseNameInput
                   placeholder="Nombre"
                   value={c.nombre}
-                  onChange={(e) => onChange(i, { nombre: e.target.value })}
+                  onValueChange={(nombre) => onChange(i, { nombre })}
                   required
                 />
                 <select

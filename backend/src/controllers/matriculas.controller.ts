@@ -67,9 +67,9 @@ export async function listMatriculas(req: Request, res: Response, next: NextFunc
     const scope = await resolveStudentScope(req.user!);
     const seccionId = req.query.seccionId as string | undefined;
     const anioLectivoId = req.query.anioLectivoId as string | undefined;
-    const estado = req.query.estado as string | undefined;
+    const estado = (req.query.estado as string | undefined) ?? "activa";
     const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 50));
+    const limit = Math.min(800, Math.max(1, Number(req.query.limit) || 100));
     const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = {
@@ -188,15 +188,25 @@ export async function createMatricula(req: Request, res: Response, next: NextFun
 export async function matriculaStats(req: Request, res: Response, next: NextFunction) {
   try {
     const scope = await resolveStudentScope(req.user!);
-    const [total, activas, inscripcionesCurso] = await Promise.all([
-      prisma.matricula.count({ where: { estudiante: scope } }),
-      prisma.matricula.count({ where: { estudiante: scope, estado: "activa" } }),
-      prisma.enrollment.count({ where: { student: scope } }),
+    const anioActivo = await prisma.anioLectivo.findFirst({
+      where: { activo: true },
+      orderBy: { anio: "desc" },
+    });
+    const whereAnio = anioActivo
+      ? { estudiante: scope, anioLectivoId: anioActivo.id }
+      : { estudiante: scope };
+
+    const [activas, totalAnio, estudiantesActivos] = await Promise.all([
+      prisma.matricula.count({ where: { ...whereAnio, estado: "activa" } }),
+      prisma.matricula.count({ where: whereAnio }),
+      prisma.student.count({ where: { ...scope, activo: true } }),
     ]);
+
     sendSuccess(res, {
-      matriculasInstitucionales: total,
       matriculasActivas: activas,
-      inscripcionesCurso: inscripcionesCurso,
+      matriculasAnioLectivo: totalAnio,
+      estudiantesActivos,
+      anioLectivo: anioActivo?.nombre ?? null,
     });
   } catch (e) {
     next(e);

@@ -20,7 +20,7 @@ import {
   markRoomRead,
   sendMessage,
 } from "../controllers/messages.controller.js";
-import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
+import { resolveStudentScope } from "../utils/student-scope.js";
 import {
   listNiveles,
   listSecciones,
@@ -32,13 +32,41 @@ import { listUsers, createUser, updateUser, deleteUser, getAuditLogs, getSystemS
 import { listAttendance, createAttendance, bulkAttendance, updateAttendance, deleteAttendance } from "../controllers/attendance.controller.js";
 import { listMatriculas, createMatricula, matriculaStats } from "../controllers/matriculas.controller.js";
 import { listGrades, createGrade, deleteGrade } from "../controllers/grades.controller.js";
+import {
+  profesorDashboard,
+  profesorGrados,
+  profesorSecciones,
+  profesorCursos,
+  profesorEstudiantes,
+  profesorNotas,
+  profesorNotasPost,
+  profesorAsistencia,
+  profesorAsistenciaMasiva,
+  profesorLms,
+  profesorPredicciones,
+  profesorPrediccionesPost,
+  profesorHistorialPredicciones,
+  profesorAlertas,
+  profesorAlertaEstado,
+  misCursos,
+  misSecciones,
+  misEstudiantes,
+} from "../controllers/profesor.controller.js";
+import {
+  estudiantePerfil,
+  estudianteDashboard,
+  estudianteNotas,
+  estudianteAsistencia,
+  estudianteLms,
+  estudiantePrediccion,
+  estudiantePrediccionPost,
+  estudianteAlertas,
+  estudianteMensajes,
+} from "../controllers/estudiante.controller.js";
 import { listReports, createReport, deleteReport, saveDashboardSnapshot, getDashboardSnapshot, listStudentRisks, createStudentRisk, applyRecommendation } from "../controllers/reports.controller.js";
 import { prisma } from "../utils/prisma.js";
-import { enrollmentSchema } from "../validators/schemas.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
-import { courseDisplayName } from "../utils/course-label.js";
-import { AppError } from "../middleware/errorHandler.js";
 
 import { getMlMetrics } from "../services/ml-client.js";
 
@@ -59,9 +87,9 @@ router.get("/academic/anios-lectivos", authenticate, listAniosLectivos);
 router.post("/academic/secciones", authenticate, authorize("admin"), createSeccion);
 router.get("/academic/cursos-catalogo", authenticate, listCursosCatalogo);
 
-router.get("/students", authenticate, listStudents);
+router.get("/students", authenticate, authorize("admin", "docente"), listStudents);
 router.post("/students", authenticate, authorize("admin"), createStudent);
-router.get("/students/:id", authenticate, getStudent);
+router.get("/students/:id", authenticate, authorize("admin", "docente"), getStudent);
 router.put("/students/:id", authenticate, authorize("admin"), updateStudent);
 router.delete("/students/:id", authenticate, authorize("admin"), deleteStudent);
 
@@ -70,6 +98,35 @@ router.post("/teachers", authenticate, authorize("admin"), createTeacher);
 router.post("/teachers/:id/account", authenticate, authorize("admin"), createTeacherAccount);
 router.put("/teachers/:id", authenticate, authorize("admin"), updateTeacher);
 router.delete("/teachers/:id", authenticate, authorize("admin"), deleteTeacher);
+
+router.get("/profesor/dashboard", authenticate, authorize("docente"), profesorDashboard);
+router.get("/profesor/grados", authenticate, authorize("docente"), profesorGrados);
+router.get("/profesor/secciones", authenticate, authorize("docente"), profesorSecciones);
+router.get("/profesor/cursos", authenticate, authorize("docente"), profesorCursos);
+router.get("/profesor/estudiantes", authenticate, authorize("docente"), profesorEstudiantes);
+router.get("/profesor/notas", authenticate, authorize("docente"), profesorNotas);
+router.post("/profesor/notas", authenticate, authorize("docente"), profesorNotasPost);
+router.get("/profesor/asistencia", authenticate, authorize("docente"), profesorAsistencia);
+router.post("/profesor/asistencia/masiva", authenticate, authorize("docente"), profesorAsistenciaMasiva);
+router.get("/profesor/lms", authenticate, authorize("docente"), profesorLms);
+router.get("/profesor/predicciones", authenticate, authorize("docente"), profesorPredicciones);
+router.post("/profesor/predicciones", authenticate, authorize("docente"), profesorPrediccionesPost);
+router.get("/profesor/historial-predicciones", authenticate, authorize("docente"), profesorHistorialPredicciones);
+router.get("/profesor/alertas", authenticate, authorize("docente"), profesorAlertas);
+router.patch("/profesor/alertas/:id/estado", authenticate, authorize("docente"), profesorAlertaEstado);
+router.get("/profesor/mis-cursos", authenticate, authorize("docente"), misCursos);
+router.get("/profesor/mis-secciones", authenticate, authorize("docente"), misSecciones);
+router.get("/profesor/mis-estudiantes", authenticate, authorize("docente"), misEstudiantes);
+
+router.get("/estudiante/perfil", authenticate, authorize("estudiante"), estudiantePerfil);
+router.get("/estudiante/dashboard", authenticate, authorize("estudiante"), estudianteDashboard);
+router.get("/estudiante/notas", authenticate, authorize("estudiante"), estudianteNotas);
+router.get("/estudiante/asistencia", authenticate, authorize("estudiante"), estudianteAsistencia);
+router.get("/estudiante/lms", authenticate, authorize("estudiante"), estudianteLms);
+router.get("/estudiante/prediccion", authenticate, authorize("estudiante"), estudiantePrediccion);
+router.post("/estudiante/prediccion", authenticate, authorize("estudiante"), estudiantePrediccionPost);
+router.get("/estudiante/alertas", authenticate, authorize("estudiante"), estudianteAlertas);
+router.get("/estudiante/mensajes", authenticate, authorize("estudiante"), estudianteMensajes);
 
 router.get("/courses", authenticate, listCourses);
 router.post("/courses", authenticate, authorize("admin", "docente"), createCourse);
@@ -80,96 +137,12 @@ router.get("/matriculas", authenticate, listMatriculas);
 router.get("/matriculas/stats", authenticate, matriculaStats);
 router.post("/matriculas", authenticate, authorize("admin"), createMatricula);
 
-router.get("/enrollments", authenticate, async (req, res, next) => {
-  try {
-    const scope = await resolveStudentScope(req.user!);
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.min(100, Number(req.query.limit) || 50);
-    const skip = (page - 1) * limit;
-    const where = { student: scope };
-    const [items, total] = await Promise.all([
-      prisma.enrollment.findMany({
-        where,
-        skip,
-        take: limit,
-        include: {
-          student: { select: { id: true, codigo: true, nombres: true, apellidos: true, seccionId: true } },
-          course: { include: { cursoCatalogo: { select: { nombre: true } } } },
-        },
-        orderBy: { createdAt: "desc" },
-      }),
-      prisma.enrollment.count({ where }),
-    ]);
-    sendSuccess(res, {
-      items: items.map((e) => ({
-        ...e,
-        id: idToString(e.id),
-        studentId: idToString(e.studentId),
-        student: { ...e.student, id: idToString(e.student.id), seccionId: e.student.seccionId ? idToString(e.student.seccionId) : null },
-        course: e.course ? { ...e.course, id: idToString(e.course.id) } : e.course,
-      })),
-      total,
-      page,
-      pages: Math.ceil(total / limit),
-      note: "Inscripción a curso (oferta). La matrícula institucional está en /matriculas.",
-    });
-  } catch (e) {
-    next(e);
-  }
-});
-router.post("/enrollments", authenticate, authorize("admin"), async (req, res, next) => {
-  try {
-    const data = enrollmentSchema.parse(req.body);
-    await assertStudentInScope(req.user!, data.studentId);
-    const [student, course] = await Promise.all([
-      prisma.student.findUnique({
-        where: { id: toDbId(data.studentId) },
-        select: { seccionId: true },
-      }),
-      prisma.course.findUnique({
-        where: { id: toDbId(data.courseId) },
-        select: { seccionId: true, codigo: true, cursoCatalogo: { select: { nombre: true } } },
-      }),
-    ]);
-    if (!student || !course) {
-      throw new AppError(404, "Estudiante o curso no encontrado");
-    }
-    if (course.seccionId && student.seccionId && course.seccionId !== student.seccionId) {
-      throw new AppError(
-        400,
-        `El curso "${courseDisplayName(course)}" no pertenece a la sección del estudiante`,
-      );
-    }
-    const exists = await prisma.enrollment.findUnique({
-      where: {
-        studentId_cursoOfertaId: {
-          studentId: toDbId(data.studentId),
-          cursoOfertaId: toDbId(data.courseId),
-        },
-      },
-    });
-    if (exists) {
-      throw new AppError(409, "El estudiante ya está inscrito en este curso");
-    }
-    const item = await prisma.enrollment.create({
-      data: {
-        studentId: toDbId(data.studentId),
-        cursoOfertaId: toDbId(data.courseId),
-      },
-      include: { student: true, course: { include: { cursoCatalogo: true } } },
-    });
-    sendCreated(res, { item });
-  } catch (e) {
-    next(e);
-  }
-});
-
 router.post("/predict", authenticate, predict);
-router.get("/predictions", authenticate, listPredictions);
-router.get("/predictions/:id", authenticate, getPrediction);
-router.get("/dashboard/kpis", authenticate, dashboardStats);
+router.get("/predictions", authenticate, authorize("admin", "docente"), listPredictions);
+router.get("/predictions/:id", authenticate, authorize("admin", "docente"), getPrediction);
+router.get("/dashboard/kpis", authenticate, authorize("admin", "docente"), dashboardStats);
 
-router.get("/alerts", authenticate, listAlerts);
+router.get("/alerts", authenticate, authorize("admin", "docente"), listAlerts);
 router.patch("/alerts/:id", authenticate, authorize("admin", "docente"), patchAlertStatus);
 
 router.get("/messages/rooms", authenticate, listMessageRooms);
@@ -206,11 +179,11 @@ router.get("/ml/metrics", authenticate, authorize("admin", "docente"), async (_r
   sendSuccess(res, { metrics: metrics ?? { message: "ML service no disponible" } });
 });
 
-router.get("/grades", authenticate, listGrades);
+router.get("/grades", authenticate, authorize("admin", "docente"), listGrades);
 router.post("/grades", authenticate, authorize("admin", "docente"), createGrade);
 router.delete("/grades/:id", authenticate, authorize("admin", "docente"), deleteGrade);
 
-router.get("/attendance", authenticate, listAttendance);
+router.get("/attendance", authenticate, authorize("admin", "docente"), listAttendance);
 router.post("/attendance", authenticate, authorize("admin", "docente"), createAttendance);
 router.post("/attendance/bulk", authenticate, authorize("admin", "docente"), bulkAttendance);
 router.put("/attendance/:id", authenticate, authorize("admin", "docente"), updateAttendance);

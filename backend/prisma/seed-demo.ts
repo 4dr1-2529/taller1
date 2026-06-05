@@ -1,5 +1,5 @@
 /**
- * Población demo Blenkir — 1 director, 15 profesores, 660 estudiantes
+ * Población demo Blenkir — 1 director, 15 profesores, 660 estudiantes (22 salones × 30)
  * Requiere: npm run db:seed
  * Ejecutar: npm run db:seed:demo
  */
@@ -8,6 +8,8 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 const PASSWORD = "Tesis2026!";
+/** Máximo de alumnos por salón/sección (capacidad institucional). */
+const ALUMNOS_POR_SALON = 30;
 
 async function getRolId(codigo: "admin" | "docente" | "estudiante") {
   const rol = await prisma.role.findUnique({ where: { codigo } });
@@ -24,7 +26,7 @@ const APELLIDOS = [
 ];
 
 const PROFESORES: { nombres: string; apellidos: string; esp: string }[] = [
-  { nombres: "María", apellidos: "Quispe", esp: "Aritmética" },
+  { nombres: "María", apellidos: "Quispe", esp: "Inglés" },
   { nombres: "José", apellidos: "Flores", esp: "Comunicación" },
   { nombres: "Ana", apellidos: "García", esp: "Ciencias" },
   { nombres: "Luis", apellidos: "Torres", esp: "Ciencias Sociales" },
@@ -53,7 +55,10 @@ function seccionesConfig(): { gradoNum: number; nombre: string }[] {
 }
 
 async function main() {
-  console.log("Seed demo Blenkir — director, 15 profesores, 660 estudiantes...");
+  const totalEsperado = seccionesConfig().length * ALUMNOS_POR_SALON;
+  console.log(
+    `Seed demo Blenkir — director, 15 profesores, ${totalEsperado} estudiantes (${ALUMNOS_POR_SALON}/salón)…`,
+  );
   const hash = await bcrypt.hash(PASSWORD, 12);
   const rolAdmin = await getRolId("admin");
   const rolDocente = await getRolId("docente");
@@ -172,11 +177,7 @@ async function main() {
     const sec = secciones.find((s) => s.grado.numero === cfg.gradoNum && s.nombre === cfg.nombre);
     if (!sec) continue;
 
-    const ofertas = await prisma.course.findMany({
-      where: { seccionId: sec.id, anioLectivoId: anio.id },
-    });
-
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < ALUMNOS_POR_SALON; i++) {
       studentNum++;
       const num = String(studentNum).padStart(4, "0");
       const email = `estudiante${num}@blenkir.edu.pe`;
@@ -241,7 +242,14 @@ async function main() {
 
       await prisma.lmsIndicadorEstudiante.upsert({
         where: { studentId_periodoId: { studentId: student.id, periodoId: periodo.id } },
-        update: {},
+        update: {
+          frecuenciaAcceso: 40 + ((studentNum * 5) % 55),
+          tiempoPlataforma: 2 + (studentNum % 8),
+          tareasRatio: 0.45 + ((studentNum * 3) % 55) / 100,
+          participacion: 40 + ((studentNum * 5) % 55),
+          usoForos: 0.2 + ((studentNum * 2) % 80) / 100,
+          disminucionActividad: studentNum % 11 === 0 ? 15 + (studentNum % 20) : studentNum % 7,
+        },
         create: {
           studentId: student.id,
           periodoId: periodo.id,
@@ -253,6 +261,25 @@ async function main() {
           disminucionActividad: studentNum % 11 === 0 ? 15 + (studentNum % 20) : studentNum % 7,
         },
       });
+
+      const basePct = 25 + ((studentNum * 7) % 65);
+      for (let w = 1; w <= 4; w++) {
+        const weekPct = Math.min(100, Math.max(5, basePct + (w - 2) * 8 + (studentNum % 5)));
+        await prisma.lmsActivity.upsert({
+          where: {
+            studentId_anioSemana: { studentId: student.id, anioSemana: `2026-W${10 + w}` },
+          },
+          update: { actividadPct: weekPct, minutos: Math.round(weekPct * 2.5), horasPlataforma: Math.round(weekPct * 0.08 * 10) / 10, conexiones: Math.max(1, Math.round(weekPct / 12)) },
+          create: {
+            studentId: student.id,
+            anioSemana: `2026-W${10 + w}`,
+            actividadPct: weekPct,
+            minutos: Math.round(weekPct * 2.5),
+            horasPlataforma: Math.round(weekPct * 0.08 * 10) / 10,
+            conexiones: Math.max(1, Math.round(weekPct / 12)),
+          },
+        });
+      }
 
       if (studentNum <= 120 || studentNum % 5 === 0) {
         const pred = await prisma.prediction.create({
@@ -284,7 +311,7 @@ async function main() {
         }
       }
 
-      if (studentNum % 100 === 0) console.log(`  … ${studentNum}/660 estudiantes`);
+      if (studentNum % 100 === 0) console.log(`  … ${studentNum}/${totalEsperado} estudiantes`);
     }
   }
 
@@ -305,7 +332,40 @@ async function main() {
     }
   }
 
-  console.log(`OK — ${studentNum} estudiantes · ${teacherIds.length} profesores · director@blenkir.edu.pe / ${PASSWORD}`);
+  const maria = await prisma.teacher.findFirst({ where: { codigo: "DOC-001" } });
+  const ingles = await prisma.cursoCatalogo.findFirst({ where: { codigo: "ING" } });
+  if (maria && ingles) {
+    for (const nombre of ["A", "D"] as const) {
+      const sec = secciones.find((s) => s.grado.numero === 2 && s.nombre === nombre);
+      if (!sec) continue;
+      await prisma.course.updateMany({
+        where: { seccionId: sec.id, cursoId: ingles.id, anioLectivoId: anio.id },
+        data: { profesorId: maria.id },
+      });
+    }
+    console.log("  María Quispe → Inglés en 2° A y 2° D");
+  }
+
+  const removedEnrollments = await prisma.enrollment.deleteMany({});
+  const matCount = await prisma.matricula.count({ where: { estado: "activa" } });
+
+  const seccionesCheck = await prisma.seccion.findMany({
+    include: { grado: true, _count: { select: { estudiantes: true } } },
+    orderBy: [{ grado: { numero: "asc" } }, { nombre: "asc" }],
+  });
+  const fueraDeLimite = seccionesCheck.filter((s) => s._count.estudiantes !== ALUMNOS_POR_SALON);
+  if (fueraDeLimite.length) {
+    for (const s of fueraDeLimite) {
+      console.warn(
+        `  ⚠ ${s.grado.numero}° ${s.nombre}: ${s._count.estudiantes} alumnos (esperado ${ALUMNOS_POR_SALON})`,
+      );
+    }
+  }
+
+  console.log(
+    `OK — ${studentNum} estudiantes · ${teacherIds.length} profesores · ${matCount} matrículas · ${seccionesCheck.length} salones × ${ALUMNOS_POR_SALON} · inscripciones curso eliminadas: ${removedEnrollments.count}`,
+  );
+  console.log(`Login: director@blenkir.edu.pe / ${PASSWORD}`);
 }
 
 main()

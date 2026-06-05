@@ -16,15 +16,16 @@ import { TableWrap } from "@/components/ui/DataTablePanel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { INPUT_CLASS } from "@/lib/ui";
 import {
-  DNI_LENGTH,
-  PHONE_MAX_DIGITS,
+  CodigoInput,
+  DniInput,
+  GradeInput,
+  PercentInput,
+  PersonNameInput,
+  PhoneInput,
+} from "@/components/ui/ValidatedInputs";
+import {
   type FieldErrors,
   firstError,
-  onlyDigits,
-  sanitizeCodigo,
-  sanitizeGradeInput,
-  sanitizePercentInput,
-  sanitizePersonName,
   validateStudentForm,
   clearFieldError,
 } from "@/lib/validation";
@@ -114,49 +115,43 @@ export function StudentsView({
               }}
             >
               <FormField label="Código" error={errors.codigo} hint="Letras, números, - y _">
-                <input
-                  className={INPUT_CLASS}
+                <CodigoInput
                   placeholder="Ej. 2024-001"
                   value={newStudent.codigo}
-                  onChange={(e) => {
+                  onValueChange={(codigo) => {
                     setErrors((p) => clearFieldError(p, "codigo"));
-                    setNewStudent((p) => ({ ...p, codigo: sanitizeCodigo(e.target.value) }));
+                    setNewStudent((p) => ({ ...p, codigo }));
                   }}
                   required
                 />
               </FormField>
-              <FormField label="DNI" error={errors.dni} hint={`${DNI_LENGTH} dígitos numéricos (Perú)`}>
-                <input
-                  className={INPUT_CLASS}
-                  inputMode="numeric"
+              <FormField label="DNI" error={errors.dni} hint="8 dígitos numéricos (Perú)">
+                <DniInput
                   autoComplete="off"
                   placeholder="12345678"
-                  maxLength={DNI_LENGTH}
                   value={newStudent.dni}
-                  onChange={(e) => {
+                  onValueChange={(dni) => {
                     setErrors((p) => clearFieldError(p, "dni"));
-                    setNewStudent((p) => ({ ...p, dni: onlyDigits(e.target.value, DNI_LENGTH) }));
+                    setNewStudent((p) => ({ ...p, dni }));
                   }}
                 />
               </FormField>
               <FormField label="Nombres" error={errors.nombres}>
-                <input
-                  className={INPUT_CLASS}
+                <PersonNameInput
                   value={newStudent.nombres}
-                  onChange={(e) => {
+                  onValueChange={(nombres) => {
                     setErrors((p) => clearFieldError(p, "nombres"));
-                    setNewStudent((p) => ({ ...p, nombres: sanitizePersonName(e.target.value) }));
+                    setNewStudent((p) => ({ ...p, nombres }));
                   }}
                   required
                 />
               </FormField>
               <FormField label="Apellidos" className="form-grid-full sm:col-span-2" error={errors.apellidos}>
-                <input
-                  className={INPUT_CLASS}
+                <PersonNameInput
                   value={newStudent.apellidos}
-                  onChange={(e) => {
+                  onValueChange={(apellidos) => {
                     setErrors((p) => clearFieldError(p, "apellidos"));
-                    setNewStudent((p) => ({ ...p, apellidos: sanitizePersonName(e.target.value) }));
+                    setNewStudent((p) => ({ ...p, apellidos }));
                   }}
                   required
                 />
@@ -198,51 +193,35 @@ export function StudentsView({
               <FormField
                 label="Teléfono"
                 error={errors.telefono}
-                hint={`${PHONE_MAX_DIGITS} dígitos, solo números`}
+                hint="9 dígitos, solo números"
               >
-                <input
-                  className={INPUT_CLASS}
-                  inputMode="numeric"
+                <PhoneInput
                   autoComplete="tel"
                   placeholder="987654321"
-                  maxLength={PHONE_MAX_DIGITS}
                   value={newStudent.telefono}
-                  onChange={(e) => {
+                  onValueChange={(telefono) => {
                     setErrors((p) => clearFieldError(p, "telefono"));
-                    setNewStudent((p) => ({
-                      ...p,
-                      telefono: onlyDigits(e.target.value, PHONE_MAX_DIGITS),
-                    }));
+                    setNewStudent((p) => ({ ...p, telefono }));
                   }}
                 />
               </FormField>
               <FormField label="Promedio (0–20)" error={errors.promedioGeneral} hint="Solo números">
-                <input
-                  className={INPUT_CLASS}
-                  inputMode="decimal"
+                <GradeInput
                   placeholder="0–20"
                   value={newStudent.promedioGeneral}
-                  onChange={(e) => {
+                  onValueChange={(promedioGeneral) => {
                     setErrors((p) => clearFieldError(p, "promedioGeneral"));
-                    setNewStudent((p) => ({
-                      ...p,
-                      promedioGeneral: sanitizeGradeInput(e.target.value),
-                    }));
+                    setNewStudent((p) => ({ ...p, promedioGeneral }));
                   }}
                 />
               </FormField>
               <FormField label="Asistencia %" error={errors.asistenciaGeneral} hint="0–100, solo números">
-                <input
-                  className={INPUT_CLASS}
-                  inputMode="numeric"
+                <PercentInput
                   placeholder="0–100"
                   value={newStudent.asistenciaGeneral}
-                  onChange={(e) => {
+                  onValueChange={(asistenciaGeneral) => {
                     setErrors((p) => clearFieldError(p, "asistenciaGeneral"));
-                    setNewStudent((p) => ({
-                      ...p,
-                      asistenciaGeneral: sanitizePercentInput(e.target.value),
-                    }));
+                    setNewStudent((p) => ({ ...p, asistenciaGeneral }));
                   }}
                 />
               </FormField>
