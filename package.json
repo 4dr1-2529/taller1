@@ -5,14 +5,15 @@
   "description": "Sistema predictivo de riesgo de deserción estudiantil — I.E.P. Huancayo, Perú",
   "workspaces": [
     "backend",
-    "frontend"
+    "frontend",
+    "packages/shared"
   ],
   "scripts": {
     "dev": "concurrently -n web,api,ml -c cyan,magenta,green \"npm run dev:web\" \"npm run dev:api\" \"npm run dev:ml\"",
     "dev:web": "npm run dev --workspace=frontend",
     "dev:api": "npm run dev --workspace=backend",
     "dev:ml": "cd machine-learning && python -m uvicorn app.main:app --reload --port 5000",
-    "build": "npm run build:api && npm run build --workspace=frontend",
+    "build": "npm run build --workspace=@tesis/shared && npm run build:api && npm run build --workspace=frontend",
     "build:api": "npm run build --workspace=backend",
     "start": "concurrently \"npm run start --workspace=frontend\" \"npm run start --workspace=backend\"",
     "db:generate": "npm run db:generate --workspace=backend",
@@ -34,7 +35,7 @@
     "test:smoke": "node backend/scripts/smoke-tests.mjs",
     "test": "npm run test:unit && npm run test:backend && npm run ml:test",
     "lint": "npm run lint --workspace=frontend",
-    "type-check": "npm run type-check --workspace=frontend && npm run type-check --workspace=backend"
+    "type-check": "npm run type-check --workspace=@tesis/shared && npm run type-check --workspace=frontend && npm run type-check --workspace=backend"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

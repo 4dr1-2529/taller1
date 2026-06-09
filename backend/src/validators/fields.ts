@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isCodigo, isPersonName } from "../utils/text-validation.js";
+import { isCodigo, isPersonName } from "@tesis/shared";
 
 /** DNI peruano: exactamente 8 dígitos */
 export const DNI_REGEX = /^\d{8}$/;

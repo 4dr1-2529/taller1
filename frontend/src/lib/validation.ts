@@ -3,7 +3,7 @@
  * DNI: 8 dígitos · Teléfono: 9 dígitos · Nota: 0–20 · Asistencia: 0–100 %
  */
 
-import { isCodigo, isPersonName, isValidEmail } from "./text-validation";
+import { isCodigo, isPersonName, isValidEmail } from "@tesis/shared";
 
 export const DNI_LENGTH = 8;
 export const PHONE_MAX_DIGITS = 9;
