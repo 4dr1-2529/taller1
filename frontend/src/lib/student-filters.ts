@@ -30,16 +30,44 @@ export const defaultAcademicFilters = (): AcademicFilterState => ({
   alertStatus: "",
 });
 
+function splitWhitespace(value: string): string[] {
+  const parts: string[] = [];
+  let current = "";
+  for (const ch of value.trim()) {
+    if (ch === " " || ch === "\t" || ch === "\n" || ch === "\r") {
+      if (current) {
+        parts.push(current);
+        current = "";
+      }
+      continue;
+    }
+    current += ch;
+  }
+  if (current) parts.push(current);
+  return parts;
+}
+
 /** Extrae número de grado (1–6) desde etiqueta de sección del estudiante */
 export function parseGradoNumero(nivel: string): number | null {
-  const m = nivel.match(/(\d+)\s*°/);
-  return m ? Number(m[1]) : null;
+  let digits = "";
+  for (const ch of nivel) {
+    if (ch >= "0" && ch <= "9") {
+      digits += ch;
+      continue;
+    }
+    if (digits.length > 0) break;
+  }
+  if (!digits) return null;
+  const num = Number(digits);
+  return Number.isFinite(num) ? num : null;
 }
 
 export function parseSeccionLetra(nivel: string): string {
-  const parts = nivel.trim().split(/\s+/);
+  const parts = splitWhitespace(nivel);
   const last = parts[parts.length - 1];
-  return last && /^[A-D]$/i.test(last) ? last.toUpperCase() : "";
+  if (!last || last.length !== 1) return "";
+  const ch = last.toUpperCase();
+  return ch >= "A" && ch <= "D" ? ch : "";
 }
 
 export function salónLabel(gradoNum: number | null, seccionLetra: string): string {
