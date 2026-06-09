@@ -2,11 +2,11 @@
 /**
  * Genera 03-seed-poblacion.sql — 660 estudiantes Blenkir Primaria
  * Uso: node database/blenkir-v3/generate-poblacion.mjs > database/blenkir-v3/03-seed-poblacion.sql
+ *
+ * Importar con hash bcrypt en sesión (sin credenciales en el SQL):
+ *   npm run db:demo-bcrypt
+ *   mysql ... -e "SET @demo_bcrypt_hash='...'; SOURCE 03-seed-poblacion.sql"
  */
-const PWD =
-  process.env.BLENKIR_DEMO_BCRYPT ??
-  "$2a$12$JTmnq1jHDMOgBHOUH0o2ne0CpvWXJzaRahmeg2YVjb6HB.p.73686"; // NOSONAR demo bcrypt hash
-
 const NOMBRES = [
   "Mateo", "Valentina", "Santiago", "Luciana", "Sebastián", "Camila", "Diego", "Isabella",
   "Alejandro", "Sofía", "Daniel", "Mariana", "Andrés", "Emilia", "Gabriel", "Victoria",
@@ -44,12 +44,13 @@ const lines = [];
 lines.push("-- =============================================================================");
 lines.push("-- I.E.P. BLENKIR — Población: 660 estudiantes + apoderados + datos ML base");
 lines.push("-- Generado automáticamente — NO editar manualmente");
+lines.push("-- Requiere @demo_bcrypt_hash en sesión (npm run db:demo-bcrypt)");
 lines.push("-- =============================================================================");
 lines.push("");
 lines.push("USE tesis_blenkir;");
 lines.push("SET NAMES utf8mb4;");
 lines.push("SET FOREIGN_KEY_CHECKS = 0;");
-lines.push(`SET @pwd := '${PWD}';`);
+lines.push("SET @pwd := @demo_bcrypt_hash;");
 lines.push("SET @rol_est := (SELECT id FROM rol WHERE codigo = 'estudiante');");
 lines.push("SET @anio := (SELECT id FROM anio_lectivo WHERE anio = 2026);");
 lines.push("SET @periodo1 := (SELECT id FROM periodo_academico WHERE anio_lectivo_id = @anio AND numero = 1);");
@@ -68,7 +69,6 @@ for (const sec of sections) {
     const codigo = `EST-2026-${num}`;
     const secId = seccionSql(sec.grado, sec.seccion);
 
-    // Métricas variadas para ML (distribución realista)
     const promedio = (8 + ((n * 7) % 110) / 10).toFixed(2);
     const asistencia = (72 + ((n * 3) % 28)).toFixed(2);
     const estado = n % 17 === 0 ? "en_riesgo" : n % 53 === 0 ? "retirado" : "activo";
@@ -93,7 +93,6 @@ for (const sec of sections) {
     lines.push(`INSERT INTO inscripcion_curso (estudiante_id, curso_oferta_id)`);
     lines.push(`SELECT @e${n}, co.id FROM curso_oferta co WHERE co.seccion_id = ${secId} AND co.anio_lectivo_id = @anio;`);
 
-    // LMS indicadores (periodo 1)
     const freq = (40 + ((n * 5) % 55)).toFixed(2);
     const tareas = (0.45 + ((n * 3) % 55) / 100).toFixed(3);
     const foros = (0.2 + ((n * 2) % 80) / 100).toFixed(3);
@@ -110,7 +109,6 @@ for (const sec of sections) {
   }
 }
 
-// Actualizar snapshot dashboard
 lines.push(`UPDATE dashboard_snapshot SET total_estudiantes = 660,`);
 lines.push(`  riesgo_bajo = (SELECT COUNT(*) FROM estudiante WHERE estado = 'activo' AND promedio_general >= 13),`);
 lines.push(`  riesgo_medio = (SELECT COUNT(*) FROM estudiante WHERE estado = 'en_riesgo'),`);

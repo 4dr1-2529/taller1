@@ -8,8 +8,10 @@ USE tesis_blenkir;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Hash bcrypt de contraseña demo (Tesis2026!) — entorno académico, no texto plano
-SET @pwd := '$2a$12$JTmnq1jHDMOgBHOUH0o2ne0CpvWXJzaRahmeg2YVjb6HB.p.73686'; -- nosonar
+-- Contraseñas demo: definir @demo_bcrypt_hash en la sesión MySQL antes de importar.
+-- Generar hash: npm run db:demo-bcrypt  (desde tesis-dashboard/)
+-- Ver database/blenkir-v3/README.md
+SET @pwd := @demo_bcrypt_hash;
 
 -- ─── Institución y calendario ───────────────────────────────────────────────
 

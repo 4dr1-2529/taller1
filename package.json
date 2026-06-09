@@ -22,6 +22,7 @@
     "db:seed:demo": "npm run db:seed:demo --workspace=backend",
     "db:reset:full": "npm run db:reset:full --workspace=backend",
     "db:reseed": "npm run db:reseed --workspace=backend",
+    "db:demo-bcrypt": "npm run db:demo-bcrypt --workspace=backend",
     "db:legacy-users": "npm run db:legacy-users --workspace=backend",
     "db:bootstrap": "npm run db:bootstrap --workspace=backend",
     "db:studio": "npm run db:studio --workspace=backend",

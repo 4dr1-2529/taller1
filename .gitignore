@@ -42,3 +42,6 @@ next-env.d.ts
 **/.venv/
 machine-learning/models/*.pkl
 machine-learning/models/training_history.json
+
+# SQL generado (importar con @demo_bcrypt_hash en sesión)
+database/blenkir-v3/03-seed-poblacion.sql
