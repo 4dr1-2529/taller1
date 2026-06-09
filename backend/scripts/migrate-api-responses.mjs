@@ -82,9 +82,7 @@ for (const rel of FILES) {
   const importLine =
     rel === "index.ts"
       ? 'import { sendSuccess } from "./utils/response.js";\n'
-      : rel.startsWith("routes")
-        ? 'import { sendCreated, sendSuccess } from "../utils/response.js";\n'
-        : 'import { sendCreated, sendSuccess } from "../utils/response.js";\n';
+      : 'import { sendCreated, sendSuccess } from "../utils/response.js";\n';
   const next = migrateContent(content, importLine);
   if (next !== content) {
     fs.writeFileSync(fp, next);

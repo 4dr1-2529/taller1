@@ -145,7 +145,7 @@ export function ProfessorAlertsView({ courses, secciones }: ProfessorAlertsViewP
             checked={includeResolved}
             onChange={(e) => setIncludeResolved(e.target.checked)}
           />
-          Incluir resueltas
+          <span>Incluir resueltas</span>
         </label>
       </div>
 

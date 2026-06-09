@@ -69,7 +69,12 @@ export function NotificationBell() {
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <button
+              type="button"
+              className="fixed inset-0 z-40 cursor-default border-0 bg-transparent p-0"
+              aria-label="Cerrar notificaciones"
+              onClick={() => setOpen(false)}
+            />
             <motion.div
               className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-2xl border border-white/10 bg-[var(--bg-primary)]/90 shadow-2xl shadow-black/30 backdrop-blur-xl"
               initial={{ opacity: 0, y: 8, scale: 0.96 }}

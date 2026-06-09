@@ -82,7 +82,6 @@ export function filterCourses(
   courses: Course[],
   filters: AcademicFilterState,
   secciones: SeccionOption[],
-  scopedStudentIds?: Set<string>,
 ): Course[] {
   let list = [...courses];
   if (filters.profesorId) {
@@ -99,9 +98,6 @@ export function filterCourses(
   }
   if (filters.courseId) {
     list = list.filter((c) => c.id === filters.courseId);
-  }
-  if (scopedStudentIds?.size) {
-    list = list;
   }
   return list;
 }

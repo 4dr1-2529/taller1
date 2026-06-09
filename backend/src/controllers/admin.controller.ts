@@ -113,8 +113,8 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
 
 export async function getAuditLogs(req: Request, res: Response, next: NextFunction) {
   try {
-    const page = Math.max(1, parseInt(req.query.page as string) || 1);
-    const limit = Math.min(100, Math.max(10, parseInt(req.query.limit as string) || 50));
+    const page = Math.max(1, Number.parseInt(String(req.query.page ?? ""), 10) || 1);
+    const limit = Math.min(100, Math.max(10, Number.parseInt(String(req.query.limit ?? ""), 10) || 50));
     const skip = (page - 1) * limit;
     const teacherId = req.query.teacherId as string | undefined;
     const role = req.query.role as string | undefined;

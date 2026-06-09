@@ -88,7 +88,7 @@ export function MlMetricsSection() {
   }
 
   const compareData = Object.entries(data).map(([name, m]) => ({
-    name: name.replace(/_/g, " "),
+    name: name.replaceAll("_", " "),
     accuracy: Math.round(m.accuracy * 1000) / 10,
     precision: Math.round(m.precision * 1000) / 10,
     recall: Math.round(m.recall * 1000) / 10,
@@ -107,7 +107,7 @@ export function MlMetricsSection() {
           </h3>
         </div>
         <span className="badge bg-violet-500/15 text-violet-300">
-          Mejor por F1: <strong>{bestModel.replace(/_/g, " ")}</strong>
+          Mejor por F1: <strong>{bestModel.replaceAll("_", " ")}</strong>
           {bestEntry ? ` (${(bestEntry[1].f1_score * 100).toFixed(1)}%)` : ""}
         </span>
       </div>
@@ -145,7 +145,7 @@ export function MlMetricsSection() {
             }`}
           >
             <h4 className="text-sm font-semibold capitalize text-[var(--text-primary)]">
-              {name.replace(/_/g, " ")}
+              {name.replaceAll("_", " ")}
               {name === bestModel ? " ★" : ""}
             </h4>
             <ul className="mt-2 space-y-1 text-xs text-[var(--text-secondary)]">

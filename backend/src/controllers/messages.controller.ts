@@ -10,7 +10,7 @@ import { toDbId, idToString } from "../utils/ids.js";
 import { courseDisplayName } from "../utils/course-label.js";
 
 function directRoom(userA: string, userB: string) {
-  const ids = [userA, userB].sort();
+  const ids = [userA, userB].sort((a, b) => a.localeCompare(b));
   return `direct:${ids[0]}:${ids[1]}`;
 }
 

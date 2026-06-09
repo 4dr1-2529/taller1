@@ -288,7 +288,7 @@ export function TeachersView({
               </div>
               <label className="form-grid-full flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                 <input type="checkbox" checked={form.crearCuenta} onChange={(e) => setForm((p) => ({ ...p, crearCuenta: e.target.checked }))} />
-                Crear cuenta de acceso ahora (el docente entrará con este correo y la contraseña)
+                <span>Crear cuenta de acceso ahora (el docente entrará con este correo y la contraseña)</span>
               </label>
               {form.crearCuenta ? (
                 <label className="block max-w-md text-sm">

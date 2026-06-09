@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -167,10 +167,11 @@ export default function LoginPage() {
 
           <form onSubmit={(e) => void handleSubmit(e)} className="mt-8 space-y-5">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-[var(--text-primary)]">
+              <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-[var(--text-primary)]">
                 Correo electrónico
               </label>
               <input
+                id="login-email"
                 type="email"
                 required
                 value={email}
@@ -184,11 +185,12 @@ export default function LoginPage() {
               {errors.email ? <p className="mt-1.5 text-xs text-rose-400">{errors.email}</p> : null}
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-[var(--text-primary)]">
+              <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-[var(--text-primary)]">
                 Contraseña
               </label>
               <div className="relative">
                 <input
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
                   required
                   minLength={6}

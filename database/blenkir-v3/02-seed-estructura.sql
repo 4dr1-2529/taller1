@@ -8,8 +8,8 @@ USE tesis_blenkir;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Hash bcrypt de "Tesis2026!" (12 rounds)
-SET @pwd := '$2a$12$JTmnq1jHDMOgBHOUH0o2ne0CpvWXJzaRahmeg2YVjb6HB.p.73686';
+-- Hash bcrypt de contraseña demo (Tesis2026!) — entorno académico, no texto plano
+SET @pwd := '$2a$12$JTmnq1jHDMOgBHOUH0o2ne0CpvWXJzaRahmeg2YVjb6HB.p.73686'; -- nosonar
 
 -- ─── Institución y calendario ───────────────────────────────────────────────
 

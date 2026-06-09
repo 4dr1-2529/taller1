@@ -61,6 +61,9 @@ describe("Permisos ESTUDIANTE", () => {
 
 describe("Roles válidos del sistema", () => {
   it("solo 3 roles", () => {
-    assert.deepEqual(Object.keys(PERMISOS).sort(), ["admin", "docente", "estudiante"]);
+    assert.deepEqual(
+      Object.keys(PERMISOS).sort((a, b) => a.localeCompare(b)),
+      ["admin", "docente", "estudiante"],
+    );
   });
 });

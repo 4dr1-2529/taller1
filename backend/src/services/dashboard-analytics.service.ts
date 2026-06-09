@@ -273,7 +273,7 @@ function extractModelComparison(metrics: unknown) {
   return keys
     .filter((k) => m[k]?.f1_score != null)
     .map((k) => ({
-      modelo: k.replace(/_/g, " "),
+      modelo: k.replaceAll("_", " "),
       f1: Math.round((m[k].f1_score ?? 0) * 1000) / 10,
       accuracy: Math.round((m[k].accuracy ?? 0) * 1000) / 10,
     }));

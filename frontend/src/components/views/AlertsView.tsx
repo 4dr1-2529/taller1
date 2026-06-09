@@ -136,7 +136,7 @@ export function AlertsView({
             checked={includeResolved}
             onChange={(e) => setIncludeResolved(e.target.checked)}
           />
-          Incluir alertas resueltas
+          <span>Incluir alertas resueltas</span>
         </label>
       ) : null}
 

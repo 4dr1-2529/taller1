@@ -100,7 +100,12 @@ def train_models() -> None:
 
     def make_rf():
         return RandomForestClassifier(
-            n_estimators=150, max_depth=12, random_state=42, class_weight="balanced"
+            n_estimators=150,
+            max_depth=12,
+            min_samples_leaf=1,
+            max_features="sqrt",
+            random_state=42,
+            class_weight="balanced",
         )
 
     def make_hgb():
@@ -140,7 +145,13 @@ def train_models() -> None:
     # Stacking: RF + HGB (estable con sklearn 1.6+)
     stacking = StackingClassifier(
         estimators=[("rf", make_rf()), ("hgb", make_hgb())],
-        final_estimator=RandomForestClassifier(n_estimators=100, max_depth=6, random_state=42),
+        final_estimator=RandomForestClassifier(
+            n_estimators=100,
+            max_depth=6,
+            min_samples_leaf=1,
+            max_features="sqrt",
+            random_state=42,
+        ),
         cv=3,
         passthrough=False,
     )

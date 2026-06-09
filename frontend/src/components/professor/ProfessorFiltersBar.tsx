@@ -47,9 +47,9 @@ export function ProfessorFiltersBar({
       />
       {show?.search !== false ? (
         <label className="block text-xs font-medium text-[var(--text-secondary)]">
-          Buscar estudiante
+          <span className="mb-1 block">Buscar estudiante</span>
           <input
-            className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-2 text-sm"
             placeholder="Nombre, apellido o código"
             value={filters.search}
             onChange={(e) => onChange("search", e.target.value)}

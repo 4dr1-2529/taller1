@@ -24,12 +24,13 @@ export async function getTeacherSectionIds(teacherId: bigint): Promise<bigint[]>
 
 export function studentWhereForSectionIds(
   sectionIds: bigint[],
-  base: Prisma.StudentWhereInput = { activo: true },
+  base?: Prisma.StudentWhereInput,
 ): Prisma.StudentWhereInput {
+  const whereBase = base ?? { activo: true };
   if (!sectionIds.length) {
     return { id: { in: [] } };
   }
-  return { ...base, seccionId: { in: sectionIds } };
+  return { ...whereBase, seccionId: { in: sectionIds } };
 }
 
 export async function resolveTeacherSectionIds(user: ScopeUser): Promise<bigint[]> {

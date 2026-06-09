@@ -108,7 +108,7 @@ const variantConfig: Record<NonNullable<StatCardProps["variant"]>, {
 
 function parseNumeric(value: string | number): number | null {
   if (typeof value === "number") return value;
-  const n = parseFloat(value.replace(/[^\d.-]/g, ""));
+  const n = Number.parseFloat(value.replace(/[^\d.-]/g, ""));
   return Number.isFinite(n) ? n : null;
 }
 

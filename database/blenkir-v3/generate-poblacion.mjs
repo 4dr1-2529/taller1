@@ -4,7 +4,8 @@
  * Uso: node database/blenkir-v3/generate-poblacion.mjs > database/blenkir-v3/03-seed-poblacion.sql
  */
 const PWD =
-  "$2a$12$JTmnq1jHDMOgBHOUH0o2ne0CpvWXJzaRahmeg2YVjb6HB.p.73686";
+  process.env.BLENKIR_DEMO_BCRYPT ??
+  "$2a$12$JTmnq1jHDMOgBHOUH0o2ne0CpvWXJzaRahmeg2YVjb6HB.p.73686"; // NOSONAR demo bcrypt hash
 
 const NOMBRES = [
   "Mateo", "Valentina", "Santiago", "Luciana", "Sebastián", "Camila", "Diego", "Isabella",
@@ -19,7 +20,7 @@ const APELLIDOS = [
 ];
 
 function esc(s) {
-  return String(s).replace(/'/g, "''");
+  return String(s).replaceAll("'", "''");
 }
 
 function seccionSql(grado, seccion) {
@@ -101,10 +102,10 @@ for (const sec of sections) {
     lines.push(`(@e${n}, @periodo1, ${freq}, ${(2 + (n % 8)).toFixed(1)}, ${tareas}, ${freq}, ${foros}, ${caid});`);
 
     lines.push(`INSERT INTO historial_academico (estudiante_id, periodo_id, promedio, cursos_desaprobados, asistencia_pct) VALUES`);
-    lines.push(`(@e${n}, @periodo1, ${promedio}, ${parseFloat(promedio) < 11 ? 2 : parseFloat(promedio) < 13 ? 1 : 0}, ${asistencia});`);
+    lines.push(`(@e${n}, @periodo1, ${promedio}, ${Number.parseFloat(promedio) < 11 ? 2 : Number.parseFloat(promedio) < 13 ? 1 : 0}, ${asistencia});`);
 
     lines.push(`INSERT INTO resumen_asistencia (estudiante_id, periodo_id, dias_registrados, dias_presentes, porcentaje) VALUES`);
-    lines.push(`(@e${n}, @periodo1, 40, ${Math.round(40 * parseFloat(asistencia) / 100)}, ${asistencia});`);
+    lines.push(`(@e${n}, @periodo1, 40, ${Math.round(40 * Number.parseFloat(asistencia) / 100)}, ${asistencia});`);
     lines.push("");
   }
 }

@@ -69,9 +69,9 @@ export function AcademicFiltersBar({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
         {s.grado ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Grado
+            <span className="mb-1 block">Grado</span>
             <select
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.gradoId}
               onChange={(e) => onChange("gradoId", e.target.value)}
             >
@@ -86,9 +86,9 @@ export function AcademicFiltersBar({
         ) : null}
         {s.seccion ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Sección / Salón
+            <span className="mb-1 block">Sección / Salón</span>
             <select
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.seccionId}
               onChange={(e) => onChange("seccionId", e.target.value)}
               disabled={!filters.gradoId && secciones.length > 12}
@@ -104,9 +104,9 @@ export function AcademicFiltersBar({
         ) : null}
         {s.course ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Curso
+            <span className="mb-1 block">Curso</span>
             <select
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.courseId}
               onChange={(e) => onChange("courseId", e.target.value)}
             >
@@ -121,9 +121,9 @@ export function AcademicFiltersBar({
         ) : null}
         {s.profesor ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Profesor
+            <span className="mb-1 block">Profesor</span>
             <select
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.profesorId}
               onChange={(e) => onChange("profesorId", e.target.value)}
             >
@@ -138,9 +138,9 @@ export function AcademicFiltersBar({
         ) : null}
         {s.bimestre ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Bimestre
+            <span className="mb-1 block">Bimestre</span>
             <select
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.bimestre}
               onChange={(e) => onChange("bimestre", e.target.value)}
             >
@@ -155,9 +155,9 @@ export function AcademicFiltersBar({
         ) : null}
         {s.estado ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Estado estudiante
+            <span className="mb-1 block">Estado estudiante</span>
             <select
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.estado}
               onChange={(e) => onChange("estado", e.target.value)}
             >
@@ -170,10 +170,10 @@ export function AcademicFiltersBar({
         ) : null}
         {s.fecha ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Fecha
+            <span className="mb-1 block">Fecha</span>
             <input
               type="date"
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.fecha}
               onChange={(e) => onChange("fecha", e.target.value)}
             />
@@ -181,9 +181,9 @@ export function AcademicFiltersBar({
         ) : null}
         {s.risk ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Nivel de riesgo
+            <span className="mb-1 block">Nivel de riesgo</span>
             <select
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.riskLevel}
               onChange={(e) => onChange("riskLevel", e.target.value)}
             >
@@ -196,9 +196,9 @@ export function AcademicFiltersBar({
         ) : null}
         {s.alertStatus ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)]">
-            Estado alerta
+            <span className="mb-1 block">Estado alerta</span>
             <select
-              className={`${INPUT_CLASS} mt-1 w-full`}
+              className={`${INPUT_CLASS} w-full`}
               value={filters.alertStatus}
               onChange={(e) => onChange("alertStatus", e.target.value)}
             >
@@ -211,8 +211,8 @@ export function AcademicFiltersBar({
         ) : null}
         {s.search ? (
           <label className="block text-xs font-medium text-[var(--text-secondary)] sm:col-span-2 lg:col-span-2">
-            Buscar estudiante
-            <div className="relative mt-1">
+            <span className="mb-1 block">Buscar estudiante</span>
+            <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 className={`${INPUT_CLASS} w-full pl-9`}

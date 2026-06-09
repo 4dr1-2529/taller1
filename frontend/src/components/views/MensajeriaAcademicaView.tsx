@@ -56,12 +56,16 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
   async function send() {
     if (!text.trim() || !roomId) return;
     const room = rooms.find((r) => r.roomId === roomId);
+    const recipientUserId =
+      room?.scope === "directo" && user?.id && room.roomId.startsWith("direct:")
+        ? room.roomId.split(":").slice(1).find((id) => id !== user.id)
+        : undefined;
     try {
       await api.sendMessage({
         roomId,
         contenido: text.trim(),
         scope: room?.scope,
-        recipientUserId: room?.scope === "directo" ? undefined : undefined,
+        recipientUserId,
       });
       setText("");
       void loadMessages();
@@ -142,8 +146,15 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="premium-card rounded-xl p-4 lg:col-span-1">
-          <label className="text-xs font-semibold uppercase text-[var(--text-muted)]">Conversación</label>
-          <select className={`${SELECT_CLASS} mt-2 w-full`} value={roomId} onChange={(e) => setRoomId(e.target.value)}>
+          <label htmlFor="mensajeria-room" className="text-xs font-semibold uppercase text-[var(--text-muted)]">
+            Conversación
+          </label>
+          <select
+            id="mensajeria-room"
+            className={`${SELECT_CLASS} mt-2 w-full`}
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value)}
+          >
             {rooms.map((r) => (
               <option key={r.roomId} value={r.roomId}>
                 {r.label}

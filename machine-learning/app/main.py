@@ -1,6 +1,7 @@
 """ML Service — predicción de riesgo de deserción (ensemble learning)."""
 from __future__ import annotations
 
+import asyncio
 import json
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -94,8 +95,10 @@ async def lifespan(app: FastAPI):
         load_path = best_path if best_path.exists() else stack_path
         model = joblib.load(load_path)
         feature_names = joblib.load(MODELS_DIR / "features.joblib")
-        with open(MODELS_DIR / "metrics.json", encoding="utf-8") as f:
-            metrics = json.load(f)
+        metrics_path = MODELS_DIR / "metrics.json"
+        metrics = await asyncio.to_thread(
+            lambda p=metrics_path: json.loads(p.read_text(encoding="utf-8"))
+        )
         best_model_name = str(metrics.get("best_model", "stacking"))
         print(f"Modelo cargado: {load_path.name} ({best_model_name})")
     except FileNotFoundError:
