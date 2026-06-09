@@ -1,16 +1,11 @@
 import { z } from "zod";
+import { isCodigo, isPersonName } from "../utils/text-validation.js";
 
 /** DNI peruano: exactamente 8 dígitos */
 export const DNI_REGEX = /^\d{8}$/;
 
 /** Celular Perú: 9 dígitos (sin letras) */
 export const PHONE_REGEX = /^\d{9}$/;
-
-/** Nombres y apellidos */
-export const PERSON_NAME_REGEX = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$/;
-
-/** Código institucional (ej. 2024-001, DOC-01) */
-export const CODIGO_REGEX = /^[A-Za-z0-9_-]+$/;
 
 export const DNI_LENGTH = 8;
 export const PHONE_MAX_DIGITS = 9;
@@ -26,13 +21,13 @@ export const personNameField = z
   .string()
   .min(2, "Mínimo 2 caracteres")
   .max(120)
-  .regex(PERSON_NAME_REGEX, "Solo letras, espacios, apóstrofes o guiones");
+  .refine(isPersonName, "Solo letras, espacios, apóstrofes o guiones");
 
 export const codigoField = z
   .string()
   .min(2, "Mínimo 2 caracteres")
   .max(32)
-  .regex(CODIGO_REGEX, "Solo letras, números, guión (-) y guión bajo (_)");
+  .refine(isCodigo, "Solo letras, números, guión (-) y guión bajo (_)");
 
 export const optionalDniField = z.preprocess(
   emptyToUndefined,
@@ -55,7 +50,7 @@ export const observacionField = z.preprocess(
   z
     .string()
     .max(500)
-    .regex(PERSON_NAME_REGEX, "Solo se permiten letras")
+    .refine(isPersonName, "Solo se permiten letras")
     .optional(),
 );
 

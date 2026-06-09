@@ -3,6 +3,8 @@
  * DNI: 8 dígitos · Teléfono: 9 dígitos · Nota: 0–20 · Asistencia: 0–100 %
  */
 
+import { isCodigo, isPersonName, isValidEmail } from "./text-validation";
+
 export const DNI_LENGTH = 8;
 export const PHONE_MAX_DIGITS = 9;
 export const GRADE_MAX = 20;
@@ -23,10 +25,6 @@ export const VALIDATION_MSG = {
   codigo: "Código: solo letras, números, - y _",
   minName: "Mínimo 2 caracteres.",
 } as const;
-
-const PERSON_NAME_REGEX = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$/;
-const CODIGO_REGEX = /^[A-Za-z0-9_-]+$/;
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type FieldErrors = Partial<Record<string, string>>;
 
@@ -113,14 +111,14 @@ export function validatePersonName(value: string, label: string, required = true
   const t = value.trim();
   if (!t) return required ? VALIDATION_MSG.required : undefined;
   if (t.length < 2) return VALIDATION_MSG.minName;
-  if (!PERSON_NAME_REGEX.test(t)) return VALIDATION_MSG.lettersOnly;
+  if (!isPersonName(t)) return VALIDATION_MSG.lettersOnly;
   return undefined;
 }
 
 export function validateCodigo(value: string, required = true): string | undefined {
   const t = value.trim();
   if (!t) return required ? VALIDATION_MSG.required : undefined;
-  if (!CODIGO_REGEX.test(t)) return VALIDATION_MSG.codigo;
+  if (!isCodigo(t)) return VALIDATION_MSG.codigo;
   return undefined;
 }
 
@@ -141,7 +139,7 @@ export function validatePhone(value: string, required = false): string | undefin
 export function validateEmail(value: string, required = false): string | undefined {
   const t = value.trim();
   if (!t) return required ? VALIDATION_MSG.required : undefined;
-  if (!EMAIL_REGEX.test(t)) return VALIDATION_MSG.email;
+  if (!isValidEmail(t)) return VALIDATION_MSG.email;
   return undefined;
 }
 

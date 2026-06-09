@@ -106,9 +106,17 @@ const variantConfig: Record<NonNullable<StatCardProps["variant"]>, {
   },
 };
 
+function keepNumericChars(value: string): string {
+  let out = "";
+  for (const ch of value) {
+    if ((ch >= "0" && ch <= "9") || ch === "." || ch === "-") out += ch;
+  }
+  return out;
+}
+
 function parseNumeric(value: string | number): number | null {
   if (typeof value === "number") return value;
-  const n = Number.parseFloat(value.replace(/[^\d.-]/g, ""));
+  const n = Number.parseFloat(keepNumericChars(value));
   return Number.isFinite(n) ? n : null;
 }
 
@@ -123,7 +131,17 @@ export function StatCard({
 }: StatCardProps) {
   const cfg = variantConfig[variant];
   const numeric = parseNumeric(value);
-  const suffix = typeof value === "string" ? value.replace(/[\d.,\s-]+/g, "") : "";
+  const suffix =
+    typeof value === "string"
+      ? value
+          .split("")
+          .filter((ch) => {
+            const isDigit = ch >= "0" && ch <= "9";
+            const isSep = ch === "." || ch === "," || ch === " " || ch === "-";
+            return !isDigit && !isSep;
+          })
+          .join("")
+      : "";
 
   const trendIcon = trend?.direction === "up" ? (
     <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
