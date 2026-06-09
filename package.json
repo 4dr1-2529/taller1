@@ -3,6 +3,9 @@
   "version": "2.0.0",
   "private": true,
   "description": "Sistema predictivo de riesgo de deserción estudiantil — I.E.P. Huancayo, Perú",
+  "engines": {
+    "node": ">=20"
+  },
   "workspaces": [
     "backend",
     "frontend",
