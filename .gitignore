@@ -30,6 +30,8 @@ yarn-error.log*
 .env.*
 !.env.example
 !**/.env.example
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
 
 # vercel
 .vercel

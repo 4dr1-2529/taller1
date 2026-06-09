@@ -1,0 +1,13 @@
+# Railway — backend API + MySQL (monorepo)
+# En el dashboard: Root Directory = repositorio (tesis-dashboard)
+# Servicio MySQL: añadir plugin MySQL y vincular DATABASE_URL al servicio backend.
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install && npm run build --workspace=@tesis/shared && npm run build --workspace=backend"
+
+[deploy]
+startCommand = "npm run start:prod --workspace=backend"
+healthcheckPath = "/health"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"

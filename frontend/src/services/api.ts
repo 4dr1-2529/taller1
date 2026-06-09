@@ -1,4 +1,10 @@
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+const BASE =
+  process.env.NEXT_PUBLIC_API_URL ??
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:4000/api/v1");
+
+if (process.env.NODE_ENV === "production" && !BASE) {
+  throw new Error("NEXT_PUBLIC_API_URL debe estar definida en producción (Vercel).");
+}
 
 export type AuthUser = {
   id: string;

@@ -8,7 +8,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-import { env } from "./config/env.js";
+import { env, corsOrigins } from "./config/env.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { sanitizeBody } from "./middleware/sanitize.js";
 import apiRoutes from "./routes/index.js";
@@ -22,7 +22,14 @@ app.use(helmet({
 }));
 app.use(
   cors({
-    origin: env.CORS_ORIGIN,
+    origin(origin, callback) {
+      const allowed = corsOrigins();
+      if (!origin || allowed.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -59,10 +66,15 @@ app.use(
   apiRoutes,
 );
 
+app.get("/health", (_req, res) => {
+  res.status(200).json({ ok: true, service: "tesis-dashboard-api" });
+});
+
 app.use(errorHandler);
 
-const server = app.listen(env.PORT, () => {
-  console.log(`API tesis-dashboard → http://localhost:${env.PORT}/api/v1`);
+const host = process.env.HOST ?? "0.0.0.0";
+const server = app.listen(env.PORT, host, () => {
+  console.log(`API tesis-dashboard → http://${host}:${env.PORT}/api/v1 (${env.NODE_ENV})`);
 });
 
 server.on("close", async () => {
