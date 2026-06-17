@@ -1,10 +1,4 @@
-const BASE =
-  process.env.NEXT_PUBLIC_API_URL ??
-  (process.env.NODE_ENV === "production" ? "" : "http://localhost:4000/api/v1");
-
-if (process.env.NODE_ENV === "production" && !BASE) {
-  throw new Error("NEXT_PUBLIC_API_URL debe estar definida en producción (Vercel).");
-}
+import { requireApiBaseUrl } from "@/lib/api-base";
 
 export type AuthUser = {
   id: string;
@@ -264,7 +258,7 @@ class ApiClient {
     };
     if (this.token) headers.Authorization = `Bearer ${this.token}`;
 
-    const res = await fetch(`${BASE}${path}`, { ...options, headers });
+    const res = await fetch(`${requireApiBaseUrl()}${path}`, { ...options, headers });
     const body = (await res.json()) as ApiEnvelope<T> & Record<string, unknown>;
 
     if (!res.ok || body.success === false) {
