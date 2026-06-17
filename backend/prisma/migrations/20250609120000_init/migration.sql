@@ -1,4 +1,4 @@
-﻿-- CreateTable
+-- CreateTable
 CREATE TABLE `institucion` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `codigo` VARCHAR(20) NOT NULL,
