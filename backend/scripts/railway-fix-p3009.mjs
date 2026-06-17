@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Recuperación P3009 — migración fallida en Railway MySQL.
+ * Recuperación P3009 en Railway MySQL (BD vacía o solo datos de prueba).
  *
- * Uso (desde backend/, con DATABASE_URL de Railway):
- *   node scripts/railway-fix-p3009.mjs
- *
- * ADVERTENCIA: borra TODAS las tablas. Solo usar si la BD no tiene datos importantes.
+ * Uso:
+ *   cd backend
+ *   set DATABASE_URL=mysql://user:pass@acela.proxy.rlwy.net:34678/railway
+ *   npm run db:railway:fix-p3009
  */
 import { execSync } from "node:child_process";
 import fs from "node:fs";
@@ -13,41 +13,48 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const backendRoot = path.join(__dirname, "..");
 const sqlPath = path.join(__dirname, "railway-drop-all-tables.sql");
+const migrationName = "20250609120000_init";
 
 if (!process.env.DATABASE_URL) {
-  console.error("Defina DATABASE_URL (Railway MySQL) antes de continuar.");
+  console.error("ERROR: defina DATABASE_URL (proxy TCP Railway o URL del plugin MySQL).");
   process.exit(1);
 }
 
-console.log("Paso 1/3: marcar migración fallida como rolled-back...");
+function run(cmd) {
+  execSync(cmd, { stdio: "inherit", cwd: backendRoot, env: process.env });
+}
+
+console.log("=== Recuperación Prisma P3009 ===\n");
+
+console.log(`1/4 migrate resolve --rolled-back "${migrationName}"`);
 try {
-  execSync('npx prisma migrate resolve --rolled-back "20250609120000_init"', {
-    stdio: "inherit",
-    cwd: path.join(__dirname, ".."),
-  });
+  run(`npx prisma migrate resolve --rolled-back "${migrationName}"`);
 } catch {
-  console.warn("  (resolve puede fallar si no hay registro fallido; continúe si la BD está vacía)");
+  console.warn("   (sin registro fallido o ya resuelto; continúa)");
 }
 
-console.log("\nPaso 2/3: eliminar tablas parciales...");
-console.log("  Ejecute el SQL en Railway MySQL:");
-console.log(`  ${sqlPath}`);
-console.log("  O desde Railway CLI: railway run -- mysql ... < scripts/railway-drop-all-tables.sql");
-
-console.log("\nPaso 3/3: aplicar migraciones...");
+console.log("\n2/4 eliminar tablas parciales vía Prisma db execute");
+const dropSql = fs.readFileSync(sqlPath, "utf8");
+const dropFile = path.join(backendRoot, ".railway-drop-temp.sql");
+fs.writeFileSync(dropFile, dropSql, "utf8");
 try {
-  execSync("npx prisma migrate deploy", { stdio: "inherit", cwd: path.join(__dirname, "..") });
-  console.log("\n✓ Migraciones aplicadas.");
+  run(`npx prisma db execute --file "${dropFile}" --schema prisma/schema.prisma`);
+  console.log("   tablas eliminadas");
 } catch (err) {
-  console.error("\nSi falló, conecte a MySQL, ejecute railway-drop-all-tables.sql y vuelva a correr:");
-  console.error("  npx prisma migrate deploy");
-  process.exit(1);
+  console.warn("   db execute falló; ejecute manualmente:", sqlPath);
+} finally {
+  fs.unlinkSync(dropFile);
 }
 
-if (fs.existsSync(sqlPath)) {
-  console.log("\nSeed opcional:");
-  console.log("  npm run db:seed");
-  console.log("  npm run db:seed:demo");
-  console.log("  ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run db:bootstrap");
-}
+console.log("\n3/4 prisma generate");
+run("npx prisma generate");
+
+console.log("\n4/4 prisma migrate deploy");
+run("npx prisma migrate deploy");
+
+console.log("\n✓ Migración aplicada. Opcional:");
+console.log("   npm run db:seed");
+console.log("   npm run db:seed:demo");
+console.log("   ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run db:bootstrap");
