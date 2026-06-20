@@ -3,16 +3,19 @@
  * Arranque producción Railway: generate → migrate deploy → API.
  * Si detecta P3009, recupera automáticamente (BD vacía / demo).
  */
-import { execSync } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
+import { applyEnvAliases, validateRailwayEnv } from "./env-aliases.mjs";
 import {
   backendRoot,
   recoverFailedInitMigration,
-  run,
   tryMigrateDeploy,
 } from "./p3009-recovery.mjs";
 
-if (!process.env.DATABASE_URL) {
-  console.error("ERROR: DATABASE_URL no está definida.");
+applyEnvAliases(process.env);
+
+const envError = validateRailwayEnv(process.env);
+if (envError) {
+  console.error(envError);
   process.exit(1);
 }
 
@@ -32,4 +35,12 @@ if (!result.ok && result.reason === "P3009") {
 }
 
 console.log("[railway-start] iniciando API");
-run("node dist/index.js");
+const api = spawn("node", ["dist/index.js"], {
+  stdio: "inherit",
+  cwd: backendRoot,
+  env: process.env,
+});
+api.on("exit", (code, signal) => {
+  if (signal) process.kill(process.pid, signal);
+  process.exit(code ?? 1);
+});

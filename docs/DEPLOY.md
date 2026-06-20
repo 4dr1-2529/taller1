@@ -15,12 +15,14 @@
 
 ```env
 DATABASE_URL=mysql://USER:PASSWORD@acela.proxy.rlwy.net:34678/railway
-JWT_SECRET=clave-segura-minimo-32-caracteres
+JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars
 NODE_ENV=production
 HOST=0.0.0.0
 CORS_ORIGIN=https://taller1-frontend.vercel.app,http://localhost:3000,http://localhost:5173,http://localhost:3029
 ML_SERVICE_URL=http://localhost:5000
 ```
+
+**Nombres exactos (inglés).** No use `JWT_SECRETO`, `ENTORNO_NODO=producción` ni `ORIGEN_CORS` — el backend acepta esos alias, pero lo correcto es `JWT_SECRET`, `NODE_ENV=production` y `CORS_ORIGIN`. `JWT_SECRET` debe tener **mínimo 32 caracteres**.
 
 `PORT` lo inyecta Railway automáticamente.
 
