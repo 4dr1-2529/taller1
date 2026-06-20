@@ -52,23 +52,29 @@ npm run start:prod --workspace=backend
 
 ### Error P3009 (migración fallida)
 
-Solo si la BD **no tiene datos importantes**:
+**Causa común:** el archivo `migration.sql` tenía BOM UTF-8 (generado en Windows), incompatible con MySQL.
+
+**Corrección aplicada en repo:** migración regenerada sin BOM + `updated_at` con defaults MySQL.
+
+Si la BD **no tiene datos importantes**, ejecutar desde tu PC con `DATABASE_URL` de Railway:
 
 ```bash
 cd backend
 export DATABASE_URL="mysql://...@acela.proxy.rlwy.net:34678/railway"
 
 npx prisma migrate resolve --rolled-back "20250609120000_init"
-# Ejecutar scripts/railway-drop-all-tables.sql en MySQL
+npx prisma db execute --file scripts/railway-drop-all-tables.sql --schema prisma/schema.prisma
 npx prisma generate
 npx prisma migrate deploy
 ```
 
-O asistente automatizado:
+O asistente:
 
 ```bash
 npm run db:railway:fix-p3009 --workspace=backend
 ```
+
+Luego **redeploy** el servicio backend en Railway.
 
 ### Seed (una vez)
 

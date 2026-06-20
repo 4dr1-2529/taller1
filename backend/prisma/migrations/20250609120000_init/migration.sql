@@ -1,4 +1,4 @@
-﻿-- CreateTable
+-- CreateTable
 CREATE TABLE `institucion` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `codigo` VARCHAR(20) NOT NULL,
@@ -159,7 +159,7 @@ CREATE TABLE `usuario` (
     `activo` BOOLEAN NOT NULL DEFAULT true,
     `ultimo_acceso` DATETIME(3) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     INDEX `idx_usuario_rol`(`rol_id`),
     INDEX `idx_usuario_activo`(`activo`),
@@ -235,7 +235,7 @@ CREATE TABLE `estudiante` (
     `activo` BOOLEAN NOT NULL DEFAULT true,
     `fecha_ingreso` DATE NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `estudiante_usuario_id_key`(`usuario_id`),
     INDEX `idx_estudiante_seccion`(`seccion_id`),
@@ -440,7 +440,7 @@ CREATE TABLE `lms_indicador_estudiante` (
     `participacion` DECIMAL(5, 2) NOT NULL DEFAULT 0,
     `uso_foros` DECIMAL(4, 3) NOT NULL DEFAULT 0,
     `disminucion_actividad` DECIMAL(5, 2) NOT NULL DEFAULT 0,
-    `updated_at` DATETIME(3) NOT NULL,
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `uk_lms_ind_est_per`(`estudiante_id`, `periodo_id`),
     PRIMARY KEY (`id`)
@@ -594,7 +594,7 @@ CREATE TABLE `alerta` (
     `estado` ENUM('nueva', 'en_seguimiento', 'resuelta') NOT NULL DEFAULT 'nueva',
     `recomendacion` TEXT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     INDEX `idx_alerta_estado`(`estado`, `nivel_riesgo`),
     INDEX `idx_alerta_estudiante`(`estudiante_id`),
@@ -735,7 +735,7 @@ CREATE TABLE `configuracion_sistema` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `clave` VARCHAR(80) NOT NULL,
     `valor` TEXT NOT NULL,
-    `updated_at` DATETIME(3) NOT NULL,
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `uk_config_clave`(`clave`),
     PRIMARY KEY (`id`)

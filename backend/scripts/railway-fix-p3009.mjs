@@ -54,7 +54,9 @@ run("npx prisma generate");
 console.log("\n4/4 prisma migrate deploy");
 run("npx prisma migrate deploy");
 
-console.log("\n✓ Migración aplicada. Opcional:");
+console.log("\n✓ Migración aplicada.");
+console.log("\nSi el deploy en Railway sigue fallando, redeploy el servicio backend desde main.");
+console.log("\nSeed opcional:");
 console.log("   npm run db:seed");
 console.log("   npm run db:seed:demo");
 console.log("   ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run db:bootstrap");

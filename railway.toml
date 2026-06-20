@@ -4,7 +4,7 @@
 
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm install --include=dev && npm run build --workspace=@tesis/shared && npm run build --workspace=backend"
+buildCommand = "npm install --include=dev && npm run build --workspace=@tesis/shared && npm run prisma:generate --workspace=backend && npm run build --workspace=backend"
 
 [deploy]
 startCommand = "npm run start:prod --workspace=backend"
