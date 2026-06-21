@@ -31,7 +31,7 @@ function mapSeccion(s: {
 
 /** Secciones y grados solo del profesor autenticado. */
 export function useProfessorStructure() {
-  const { isAuthenticated, isDocente } = useAuth();
+  const { isAuthenticated, isDocente, loading: authLoading } = useAuth();
   const [secciones, setSecciones] = useState<SeccionOption[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -52,8 +52,9 @@ export function useProfessorStructure() {
   }, [isAuthenticated, isDocente]);
 
   useEffect(() => {
+    if (authLoading) return;
     void load();
-  }, [load]);
+  }, [load, authLoading]);
 
   return { secciones, loading, refresh: load };
 }

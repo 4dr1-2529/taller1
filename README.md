@@ -6,6 +6,16 @@
 **Institución:** I.E.P. Blenkir Huancayo · Perú  
 **Tipo:** Software SaaS educativo con IA explicable y persistencia real
 
+### Producción (Vercel + Railway)
+
+| Servicio | URL |
+|----------|-----|
+| **Frontend** | https://taller1-frontend.vercel.app |
+| **API** | https://taller1-production.up.railway.app/api/v1 |
+| **Health** | https://taller1-production.up.railway.app/health |
+
+Guía de despliegue: **[docs/DEPLOY.md](docs/DEPLOY.md)** · Cambios recientes: **[CHANGELOG.md](CHANGELOG.md)**
+
 ---
 
 ## Arquitectura
@@ -28,8 +38,15 @@ tesis-dashboard/
 │   ├── utils/              # Validadores de entrada
 │   └── train.py
 ├── database/mysql/         # Guía XAMPP
-└── docs/                   # API, roles, pruebas, Postman, SonarQube
+└── docs/                   # API, roles, pruebas, Postman, SonarQube, DEPLOY
 ```
+
+### Entornos
+
+| Entorno | Frontend | Backend | Base de datos |
+|---------|----------|---------|---------------|
+| **Local** | `:3029` | `:4000/api/v1` | MySQL XAMPP `:3306` |
+| **Producción** | Vercel | Railway | MySQL Railway |
 
 ## Inicio rápido
 
@@ -134,10 +151,16 @@ Legacy: `director@iep-huancayo.edu.pe`, `admin@iep-huancayo.edu.pe`
 - **Mensajería académica** (comunicados globales, avisos de curso, mensajes directos)
 
 ### Seguridad
-- JWT + refresh tokens
+- JWT + refresh tokens (hash SHA-256 en sesión)
 - RBAC con **3 roles**: `admin`, `docente`, `estudiante`
 - Brute-force protection, XSS sanitization, rate limiting, Helmet
 - Auditoría (AuditLog) y sesiones con invalidación
+- CORS configurable (orígenes explícitos, `*` o `*.vercel.app`)
+- Validación `JWT_SECRET` ≥ 32 caracteres en producción
+
+### Frontend (auth por rol)
+- Hook `useAuthReady` — evita llamadas API antes de confirmar el rol (sin 401 al login)
+- Servicios separados: `directorService`, `profesorService`, `estudianteService`
 
 ### UI/UX
 - Modo claro / oscuro, responsive, skeletons, toasts (Sonner)
@@ -270,7 +293,30 @@ Más: [docs/machine-learning.md](docs/machine-learning.md)
 | `npm run type-check` | TypeScript frontend + backend |
 | `npm run test:backend` | Solo tests backend |
 | `npm run test:smoke` | Smoke API + ML + login |
+| `npm run db:railway:fix-p3009` | Recuperar migración fallida en Railway |
+| `npm run start:prod` | Arranque producción (migrate + API) |
+| `npm run db:reset:full` | Reset completo BD + reseed |
 | `npm run lint` | ESLint frontend |
+
+---
+
+## Despliegue producción
+
+Despliegue actual: **Vercel** (frontend) + **Railway** (backend + MySQL).
+
+```env
+# Vercel
+NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1
+
+# Railway (backend)
+DATABASE_URL=${{MySQL.DATABASE_URL}}
+JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars   # mín. 32 chars
+NODE_ENV=production
+HOST=0.0.0.0
+CORS_ORIGIN=https://taller1-frontend.vercel.app
+```
+
+Pasos completos, seed, troubleshooting P3009/CORS/login: **[docs/DEPLOY.md](docs/DEPLOY.md)**
 
 ---
 
@@ -278,22 +324,27 @@ Más: [docs/machine-learning.md](docs/machine-learning.md)
 
 ### Frontend (`frontend/.env.local`)
 
-```
+```env
+# Local
 NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
+
+# Producción (Vercel)
+# NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1
 ```
 
 ### Backend (`backend/.env`)
 
-```
+```env
 DATABASE_URL="mysql://root@localhost:3306/tesis_dashboard"
-JWT_SECRET="change-me"
+JWT_SECRET="blenkir_tesis_2026_jwt_secret_min_32_chars"
 JWT_EXPIRES_IN="8h"
 PORT=4000
+HOST=0.0.0.0
 CORS_ORIGIN="http://localhost:3029"
 ML_SERVICE_URL="http://localhost:5000"
 ```
 
-Copie desde `backend/.env.example`.
+Copie desde `backend/.env.example` y `frontend/.env.example`.
 
 ---
 
@@ -301,6 +352,8 @@ Copie desde `backend/.env.example`.
 
 | Documento | Contenido |
 |-----------|-----------|
+| [CHANGELOG.md](CHANGELOG.md) | Historial de cambios (v2.0.1 despliegue + fixes) |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Vercel + Railway + MySQL, variables, seed, troubleshooting |
 | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Capas y flujo de datos |
 | [docs/API.md](docs/API.md) | Endpoints REST |
 | [docs/roles.md](docs/roles.md) | Matriz de permisos |

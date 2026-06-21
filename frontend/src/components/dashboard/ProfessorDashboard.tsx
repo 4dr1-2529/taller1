@@ -23,6 +23,7 @@ import {
   YAxis,
 } from "recharts";
 import { profesorService, type ProfesorDashboardData } from "@/services/profesorService";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 
@@ -54,16 +55,19 @@ function KpiCard({
 }
 
 export function ProfessorDashboard() {
+  const { ready, isDocente } = useAuthReady();
   const [data, setData] = useState<ProfesorDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!ready || !isDocente) return;
+    setLoading(true);
     void profesorService
       .getDashboard()
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+  }, [ready, isDocente]);
 
   if (loading) {
     return (

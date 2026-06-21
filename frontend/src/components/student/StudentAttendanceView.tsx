@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { estudianteService } from "@/services/estudianteService";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
@@ -18,6 +19,7 @@ type AsistenciaItem = {
 };
 
 export function StudentAttendanceView() {
+  const { ready, isEstudiante } = useAuthReady();
   const [items, setItems] = useState<AsistenciaItem[]>([]);
   const [resumen, setResumen] = useState({
     asistencias: 0,
@@ -35,6 +37,7 @@ export function StudentAttendanceView() {
   const [hasta, setHasta] = useState("");
 
   const load = useCallback(async () => {
+    if (!ready || !isEstudiante) return;
     setLoading(true);
     try {
       const res = await estudianteService.getAsistencia({
@@ -51,11 +54,12 @@ export function StudentAttendanceView() {
     } finally {
       setLoading(false);
     }
-  }, [mes, bimestre, estado, desde, hasta]);
+  }, [mes, bimestre, estado, desde, hasta, ready, isEstudiante]);
 
   useEffect(() => {
+    if (!ready || !isEstudiante) return;
     void load();
-  }, [load]);
+  }, [load, ready, isEstudiante]);
 
   function clearFilters() {
     setMes("");

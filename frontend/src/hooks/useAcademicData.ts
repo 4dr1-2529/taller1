@@ -48,9 +48,14 @@ export function useAcademicData() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [matriculaStats, setMatriculaStats] = useState<MatriculaStats | null>(null);
 
+  const role = user?.role;
+
   const loadFromApi = useCallback(async () => {
     if (!api.hasToken) {
       setDataSource("none");
+      return false;
+    }
+    if (!role) {
       return false;
     }
     setLoading(true);
@@ -111,20 +116,20 @@ export function useAcademicData() {
     } finally {
       setLoading(false);
     }
-  }, [refreshAuth, isDocente, isEstudiante]);
+  }, [refreshAuth, isDocente, isEstudiante, role]);
 
   useEffect(() => {
     if (authLoading) return;
-    if (isAuthenticated) {
+    if (isAuthenticated && role) {
       void loadFromApi();
-    } else {
+    } else if (!isAuthenticated) {
       setDataSource("none");
       setStudents([]);
       setTeachers([]);
       setCourses([]);
       setMatriculaStats(null);
     }
-  }, [isAuthenticated, authLoading, loadFromApi]);
+  }, [isAuthenticated, authLoading, role, loadFromApi]);
 
   async function addStudent(form: NewStudentForm): Promise<void> {
     if (!api.hasToken) {

@@ -17,6 +17,7 @@ import {
   YAxis,
 } from "recharts";
 import { estudianteService } from "@/services/estudianteService";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
@@ -25,16 +26,19 @@ import { CardSkeleton } from "@/components/ui/Skeleton";
 const PIE_COLORS = ["#10b981", "#f59e0b"];
 
 export function StudentLMSView() {
+  const { ready, isEstudiante } = useAuthReady();
   const [data, setData] = useState<Awaited<ReturnType<typeof estudianteService.getLms>> | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!ready || !isEstudiante) return;
+    setLoading(true);
     void estudianteService
       .getLms()
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+  }, [ready, isEstudiante]);
 
   if (loading) {
     return (

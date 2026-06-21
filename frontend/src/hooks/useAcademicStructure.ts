@@ -16,19 +16,23 @@ export type SeccionOption = {
 };
 
 export function useAcademicStructure() {
-  const { isAuthenticated, user } = useAuth();
-  const isDocente = user?.role === "docente";
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
+  const role = user?.role;
   const [secciones, setSecciones] = useState<SeccionOption[]>([]);
   const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
-    if (!api.hasToken) {
+    if (!api.hasToken || !role) {
+      setSecciones([]);
+      return;
+    }
+    if (role === "estudiante") {
       setSecciones([]);
       return;
     }
     setLoading(true);
     try {
-      const res = isDocente ? await api.getProfesorSecciones() : await api.getSecciones();
+      const res = role === "docente" ? await api.getProfesorSecciones() : await api.getSecciones();
       const options: SeccionOption[] = res.items.map((s) => {
         const grado = s.grado;
         const nivel = grado?.nivel?.codigo === "secundaria" ? "Secundaria" : "Primaria";
@@ -49,12 +53,13 @@ export function useAcademicStructure() {
     } finally {
       setLoading(false);
     }
-  }, [isDocente]);
+  }, [role]);
 
   useEffect(() => {
-    if (isAuthenticated) void load();
+    if (authLoading) return;
+    if (isAuthenticated && role) void load();
     else setSecciones([]);
-  }, [isAuthenticated, load]);
+  }, [isAuthenticated, authLoading, role, load]);
 
   return { secciones, loading, refresh: load };
 }

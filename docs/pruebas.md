@@ -1,4 +1,26 @@
-# Pruebas
+# Producción (Vercel + Railway)
+
+Con servicios desplegados:
+
+| Check | URL / acción |
+|-------|--------------|
+| Health backend | `GET https://taller1-production.up.railway.app/health` |
+| Login web | https://taller1-frontend.vercel.app |
+| Director | `director@blenkir.edu.pe` / `Tesis2026!` |
+| Profesor | `profesor1@blenkir.edu.pe` / `Tesis2026!` |
+| Estudiante | `estudiante0001@blenkir.edu.pe` / `Tesis2026!` |
+
+Verificar por rol:
+
+1. Dashboard carga sin F5 ni 401 en consola del navegador
+2. Estudiante no puede acceder a rutas `/students` (403)
+3. Profesor solo ve sus secciones en filtros
+
+Seed en BD vacía (consola Railway): `npm run db:seed --workspace=backend && npm run db:seed:demo --workspace=backend`
+
+Guía: [DEPLOY.md](DEPLOY.md)
+
+---
 
 ## Comandos
 

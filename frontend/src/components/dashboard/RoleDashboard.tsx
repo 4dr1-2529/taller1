@@ -48,9 +48,9 @@ export function RoleDashboard({ role, students, courses, matriculaStats = null, 
   } | null>(null);
 
   useEffect(() => {
-    if (!useApi) return;
+    if (!useApi || role !== "admin") return;
     void api.getDashboardKpis().then((r) => setKpis(r.kpis as typeof kpis)).catch(() => setKpis(null));
-  }, [useApi, students.length]);
+  }, [useApi, role, students.length]);
 
   if (role === "admin") {    const totalStudents = kpis?.totalStudents ?? students.length;
     const directorName =

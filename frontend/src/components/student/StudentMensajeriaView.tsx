@@ -2,21 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { estudianteService } from "@/services/estudianteService";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 
 export function StudentMensajeriaView() {
+  const { ready, isEstudiante } = useAuthReady();
   const [items, setItems] = useState<Awaited<ReturnType<typeof estudianteService.getMensajes>>["items"]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!ready || !isEstudiante) return;
+    setLoading(true);
     void estudianteService
       .getMensajes()
       .then((r) => setItems(r.items))
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [ready, isEstudiante]);
 
   if (loading) return <CardSkeleton />;
 

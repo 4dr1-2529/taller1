@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { estudianteService, type EstudianteNotasData } from "@/services/estudianteService";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
@@ -16,16 +17,19 @@ function estadoClass(estado: string): string {
 }
 
 export function StudentGradesView() {
+  const { ready, isEstudiante } = useAuthReady();
   const [data, setData] = useState<EstudianteNotasData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!ready || !isEstudiante) return;
+    setLoading(true);
     void estudianteService
       .getNotas()
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+  }, [ready, isEstudiante]);
 
   if (loading) {
     return (

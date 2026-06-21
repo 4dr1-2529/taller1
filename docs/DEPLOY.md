@@ -1,97 +1,181 @@
 # Despliegue producción — Vercel + Railway + MySQL
 
-## URLs del proyecto
-
-| Servicio | URL |
-|----------|-----|
-| Frontend | https://taller1-frontend.vercel.app |
-| Backend | `https://TU-SERVICIO.up.railway.app` (configurar en Vercel) |
-| MySQL TCP proxy | `acela.proxy.rlwy.net:34678` |
-| MySQL interno (Railway) | `mysql.railway.internal:3306` |
+Guía para el entorno en la nube del **Tesis Dashboard v2.0**.
 
 ---
 
-## Variables Railway (backend)
+## URLs en producción
+
+| Servicio | URL |
+|----------|-----|
+| **Frontend (Vercel)** | https://taller1-frontend.vercel.app |
+| **Backend API (Railway)** | https://taller1-production.up.railway.app |
+| **API base (v1)** | https://taller1-production.up.railway.app/api/v1 |
+| **Health check** | https://taller1-production.up.railway.app/health |
+| **Repositorio** | https://github.com/4dr1-2529/taller1 |
+
+MySQL corre como plugin en Railway. El backend usa la URL **interna** `mysql.railway.internal:3306` vía variable `${{MySQL.DATABASE_URL}}`.
+
+---
+
+## Arquitectura desplegada
+
+```
+[Vercel — Next.js 16]
+  NEXT_PUBLIC_API_URL → Railway /api/v1
+        │ JWT Bearer
+        ▼
+[Railway — Express + Prisma]
+  migrate deploy al arrancar (railway-start.mjs)
+        │
+        ▼
+[Railway — MySQL 8]
+  seed: db:seed + db:seed:demo (una vez)
+```
+
+El servicio **ML (FastAPI :5000)** no está desplegado en Railway por defecto. En producción, `ML_SERVICE_URL` apunta a localhost; las predicciones usan lógica del backend o requieren desplegar ML por separado.
+
+---
+
+## Variables Railway (servicio backend)
+
+En el dashboard de Railway → servicio **backend** → **Variables**:
 
 ```env
-DATABASE_URL=mysql://USER:PASSWORD@acela.proxy.rlwy.net:34678/railway
+DATABASE_URL=${{MySQL.DATABASE_URL}}
 JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars
 NODE_ENV=production
 HOST=0.0.0.0
-CORS_ORIGIN=https://taller1-frontend.vercel.app,http://localhost:3000,http://localhost:5173,http://localhost:3029
+CORS_ORIGIN=https://taller1-frontend.vercel.app
 ML_SERVICE_URL=http://localhost:5000
 ```
 
-**Nombres exactos (inglés).** No use `JWT_SECRETO`, `ENTORNO_NODO=producción` ni `ORIGEN_CORS` — el backend acepta esos alias, pero lo correcto es `JWT_SECRET`, `NODE_ENV=production` y `CORS_ORIGIN`. `JWT_SECRET` debe tener **mínimo 32 caracteres**.
+| Variable | Notas |
+|----------|-------|
+| `DATABASE_URL` | Vincular desde el plugin **MySQL** (`${{MySQL.DATABASE_URL}}`) |
+| `JWT_SECRET` | **Mínimo 32 caracteres.** Si es más corto, el backend no arranca |
+| `PORT` | Lo inyecta Railway automáticamente — no fijar |
+| `CORS_ORIGIN` | URL exacta del frontend Vercel. También acepta `*` o `*.vercel.app` |
+| `HOST` | Debe ser `0.0.0.0` para escuchar en Railway |
 
-`PORT` lo inyecta Railway automáticamente.
-
-Vincule `DATABASE_URL` desde el plugin **MySQL** al servicio backend.
+**Alias en español:** el backend acepta `JWT_SECRETO`, `ORIGEN_CORS`, etc., pero use siempre los nombres en inglés en producción.
 
 ---
 
 ## Variables Vercel (frontend)
 
+En **Settings → Environment Variables** (Production **y** Preview):
+
 ```env
-NEXT_PUBLIC_API_URL=https://TU-BACKEND.up.railway.app/api/v1
+NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1
 ```
 
-Definir en **Production** y **Preview**.
+**Root Directory del proyecto en Vercel:** `frontend`
+
+El archivo `frontend/vercel.json` ya define el build del monorepo:
+
+```json
+{
+  "installCommand": "cd .. && npm install --include=dev",
+  "buildCommand": "cd .. && npm run build --workspace=@tesis/shared && npm run build --workspace=frontend"
+}
+```
 
 ---
 
-## Railway — comandos
+## Railway — build y start
+
+Configuración en `railway.toml` (raíz del monorepo):
+
+| Fase | Comando |
+|------|---------|
+| Build | `npm install --include=dev && npm run build --workspace=@tesis/shared && npm run prisma:generate --workspace=backend && npm run build --workspace=backend` |
+| Start | `npm run start:prod --workspace=backend` |
+| Health | `GET /health` (timeout 120 s) |
+
+`start:prod` ejecuta `railway-start.mjs`:
+
+1. Valida `JWT_SECRET` y normaliza alias de entorno
+2. `prisma generate`
+3. `prisma migrate deploy` (con recuperación automática si P3009)
+4. Inicia `node dist/index.js`
+
+---
+
+## Seed de base de datos (una vez)
+
+Tras el primer deploy exitoso, ejecutar en la **consola Railway** del servicio backend (o localmente con `DATABASE_URL` de Railway):
 
 ```bash
-# Build (automático vía railway.toml)
-npm install --include=dev
-npm run build --workspace=@tesis/shared
-npm run build --workspace=backend
-
-# Start producción
-npm run start:prod --workspace=backend
+npm run db:seed --workspace=backend
+npm run db:seed:demo --workspace=backend
 ```
 
-### Error P3009 (migración fallida)
+Credenciales resultantes (contraseña **`Tesis2026!`**):
 
-**Causa común:** el archivo `migration.sql` tenía BOM UTF-8 (generado en Windows), incompatible con MySQL.
+| Rol | Email |
+|-----|-------|
+| Director | `director@blenkir.edu.pe` |
+| Profesor | `profesor1@blenkir.edu.pe` |
+| Estudiante | `estudiante0001@blenkir.edu.pe` |
 
-**Corrección aplicada en repo:** migración regenerada sin BOM + `updated_at` con defaults MySQL.
+Datos demo: **660 estudiantes**, **15 profesores**, **22 secciones**, predicciones y alertas.
 
-Si la BD **no tiene datos importantes**, ejecutar desde tu PC con `DATABASE_URL` de Railway:
+---
+
+## Solución de problemas
+
+### Error P3009 — migración fallida
+
+**Causa habitual:** migración inicial con BOM UTF-8 (Windows) o BD en estado inconsistente.
+
+**En repo:** migración corregida + auto-recovery en arranque.
+
+Si persiste y la BD **no tiene datos importantes**:
+
+```bash
+npm run db:railway:fix-p3009 --workspace=backend
+```
+
+O manualmente (con `DATABASE_URL` de Railway):
 
 ```bash
 cd backend
-export DATABASE_URL="mysql://...@acela.proxy.rlwy.net:34678/railway"
-
 npx prisma migrate resolve --rolled-back "20250609120000_init"
 npx prisma db execute --file scripts/railway-drop-all-tables.sql --schema prisma/schema.prisma
 npx prisma generate
 npx prisma migrate deploy
 ```
 
-O asistente:
+Luego **redeploy** del backend.
 
-```bash
-npm run db:railway:fix-p3009 --workspace=backend
-```
+### Login 401 — usuarios inexistentes
 
-Luego **redeploy** el servicio backend en Railway.
+Ejecute el seed (sección anterior). Sin seed, la BD no tiene cuentas demo.
 
-### Seed (una vez)
+### Login 500 — JWT / sesión
 
-```bash
-npm run db:seed --workspace=backend
-npm run db:seed:demo --workspace=backend
-ADMIN_EMAIL=director@blenkir.edu.pe ADMIN_PASSWORD=TuClave npm run db:bootstrap --workspace=backend
-```
+- Verifique `JWT_SECRET` ≥ 32 caracteres
+- El refresh token se guarda hasheado (SHA-256); requiere migraciones aplicadas
+
+### CORS bloqueado
+
+- `CORS_ORIGIN` debe incluir `https://taller1-frontend.vercel.app`
+- Tras cambiar CORS, redeploy del backend
+
+### Pantalla trabada / 401 en consola al entrar
+
+Corregido en frontend v2.0.1: el cliente espera a que el rol esté confirmado (`useAuthReady`) antes de llamar APIs de Director, Profesor o Estudiante. Redeploy de Vercel tras actualizar.
+
+### `/health` no responde
+
+1. Revise logs de Railway (migrate deploy, JWT_SECRET)
+2. Confirme plugin MySQL activo y `DATABASE_URL` vinculada
+3. Espere hasta 120 s (healthcheck timeout)
 
 ---
 
-## Vercel — comandos
-
-- **Root Directory:** `frontend`
-- **Build:** `cd .. && npm install --include=dev && npm run build --workspace=@tesis/shared && npm run build --workspace=frontend`
+## Vercel — deploy manual
 
 ```bash
 cd frontend
@@ -100,21 +184,29 @@ vercel --prod
 
 ---
 
-## Builds locales
+## Builds locales (verificar antes de push)
 
 ```bash
 npm run build --workspace=@tesis/shared
 npm run build --workspace=backend
 npm run build --workspace=frontend
+npm run type-check
 ```
 
 ---
 
-## Checklist
+## Checklist de producción
 
-- [ ] MySQL Railway activo
-- [ ] P3009 resuelto (`migrate deploy` OK)
-- [ ] `/health` responde en Railway
-- [ ] `NEXT_PUBLIC_API_URL` en Vercel
-- [ ] `CORS_ORIGIN` incluye `https://taller1-frontend.vercel.app`
-- [ ] Login probado en producción
+- [ ] Plugin MySQL activo en Railway
+- [ ] `DATABASE_URL` vinculada al backend
+- [ ] `JWT_SECRET` ≥ 32 caracteres
+- [ ] `CORS_ORIGIN` = URL Vercel de producción
+- [ ] `NEXT_PUBLIC_API_URL` en Vercel (Production + Preview)
+- [ ] `/health` responde 200
+- [ ] Seed ejecutado (`db:seed` + `db:seed:demo`)
+- [ ] Login Director, Profesor y Estudiante sin F5 ni 401 en consola
+- [ ] Dashboard carga KPIs correctos por rol
+
+---
+
+Ver también: [README.md](../README.md) · [CHANGELOG.md](../CHANGELOG.md) · [docs/pruebas.md](pruebas.md)

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { estudianteService } from "@/services/estudianteService";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { RiskGauge } from "@/components/ui/RiskGauge";
@@ -17,12 +18,14 @@ function riskLevelKey(nivel: string): "bajo" | "medio" | "alto" {
 }
 
 export function StudentPredictionView() {
+  const { ready, isEstudiante } = useAuthReady();
   const [data, setData] = useState<Awaited<ReturnType<typeof estudianteService.getPrediccion>> | null>(null);
   const [alertas, setAlertas] = useState<Awaited<ReturnType<typeof estudianteService.getAlertas>> | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   async function load() {
+    if (!ready || !isEstudiante) return;
     const [pred, al] = await Promise.all([
       estudianteService.getPrediccion().catch(() => null),
       estudianteService.getAlertas().catch(() => null),
@@ -32,8 +35,9 @@ export function StudentPredictionView() {
   }
 
   useEffect(() => {
+    if (!ready || !isEstudiante) return;
     void load().finally(() => setLoading(false));
-  }, []);
+  }, [ready, isEstudiante]);
 
   async function handleRefresh() {
     setRefreshing(true);

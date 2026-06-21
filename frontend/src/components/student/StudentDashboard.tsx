@@ -10,6 +10,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { estudianteService, type EstudianteDashboardData } from "@/services/estudianteService";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 import { RiskBadge } from "@/components/ui/RiskBadge";
@@ -48,16 +49,19 @@ function riskLevelKey(label: string): "bajo" | "medio" | "alto" {
 }
 
 export function StudentDashboard() {
+  const { ready, isEstudiante } = useAuthReady();
   const [data, setData] = useState<EstudianteDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!ready || !isEstudiante) return;
+    setLoading(true);
     void estudianteService
       .getDashboard()
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+  }, [ready, isEstudiante]);
 
   if (loading) {
     return (
