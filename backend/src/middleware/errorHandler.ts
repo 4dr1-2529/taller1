@@ -28,6 +28,8 @@ export function errorHandler(
   }
   if (env.NODE_ENV !== "production") {
     console.error(err);
+  } else {
+    console.error("[error]", err instanceof Error ? err.message : err);
   }
   return res.status(500).json(errorPayload("Error interno del servidor"));
 }

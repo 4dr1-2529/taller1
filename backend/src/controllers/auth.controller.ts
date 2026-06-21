@@ -9,6 +9,7 @@ import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { toDbId, idToString } from "../utils/ids.js";
 import { mapUserWithRole } from "../utils/rol.js";
+import { hashToken, truncate } from "../utils/tokens.js";
 
 const loginAttempts = new Map<string, { count: number; lastAttempt: number }>();
 const MAX_ATTEMPTS = 5;
@@ -65,9 +66,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     await prisma.session.create({
       data: {
         usuarioId: user.id,
-        tokenHash: refreshToken,
-        ipAddress: ip,
-        userAgent: req.headers["user-agent"] ?? null,
+        tokenHash: hashToken(refreshToken),
+        ipAddress: truncate(ip, 45),
+        userAgent: truncate(req.headers["user-agent"], 255),
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       },
     });
@@ -106,7 +107,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
     const session = await prisma.session.findFirst({
       where: {
         usuarioId: toDbId(decoded.sub),
-        tokenHash: refreshToken,
+        tokenHash: hashToken(refreshToken),
         expiresAt: { gt: new Date() },
       },
     });
