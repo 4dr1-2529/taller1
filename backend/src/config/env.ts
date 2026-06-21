@@ -48,3 +48,19 @@ export function corsOrigins(): string[] {
     .map((origin) => origin.trim())
     .filter(Boolean);
 }
+
+/** Permite *, lista exacta y subdominios *.vercel.app si hay algún origen vercel.app. */
+export function isCorsOriginAllowed(origin: string | undefined): boolean {
+  if (!origin) return true;
+
+  const allowed = corsOrigins();
+  if (allowed.includes("*")) return true;
+  if (allowed.includes(origin)) return true;
+
+  const allowsVercel = allowed.some((o) => o.includes(".vercel.app"));
+  if (allowsVercel && /^https:\/\/[\w-]+\.vercel\.app$/.test(origin)) {
+    return true;
+  }
+
+  return false;
+}

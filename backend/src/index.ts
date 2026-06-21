@@ -8,7 +8,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-import { env, corsOrigins } from "./config/env.js";
+import { env, isCorsOriginAllowed } from "./config/env.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { sanitizeBody } from "./middleware/sanitize.js";
 import apiRoutes from "./routes/index.js";
@@ -23,8 +23,7 @@ app.use(helmet({
 app.use(
   cors({
     origin(origin, callback) {
-      const allowed = corsOrigins();
-      if (!origin || allowed.includes(origin)) {
+      if (isCorsOriginAllowed(origin)) {
         callback(null, true);
         return;
       }
