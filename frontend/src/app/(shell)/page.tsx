@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { api } from "@/services/api";
 import { AppShell } from "@/components/layout/AppShell";
 import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
@@ -145,12 +146,11 @@ function sectionSubtitle(section: AppSection, role: string): string {
 }
 
 export default function Home() {
-  const { user } = useAuth();
-  const isDocente = user?.role === "docente";
-  const role = user?.role ?? "estudiante";
-  const visibleSections = ROLE_SECTIONS[role] ?? ROLE_SECTIONS.estudiante;
+  const { user, loading: authLoading, isAuthenticated, isDocente, isEstudiante } = useAuth();
+  const role = user?.role;
+  const visibleSections = role ? (ROLE_SECTIONS[role] ?? ROLE_SECTIONS.estudiante) : ROLE_SECTIONS.admin;
 
-  const [activeSection, setActiveSection] = useState<AppSection>(visibleSections[0]);
+  const [activeSection, setActiveSection] = useState<AppSection>("Dashboard");
   const {
     students,
     teachers,
@@ -179,18 +179,23 @@ export default function Home() {
 
   const useApi = dataSource === "api";
   const isDirector = role === "admin";
-  const isEstudiante = role === "estudiante";
   const [alertCount, setAlertCount] = useState(0);
 
   useEffect(() => {
-    if (!visibleSections.includes(activeSection)) {
+    if (!authLoading && !isAuthenticated) {
+      window.location.replace("/login");
+    }
+  }, [authLoading, isAuthenticated]);
+
+  useEffect(() => {
+    if (!role || !visibleSections.includes(activeSection)) {
       setActiveSection(visibleSections[0]);
     }
   }, [role, visibleSections, activeSection]);
 
   useEffect(() => {
-    if (!useApi || !api.hasToken) {
-      setAlertCount(earlyAlertCount(students));
+    if (authLoading || !user || !useApi || !api.hasToken) {
+      if (!authLoading && user) setAlertCount(earlyAlertCount(students));
       return;
     }
     if (isDocente) {
@@ -211,7 +216,7 @@ export default function Home() {
       .getAlerts()
       .then((r) => setAlertCount(r.total ?? r.items.length))
       .catch(() => setAlertCount(earlyAlertCount(students)));
-  }, [useApi, students, loading, isDocente, isEstudiante]);
+  }, [useApi, students, loading, isDocente, isEstudiante, user, authLoading]);
 
   async function handleAddStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -247,6 +252,7 @@ export default function Home() {
   }
 
   function renderSection() {
+    if (!role) return null;
     if (loading && dataSource === "api" && !isEstudiante && !isDocente) {
       return (
         <div className="grid gap-4 md:grid-cols-2">
@@ -382,6 +388,14 @@ export default function Home() {
       default:
         return null;
     }
+  }
+
+  if (authLoading || !user || !role) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--brand-orange)]" aria-label="Cargando sesión" />
+      </div>
+    );
   }
 
   return (
