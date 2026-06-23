@@ -1,47 +1,32 @@
-# Cuentas — I.E.P. Blenkir
+# Cuentas de acceso — I.E.P. Blenkir (producción)
 
-**Contraseña institucional:** `mbappe29`
+**Contraseña para todas las cuentas:** `mbappe29`
 
-## Archivos importantes
+## Archivos (usar estos para entrar a la web)
 
-| Archivo | Origen | Uso |
-|---------|--------|-----|
-| `estudiantes.csv` | Base local (tras seed) | Login local / desarrollo |
-| `profesores.csv` | Base local | Docentes locales |
-| `estudiantes-produccion.csv` | API Railway **real** | Login en https://taller1-frontend.vercel.app |
-| `profesores-produccion.csv` | API Railway | Producción |
-| `cuentas-produccion.json` | API Railway | JSON completo producción |
+| Archivo | Contenido |
+|---------|-----------|
+| **`estudiantes.csv`** | 660 alumnos — columna `email_login` |
+| **`profesores.csv`** | 23 docentes — columna `email_login` |
+| `cuentas.json` | Mismo datos en JSON + verificación |
 
-> **Importante:** el correo de login es el de la columna `email_login`. Debe coincidir con la tabla `usuario` del sistema.
+Sitio: https://taller1-frontend.vercel.app
 
-## Regenerar cuentas locales
+## Actualizar desde producción (datos reales verificados)
 
 ```bash
 cd tesis-dashboard/backend
-npm run db:seed:demo
-npm run export:accounts
+npm run export:accounts:web
 ```
 
-## Regenerar cuentas de PRODUCCIÓN (las reales del sitio web)
+Eso descarga correos de la tabla `usuario`, prueba logins y sobrescribe los CSV.
 
-```bash
-cd tesis-dashboard/backend
-npm run export:accounts:prod
-```
+> Requiere que Railway tenga desplegado el endpoint `/admin/cuentas-acceso`.
 
-## Reparar producción (login + notas I–II)
+## Si el login falla en la web
 
-En Railway → servicio **taller1-production** → **Variables**:
+En Railway → **taller1-production** → **Variables** → agregar `RUN_REPAIR=1` → redeploy → quitar la variable.
 
-1. Agregar `RUN_REPAIR=1` → redeploy → esperar logs `OK — contraseña institucional: mbappe29`
-2. Quitar la variable después del deploy
+## Ejemplos verificados
 
-O reseed completo: `RUN_DEMO_SEED=1` (borra y repobla todo).
-
-## Estudiante ejemplo (local, estable)
-
-| Código | Salón | Correo login | Contraseña |
-|--------|-------|--------------|------------|
-| EST-2026-0001 | 1° A | mateo.quispe0001@blenkir.edu.pe | mbappe29 |
-
-Tras reseed en Railway, el mismo código tendrá el mismo correo (cuentas determinísticas).
+Consulte las primeras filas de `estudiantes.csv` y `profesores.csv` tras ejecutar `export:accounts:web`.

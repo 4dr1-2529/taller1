@@ -37,6 +37,7 @@ import {
   createSeccion,
 } from "../controllers/academic-structure.controller.js";
 import { listUsers, createUser, updateUser, deleteUser, getAuditLogs, getSystemStats } from "../controllers/admin.controller.js";
+import { exportAccessAccounts } from "../controllers/accounts-export.controller.js";
 import { listAttendance, createAttendance, bulkAttendance, updateAttendance, deleteAttendance } from "../controllers/attendance.controller.js";
 import { listMatriculas, createMatricula, matriculaStats } from "../controllers/matriculas.controller.js";
 import { listGrades, createGrade, deleteGrade } from "../controllers/grades.controller.js";
@@ -222,5 +223,6 @@ router.put("/admin/users/:id", authenticate, authorize("admin"), updateUser);
 router.delete("/admin/users/:id", authenticate, authorize("admin"), deleteUser);
 router.get("/admin/audit-logs", authenticate, authorize("admin"), getAuditLogs);
 router.get("/admin/system-stats", authenticate, authorize("admin"), getSystemStats);
+router.get("/admin/cuentas-acceso", authenticate, authorize("admin"), exportAccessAccounts);
 
 export default router;
