@@ -39,8 +39,8 @@
 | Rol | Credencial demo | Verificar |
 |-----|-----------------|-----------|
 | Director | `director@blenkir.edu.pe` | Totales globales, CRUD, reportes |
-| Profesor | `profesor1@blenkir.edu.pe` | Filtros salón, notas propias |
-| Estudiante | `estudiante0001@blenkir.edu.pe` | Sin filtros globales, solo `/estudiante/*` |
+| Profesor tutor | `pro50000001@blenkir.edu.pe` | Filtros salón, notas propias |
+| Estudiante | `mateo.quispe0001@blenkir.edu.pe` | Sin filtros globales, solo `/estudiante/*` |
 
 Contraseña: `mbappe29`
 

@@ -7,8 +7,8 @@ Con servicios desplegados:
 | Health backend | `GET https://taller1-production.up.railway.app/health` |
 | Login web | https://taller1-frontend.vercel.app |
 | Director | `director@blenkir.edu.pe` / `mbappe29` |
-| Profesor | `profesor1@blenkir.edu.pe` / `mbappe29` |
-| Estudiante | `estudiante0001@blenkir.edu.pe` / `mbappe29` |
+| Profesor tutor | `pro50000001@blenkir.edu.pe` / `mbappe29` |
+| Estudiante | `mateo.quispe0001@blenkir.edu.pe` / `mbappe29` |
 
 Verificar por rol:
 
@@ -59,13 +59,13 @@ cd machine-learning && python tests/test_predict.py
 4. Predicción y alertas globales
 
 ### Profesor
-5. Login `profesor1@blenkir.edu.pe`
+5. Login `pro50000001@blenkir.edu.pe`
 6. Filtros grado → sección → Buscar en Notas/Asistencia/LMS
 7. Registrar nota y asistencia solo en sus salones
 8. Profesor en curso ajeno → 403
 
 ### Estudiante
-9. Login `estudiante0001@blenkir.edu.pe`
+9. Login `mateo.quispe0001@blenkir.edu.pe`
 10. Dashboard personal (sin totales globales)
 11. Mis notas / asistencia / LMS / riesgo — solo datos propios
 12. `GET /students` o `/profesor/dashboard` → 403

@@ -116,10 +116,27 @@ Credenciales resultantes (contraseña **`mbappe29`**):
 | Rol | Email |
 |-----|-------|
 | Director | `director@blenkir.edu.pe` |
-| Profesor | `profesor1@blenkir.edu.pe` |
-| Estudiante | `estudiante0001@blenkir.edu.pe` |
+| Profesor tutor | `pro50000001@blenkir.edu.pe` |
+| Estudiante | `mateo.quispe0001@blenkir.edu.pe` |
 
-Datos demo: **660 estudiantes**, **15 profesores**, **22 secciones**, predicciones y alertas.
+Contraseña: **`mbappe29`**. Listado completo en `docs/cuentas-demo/` (660 alumnos + 23 docentes).
+
+Datos demo: **660 estudiantes**, **23 profesores** (8 tutores + polidocencia), **22 secciones**, notas bimestres I–II, predicciones y alertas.
+
+### Reseed o reparación en Railway (sin consola)
+
+Variables temporales en Railway → redeploy → quitar variable:
+
+| Variable | Efecto |
+|----------|--------|
+| `RUN_DEMO_SEED=1` | Reseed completo (estructura + demo) |
+| `RUN_REPAIR=1` | Reparar emails/contraseñas + notas I–II faltantes |
+
+Actualizar CSV desde producción (local, con API desplegada):
+
+```bash
+npm run export:accounts:web
+```
 
 ---
 
@@ -149,9 +166,11 @@ npx prisma migrate deploy
 
 Luego **redeploy** del backend.
 
-### Login 401 — usuarios inexistentes
+### Login 401 — usuarios inexistentes o email incorrecto
 
-Ejecute el seed (sección anterior). Sin seed, la BD no tiene cuentas demo.
+1. Ejecute el seed (sección anterior) o `RUN_DEMO_SEED=1` en Railway.
+2. Use los correos de `docs/cuentas-demo/*.csv` (columna `email_login`), no emails legacy.
+3. Si las cuentas existen pero fallan: `RUN_REPAIR=1` en Railway y redeploy.
 
 ### Login 500 — JWT / sesión
 

@@ -104,7 +104,9 @@ Contraseña: `mbappe29`
 | Rol | Email |
 |-----|-------|
 | Director | `director@blenkir.edu.pe` |
-| Profesor | `profesor1@blenkir.edu.pe` |
-| Estudiante | `estudiante0001@blenkir.edu.pe` |
+| **Profesor tutor** | `pro50000001@blenkir.edu.pe` |
+| **Estudiante** | `mateo.quispe0001@blenkir.edu.pe` |
+
+Listado completo: [docs/cuentas-demo/](cuentas-demo/README.md) (660 alumnos + 23 docentes).
 
 Ver [../README.md](../README.md) y [../docs/DEPLOY.md](../docs/DEPLOY.md) para seed y despliegue.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { estudianteService } from "@/services/estudianteService";
@@ -24,7 +24,7 @@ export function StudentPredictionView() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     if (!ready || !isEstudiante) return;
     const [pred, al] = await Promise.all([
       estudianteService.getPrediccion().catch(() => null),
@@ -32,12 +32,12 @@ export function StudentPredictionView() {
     ]);
     setData(pred);
     setAlertas(al);
-  }
+  }, [ready, isEstudiante]);
 
   useEffect(() => {
     if (!ready || !isEstudiante) return;
     void load().finally(() => setLoading(false));
-  }, [ready, isEstudiante]);
+  }, [ready, isEstudiante, load]);
 
   async function handleRefresh() {
     setRefreshing(true);

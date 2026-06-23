@@ -7,7 +7,7 @@ import { api, type TeacherAssignment } from "@/services/api";
 import type { Teacher } from "@/types/academic";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
-import { INPUT_CLASS, SELECT_CLASS } from "@/lib/ui";
+import { SELECT_CLASS } from "@/lib/ui";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 
 type Props = {

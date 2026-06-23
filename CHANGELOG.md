@@ -6,6 +6,27 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
 ---
 
+## [2.0.2] — 2026-06-04
+
+### Añadido
+
+- **README principal** ampliado: stack, estructura monorepo, scripts, variables de entorno y URLs de producción
+- **Cuentas determinísticas:** emails estables (`mateo.quispe0001@…`, `pro50000001@…`) sincronizados con BD
+- **Exportación verificada:** endpoint `GET /admin/cuentas-acceso` + scripts `export:accounts:web` y `verify-production-accounts`
+- **8 tutores** exclusivos 1°–2° + **15 docentes** polidocencia 3°–6° (23 total)
+- Scripts raíz: `db:repair:all`, `export:accounts:web`
+- CSV canónicos en `docs/cuentas-demo/` (660 estudiantes + 23 profesores)
+
+### Corregido
+
+- **Notas NaN** en vista Director: filtro por bimestre, coerción numérica en API y frontend
+- **Notas I–II** completas para todos los estudiantes/cursos; bimestres III–IV vacíos
+- **Plantilla docente:** asignaciones tutor/polidocencia y cobertura de cursos
+- Documentación y Postman alineados con credenciales actuales (eliminados emails legacy)
+- Lint frontend: dependencias de hooks y imports sin usar
+
+---
+
 ## [2.0.1] — 2026-06-04
 
 ### Despliegue producción
@@ -44,7 +65,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 - **Matrículas institucionales** (estudiante + año lectivo + sección)
 - **Mensajería académica** (comunicados, avisos de curso, mensajes directos)
 - Schema Prisma **Blenkir v3** (~51 tablas)
-- Seed demo: 660 estudiantes, 15 profesores, 22 secciones, predicciones y alertas
+- Seed demo: 660 estudiantes, 23 profesores, 22 secciones, predicciones y alertas
 - Dashboard por rol con KPIs, gráficos Recharts y predicción ensemble ML
 - Tests de roles, alcance docente/estudiante y formato de respuesta API
 - Preparación SonarQube (bugs, accesibilidad, seguridad)
@@ -71,8 +92,10 @@ Contraseña para todos: **`mbappe29`**
 | Rol | Email |
 |-----|-------|
 | Director | `director@blenkir.edu.pe` |
-| Profesor | `profesor1@blenkir.edu.pe` |
-| Estudiante | `estudiante0001@blenkir.edu.pe` |
+| Profesor tutor | `pro50000001@blenkir.edu.pe` |
+| Estudiante | `mateo.quispe0001@blenkir.edu.pe` |
+
+Listado completo: `docs/cuentas-demo/estudiantes.csv` y `profesores.csv`.
 
 Ejecutar una vez en BD vacía:
 
