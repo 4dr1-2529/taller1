@@ -123,15 +123,15 @@ tesis-dashboard/                    # Monorepo npm workspaces
 │   └── blenkir-v3/                 # DER, scripts SQL v3
 │
 ├── docs/
-│   ├── DEPLOY.md                   # Vercel + Railway paso a paso
-│   ├── API.md                      # Endpoints REST
-│   ├── ARQUITECTURA.md             # Capas y flujos
-│   ├── cuentas-demo/               # CSV login verificados (660 + 23)
-│   │   ├── estudiantes.csv
-│   │   ├── profesores.csv
-│   │   └── README.md
-│   ├── roles.md                    # RBAC Director / Profesor / Estudiante
-│   └── postman/                    # Colección Postman
+│   ├── INDICE-ISO.md               # Índice documentación ISO
+│   ├── iso-9001/ · iso-25010/ · iso-29119/
+│   ├── arquitectura/               # Visión por capas
+│   ├── backend/ · frontend/ · python-ia/
+│   ├── evidencias/                 # Capturas y logs QA
+│   ├── plan-pruebas/
+│   ├── DEPLOY.md
+│   ├── cuentas-demo/               # CSV login (660 + 23)
+│   └── postman/
 │
 ├── package.json                    # Scripts raíz (dev, build, db, ml)
 ├── CHANGELOG.md
@@ -339,7 +339,119 @@ npm run ml:train
 npm run ml:test
 ```
 
-Más: [docs/machine-learning.md](docs/machine-learning.md)
+Más: [docs/python-ia/modelo-predictivo.md](docs/python-ia/modelo-predictivo.md)
+
+---
+
+## Arquitectura del sistema
+
+Visión de capas y flujos de datos:
+
+| Documento | Contenido |
+|-----------|-----------|
+| [docs/arquitectura/arquitectura-general.md](docs/arquitectura/arquitectura-general.md) | Diagrama general monorepo |
+| [docs/arquitectura/arquitectura-backend.md](docs/arquitectura/arquitectura-backend.md) | Capa API Express + Railway |
+| [docs/arquitectura/arquitectura-frontend.md](docs/arquitectura/arquitectura-frontend.md) | Capa UI Next.js + Vercel |
+| [docs/arquitectura/arquitectura-ia.md](docs/arquitectura/arquitectura-ia.md) | Capa ML ensemble |
+| [docs/backend/backend-arquitectura.md](docs/backend/backend-arquitectura.md) | Detalle técnico backend |
+| [docs/frontend/frontend-arquitectura.md](docs/frontend/frontend-arquitectura.md) | Detalle técnico frontend |
+
+---
+
+## Railway (backend + MySQL)
+
+| Elemento | Valor |
+|----------|-------|
+| API | https://taller1-production.up.railway.app/api/v1 |
+| Health | https://taller1-production.up.railway.app/health |
+| Start | `npm run start:prod` → `railway-start.mjs` |
+| BD | Plugin MySQL Railway → `DATABASE_URL` |
+
+Variables clave: `JWT_SECRET` (≥32 chars), `CORS_ORIGIN`, `ML_SERVICE_URL`  
+Operación: `RUN_DEMO_SEED=1` · `RUN_REPAIR=1` (temporal, redeploy)
+
+Guía: [docs/DEPLOY.md](docs/DEPLOY.md)
+
+---
+
+## Vercel (frontend)
+
+| Elemento | Valor |
+|----------|-------|
+| URL | https://taller1-frontend.vercel.app |
+| Build | `@tesis/shared` + `next build` |
+| Variable | `NEXT_PUBLIC_API_URL` → URL Railway `/api/v1` |
+
+---
+
+## Inteligencia Artificial
+
+Pipeline: **Datos → Preprocesamiento → Feature Engineering → RF + XGBoost → Stacking → Meta-RF → Predicción → Dashboard → Alertas**
+
+```bash
+npm run ml:train    # Entrenar ensemble, genera metrics.json
+npm run ml:test     # Validar formato respuesta
+npm run dev:ml      # Servicio FastAPI :5000
+```
+
+Documentación: [docs/python-ia/modelo-predictivo.md](docs/python-ia/modelo-predictivo.md)
+
+---
+
+## Normas ISO aplicadas
+
+| Norma | Documento | Alcance |
+|-------|-----------|---------|
+| **ISO 9001** | [docs/iso-9001/macroproceso-academico.md](docs/iso-9001/macroproceso-academico.md) | Macroproceso gestión académica, KPI, responsables |
+| **ISO/IEC 25010** | [docs/iso-25010/calidad-software.md](docs/iso-25010/calidad-software.md) | Calidad software con tabla de evidencias |
+| **ISO/IEC 29119** | [docs/iso-29119/plan-pruebas.md](docs/iso-29119/plan-pruebas.md) | Plan de pruebas (54 casos) |
+
+Índice completo: **[docs/INDICE-ISO.md](docs/INDICE-ISO.md)**
+
+---
+
+## Plan de pruebas
+
+| Comando | Alcance |
+|---------|---------|
+| `npm run test:backend` | 58+ tests unitarios API, roles, scope |
+| `npm run ml:test` | Tests modelo predictivo Python |
+| `npm run type-check` | TypeScript shared + frontend + backend |
+| `npm run lint` | ESLint frontend |
+| `npm run build` | Build producción completo |
+| `npm run test:smoke` | Integración API + ML (servicios activos) |
+
+Plan formal: [docs/iso-29119/plan-pruebas.md](docs/iso-29119/plan-pruebas.md)  
+Índice operativo: [docs/plan-pruebas/README.md](docs/plan-pruebas/README.md)
+
+---
+
+## Capturas y evidencias
+
+Almacene capturas, logs y artefactos en **`docs/evidencias/`**:
+
+| Carpeta | Contenido |
+|---------|-----------|
+| `capturas/` | Pantallas del sistema |
+| `dashboard/` | KPIs por rol |
+| `backend/` · `frontend/` | Resultados tests |
+| `ia/` | metrics.json, matrices |
+| `railway/` · `vercel/` | Despliegue producción |
+| `github/` · `postman/` · `sonarqube/` | Repo, API, calidad código |
+
+Guía: [docs/evidencias/README.md](docs/evidencias/README.md)
+
+---
+
+## Autores
+
+| Rol | Institución |
+|-----|-------------|
+| **Proyecto de tesis** | Modelo predictivo ensemble learning — riesgo de deserción |
+| **Institución** | I.E.P. Blenkir Huancayo, Perú |
+| **Repositorio** | [github.com/4dr1-2529/taller1](https://github.com/4dr1-2529/taller1) |
+
+*Desarrollado como proyecto universitario — SaaS educativo con IA explicable y persistencia real en MySQL.*
 
 ---
 
@@ -347,9 +459,9 @@ Más: [docs/machine-learning.md](docs/machine-learning.md)
 
 | Documento | Contenido |
 |-----------|-----------|
+| [docs/INDICE-ISO.md](docs/INDICE-ISO.md) | Índice ISO, arquitectura y evidencias |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Despliegue Vercel + Railway |
-| [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Capas y flujo de datos |
-| [docs/API.md](docs/API.md) | Endpoints REST detallados |
+| [docs/iso-29119/plan-pruebas.md](docs/iso-29119/plan-pruebas.md) | Plan de pruebas formal |
 | [docs/cuentas-demo/README.md](docs/cuentas-demo/README.md) | CSV de login verificados |
 | [docs/roles.md](docs/roles.md) | Permisos por rol |
 | [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
