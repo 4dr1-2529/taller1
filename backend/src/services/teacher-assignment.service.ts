@@ -1,7 +1,7 @@
 /**
  * Asignación docente institucional:
  * - 1° y 2°: tutor dicta todos los cursos del aula (esTutor=true)
- * - 3° a 6°: polidocencia — docente por curso en varios grados/secciones
+ * - 3° a 6°: polidocencia — 2 cursos por docente, máx. 6 salones distintos
  */
 import type { Prisma } from "@prisma/client";
 import { AppError } from "../middleware/errorHandler.js";
@@ -40,6 +40,50 @@ export type CreateTutorInput = {
 
 function isTutorGrade(numero: number): boolean {
   return numero >= 1 && numero <= 2;
+}
+
+export const MAX_POLIDOCENCIA_COURSES = 2;
+export const MAX_POLIDOCENCIA_SECTIONS = 6;
+
+async function assertPolidocenciaTeacherLimits(
+  profesorId: bigint,
+  cursoId: bigint,
+  seccionId: bigint,
+  anioLectivoId: bigint,
+  gradoNumero: number,
+  tx: Prisma.TransactionClient = prisma,
+) {
+  if (isTutorGrade(gradoNumero)) return;
+
+  const active = await tx.teacherCourseAssignment.findMany({
+    where: {
+      profesorId,
+      anioLectivoId,
+      activo: true,
+      esTutor: false,
+      grado: { numero: { gte: 3 } },
+    },
+    select: { cursoId: true, seccionId: true },
+  });
+
+  const courseIds = new Set(active.map((a) => a.cursoId.toString()));
+  const sectionIds = new Set(active.map((a) => a.seccionId.toString()));
+
+  const cursoKey = cursoId.toString();
+  const seccionKey = seccionId.toString();
+
+  if (!courseIds.has(cursoKey) && courseIds.size >= MAX_POLIDOCENCIA_COURSES) {
+    throw new AppError(
+      400,
+      `En polidocencia (3°–6°) cada docente dicta como máximo ${MAX_POLIDOCENCIA_COURSES} cursos distintos`,
+    );
+  }
+  if (!sectionIds.has(seccionKey) && sectionIds.size >= MAX_POLIDOCENCIA_SECTIONS) {
+    throw new AppError(
+      400,
+      `En polidocencia (3°–6°) cada docente atiende como máximo ${MAX_POLIDOCENCIA_SECTIONS} salones`,
+    );
+  }
 }
 
 async function assertTeacherActive(profesorId: bigint, tx: Prisma.TransactionClient = prisma) {
@@ -233,6 +277,14 @@ export async function createCourseAssignment(input: CreateAssignmentInput) {
   return prisma.$transaction(async (tx) => {
     await assertTeacherActive(profesorId, tx);
     await assertNoOtherTeacherForCourse(cursoId, seccion.id, anioLectivoId, profesorId, tx);
+    await assertPolidocenciaTeacherLimits(
+      profesorId,
+      cursoId,
+      seccion.id,
+      anioLectivoId,
+      seccion.grado.numero,
+      tx,
+    );
 
     if (esTutor) {
       await assertSingleTutor(seccion.id, anioLectivoId, profesorId, tx);
@@ -489,6 +541,10 @@ export async function getTeacherWorkload(profesorId: bigint) {
         ? "Tutor y docente por curso"
         : "Docente por curso";
 
+  const poliAssignments = assignments.filter((a) => !a.esTutor && a.grado.numero >= 3);
+  const poliCourseIds = new Set(poliAssignments.map((a) => idToString(a.cursoId)));
+  const poliSectionIds = new Set(poliAssignments.map((a) => idToString(a.seccionId)));
+
   return {
     tipoAsignacion: tipoPrincipal,
     esTutor,
@@ -497,6 +553,12 @@ export async function getTeacherWorkload(profesorId: bigint) {
     secciones: [...seccionesSet].sort(),
     cargaAcademica: assignments.length,
     totalAlumnos,
+    polidocencia: {
+      cursosDistintos: poliCourseIds.size,
+      maxCursos: MAX_POLIDOCENCIA_COURSES,
+      salonesDistintos: poliSectionIds.size,
+      maxSalones: MAX_POLIDOCENCIA_SECTIONS,
+    },
     asignaciones: assignments.map((a) => ({
       curso: a.curso.nombre,
       salon: `${a.grado.numero}° ${a.seccion.nombre}`,

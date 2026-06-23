@@ -123,7 +123,7 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
         <div>
           <h2 className="text-xl font-bold">Asignaciones docentes</h2>
           <p className="text-sm text-[var(--text-secondary)]">
-            1°-2°: tutor de aula (todos los cursos) · 3°-6°: docente por curso en varios salones
+            1°-2°: un tutor dicta todos los cursos del aula · 3°-6°: 2 cursos por docente, máx. 6 salones
           </p>
         </div>
       </div>

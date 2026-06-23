@@ -374,6 +374,12 @@ class ApiClient {
         secciones: string[];
         cargaAcademica: number;
         totalAlumnos: number;
+        polidocencia?: {
+          cursosDistintos: number;
+          maxCursos: number;
+          salonesDistintos: number;
+          maxSalones: number;
+        };
         asignaciones: { curso: string; salon: string; esTutor: boolean }[];
       };
     }>(`/teachers/${id}/detail`);

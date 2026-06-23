@@ -123,7 +123,7 @@ function sectionSubtitle(section: AppSection, role: string): string {
     case "Profesores":
       return "Docentes y cursos asignados.";
     case "Asignaciones":
-      return "Asignación docente: tutor de aula (1°-2°) o por curso (3°-6° polidocencia).";
+      return "Asignación docente: tutor de aula (1°-2°) o polidocencia (3°-6°: 2 cursos, máx. 6 salones).";
     case "Cursos":
       return "Oferta académica por sección.";
     case "Matrículas":

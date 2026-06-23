@@ -533,6 +533,12 @@ function TeacherWorkloadPanel({
           <p className="mt-1">
             {workload.totalAlumnos} alumnos · {workload.cargaAcademica} asignaciones
           </p>
+          {workload.polidocencia ? (
+            <p className="mt-1 text-xs text-[var(--text-muted)]">
+              Polidocencia: {workload.polidocencia.cursosDistintos}/{workload.polidocencia.maxCursos} cursos ·{" "}
+              {workload.polidocencia.salonesDistintos}/{workload.polidocencia.maxSalones} salones
+            </p>
+          ) : null}
         </div>
       </div>
     </div>
