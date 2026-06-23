@@ -8,7 +8,9 @@ import bcrypt from "bcryptjs";
 import { seedTeacherAssignments } from "./seed-assignments.js";
 
 const prisma = new PrismaClient();
-const PASSWORD = "mbappe29";
+import { DEFAULT_INSTITUTION_PASSWORD } from "../scripts/default-password.mjs";
+
+const PASSWORD = DEFAULT_INSTITUTION_PASSWORD;
 /** Máximo de alumnos por salón/sección (capacidad institucional). */
 const ALUMNOS_POR_SALON = 30;
 

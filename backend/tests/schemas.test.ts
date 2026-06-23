@@ -19,7 +19,7 @@ import {
 describe("AUTH", () => {
   it("login válido", () => {
     assert.equal(
-      loginSchema.safeParse({ email: "dir@blenkir.edu.pe", password: "Tesis2026!" }).success,
+      loginSchema.safeParse({ email: "dir@blenkir.edu.pe", password: "mbappe29" }).success,
       true,
     );
   });
@@ -59,7 +59,7 @@ describe("Roles y contraseña", () => {
     assert.equal(
       createUserSchema.safeParse({
         email: "p@b.com",
-        password: "Tesis2026!",
+        password: "Password1x",
         nombres: "Ana",
         apellidos: "López",
         role: "docente",
@@ -69,7 +69,7 @@ describe("Roles y contraseña", () => {
     assert.equal(
       createUserSchema.safeParse({
         email: "p@b.com",
-        password: "Tesis2026!",
+        password: "Password1x",
         nombres: "Ana",
         apellidos: "López",
         role: "tutor",
