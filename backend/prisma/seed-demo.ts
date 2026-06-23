@@ -10,12 +10,15 @@ import { seedTeacherAssignments } from "./seed-assignments.js";
 import { seedBimesterGrades } from "./demo-data/seed-grades.js";
 import { TUTOR_SALON_LABELS } from "./demo-data/tutor-labels.js";
 import {
-  nextUniqueDni,
+  deterministicStudent,
+  deterministicTeacherDni,
   randomPeruvianPerson,
-  studentEmail,
-  teacherEmail,
 } from "./demo-data/peruvian-names.js";
 import { DEFAULT_INSTITUTION_PASSWORD } from "../scripts/default-password.mjs";
+import {
+  buildStudentAccountEmail,
+  buildTeacherAccountEmail,
+} from "../src/utils/person-accounts.js";
 
 const prisma = new PrismaClient();
 const PASSWORD = DEFAULT_INSTITUTION_PASSWORD;
@@ -69,7 +72,6 @@ async function main() {
   const rolDocente = await getRolId("docente");
   const rolEstudiante = await getRolId("estudiante");
 
-  const usedDni = new Set<string>();
   const usedEmails = new Set<string>([DIRECTOR_EMAIL]);
 
   const anio = await prisma.anioLectivo.findFirst({ where: { anio: 2026 } });
@@ -85,7 +87,7 @@ async function main() {
   const periodo1 = periodos.find((p) => p.numero === 1)!;
 
   const directorPerson = randomPeruvianPerson();
-  const directorDni = nextUniqueDni(usedDni);
+  const directorDni = "40000000";
 
   await prisma.user.upsert({
     where: { email: DIRECTOR_EMAIL },
@@ -107,10 +109,10 @@ async function main() {
     },
   });
 
-  async function upsertTeacher(codigo: string, especialidad: string): Promise<bigint> {
-    const person = randomPeruvianPerson();
-    const dni = nextUniqueDni(usedDni);
-    const email = teacherEmail(dni);
+  async function upsertTeacher(codigo: string, especialidad: string, teacherIndex: number): Promise<bigint> {
+    const dni = deterministicTeacherDni(teacherIndex);
+    const email = buildTeacherAccountEmail(dni);
+    const person = deterministicStudent(700 + teacherIndex);
     usedEmails.add(email);
 
     const user = await prisma.user.upsert({
@@ -159,13 +161,13 @@ async function main() {
   for (let i = 0; i < TUTOR_SALON_LABELS.length; i++) {
     const label = TUTOR_SALON_LABELS[i]!;
     const codigo = `DOC-${String(i + 1).padStart(3, "0")}`;
-    tutorTeacherIds.push(await upsertTeacher(codigo, label.especialidad));
+    tutorTeacherIds.push(await upsertTeacher(codigo, label.especialidad, i));
   }
 
   const poliTeacherIds: bigint[] = [];
   for (let i = 0; i < POLI_SPECIALTIES.length; i++) {
     const codigo = `DOC-${String(TUTOR_SALON_LABELS.length + i + 1).padStart(3, "0")}`;
-    poliTeacherIds.push(await upsertTeacher(codigo, POLI_SPECIALTIES[i]!));
+    poliTeacherIds.push(await upsertTeacher(codigo, POLI_SPECIALTIES[i]!, TUTOR_SALON_LABELS.length + i));
   }
 
   const teacherIds = [...tutorTeacherIds, ...poliTeacherIds];
@@ -190,9 +192,10 @@ async function main() {
       studentNum++;
       const num = String(studentNum).padStart(4, "0");
       const codigo = `EST-2026-${num}`;
-      const person = randomPeruvianPerson();
-      const dni = nextUniqueDni(usedDni);
-      const email = studentEmail(person.nombres, person.apellidos, dni, usedEmails);
+      const person = deterministicStudent(studentNum);
+      const dni = person.dni;
+      const email = buildStudentAccountEmail(person.nombres, person.apellidos, dni, null);
+      usedEmails.add(email);
 
       const promedio = 8 + ((studentNum * 7) % 110) / 10;
       const asistencia = 72 + ((studentNum * 3) % 28);

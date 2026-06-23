@@ -1,0 +1,24 @@
+codigo,tipo,nombres,apellidos,email_login,password,especialidad
+DOC-001,Tutor 1°-2°,Rosa,Paredes Silva,pro50000001@blenkir.edu.pe,mbappe29,Tutor de aula — 1° A
+DOC-002,Tutor 1°-2°,Mateo,Silva Herrera,pro50000002@blenkir.edu.pe,mbappe29,Tutor de aula — 1° B
+DOC-003,Tutor 1°-2°,Valentina,Silva Herrera,pro50000003@blenkir.edu.pe,mbappe29,Tutor de aula — 1° C
+DOC-004,Tutor 1°-2°,Santiago,Silva Herrera,pro50000004@blenkir.edu.pe,mbappe29,Tutor de aula — 1° D
+DOC-005,Tutor 1°-2°,Luciana,Silva Herrera,pro50000005@blenkir.edu.pe,mbappe29,Tutor de aula — 2° A
+DOC-006,Tutor 1°-2°,Sebastián,Silva Herrera,pro50000006@blenkir.edu.pe,mbappe29,Tutor de aula — 2° B
+DOC-007,Tutor 1°-2°,Camila,Silva Herrera,pro50000007@blenkir.edu.pe,mbappe29,Tutor de aula — 2° C
+DOC-008,Tutor 1°-2°,Diego,Silva Herrera,pro50000008@blenkir.edu.pe,mbappe29,Tutor de aula — 2° D
+DOC-009,Polidocencia 3°-6°,Isabella,Silva Herrera,pro50000009@blenkir.edu.pe,mbappe29,Inglés
+DOC-010,Polidocencia 3°-6°,Alejandro,Silva Herrera,pro50000010@blenkir.edu.pe,mbappe29,Comunicación
+DOC-011,Polidocencia 3°-6°,Sofía,Silva Herrera,pro50000011@blenkir.edu.pe,mbappe29,Ciencias
+DOC-012,Polidocencia 3°-6°,Daniel,Silva Herrera,pro50000012@blenkir.edu.pe,mbappe29,Ciencias Sociales
+DOC-013,Polidocencia 3°-6°,Mariana,Silva Herrera,pro50000013@blenkir.edu.pe,mbappe29,Educación Física
+DOC-014,Polidocencia 3°-6°,Andrés,Silva Herrera,pro50000014@blenkir.edu.pe,mbappe29,Matemática
+DOC-015,Polidocencia 3°-6°,Emilia,Silva Herrera,pro50000015@blenkir.edu.pe,mbappe29,Lenguaje
+DOC-016,Polidocencia 3°-6°,Gabriel,Silva Herrera,pro50000016@blenkir.edu.pe,mbappe29,Religión
+DOC-017,Polidocencia 3°-6°,Victoria,Silva Herrera,pro50000017@blenkir.edu.pe,mbappe29,Taller
+DOC-018,Polidocencia 3°-6°,Renato,Silva Herrera,pro50000018@blenkir.edu.pe,mbappe29,Geografía
+DOC-019,Polidocencia 3°-6°,Fiorella,Silva Herrera,pro50000019@blenkir.edu.pe,mbappe29,Historia
+DOC-020,Polidocencia 3°-6°,Bruno,Silva Herrera,pro50000020@blenkir.edu.pe,mbappe29,Razonamiento
+DOC-021,Polidocencia 3°-6°,Ariana,Silva Herrera,pro50000021@blenkir.edu.pe,mbappe29,Geometría
+DOC-022,Polidocencia 3°-6°,Joaquín,Silva Herrera,pro50000022@blenkir.edu.pe,mbappe29,Álgebra
+DOC-023,Polidocencia 3°-6°,Mía,Silva Herrera,pro50000023@blenkir.edu.pe,mbappe29,Arte

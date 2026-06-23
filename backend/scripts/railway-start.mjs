@@ -45,6 +45,17 @@ if (process.env.RUN_DEMO_SEED === "1") {
   seed.unref();
 }
 
+if (process.env.RUN_REPAIR === "1") {
+  console.log("[railway-start] RUN_REPAIR=1 — reparando cuentas y notas I–II…");
+  const repair = spawn("tsx", ["scripts/repair-institutional-data.ts"], {
+    cwd: backendRoot,
+    env: process.env,
+    stdio: "inherit",
+    detached: true,
+  });
+  repair.unref();
+}
+
 console.log("[railway-start] iniciando API");
 const api = spawn("node", ["dist/index.js"], {
   stdio: "inherit",

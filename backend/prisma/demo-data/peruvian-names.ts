@@ -36,6 +36,22 @@ export function randomPeruvianPerson(): PeruvianPerson {
   };
 }
 
+/** Estudiante estable por índice (1–660): mismo nombre, DNI y correo en cada seed. */
+export function deterministicStudent(studentNum: number): PeruvianPerson & { dni: string } {
+  const i = studentNum - 1;
+  const nombres = PERUVIAN_FIRST_NAMES[i % PERUVIAN_FIRST_NAMES.length]!;
+  const apellidoPaterno = PERUVIAN_SURNAMES[Math.floor(i / PERUVIAN_FIRST_NAMES.length) % PERUVIAN_SURNAMES.length]!;
+  const apellidoMaterno =
+    PERUVIAN_SURNAMES[(Math.floor(i / PERUVIAN_FIRST_NAMES.length) + 1) % PERUVIAN_SURNAMES.length]!;
+  const dni = String(40_000_000 + studentNum).padStart(8, "0");
+  return { nombres, apellidos: `${apellidoPaterno} ${apellidoMaterno}`, dni };
+}
+
+/** Docente estable por índice (0–22): mismo DNI y correo pro{DNI}@ en cada seed. */
+export function deterministicTeacherDni(teacherIndex: number): string {
+  return String(50_000_001 + teacherIndex).padStart(8, "0");
+}
+
 function slugPart(value: string): string {
   return value
     .toLowerCase()

@@ -27,4 +27,11 @@ execSync("npm run db:reset:full --workspace=backend", {
   env: process.env,
 });
 
+console.log("[railway-seed] reparación final cuentas y notas…");
+execSync("tsx scripts/repair-institutional-data.ts", {
+  stdio: "inherit",
+  cwd: backendRoot,
+  env: process.env,
+});
+
 console.log("[railway-seed] OK — director@blenkir.edu.pe / mbappe29");

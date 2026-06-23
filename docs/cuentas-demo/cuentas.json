@@ -1,0 +1,5502 @@
+{
+  "generatedAt": "2026-06-23T20:56:44.583Z",
+  "source": "local-database",
+  "password": "mbappe29",
+  "director": {
+    "email": "director@blenkir.edu.pe",
+    "nombres": "Rosa",
+    "apellidos": "Ortiz Vásquez",
+    "rol": "Director"
+  },
+  "teachers": [
+    {
+      "codigo": "DOC-001",
+      "nombres": "Rosa",
+      "apellidos": "Paredes Silva",
+      "email": "pro50000001@blenkir.edu.pe",
+      "especialidad": "Tutor de aula — 1° A",
+      "tipo": "Tutor 1°-2°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-002",
+      "nombres": "Mateo",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000002@blenkir.edu.pe",
+      "especialidad": "Tutor de aula — 1° B",
+      "tipo": "Tutor 1°-2°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-003",
+      "nombres": "Valentina",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000003@blenkir.edu.pe",
+      "especialidad": "Tutor de aula — 1° C",
+      "tipo": "Tutor 1°-2°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-004",
+      "nombres": "Santiago",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000004@blenkir.edu.pe",
+      "especialidad": "Tutor de aula — 1° D",
+      "tipo": "Tutor 1°-2°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-005",
+      "nombres": "Luciana",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000005@blenkir.edu.pe",
+      "especialidad": "Tutor de aula — 2° A",
+      "tipo": "Tutor 1°-2°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-006",
+      "nombres": "Sebastián",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000006@blenkir.edu.pe",
+      "especialidad": "Tutor de aula — 2° B",
+      "tipo": "Tutor 1°-2°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-007",
+      "nombres": "Camila",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000007@blenkir.edu.pe",
+      "especialidad": "Tutor de aula — 2° C",
+      "tipo": "Tutor 1°-2°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-008",
+      "nombres": "Diego",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000008@blenkir.edu.pe",
+      "especialidad": "Tutor de aula — 2° D",
+      "tipo": "Tutor 1°-2°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-009",
+      "nombres": "Isabella",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000009@blenkir.edu.pe",
+      "especialidad": "Inglés",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-010",
+      "nombres": "Alejandro",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000010@blenkir.edu.pe",
+      "especialidad": "Comunicación",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-011",
+      "nombres": "Sofía",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000011@blenkir.edu.pe",
+      "especialidad": "Ciencias",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-012",
+      "nombres": "Daniel",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000012@blenkir.edu.pe",
+      "especialidad": "Ciencias Sociales",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-013",
+      "nombres": "Mariana",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000013@blenkir.edu.pe",
+      "especialidad": "Educación Física",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-014",
+      "nombres": "Andrés",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000014@blenkir.edu.pe",
+      "especialidad": "Matemática",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-015",
+      "nombres": "Emilia",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000015@blenkir.edu.pe",
+      "especialidad": "Lenguaje",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-016",
+      "nombres": "Gabriel",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000016@blenkir.edu.pe",
+      "especialidad": "Religión",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-017",
+      "nombres": "Victoria",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000017@blenkir.edu.pe",
+      "especialidad": "Taller",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-018",
+      "nombres": "Renato",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000018@blenkir.edu.pe",
+      "especialidad": "Geografía",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-019",
+      "nombres": "Fiorella",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000019@blenkir.edu.pe",
+      "especialidad": "Historia",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-020",
+      "nombres": "Bruno",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000020@blenkir.edu.pe",
+      "especialidad": "Razonamiento",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-021",
+      "nombres": "Ariana",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000021@blenkir.edu.pe",
+      "especialidad": "Geometría",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-022",
+      "nombres": "Joaquín",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000022@blenkir.edu.pe",
+      "especialidad": "Álgebra",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "DOC-023",
+      "nombres": "Mía",
+      "apellidos": "Silva Herrera",
+      "email": "pro50000023@blenkir.edu.pe",
+      "especialidad": "Arte",
+      "tipo": "Polidocencia 3°-6°",
+      "password": "mbappe29"
+    }
+  ],
+  "students": [
+    {
+      "codigo": "EST-2026-0001",
+      "nombres": "Mateo",
+      "apellidos": "Quispe Flores",
+      "email": "mateo.quispe0001@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0002",
+      "nombres": "Valentina",
+      "apellidos": "Quispe Flores",
+      "email": "valentina.quispe0002@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0003",
+      "nombres": "Santiago",
+      "apellidos": "Quispe Flores",
+      "email": "santiago.quispe0003@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0004",
+      "nombres": "Luciana",
+      "apellidos": "Quispe Flores",
+      "email": "luciana.quispe0004@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0005",
+      "nombres": "Sebastián",
+      "apellidos": "Quispe Flores",
+      "email": "sebastian.quispe0005@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0006",
+      "nombres": "Camila",
+      "apellidos": "Quispe Flores",
+      "email": "camila.quispe0006@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0007",
+      "nombres": "Diego",
+      "apellidos": "Quispe Flores",
+      "email": "diego.quispe0007@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0008",
+      "nombres": "Isabella",
+      "apellidos": "Quispe Flores",
+      "email": "isabella.quispe0008@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0009",
+      "nombres": "Alejandro",
+      "apellidos": "Quispe Flores",
+      "email": "alejandro.quispe0009@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0010",
+      "nombres": "Sofía",
+      "apellidos": "Quispe Flores",
+      "email": "sofia.quispe0010@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0011",
+      "nombres": "Daniel",
+      "apellidos": "Quispe Flores",
+      "email": "daniel.quispe0011@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0012",
+      "nombres": "Mariana",
+      "apellidos": "Quispe Flores",
+      "email": "mariana.quispe0012@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0013",
+      "nombres": "Andrés",
+      "apellidos": "Quispe Flores",
+      "email": "andres.quispe0013@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0014",
+      "nombres": "Emilia",
+      "apellidos": "Quispe Flores",
+      "email": "emilia.quispe0014@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0015",
+      "nombres": "Gabriel",
+      "apellidos": "Quispe Flores",
+      "email": "gabriel.quispe0015@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0016",
+      "nombres": "Victoria",
+      "apellidos": "Quispe Flores",
+      "email": "victoria.quispe0016@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0017",
+      "nombres": "Renato",
+      "apellidos": "Quispe Flores",
+      "email": "renato.quispe0017@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0018",
+      "nombres": "Fiorella",
+      "apellidos": "Quispe Flores",
+      "email": "fiorella.quispe0018@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0019",
+      "nombres": "Bruno",
+      "apellidos": "Quispe Flores",
+      "email": "bruno.quispe0019@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0020",
+      "nombres": "Ariana",
+      "apellidos": "Quispe Flores",
+      "email": "ariana.quispe0020@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0021",
+      "nombres": "Joaquín",
+      "apellidos": "Quispe Flores",
+      "email": "joaquin.quispe0021@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0022",
+      "nombres": "Mía",
+      "apellidos": "Quispe Flores",
+      "email": "mia.quispe0022@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0023",
+      "nombres": "Thiago",
+      "apellidos": "Quispe Flores",
+      "email": "thiago.quispe0023@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0024",
+      "nombres": "Antonella",
+      "apellidos": "Quispe Flores",
+      "email": "antonella.quispe0024@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0025",
+      "nombres": "Ian",
+      "apellidos": "Quispe Flores",
+      "email": "ian.quispe0025@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0026",
+      "nombres": "Lucía",
+      "apellidos": "Quispe Flores",
+      "email": "lucia.quispe0026@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0027",
+      "nombres": "Adrián",
+      "apellidos": "Quispe Flores",
+      "email": "adrian.quispe0027@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0028",
+      "nombres": "Valeria",
+      "apellidos": "Quispe Flores",
+      "email": "valeria.quispe0028@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0029",
+      "nombres": "Emilio",
+      "apellidos": "Quispe Flores",
+      "email": "emilio.quispe0029@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0030",
+      "nombres": "Nicole",
+      "apellidos": "Quispe Flores",
+      "email": "nicole.quispe0030@blenkir.edu.pe",
+      "salon": "1° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0031",
+      "nombres": "Rodrigo",
+      "apellidos": "Quispe Flores",
+      "email": "rodrigo.quispe0031@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0032",
+      "nombres": "Paola",
+      "apellidos": "Quispe Flores",
+      "email": "paola.quispe0032@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0033",
+      "nombres": "César",
+      "apellidos": "Quispe Flores",
+      "email": "cesar.quispe0033@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0034",
+      "nombres": "Milagros",
+      "apellidos": "Quispe Flores",
+      "email": "milagros.quispe0034@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0035",
+      "nombres": "Eduardo",
+      "apellidos": "Quispe Flores",
+      "email": "eduardo.quispe0035@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0036",
+      "nombres": "Roxana",
+      "apellidos": "Quispe Flores",
+      "email": "roxana.quispe0036@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0037",
+      "nombres": "Julio",
+      "apellidos": "Quispe Flores",
+      "email": "julio.quispe0037@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0038",
+      "nombres": "Katherine",
+      "apellidos": "Quispe Flores",
+      "email": "katherine.quispe0038@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0039",
+      "nombres": "Marco",
+      "apellidos": "Quispe Flores",
+      "email": "marco.quispe0039@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0040",
+      "nombres": "Angela",
+      "apellidos": "Quispe Flores",
+      "email": "angela.quispe0040@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0041",
+      "nombres": "Felipe",
+      "apellidos": "Quispe Flores",
+      "email": "felipe.quispe0041@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0042",
+      "nombres": "Ruth",
+      "apellidos": "Quispe Flores",
+      "email": "ruth.quispe0042@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0043",
+      "nombres": "Héctor",
+      "apellidos": "Quispe Flores",
+      "email": "hector.quispe0043@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0044",
+      "nombres": "Gladys",
+      "apellidos": "Quispe Flores",
+      "email": "gladys.quispe0044@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0045",
+      "nombres": "Óscar",
+      "apellidos": "Quispe Flores",
+      "email": "oscar.quispe0045@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0046",
+      "nombres": "Patricia",
+      "apellidos": "Quispe Flores",
+      "email": "patricia.quispe0046@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0047",
+      "nombres": "Raúl",
+      "apellidos": "Quispe Flores",
+      "email": "raul.quispe0047@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0048",
+      "nombres": "Carmen",
+      "apellidos": "Quispe Flores",
+      "email": "carmen.quispe0048@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0049",
+      "nombres": "Miguel",
+      "apellidos": "Quispe Flores",
+      "email": "miguel.quispe0049@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0050",
+      "nombres": "Rosa",
+      "apellidos": "Quispe Flores",
+      "email": "rosa.quispe0050@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0051",
+      "nombres": "Mateo",
+      "apellidos": "Flores García",
+      "email": "mateo.flores0051@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0052",
+      "nombres": "Valentina",
+      "apellidos": "Flores García",
+      "email": "valentina.flores0052@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0053",
+      "nombres": "Santiago",
+      "apellidos": "Flores García",
+      "email": "santiago.flores0053@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0054",
+      "nombres": "Luciana",
+      "apellidos": "Flores García",
+      "email": "luciana.flores0054@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0055",
+      "nombres": "Sebastián",
+      "apellidos": "Flores García",
+      "email": "sebastian.flores0055@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0056",
+      "nombres": "Camila",
+      "apellidos": "Flores García",
+      "email": "camila.flores0056@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0057",
+      "nombres": "Diego",
+      "apellidos": "Flores García",
+      "email": "diego.flores0057@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0058",
+      "nombres": "Isabella",
+      "apellidos": "Flores García",
+      "email": "isabella.flores0058@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0059",
+      "nombres": "Alejandro",
+      "apellidos": "Flores García",
+      "email": "alejandro.flores0059@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0060",
+      "nombres": "Sofía",
+      "apellidos": "Flores García",
+      "email": "sofia.flores0060@blenkir.edu.pe",
+      "salon": "1° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0061",
+      "nombres": "Daniel",
+      "apellidos": "Flores García",
+      "email": "daniel.flores0061@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0062",
+      "nombres": "Mariana",
+      "apellidos": "Flores García",
+      "email": "mariana.flores0062@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0063",
+      "nombres": "Andrés",
+      "apellidos": "Flores García",
+      "email": "andres.flores0063@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0064",
+      "nombres": "Emilia",
+      "apellidos": "Flores García",
+      "email": "emilia.flores0064@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0065",
+      "nombres": "Gabriel",
+      "apellidos": "Flores García",
+      "email": "gabriel.flores0065@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0066",
+      "nombres": "Victoria",
+      "apellidos": "Flores García",
+      "email": "victoria.flores0066@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0067",
+      "nombres": "Renato",
+      "apellidos": "Flores García",
+      "email": "renato.flores0067@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0068",
+      "nombres": "Fiorella",
+      "apellidos": "Flores García",
+      "email": "fiorella.flores0068@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0069",
+      "nombres": "Bruno",
+      "apellidos": "Flores García",
+      "email": "bruno.flores0069@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0070",
+      "nombres": "Ariana",
+      "apellidos": "Flores García",
+      "email": "ariana.flores0070@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0071",
+      "nombres": "Joaquín",
+      "apellidos": "Flores García",
+      "email": "joaquin.flores0071@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0072",
+      "nombres": "Mía",
+      "apellidos": "Flores García",
+      "email": "mia.flores0072@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0073",
+      "nombres": "Thiago",
+      "apellidos": "Flores García",
+      "email": "thiago.flores0073@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0074",
+      "nombres": "Antonella",
+      "apellidos": "Flores García",
+      "email": "antonella.flores0074@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0075",
+      "nombres": "Ian",
+      "apellidos": "Flores García",
+      "email": "ian.flores0075@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0076",
+      "nombres": "Lucía",
+      "apellidos": "Flores García",
+      "email": "lucia.flores0076@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0077",
+      "nombres": "Adrián",
+      "apellidos": "Flores García",
+      "email": "adrian.flores0077@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0078",
+      "nombres": "Valeria",
+      "apellidos": "Flores García",
+      "email": "valeria.flores0078@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0079",
+      "nombres": "Emilio",
+      "apellidos": "Flores García",
+      "email": "emilio.flores0079@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0080",
+      "nombres": "Nicole",
+      "apellidos": "Flores García",
+      "email": "nicole.flores0080@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0081",
+      "nombres": "Rodrigo",
+      "apellidos": "Flores García",
+      "email": "rodrigo.flores0081@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0082",
+      "nombres": "Paola",
+      "apellidos": "Flores García",
+      "email": "paola.flores0082@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0083",
+      "nombres": "César",
+      "apellidos": "Flores García",
+      "email": "cesar.flores0083@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0084",
+      "nombres": "Milagros",
+      "apellidos": "Flores García",
+      "email": "milagros.flores0084@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0085",
+      "nombres": "Eduardo",
+      "apellidos": "Flores García",
+      "email": "eduardo.flores0085@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0086",
+      "nombres": "Roxana",
+      "apellidos": "Flores García",
+      "email": "roxana.flores0086@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0087",
+      "nombres": "Julio",
+      "apellidos": "Flores García",
+      "email": "julio.flores0087@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0088",
+      "nombres": "Katherine",
+      "apellidos": "Flores García",
+      "email": "katherine.flores0088@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0089",
+      "nombres": "Marco",
+      "apellidos": "Flores García",
+      "email": "marco.flores0089@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0090",
+      "nombres": "Angela",
+      "apellidos": "Flores García",
+      "email": "angela.flores0090@blenkir.edu.pe",
+      "salon": "1° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0091",
+      "nombres": "Felipe",
+      "apellidos": "Flores García",
+      "email": "felipe.flores0091@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0092",
+      "nombres": "Ruth",
+      "apellidos": "Flores García",
+      "email": "ruth.flores0092@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0093",
+      "nombres": "Héctor",
+      "apellidos": "Flores García",
+      "email": "hector.flores0093@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0094",
+      "nombres": "Gladys",
+      "apellidos": "Flores García",
+      "email": "gladys.flores0094@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0095",
+      "nombres": "Óscar",
+      "apellidos": "Flores García",
+      "email": "oscar.flores0095@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0096",
+      "nombres": "Patricia",
+      "apellidos": "Flores García",
+      "email": "patricia.flores0096@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0097",
+      "nombres": "Raúl",
+      "apellidos": "Flores García",
+      "email": "raul.flores0097@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0098",
+      "nombres": "Carmen",
+      "apellidos": "Flores García",
+      "email": "carmen.flores0098@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0099",
+      "nombres": "Miguel",
+      "apellidos": "Flores García",
+      "email": "miguel.flores0099@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0100",
+      "nombres": "Rosa",
+      "apellidos": "Flores García",
+      "email": "rosa.flores0100@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0101",
+      "nombres": "Mateo",
+      "apellidos": "García Torres",
+      "email": "mateo.garcia0101@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0102",
+      "nombres": "Valentina",
+      "apellidos": "García Torres",
+      "email": "valentina.garcia0102@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0103",
+      "nombres": "Santiago",
+      "apellidos": "García Torres",
+      "email": "santiago.garcia0103@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0104",
+      "nombres": "Luciana",
+      "apellidos": "García Torres",
+      "email": "luciana.garcia0104@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0105",
+      "nombres": "Sebastián",
+      "apellidos": "García Torres",
+      "email": "sebastian.garcia0105@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0106",
+      "nombres": "Camila",
+      "apellidos": "García Torres",
+      "email": "camila.garcia0106@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0107",
+      "nombres": "Diego",
+      "apellidos": "García Torres",
+      "email": "diego.garcia0107@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0108",
+      "nombres": "Isabella",
+      "apellidos": "García Torres",
+      "email": "isabella.garcia0108@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0109",
+      "nombres": "Alejandro",
+      "apellidos": "García Torres",
+      "email": "alejandro.garcia0109@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0110",
+      "nombres": "Sofía",
+      "apellidos": "García Torres",
+      "email": "sofia.garcia0110@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0111",
+      "nombres": "Daniel",
+      "apellidos": "García Torres",
+      "email": "daniel.garcia0111@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0112",
+      "nombres": "Mariana",
+      "apellidos": "García Torres",
+      "email": "mariana.garcia0112@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0113",
+      "nombres": "Andrés",
+      "apellidos": "García Torres",
+      "email": "andres.garcia0113@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0114",
+      "nombres": "Emilia",
+      "apellidos": "García Torres",
+      "email": "emilia.garcia0114@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0115",
+      "nombres": "Gabriel",
+      "apellidos": "García Torres",
+      "email": "gabriel.garcia0115@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0116",
+      "nombres": "Victoria",
+      "apellidos": "García Torres",
+      "email": "victoria.garcia0116@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0117",
+      "nombres": "Renato",
+      "apellidos": "García Torres",
+      "email": "renato.garcia0117@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0118",
+      "nombres": "Fiorella",
+      "apellidos": "García Torres",
+      "email": "fiorella.garcia0118@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0119",
+      "nombres": "Bruno",
+      "apellidos": "García Torres",
+      "email": "bruno.garcia0119@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0120",
+      "nombres": "Ariana",
+      "apellidos": "García Torres",
+      "email": "ariana.garcia0120@blenkir.edu.pe",
+      "salon": "1° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0121",
+      "nombres": "Joaquín",
+      "apellidos": "García Torres",
+      "email": "joaquin.garcia0121@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0122",
+      "nombres": "Mía",
+      "apellidos": "García Torres",
+      "email": "mia.garcia0122@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0123",
+      "nombres": "Thiago",
+      "apellidos": "García Torres",
+      "email": "thiago.garcia0123@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0124",
+      "nombres": "Antonella",
+      "apellidos": "García Torres",
+      "email": "antonella.garcia0124@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0125",
+      "nombres": "Ian",
+      "apellidos": "García Torres",
+      "email": "ian.garcia0125@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0126",
+      "nombres": "Lucía",
+      "apellidos": "García Torres",
+      "email": "lucia.garcia0126@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0127",
+      "nombres": "Adrián",
+      "apellidos": "García Torres",
+      "email": "adrian.garcia0127@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0128",
+      "nombres": "Valeria",
+      "apellidos": "García Torres",
+      "email": "valeria.garcia0128@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0129",
+      "nombres": "Emilio",
+      "apellidos": "García Torres",
+      "email": "emilio.garcia0129@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0130",
+      "nombres": "Nicole",
+      "apellidos": "García Torres",
+      "email": "nicole.garcia0130@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0131",
+      "nombres": "Rodrigo",
+      "apellidos": "García Torres",
+      "email": "rodrigo.garcia0131@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0132",
+      "nombres": "Paola",
+      "apellidos": "García Torres",
+      "email": "paola.garcia0132@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0133",
+      "nombres": "César",
+      "apellidos": "García Torres",
+      "email": "cesar.garcia0133@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0134",
+      "nombres": "Milagros",
+      "apellidos": "García Torres",
+      "email": "milagros.garcia0134@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0135",
+      "nombres": "Eduardo",
+      "apellidos": "García Torres",
+      "email": "eduardo.garcia0135@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0136",
+      "nombres": "Roxana",
+      "apellidos": "García Torres",
+      "email": "roxana.garcia0136@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0137",
+      "nombres": "Julio",
+      "apellidos": "García Torres",
+      "email": "julio.garcia0137@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0138",
+      "nombres": "Katherine",
+      "apellidos": "García Torres",
+      "email": "katherine.garcia0138@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0139",
+      "nombres": "Marco",
+      "apellidos": "García Torres",
+      "email": "marco.garcia0139@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0140",
+      "nombres": "Angela",
+      "apellidos": "García Torres",
+      "email": "angela.garcia0140@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0141",
+      "nombres": "Felipe",
+      "apellidos": "García Torres",
+      "email": "felipe.garcia0141@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0142",
+      "nombres": "Ruth",
+      "apellidos": "García Torres",
+      "email": "ruth.garcia0142@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0143",
+      "nombres": "Héctor",
+      "apellidos": "García Torres",
+      "email": "hector.garcia0143@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0144",
+      "nombres": "Gladys",
+      "apellidos": "García Torres",
+      "email": "gladys.garcia0144@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0145",
+      "nombres": "Óscar",
+      "apellidos": "García Torres",
+      "email": "oscar.garcia0145@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0146",
+      "nombres": "Patricia",
+      "apellidos": "García Torres",
+      "email": "patricia.garcia0146@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0147",
+      "nombres": "Raúl",
+      "apellidos": "García Torres",
+      "email": "raul.garcia0147@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0148",
+      "nombres": "Carmen",
+      "apellidos": "García Torres",
+      "email": "carmen.garcia0148@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0149",
+      "nombres": "Miguel",
+      "apellidos": "García Torres",
+      "email": "miguel.garcia0149@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0150",
+      "nombres": "Rosa",
+      "apellidos": "García Torres",
+      "email": "rosa.garcia0150@blenkir.edu.pe",
+      "salon": "2° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0151",
+      "nombres": "Mateo",
+      "apellidos": "Torres Mamani",
+      "email": "mateo.torres0151@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0152",
+      "nombres": "Valentina",
+      "apellidos": "Torres Mamani",
+      "email": "valentina.torres0152@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0153",
+      "nombres": "Santiago",
+      "apellidos": "Torres Mamani",
+      "email": "santiago.torres0153@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0154",
+      "nombres": "Luciana",
+      "apellidos": "Torres Mamani",
+      "email": "luciana.torres0154@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0155",
+      "nombres": "Sebastián",
+      "apellidos": "Torres Mamani",
+      "email": "sebastian.torres0155@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0156",
+      "nombres": "Camila",
+      "apellidos": "Torres Mamani",
+      "email": "camila.torres0156@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0157",
+      "nombres": "Diego",
+      "apellidos": "Torres Mamani",
+      "email": "diego.torres0157@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0158",
+      "nombres": "Isabella",
+      "apellidos": "Torres Mamani",
+      "email": "isabella.torres0158@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0159",
+      "nombres": "Alejandro",
+      "apellidos": "Torres Mamani",
+      "email": "alejandro.torres0159@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0160",
+      "nombres": "Sofía",
+      "apellidos": "Torres Mamani",
+      "email": "sofia.torres0160@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0161",
+      "nombres": "Daniel",
+      "apellidos": "Torres Mamani",
+      "email": "daniel.torres0161@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0162",
+      "nombres": "Mariana",
+      "apellidos": "Torres Mamani",
+      "email": "mariana.torres0162@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0163",
+      "nombres": "Andrés",
+      "apellidos": "Torres Mamani",
+      "email": "andres.torres0163@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0164",
+      "nombres": "Emilia",
+      "apellidos": "Torres Mamani",
+      "email": "emilia.torres0164@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0165",
+      "nombres": "Gabriel",
+      "apellidos": "Torres Mamani",
+      "email": "gabriel.torres0165@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0166",
+      "nombres": "Victoria",
+      "apellidos": "Torres Mamani",
+      "email": "victoria.torres0166@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0167",
+      "nombres": "Renato",
+      "apellidos": "Torres Mamani",
+      "email": "renato.torres0167@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0168",
+      "nombres": "Fiorella",
+      "apellidos": "Torres Mamani",
+      "email": "fiorella.torres0168@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0169",
+      "nombres": "Bruno",
+      "apellidos": "Torres Mamani",
+      "email": "bruno.torres0169@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0170",
+      "nombres": "Ariana",
+      "apellidos": "Torres Mamani",
+      "email": "ariana.torres0170@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0171",
+      "nombres": "Joaquín",
+      "apellidos": "Torres Mamani",
+      "email": "joaquin.torres0171@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0172",
+      "nombres": "Mía",
+      "apellidos": "Torres Mamani",
+      "email": "mia.torres0172@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0173",
+      "nombres": "Thiago",
+      "apellidos": "Torres Mamani",
+      "email": "thiago.torres0173@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0174",
+      "nombres": "Antonella",
+      "apellidos": "Torres Mamani",
+      "email": "antonella.torres0174@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0175",
+      "nombres": "Ian",
+      "apellidos": "Torres Mamani",
+      "email": "ian.torres0175@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0176",
+      "nombres": "Lucía",
+      "apellidos": "Torres Mamani",
+      "email": "lucia.torres0176@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0177",
+      "nombres": "Adrián",
+      "apellidos": "Torres Mamani",
+      "email": "adrian.torres0177@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0178",
+      "nombres": "Valeria",
+      "apellidos": "Torres Mamani",
+      "email": "valeria.torres0178@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0179",
+      "nombres": "Emilio",
+      "apellidos": "Torres Mamani",
+      "email": "emilio.torres0179@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0180",
+      "nombres": "Nicole",
+      "apellidos": "Torres Mamani",
+      "email": "nicole.torres0180@blenkir.edu.pe",
+      "salon": "2° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0181",
+      "nombres": "Rodrigo",
+      "apellidos": "Torres Mamani",
+      "email": "rodrigo.torres0181@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0182",
+      "nombres": "Paola",
+      "apellidos": "Torres Mamani",
+      "email": "paola.torres0182@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0183",
+      "nombres": "César",
+      "apellidos": "Torres Mamani",
+      "email": "cesar.torres0183@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0184",
+      "nombres": "Milagros",
+      "apellidos": "Torres Mamani",
+      "email": "milagros.torres0184@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0185",
+      "nombres": "Eduardo",
+      "apellidos": "Torres Mamani",
+      "email": "eduardo.torres0185@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0186",
+      "nombres": "Roxana",
+      "apellidos": "Torres Mamani",
+      "email": "roxana.torres0186@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0187",
+      "nombres": "Julio",
+      "apellidos": "Torres Mamani",
+      "email": "julio.torres0187@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0188",
+      "nombres": "Katherine",
+      "apellidos": "Torres Mamani",
+      "email": "katherine.torres0188@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0189",
+      "nombres": "Marco",
+      "apellidos": "Torres Mamani",
+      "email": "marco.torres0189@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0190",
+      "nombres": "Angela",
+      "apellidos": "Torres Mamani",
+      "email": "angela.torres0190@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0191",
+      "nombres": "Felipe",
+      "apellidos": "Torres Mamani",
+      "email": "felipe.torres0191@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0192",
+      "nombres": "Ruth",
+      "apellidos": "Torres Mamani",
+      "email": "ruth.torres0192@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0193",
+      "nombres": "Héctor",
+      "apellidos": "Torres Mamani",
+      "email": "hector.torres0193@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0194",
+      "nombres": "Gladys",
+      "apellidos": "Torres Mamani",
+      "email": "gladys.torres0194@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0195",
+      "nombres": "Óscar",
+      "apellidos": "Torres Mamani",
+      "email": "oscar.torres0195@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0196",
+      "nombres": "Patricia",
+      "apellidos": "Torres Mamani",
+      "email": "patricia.torres0196@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0197",
+      "nombres": "Raúl",
+      "apellidos": "Torres Mamani",
+      "email": "raul.torres0197@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0198",
+      "nombres": "Carmen",
+      "apellidos": "Torres Mamani",
+      "email": "carmen.torres0198@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0199",
+      "nombres": "Miguel",
+      "apellidos": "Torres Mamani",
+      "email": "miguel.torres0199@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0200",
+      "nombres": "Rosa",
+      "apellidos": "Torres Mamani",
+      "email": "rosa.torres0200@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0201",
+      "nombres": "Mateo",
+      "apellidos": "Mamani Rojas",
+      "email": "mateo.mamani0201@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0202",
+      "nombres": "Valentina",
+      "apellidos": "Mamani Rojas",
+      "email": "valentina.mamani0202@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0203",
+      "nombres": "Santiago",
+      "apellidos": "Mamani Rojas",
+      "email": "santiago.mamani0203@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0204",
+      "nombres": "Luciana",
+      "apellidos": "Mamani Rojas",
+      "email": "luciana.mamani0204@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0205",
+      "nombres": "Sebastián",
+      "apellidos": "Mamani Rojas",
+      "email": "sebastian.mamani0205@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0206",
+      "nombres": "Camila",
+      "apellidos": "Mamani Rojas",
+      "email": "camila.mamani0206@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0207",
+      "nombres": "Diego",
+      "apellidos": "Mamani Rojas",
+      "email": "diego.mamani0207@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0208",
+      "nombres": "Isabella",
+      "apellidos": "Mamani Rojas",
+      "email": "isabella.mamani0208@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0209",
+      "nombres": "Alejandro",
+      "apellidos": "Mamani Rojas",
+      "email": "alejandro.mamani0209@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0210",
+      "nombres": "Sofía",
+      "apellidos": "Mamani Rojas",
+      "email": "sofia.mamani0210@blenkir.edu.pe",
+      "salon": "2° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0211",
+      "nombres": "Daniel",
+      "apellidos": "Mamani Rojas",
+      "email": "daniel.mamani0211@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0212",
+      "nombres": "Mariana",
+      "apellidos": "Mamani Rojas",
+      "email": "mariana.mamani0212@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0213",
+      "nombres": "Andrés",
+      "apellidos": "Mamani Rojas",
+      "email": "andres.mamani0213@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0214",
+      "nombres": "Emilia",
+      "apellidos": "Mamani Rojas",
+      "email": "emilia.mamani0214@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0215",
+      "nombres": "Gabriel",
+      "apellidos": "Mamani Rojas",
+      "email": "gabriel.mamani0215@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0216",
+      "nombres": "Victoria",
+      "apellidos": "Mamani Rojas",
+      "email": "victoria.mamani0216@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0217",
+      "nombres": "Renato",
+      "apellidos": "Mamani Rojas",
+      "email": "renato.mamani0217@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0218",
+      "nombres": "Fiorella",
+      "apellidos": "Mamani Rojas",
+      "email": "fiorella.mamani0218@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0219",
+      "nombres": "Bruno",
+      "apellidos": "Mamani Rojas",
+      "email": "bruno.mamani0219@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0220",
+      "nombres": "Ariana",
+      "apellidos": "Mamani Rojas",
+      "email": "ariana.mamani0220@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0221",
+      "nombres": "Joaquín",
+      "apellidos": "Mamani Rojas",
+      "email": "joaquin.mamani0221@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0222",
+      "nombres": "Mía",
+      "apellidos": "Mamani Rojas",
+      "email": "mia.mamani0222@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0223",
+      "nombres": "Thiago",
+      "apellidos": "Mamani Rojas",
+      "email": "thiago.mamani0223@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0224",
+      "nombres": "Antonella",
+      "apellidos": "Mamani Rojas",
+      "email": "antonella.mamani0224@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0225",
+      "nombres": "Ian",
+      "apellidos": "Mamani Rojas",
+      "email": "ian.mamani0225@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0226",
+      "nombres": "Lucía",
+      "apellidos": "Mamani Rojas",
+      "email": "lucia.mamani0226@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0227",
+      "nombres": "Adrián",
+      "apellidos": "Mamani Rojas",
+      "email": "adrian.mamani0227@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0228",
+      "nombres": "Valeria",
+      "apellidos": "Mamani Rojas",
+      "email": "valeria.mamani0228@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0229",
+      "nombres": "Emilio",
+      "apellidos": "Mamani Rojas",
+      "email": "emilio.mamani0229@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0230",
+      "nombres": "Nicole",
+      "apellidos": "Mamani Rojas",
+      "email": "nicole.mamani0230@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0231",
+      "nombres": "Rodrigo",
+      "apellidos": "Mamani Rojas",
+      "email": "rodrigo.mamani0231@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0232",
+      "nombres": "Paola",
+      "apellidos": "Mamani Rojas",
+      "email": "paola.mamani0232@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0233",
+      "nombres": "César",
+      "apellidos": "Mamani Rojas",
+      "email": "cesar.mamani0233@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0234",
+      "nombres": "Milagros",
+      "apellidos": "Mamani Rojas",
+      "email": "milagros.mamani0234@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0235",
+      "nombres": "Eduardo",
+      "apellidos": "Mamani Rojas",
+      "email": "eduardo.mamani0235@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0236",
+      "nombres": "Roxana",
+      "apellidos": "Mamani Rojas",
+      "email": "roxana.mamani0236@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0237",
+      "nombres": "Julio",
+      "apellidos": "Mamani Rojas",
+      "email": "julio.mamani0237@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0238",
+      "nombres": "Katherine",
+      "apellidos": "Mamani Rojas",
+      "email": "katherine.mamani0238@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0239",
+      "nombres": "Marco",
+      "apellidos": "Mamani Rojas",
+      "email": "marco.mamani0239@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0240",
+      "nombres": "Angela",
+      "apellidos": "Mamani Rojas",
+      "email": "angela.mamani0240@blenkir.edu.pe",
+      "salon": "2° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0241",
+      "nombres": "Felipe",
+      "apellidos": "Mamani Rojas",
+      "email": "felipe.mamani0241@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0242",
+      "nombres": "Ruth",
+      "apellidos": "Mamani Rojas",
+      "email": "ruth.mamani0242@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0243",
+      "nombres": "Héctor",
+      "apellidos": "Mamani Rojas",
+      "email": "hector.mamani0243@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0244",
+      "nombres": "Gladys",
+      "apellidos": "Mamani Rojas",
+      "email": "gladys.mamani0244@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0245",
+      "nombres": "Óscar",
+      "apellidos": "Mamani Rojas",
+      "email": "oscar.mamani0245@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0246",
+      "nombres": "Patricia",
+      "apellidos": "Mamani Rojas",
+      "email": "patricia.mamani0246@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0247",
+      "nombres": "Raúl",
+      "apellidos": "Mamani Rojas",
+      "email": "raul.mamani0247@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0248",
+      "nombres": "Carmen",
+      "apellidos": "Mamani Rojas",
+      "email": "carmen.mamani0248@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0249",
+      "nombres": "Miguel",
+      "apellidos": "Mamani Rojas",
+      "email": "miguel.mamani0249@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0250",
+      "nombres": "Rosa",
+      "apellidos": "Mamani Rojas",
+      "email": "rosa.mamani0250@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0251",
+      "nombres": "Mateo",
+      "apellidos": "Rojas Díaz",
+      "email": "mateo.rojas0251@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0252",
+      "nombres": "Valentina",
+      "apellidos": "Rojas Díaz",
+      "email": "valentina.rojas0252@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0253",
+      "nombres": "Santiago",
+      "apellidos": "Rojas Díaz",
+      "email": "santiago.rojas0253@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0254",
+      "nombres": "Luciana",
+      "apellidos": "Rojas Díaz",
+      "email": "luciana.rojas0254@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0255",
+      "nombres": "Sebastián",
+      "apellidos": "Rojas Díaz",
+      "email": "sebastian.rojas0255@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0256",
+      "nombres": "Camila",
+      "apellidos": "Rojas Díaz",
+      "email": "camila.rojas0256@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0257",
+      "nombres": "Diego",
+      "apellidos": "Rojas Díaz",
+      "email": "diego.rojas0257@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0258",
+      "nombres": "Isabella",
+      "apellidos": "Rojas Díaz",
+      "email": "isabella.rojas0258@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0259",
+      "nombres": "Alejandro",
+      "apellidos": "Rojas Díaz",
+      "email": "alejandro.rojas0259@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0260",
+      "nombres": "Sofía",
+      "apellidos": "Rojas Díaz",
+      "email": "sofia.rojas0260@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0261",
+      "nombres": "Daniel",
+      "apellidos": "Rojas Díaz",
+      "email": "daniel.rojas0261@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0262",
+      "nombres": "Mariana",
+      "apellidos": "Rojas Díaz",
+      "email": "mariana.rojas0262@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0263",
+      "nombres": "Andrés",
+      "apellidos": "Rojas Díaz",
+      "email": "andres.rojas0263@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0264",
+      "nombres": "Emilia",
+      "apellidos": "Rojas Díaz",
+      "email": "emilia.rojas0264@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0265",
+      "nombres": "Gabriel",
+      "apellidos": "Rojas Díaz",
+      "email": "gabriel.rojas0265@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0266",
+      "nombres": "Victoria",
+      "apellidos": "Rojas Díaz",
+      "email": "victoria.rojas0266@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0267",
+      "nombres": "Renato",
+      "apellidos": "Rojas Díaz",
+      "email": "renato.rojas0267@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0268",
+      "nombres": "Fiorella",
+      "apellidos": "Rojas Díaz",
+      "email": "fiorella.rojas0268@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0269",
+      "nombres": "Bruno",
+      "apellidos": "Rojas Díaz",
+      "email": "bruno.rojas0269@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0270",
+      "nombres": "Ariana",
+      "apellidos": "Rojas Díaz",
+      "email": "ariana.rojas0270@blenkir.edu.pe",
+      "salon": "3° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0271",
+      "nombres": "Joaquín",
+      "apellidos": "Rojas Díaz",
+      "email": "joaquin.rojas0271@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0272",
+      "nombres": "Mía",
+      "apellidos": "Rojas Díaz",
+      "email": "mia.rojas0272@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0273",
+      "nombres": "Thiago",
+      "apellidos": "Rojas Díaz",
+      "email": "thiago.rojas0273@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0274",
+      "nombres": "Antonella",
+      "apellidos": "Rojas Díaz",
+      "email": "antonella.rojas0274@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0275",
+      "nombres": "Ian",
+      "apellidos": "Rojas Díaz",
+      "email": "ian.rojas0275@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0276",
+      "nombres": "Lucía",
+      "apellidos": "Rojas Díaz",
+      "email": "lucia.rojas0276@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0277",
+      "nombres": "Adrián",
+      "apellidos": "Rojas Díaz",
+      "email": "adrian.rojas0277@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0278",
+      "nombres": "Valeria",
+      "apellidos": "Rojas Díaz",
+      "email": "valeria.rojas0278@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0279",
+      "nombres": "Emilio",
+      "apellidos": "Rojas Díaz",
+      "email": "emilio.rojas0279@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0280",
+      "nombres": "Nicole",
+      "apellidos": "Rojas Díaz",
+      "email": "nicole.rojas0280@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0281",
+      "nombres": "Rodrigo",
+      "apellidos": "Rojas Díaz",
+      "email": "rodrigo.rojas0281@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0282",
+      "nombres": "Paola",
+      "apellidos": "Rojas Díaz",
+      "email": "paola.rojas0282@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0283",
+      "nombres": "César",
+      "apellidos": "Rojas Díaz",
+      "email": "cesar.rojas0283@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0284",
+      "nombres": "Milagros",
+      "apellidos": "Rojas Díaz",
+      "email": "milagros.rojas0284@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0285",
+      "nombres": "Eduardo",
+      "apellidos": "Rojas Díaz",
+      "email": "eduardo.rojas0285@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0286",
+      "nombres": "Roxana",
+      "apellidos": "Rojas Díaz",
+      "email": "roxana.rojas0286@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0287",
+      "nombres": "Julio",
+      "apellidos": "Rojas Díaz",
+      "email": "julio.rojas0287@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0288",
+      "nombres": "Katherine",
+      "apellidos": "Rojas Díaz",
+      "email": "katherine.rojas0288@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0289",
+      "nombres": "Marco",
+      "apellidos": "Rojas Díaz",
+      "email": "marco.rojas0289@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0290",
+      "nombres": "Angela",
+      "apellidos": "Rojas Díaz",
+      "email": "angela.rojas0290@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0291",
+      "nombres": "Felipe",
+      "apellidos": "Rojas Díaz",
+      "email": "felipe.rojas0291@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0292",
+      "nombres": "Ruth",
+      "apellidos": "Rojas Díaz",
+      "email": "ruth.rojas0292@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0293",
+      "nombres": "Héctor",
+      "apellidos": "Rojas Díaz",
+      "email": "hector.rojas0293@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0294",
+      "nombres": "Gladys",
+      "apellidos": "Rojas Díaz",
+      "email": "gladys.rojas0294@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0295",
+      "nombres": "Óscar",
+      "apellidos": "Rojas Díaz",
+      "email": "oscar.rojas0295@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0296",
+      "nombres": "Patricia",
+      "apellidos": "Rojas Díaz",
+      "email": "patricia.rojas0296@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0297",
+      "nombres": "Raúl",
+      "apellidos": "Rojas Díaz",
+      "email": "raul.rojas0297@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0298",
+      "nombres": "Carmen",
+      "apellidos": "Rojas Díaz",
+      "email": "carmen.rojas0298@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0299",
+      "nombres": "Miguel",
+      "apellidos": "Rojas Díaz",
+      "email": "miguel.rojas0299@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0300",
+      "nombres": "Rosa",
+      "apellidos": "Rojas Díaz",
+      "email": "rosa.rojas0300@blenkir.edu.pe",
+      "salon": "3° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0301",
+      "nombres": "Mateo",
+      "apellidos": "Díaz Chávez",
+      "email": "mateo.diaz0301@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0302",
+      "nombres": "Valentina",
+      "apellidos": "Díaz Chávez",
+      "email": "valentina.diaz0302@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0303",
+      "nombres": "Santiago",
+      "apellidos": "Díaz Chávez",
+      "email": "santiago.diaz0303@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0304",
+      "nombres": "Luciana",
+      "apellidos": "Díaz Chávez",
+      "email": "luciana.diaz0304@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0305",
+      "nombres": "Sebastián",
+      "apellidos": "Díaz Chávez",
+      "email": "sebastian.diaz0305@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0306",
+      "nombres": "Camila",
+      "apellidos": "Díaz Chávez",
+      "email": "camila.diaz0306@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0307",
+      "nombres": "Diego",
+      "apellidos": "Díaz Chávez",
+      "email": "diego.diaz0307@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0308",
+      "nombres": "Isabella",
+      "apellidos": "Díaz Chávez",
+      "email": "isabella.diaz0308@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0309",
+      "nombres": "Alejandro",
+      "apellidos": "Díaz Chávez",
+      "email": "alejandro.diaz0309@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0310",
+      "nombres": "Sofía",
+      "apellidos": "Díaz Chávez",
+      "email": "sofia.diaz0310@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0311",
+      "nombres": "Daniel",
+      "apellidos": "Díaz Chávez",
+      "email": "daniel.diaz0311@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0312",
+      "nombres": "Mariana",
+      "apellidos": "Díaz Chávez",
+      "email": "mariana.diaz0312@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0313",
+      "nombres": "Andrés",
+      "apellidos": "Díaz Chávez",
+      "email": "andres.diaz0313@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0314",
+      "nombres": "Emilia",
+      "apellidos": "Díaz Chávez",
+      "email": "emilia.diaz0314@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0315",
+      "nombres": "Gabriel",
+      "apellidos": "Díaz Chávez",
+      "email": "gabriel.diaz0315@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0316",
+      "nombres": "Victoria",
+      "apellidos": "Díaz Chávez",
+      "email": "victoria.diaz0316@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0317",
+      "nombres": "Renato",
+      "apellidos": "Díaz Chávez",
+      "email": "renato.diaz0317@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0318",
+      "nombres": "Fiorella",
+      "apellidos": "Díaz Chávez",
+      "email": "fiorella.diaz0318@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0319",
+      "nombres": "Bruno",
+      "apellidos": "Díaz Chávez",
+      "email": "bruno.diaz0319@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0320",
+      "nombres": "Ariana",
+      "apellidos": "Díaz Chávez",
+      "email": "ariana.diaz0320@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0321",
+      "nombres": "Joaquín",
+      "apellidos": "Díaz Chávez",
+      "email": "joaquin.diaz0321@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0322",
+      "nombres": "Mía",
+      "apellidos": "Díaz Chávez",
+      "email": "mia.diaz0322@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0323",
+      "nombres": "Thiago",
+      "apellidos": "Díaz Chávez",
+      "email": "thiago.diaz0323@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0324",
+      "nombres": "Antonella",
+      "apellidos": "Díaz Chávez",
+      "email": "antonella.diaz0324@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0325",
+      "nombres": "Ian",
+      "apellidos": "Díaz Chávez",
+      "email": "ian.diaz0325@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0326",
+      "nombres": "Lucía",
+      "apellidos": "Díaz Chávez",
+      "email": "lucia.diaz0326@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0327",
+      "nombres": "Adrián",
+      "apellidos": "Díaz Chávez",
+      "email": "adrian.diaz0327@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0328",
+      "nombres": "Valeria",
+      "apellidos": "Díaz Chávez",
+      "email": "valeria.diaz0328@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0329",
+      "nombres": "Emilio",
+      "apellidos": "Díaz Chávez",
+      "email": "emilio.diaz0329@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0330",
+      "nombres": "Nicole",
+      "apellidos": "Díaz Chávez",
+      "email": "nicole.diaz0330@blenkir.edu.pe",
+      "salon": "3° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0331",
+      "nombres": "Rodrigo",
+      "apellidos": "Díaz Chávez",
+      "email": "rodrigo.diaz0331@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0332",
+      "nombres": "Paola",
+      "apellidos": "Díaz Chávez",
+      "email": "paola.diaz0332@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0333",
+      "nombres": "César",
+      "apellidos": "Díaz Chávez",
+      "email": "cesar.diaz0333@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0334",
+      "nombres": "Milagros",
+      "apellidos": "Díaz Chávez",
+      "email": "milagros.diaz0334@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0335",
+      "nombres": "Eduardo",
+      "apellidos": "Díaz Chávez",
+      "email": "eduardo.diaz0335@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0336",
+      "nombres": "Roxana",
+      "apellidos": "Díaz Chávez",
+      "email": "roxana.diaz0336@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0337",
+      "nombres": "Julio",
+      "apellidos": "Díaz Chávez",
+      "email": "julio.diaz0337@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0338",
+      "nombres": "Katherine",
+      "apellidos": "Díaz Chávez",
+      "email": "katherine.diaz0338@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0339",
+      "nombres": "Marco",
+      "apellidos": "Díaz Chávez",
+      "email": "marco.diaz0339@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0340",
+      "nombres": "Angela",
+      "apellidos": "Díaz Chávez",
+      "email": "angela.diaz0340@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0341",
+      "nombres": "Felipe",
+      "apellidos": "Díaz Chávez",
+      "email": "felipe.diaz0341@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0342",
+      "nombres": "Ruth",
+      "apellidos": "Díaz Chávez",
+      "email": "ruth.diaz0342@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0343",
+      "nombres": "Héctor",
+      "apellidos": "Díaz Chávez",
+      "email": "hector.diaz0343@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0344",
+      "nombres": "Gladys",
+      "apellidos": "Díaz Chávez",
+      "email": "gladys.diaz0344@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0345",
+      "nombres": "Óscar",
+      "apellidos": "Díaz Chávez",
+      "email": "oscar.diaz0345@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0346",
+      "nombres": "Patricia",
+      "apellidos": "Díaz Chávez",
+      "email": "patricia.diaz0346@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0347",
+      "nombres": "Raúl",
+      "apellidos": "Díaz Chávez",
+      "email": "raul.diaz0347@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0348",
+      "nombres": "Carmen",
+      "apellidos": "Díaz Chávez",
+      "email": "carmen.diaz0348@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0349",
+      "nombres": "Miguel",
+      "apellidos": "Díaz Chávez",
+      "email": "miguel.diaz0349@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0350",
+      "nombres": "Rosa",
+      "apellidos": "Díaz Chávez",
+      "email": "rosa.diaz0350@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0351",
+      "nombres": "Mateo",
+      "apellidos": "Chávez Vega",
+      "email": "mateo.chavez0351@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0352",
+      "nombres": "Valentina",
+      "apellidos": "Chávez Vega",
+      "email": "valentina.chavez0352@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0353",
+      "nombres": "Santiago",
+      "apellidos": "Chávez Vega",
+      "email": "santiago.chavez0353@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0354",
+      "nombres": "Luciana",
+      "apellidos": "Chávez Vega",
+      "email": "luciana.chavez0354@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0355",
+      "nombres": "Sebastián",
+      "apellidos": "Chávez Vega",
+      "email": "sebastian.chavez0355@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0356",
+      "nombres": "Camila",
+      "apellidos": "Chávez Vega",
+      "email": "camila.chavez0356@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0357",
+      "nombres": "Diego",
+      "apellidos": "Chávez Vega",
+      "email": "diego.chavez0357@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0358",
+      "nombres": "Isabella",
+      "apellidos": "Chávez Vega",
+      "email": "isabella.chavez0358@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0359",
+      "nombres": "Alejandro",
+      "apellidos": "Chávez Vega",
+      "email": "alejandro.chavez0359@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0360",
+      "nombres": "Sofía",
+      "apellidos": "Chávez Vega",
+      "email": "sofia.chavez0360@blenkir.edu.pe",
+      "salon": "3° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0361",
+      "nombres": "Daniel",
+      "apellidos": "Chávez Vega",
+      "email": "daniel.chavez0361@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0362",
+      "nombres": "Mariana",
+      "apellidos": "Chávez Vega",
+      "email": "mariana.chavez0362@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0363",
+      "nombres": "Andrés",
+      "apellidos": "Chávez Vega",
+      "email": "andres.chavez0363@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0364",
+      "nombres": "Emilia",
+      "apellidos": "Chávez Vega",
+      "email": "emilia.chavez0364@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0365",
+      "nombres": "Gabriel",
+      "apellidos": "Chávez Vega",
+      "email": "gabriel.chavez0365@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0366",
+      "nombres": "Victoria",
+      "apellidos": "Chávez Vega",
+      "email": "victoria.chavez0366@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0367",
+      "nombres": "Renato",
+      "apellidos": "Chávez Vega",
+      "email": "renato.chavez0367@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0368",
+      "nombres": "Fiorella",
+      "apellidos": "Chávez Vega",
+      "email": "fiorella.chavez0368@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0369",
+      "nombres": "Bruno",
+      "apellidos": "Chávez Vega",
+      "email": "bruno.chavez0369@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0370",
+      "nombres": "Ariana",
+      "apellidos": "Chávez Vega",
+      "email": "ariana.chavez0370@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0371",
+      "nombres": "Joaquín",
+      "apellidos": "Chávez Vega",
+      "email": "joaquin.chavez0371@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0372",
+      "nombres": "Mía",
+      "apellidos": "Chávez Vega",
+      "email": "mia.chavez0372@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0373",
+      "nombres": "Thiago",
+      "apellidos": "Chávez Vega",
+      "email": "thiago.chavez0373@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0374",
+      "nombres": "Antonella",
+      "apellidos": "Chávez Vega",
+      "email": "antonella.chavez0374@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0375",
+      "nombres": "Ian",
+      "apellidos": "Chávez Vega",
+      "email": "ian.chavez0375@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0376",
+      "nombres": "Lucía",
+      "apellidos": "Chávez Vega",
+      "email": "lucia.chavez0376@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0377",
+      "nombres": "Adrián",
+      "apellidos": "Chávez Vega",
+      "email": "adrian.chavez0377@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0378",
+      "nombres": "Valeria",
+      "apellidos": "Chávez Vega",
+      "email": "valeria.chavez0378@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0379",
+      "nombres": "Emilio",
+      "apellidos": "Chávez Vega",
+      "email": "emilio.chavez0379@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0380",
+      "nombres": "Nicole",
+      "apellidos": "Chávez Vega",
+      "email": "nicole.chavez0380@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0381",
+      "nombres": "Rodrigo",
+      "apellidos": "Chávez Vega",
+      "email": "rodrigo.chavez0381@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0382",
+      "nombres": "Paola",
+      "apellidos": "Chávez Vega",
+      "email": "paola.chavez0382@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0383",
+      "nombres": "César",
+      "apellidos": "Chávez Vega",
+      "email": "cesar.chavez0383@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0384",
+      "nombres": "Milagros",
+      "apellidos": "Chávez Vega",
+      "email": "milagros.chavez0384@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0385",
+      "nombres": "Eduardo",
+      "apellidos": "Chávez Vega",
+      "email": "eduardo.chavez0385@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0386",
+      "nombres": "Roxana",
+      "apellidos": "Chávez Vega",
+      "email": "roxana.chavez0386@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0387",
+      "nombres": "Julio",
+      "apellidos": "Chávez Vega",
+      "email": "julio.chavez0387@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0388",
+      "nombres": "Katherine",
+      "apellidos": "Chávez Vega",
+      "email": "katherine.chavez0388@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0389",
+      "nombres": "Marco",
+      "apellidos": "Chávez Vega",
+      "email": "marco.chavez0389@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0390",
+      "nombres": "Angela",
+      "apellidos": "Chávez Vega",
+      "email": "angela.chavez0390@blenkir.edu.pe",
+      "salon": "4° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0391",
+      "nombres": "Felipe",
+      "apellidos": "Chávez Vega",
+      "email": "felipe.chavez0391@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0392",
+      "nombres": "Ruth",
+      "apellidos": "Chávez Vega",
+      "email": "ruth.chavez0392@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0393",
+      "nombres": "Héctor",
+      "apellidos": "Chávez Vega",
+      "email": "hector.chavez0393@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0394",
+      "nombres": "Gladys",
+      "apellidos": "Chávez Vega",
+      "email": "gladys.chavez0394@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0395",
+      "nombres": "Óscar",
+      "apellidos": "Chávez Vega",
+      "email": "oscar.chavez0395@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0396",
+      "nombres": "Patricia",
+      "apellidos": "Chávez Vega",
+      "email": "patricia.chavez0396@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0397",
+      "nombres": "Raúl",
+      "apellidos": "Chávez Vega",
+      "email": "raul.chavez0397@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0398",
+      "nombres": "Carmen",
+      "apellidos": "Chávez Vega",
+      "email": "carmen.chavez0398@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0399",
+      "nombres": "Miguel",
+      "apellidos": "Chávez Vega",
+      "email": "miguel.chavez0399@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0400",
+      "nombres": "Rosa",
+      "apellidos": "Chávez Vega",
+      "email": "rosa.chavez0400@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0401",
+      "nombres": "Mateo",
+      "apellidos": "Vega Castro",
+      "email": "mateo.vega0401@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0402",
+      "nombres": "Valentina",
+      "apellidos": "Vega Castro",
+      "email": "valentina.vega0402@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0403",
+      "nombres": "Santiago",
+      "apellidos": "Vega Castro",
+      "email": "santiago.vega0403@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0404",
+      "nombres": "Luciana",
+      "apellidos": "Vega Castro",
+      "email": "luciana.vega0404@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0405",
+      "nombres": "Sebastián",
+      "apellidos": "Vega Castro",
+      "email": "sebastian.vega0405@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0406",
+      "nombres": "Camila",
+      "apellidos": "Vega Castro",
+      "email": "camila.vega0406@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0407",
+      "nombres": "Diego",
+      "apellidos": "Vega Castro",
+      "email": "diego.vega0407@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0408",
+      "nombres": "Isabella",
+      "apellidos": "Vega Castro",
+      "email": "isabella.vega0408@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0409",
+      "nombres": "Alejandro",
+      "apellidos": "Vega Castro",
+      "email": "alejandro.vega0409@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0410",
+      "nombres": "Sofía",
+      "apellidos": "Vega Castro",
+      "email": "sofia.vega0410@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0411",
+      "nombres": "Daniel",
+      "apellidos": "Vega Castro",
+      "email": "daniel.vega0411@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0412",
+      "nombres": "Mariana",
+      "apellidos": "Vega Castro",
+      "email": "mariana.vega0412@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0413",
+      "nombres": "Andrés",
+      "apellidos": "Vega Castro",
+      "email": "andres.vega0413@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0414",
+      "nombres": "Emilia",
+      "apellidos": "Vega Castro",
+      "email": "emilia.vega0414@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0415",
+      "nombres": "Gabriel",
+      "apellidos": "Vega Castro",
+      "email": "gabriel.vega0415@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0416",
+      "nombres": "Victoria",
+      "apellidos": "Vega Castro",
+      "email": "victoria.vega0416@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0417",
+      "nombres": "Renato",
+      "apellidos": "Vega Castro",
+      "email": "renato.vega0417@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0418",
+      "nombres": "Fiorella",
+      "apellidos": "Vega Castro",
+      "email": "fiorella.vega0418@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0419",
+      "nombres": "Bruno",
+      "apellidos": "Vega Castro",
+      "email": "bruno.vega0419@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0420",
+      "nombres": "Ariana",
+      "apellidos": "Vega Castro",
+      "email": "ariana.vega0420@blenkir.edu.pe",
+      "salon": "4° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0421",
+      "nombres": "Joaquín",
+      "apellidos": "Vega Castro",
+      "email": "joaquin.vega0421@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0422",
+      "nombres": "Mía",
+      "apellidos": "Vega Castro",
+      "email": "mia.vega0422@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0423",
+      "nombres": "Thiago",
+      "apellidos": "Vega Castro",
+      "email": "thiago.vega0423@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0424",
+      "nombres": "Antonella",
+      "apellidos": "Vega Castro",
+      "email": "antonella.vega0424@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0425",
+      "nombres": "Ian",
+      "apellidos": "Vega Castro",
+      "email": "ian.vega0425@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0426",
+      "nombres": "Lucía",
+      "apellidos": "Vega Castro",
+      "email": "lucia.vega0426@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0427",
+      "nombres": "Adrián",
+      "apellidos": "Vega Castro",
+      "email": "adrian.vega0427@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0428",
+      "nombres": "Valeria",
+      "apellidos": "Vega Castro",
+      "email": "valeria.vega0428@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0429",
+      "nombres": "Emilio",
+      "apellidos": "Vega Castro",
+      "email": "emilio.vega0429@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0430",
+      "nombres": "Nicole",
+      "apellidos": "Vega Castro",
+      "email": "nicole.vega0430@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0431",
+      "nombres": "Rodrigo",
+      "apellidos": "Vega Castro",
+      "email": "rodrigo.vega0431@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0432",
+      "nombres": "Paola",
+      "apellidos": "Vega Castro",
+      "email": "paola.vega0432@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0433",
+      "nombres": "César",
+      "apellidos": "Vega Castro",
+      "email": "cesar.vega0433@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0434",
+      "nombres": "Milagros",
+      "apellidos": "Vega Castro",
+      "email": "milagros.vega0434@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0435",
+      "nombres": "Eduardo",
+      "apellidos": "Vega Castro",
+      "email": "eduardo.vega0435@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0436",
+      "nombres": "Roxana",
+      "apellidos": "Vega Castro",
+      "email": "roxana.vega0436@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0437",
+      "nombres": "Julio",
+      "apellidos": "Vega Castro",
+      "email": "julio.vega0437@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0438",
+      "nombres": "Katherine",
+      "apellidos": "Vega Castro",
+      "email": "katherine.vega0438@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0439",
+      "nombres": "Marco",
+      "apellidos": "Vega Castro",
+      "email": "marco.vega0439@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0440",
+      "nombres": "Angela",
+      "apellidos": "Vega Castro",
+      "email": "angela.vega0440@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0441",
+      "nombres": "Felipe",
+      "apellidos": "Vega Castro",
+      "email": "felipe.vega0441@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0442",
+      "nombres": "Ruth",
+      "apellidos": "Vega Castro",
+      "email": "ruth.vega0442@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0443",
+      "nombres": "Héctor",
+      "apellidos": "Vega Castro",
+      "email": "hector.vega0443@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0444",
+      "nombres": "Gladys",
+      "apellidos": "Vega Castro",
+      "email": "gladys.vega0444@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0445",
+      "nombres": "Óscar",
+      "apellidos": "Vega Castro",
+      "email": "oscar.vega0445@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0446",
+      "nombres": "Patricia",
+      "apellidos": "Vega Castro",
+      "email": "patricia.vega0446@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0447",
+      "nombres": "Raúl",
+      "apellidos": "Vega Castro",
+      "email": "raul.vega0447@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0448",
+      "nombres": "Carmen",
+      "apellidos": "Vega Castro",
+      "email": "carmen.vega0448@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0449",
+      "nombres": "Miguel",
+      "apellidos": "Vega Castro",
+      "email": "miguel.vega0449@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0450",
+      "nombres": "Rosa",
+      "apellidos": "Vega Castro",
+      "email": "rosa.vega0450@blenkir.edu.pe",
+      "salon": "4° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0451",
+      "nombres": "Mateo",
+      "apellidos": "Castro Huamán",
+      "email": "mateo.castro0451@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0452",
+      "nombres": "Valentina",
+      "apellidos": "Castro Huamán",
+      "email": "valentina.castro0452@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0453",
+      "nombres": "Santiago",
+      "apellidos": "Castro Huamán",
+      "email": "santiago.castro0453@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0454",
+      "nombres": "Luciana",
+      "apellidos": "Castro Huamán",
+      "email": "luciana.castro0454@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0455",
+      "nombres": "Sebastián",
+      "apellidos": "Castro Huamán",
+      "email": "sebastian.castro0455@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0456",
+      "nombres": "Camila",
+      "apellidos": "Castro Huamán",
+      "email": "camila.castro0456@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0457",
+      "nombres": "Diego",
+      "apellidos": "Castro Huamán",
+      "email": "diego.castro0457@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0458",
+      "nombres": "Isabella",
+      "apellidos": "Castro Huamán",
+      "email": "isabella.castro0458@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0459",
+      "nombres": "Alejandro",
+      "apellidos": "Castro Huamán",
+      "email": "alejandro.castro0459@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0460",
+      "nombres": "Sofía",
+      "apellidos": "Castro Huamán",
+      "email": "sofia.castro0460@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0461",
+      "nombres": "Daniel",
+      "apellidos": "Castro Huamán",
+      "email": "daniel.castro0461@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0462",
+      "nombres": "Mariana",
+      "apellidos": "Castro Huamán",
+      "email": "mariana.castro0462@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0463",
+      "nombres": "Andrés",
+      "apellidos": "Castro Huamán",
+      "email": "andres.castro0463@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0464",
+      "nombres": "Emilia",
+      "apellidos": "Castro Huamán",
+      "email": "emilia.castro0464@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0465",
+      "nombres": "Gabriel",
+      "apellidos": "Castro Huamán",
+      "email": "gabriel.castro0465@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0466",
+      "nombres": "Victoria",
+      "apellidos": "Castro Huamán",
+      "email": "victoria.castro0466@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0467",
+      "nombres": "Renato",
+      "apellidos": "Castro Huamán",
+      "email": "renato.castro0467@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0468",
+      "nombres": "Fiorella",
+      "apellidos": "Castro Huamán",
+      "email": "fiorella.castro0468@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0469",
+      "nombres": "Bruno",
+      "apellidos": "Castro Huamán",
+      "email": "bruno.castro0469@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0470",
+      "nombres": "Ariana",
+      "apellidos": "Castro Huamán",
+      "email": "ariana.castro0470@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0471",
+      "nombres": "Joaquín",
+      "apellidos": "Castro Huamán",
+      "email": "joaquin.castro0471@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0472",
+      "nombres": "Mía",
+      "apellidos": "Castro Huamán",
+      "email": "mia.castro0472@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0473",
+      "nombres": "Thiago",
+      "apellidos": "Castro Huamán",
+      "email": "thiago.castro0473@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0474",
+      "nombres": "Antonella",
+      "apellidos": "Castro Huamán",
+      "email": "antonella.castro0474@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0475",
+      "nombres": "Ian",
+      "apellidos": "Castro Huamán",
+      "email": "ian.castro0475@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0476",
+      "nombres": "Lucía",
+      "apellidos": "Castro Huamán",
+      "email": "lucia.castro0476@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0477",
+      "nombres": "Adrián",
+      "apellidos": "Castro Huamán",
+      "email": "adrian.castro0477@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0478",
+      "nombres": "Valeria",
+      "apellidos": "Castro Huamán",
+      "email": "valeria.castro0478@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0479",
+      "nombres": "Emilio",
+      "apellidos": "Castro Huamán",
+      "email": "emilio.castro0479@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0480",
+      "nombres": "Nicole",
+      "apellidos": "Castro Huamán",
+      "email": "nicole.castro0480@blenkir.edu.pe",
+      "salon": "4° D",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0481",
+      "nombres": "Rodrigo",
+      "apellidos": "Castro Huamán",
+      "email": "rodrigo.castro0481@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0482",
+      "nombres": "Paola",
+      "apellidos": "Castro Huamán",
+      "email": "paola.castro0482@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0483",
+      "nombres": "César",
+      "apellidos": "Castro Huamán",
+      "email": "cesar.castro0483@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0484",
+      "nombres": "Milagros",
+      "apellidos": "Castro Huamán",
+      "email": "milagros.castro0484@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0485",
+      "nombres": "Eduardo",
+      "apellidos": "Castro Huamán",
+      "email": "eduardo.castro0485@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0486",
+      "nombres": "Roxana",
+      "apellidos": "Castro Huamán",
+      "email": "roxana.castro0486@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0487",
+      "nombres": "Julio",
+      "apellidos": "Castro Huamán",
+      "email": "julio.castro0487@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0488",
+      "nombres": "Katherine",
+      "apellidos": "Castro Huamán",
+      "email": "katherine.castro0488@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0489",
+      "nombres": "Marco",
+      "apellidos": "Castro Huamán",
+      "email": "marco.castro0489@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0490",
+      "nombres": "Angela",
+      "apellidos": "Castro Huamán",
+      "email": "angela.castro0490@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0491",
+      "nombres": "Felipe",
+      "apellidos": "Castro Huamán",
+      "email": "felipe.castro0491@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0492",
+      "nombres": "Ruth",
+      "apellidos": "Castro Huamán",
+      "email": "ruth.castro0492@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0493",
+      "nombres": "Héctor",
+      "apellidos": "Castro Huamán",
+      "email": "hector.castro0493@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0494",
+      "nombres": "Gladys",
+      "apellidos": "Castro Huamán",
+      "email": "gladys.castro0494@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0495",
+      "nombres": "Óscar",
+      "apellidos": "Castro Huamán",
+      "email": "oscar.castro0495@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0496",
+      "nombres": "Patricia",
+      "apellidos": "Castro Huamán",
+      "email": "patricia.castro0496@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0497",
+      "nombres": "Raúl",
+      "apellidos": "Castro Huamán",
+      "email": "raul.castro0497@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0498",
+      "nombres": "Carmen",
+      "apellidos": "Castro Huamán",
+      "email": "carmen.castro0498@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0499",
+      "nombres": "Miguel",
+      "apellidos": "Castro Huamán",
+      "email": "miguel.castro0499@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0500",
+      "nombres": "Rosa",
+      "apellidos": "Castro Huamán",
+      "email": "rosa.castro0500@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0501",
+      "nombres": "Mateo",
+      "apellidos": "Huamán Condori",
+      "email": "mateo.huaman0501@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0502",
+      "nombres": "Valentina",
+      "apellidos": "Huamán Condori",
+      "email": "valentina.huaman0502@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0503",
+      "nombres": "Santiago",
+      "apellidos": "Huamán Condori",
+      "email": "santiago.huaman0503@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0504",
+      "nombres": "Luciana",
+      "apellidos": "Huamán Condori",
+      "email": "luciana.huaman0504@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0505",
+      "nombres": "Sebastián",
+      "apellidos": "Huamán Condori",
+      "email": "sebastian.huaman0505@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0506",
+      "nombres": "Camila",
+      "apellidos": "Huamán Condori",
+      "email": "camila.huaman0506@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0507",
+      "nombres": "Diego",
+      "apellidos": "Huamán Condori",
+      "email": "diego.huaman0507@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0508",
+      "nombres": "Isabella",
+      "apellidos": "Huamán Condori",
+      "email": "isabella.huaman0508@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0509",
+      "nombres": "Alejandro",
+      "apellidos": "Huamán Condori",
+      "email": "alejandro.huaman0509@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0510",
+      "nombres": "Sofía",
+      "apellidos": "Huamán Condori",
+      "email": "sofia.huaman0510@blenkir.edu.pe",
+      "salon": "5° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0511",
+      "nombres": "Daniel",
+      "apellidos": "Huamán Condori",
+      "email": "daniel.huaman0511@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0512",
+      "nombres": "Mariana",
+      "apellidos": "Huamán Condori",
+      "email": "mariana.huaman0512@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0513",
+      "nombres": "Andrés",
+      "apellidos": "Huamán Condori",
+      "email": "andres.huaman0513@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0514",
+      "nombres": "Emilia",
+      "apellidos": "Huamán Condori",
+      "email": "emilia.huaman0514@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0515",
+      "nombres": "Gabriel",
+      "apellidos": "Huamán Condori",
+      "email": "gabriel.huaman0515@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0516",
+      "nombres": "Victoria",
+      "apellidos": "Huamán Condori",
+      "email": "victoria.huaman0516@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0517",
+      "nombres": "Renato",
+      "apellidos": "Huamán Condori",
+      "email": "renato.huaman0517@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0518",
+      "nombres": "Fiorella",
+      "apellidos": "Huamán Condori",
+      "email": "fiorella.huaman0518@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0519",
+      "nombres": "Bruno",
+      "apellidos": "Huamán Condori",
+      "email": "bruno.huaman0519@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0520",
+      "nombres": "Ariana",
+      "apellidos": "Huamán Condori",
+      "email": "ariana.huaman0520@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0521",
+      "nombres": "Joaquín",
+      "apellidos": "Huamán Condori",
+      "email": "joaquin.huaman0521@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0522",
+      "nombres": "Mía",
+      "apellidos": "Huamán Condori",
+      "email": "mia.huaman0522@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0523",
+      "nombres": "Thiago",
+      "apellidos": "Huamán Condori",
+      "email": "thiago.huaman0523@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0524",
+      "nombres": "Antonella",
+      "apellidos": "Huamán Condori",
+      "email": "antonella.huaman0524@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0525",
+      "nombres": "Ian",
+      "apellidos": "Huamán Condori",
+      "email": "ian.huaman0525@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0526",
+      "nombres": "Lucía",
+      "apellidos": "Huamán Condori",
+      "email": "lucia.huaman0526@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0527",
+      "nombres": "Adrián",
+      "apellidos": "Huamán Condori",
+      "email": "adrian.huaman0527@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0528",
+      "nombres": "Valeria",
+      "apellidos": "Huamán Condori",
+      "email": "valeria.huaman0528@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0529",
+      "nombres": "Emilio",
+      "apellidos": "Huamán Condori",
+      "email": "emilio.huaman0529@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0530",
+      "nombres": "Nicole",
+      "apellidos": "Huamán Condori",
+      "email": "nicole.huaman0530@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0531",
+      "nombres": "Rodrigo",
+      "apellidos": "Huamán Condori",
+      "email": "rodrigo.huaman0531@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0532",
+      "nombres": "Paola",
+      "apellidos": "Huamán Condori",
+      "email": "paola.huaman0532@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0533",
+      "nombres": "César",
+      "apellidos": "Huamán Condori",
+      "email": "cesar.huaman0533@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0534",
+      "nombres": "Milagros",
+      "apellidos": "Huamán Condori",
+      "email": "milagros.huaman0534@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0535",
+      "nombres": "Eduardo",
+      "apellidos": "Huamán Condori",
+      "email": "eduardo.huaman0535@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0536",
+      "nombres": "Roxana",
+      "apellidos": "Huamán Condori",
+      "email": "roxana.huaman0536@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0537",
+      "nombres": "Julio",
+      "apellidos": "Huamán Condori",
+      "email": "julio.huaman0537@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0538",
+      "nombres": "Katherine",
+      "apellidos": "Huamán Condori",
+      "email": "katherine.huaman0538@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0539",
+      "nombres": "Marco",
+      "apellidos": "Huamán Condori",
+      "email": "marco.huaman0539@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0540",
+      "nombres": "Angela",
+      "apellidos": "Huamán Condori",
+      "email": "angela.huaman0540@blenkir.edu.pe",
+      "salon": "5° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0541",
+      "nombres": "Felipe",
+      "apellidos": "Huamán Condori",
+      "email": "felipe.huaman0541@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0542",
+      "nombres": "Ruth",
+      "apellidos": "Huamán Condori",
+      "email": "ruth.huaman0542@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0543",
+      "nombres": "Héctor",
+      "apellidos": "Huamán Condori",
+      "email": "hector.huaman0543@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0544",
+      "nombres": "Gladys",
+      "apellidos": "Huamán Condori",
+      "email": "gladys.huaman0544@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0545",
+      "nombres": "Óscar",
+      "apellidos": "Huamán Condori",
+      "email": "oscar.huaman0545@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0546",
+      "nombres": "Patricia",
+      "apellidos": "Huamán Condori",
+      "email": "patricia.huaman0546@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0547",
+      "nombres": "Raúl",
+      "apellidos": "Huamán Condori",
+      "email": "raul.huaman0547@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0548",
+      "nombres": "Carmen",
+      "apellidos": "Huamán Condori",
+      "email": "carmen.huaman0548@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0549",
+      "nombres": "Miguel",
+      "apellidos": "Huamán Condori",
+      "email": "miguel.huaman0549@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0550",
+      "nombres": "Rosa",
+      "apellidos": "Huamán Condori",
+      "email": "rosa.huaman0550@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0551",
+      "nombres": "Mateo",
+      "apellidos": "Condori Salazar",
+      "email": "mateo.condori0551@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0552",
+      "nombres": "Valentina",
+      "apellidos": "Condori Salazar",
+      "email": "valentina.condori0552@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0553",
+      "nombres": "Santiago",
+      "apellidos": "Condori Salazar",
+      "email": "santiago.condori0553@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0554",
+      "nombres": "Luciana",
+      "apellidos": "Condori Salazar",
+      "email": "luciana.condori0554@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0555",
+      "nombres": "Sebastián",
+      "apellidos": "Condori Salazar",
+      "email": "sebastian.condori0555@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0556",
+      "nombres": "Camila",
+      "apellidos": "Condori Salazar",
+      "email": "camila.condori0556@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0557",
+      "nombres": "Diego",
+      "apellidos": "Condori Salazar",
+      "email": "diego.condori0557@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0558",
+      "nombres": "Isabella",
+      "apellidos": "Condori Salazar",
+      "email": "isabella.condori0558@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0559",
+      "nombres": "Alejandro",
+      "apellidos": "Condori Salazar",
+      "email": "alejandro.condori0559@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0560",
+      "nombres": "Sofía",
+      "apellidos": "Condori Salazar",
+      "email": "sofia.condori0560@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0561",
+      "nombres": "Daniel",
+      "apellidos": "Condori Salazar",
+      "email": "daniel.condori0561@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0562",
+      "nombres": "Mariana",
+      "apellidos": "Condori Salazar",
+      "email": "mariana.condori0562@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0563",
+      "nombres": "Andrés",
+      "apellidos": "Condori Salazar",
+      "email": "andres.condori0563@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0564",
+      "nombres": "Emilia",
+      "apellidos": "Condori Salazar",
+      "email": "emilia.condori0564@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0565",
+      "nombres": "Gabriel",
+      "apellidos": "Condori Salazar",
+      "email": "gabriel.condori0565@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0566",
+      "nombres": "Victoria",
+      "apellidos": "Condori Salazar",
+      "email": "victoria.condori0566@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0567",
+      "nombres": "Renato",
+      "apellidos": "Condori Salazar",
+      "email": "renato.condori0567@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0568",
+      "nombres": "Fiorella",
+      "apellidos": "Condori Salazar",
+      "email": "fiorella.condori0568@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0569",
+      "nombres": "Bruno",
+      "apellidos": "Condori Salazar",
+      "email": "bruno.condori0569@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0570",
+      "nombres": "Ariana",
+      "apellidos": "Condori Salazar",
+      "email": "ariana.condori0570@blenkir.edu.pe",
+      "salon": "5° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0571",
+      "nombres": "Joaquín",
+      "apellidos": "Condori Salazar",
+      "email": "joaquin.condori0571@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0572",
+      "nombres": "Mía",
+      "apellidos": "Condori Salazar",
+      "email": "mia.condori0572@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0573",
+      "nombres": "Thiago",
+      "apellidos": "Condori Salazar",
+      "email": "thiago.condori0573@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0574",
+      "nombres": "Antonella",
+      "apellidos": "Condori Salazar",
+      "email": "antonella.condori0574@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0575",
+      "nombres": "Ian",
+      "apellidos": "Condori Salazar",
+      "email": "ian.condori0575@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0576",
+      "nombres": "Lucía",
+      "apellidos": "Condori Salazar",
+      "email": "lucia.condori0576@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0577",
+      "nombres": "Adrián",
+      "apellidos": "Condori Salazar",
+      "email": "adrian.condori0577@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0578",
+      "nombres": "Valeria",
+      "apellidos": "Condori Salazar",
+      "email": "valeria.condori0578@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0579",
+      "nombres": "Emilio",
+      "apellidos": "Condori Salazar",
+      "email": "emilio.condori0579@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0580",
+      "nombres": "Nicole",
+      "apellidos": "Condori Salazar",
+      "email": "nicole.condori0580@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0581",
+      "nombres": "Rodrigo",
+      "apellidos": "Condori Salazar",
+      "email": "rodrigo.condori0581@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0582",
+      "nombres": "Paola",
+      "apellidos": "Condori Salazar",
+      "email": "paola.condori0582@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0583",
+      "nombres": "César",
+      "apellidos": "Condori Salazar",
+      "email": "cesar.condori0583@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0584",
+      "nombres": "Milagros",
+      "apellidos": "Condori Salazar",
+      "email": "milagros.condori0584@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0585",
+      "nombres": "Eduardo",
+      "apellidos": "Condori Salazar",
+      "email": "eduardo.condori0585@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0586",
+      "nombres": "Roxana",
+      "apellidos": "Condori Salazar",
+      "email": "roxana.condori0586@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0587",
+      "nombres": "Julio",
+      "apellidos": "Condori Salazar",
+      "email": "julio.condori0587@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0588",
+      "nombres": "Katherine",
+      "apellidos": "Condori Salazar",
+      "email": "katherine.condori0588@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0589",
+      "nombres": "Marco",
+      "apellidos": "Condori Salazar",
+      "email": "marco.condori0589@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0590",
+      "nombres": "Angela",
+      "apellidos": "Condori Salazar",
+      "email": "angela.condori0590@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0591",
+      "nombres": "Felipe",
+      "apellidos": "Condori Salazar",
+      "email": "felipe.condori0591@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0592",
+      "nombres": "Ruth",
+      "apellidos": "Condori Salazar",
+      "email": "ruth.condori0592@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0593",
+      "nombres": "Héctor",
+      "apellidos": "Condori Salazar",
+      "email": "hector.condori0593@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0594",
+      "nombres": "Gladys",
+      "apellidos": "Condori Salazar",
+      "email": "gladys.condori0594@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0595",
+      "nombres": "Óscar",
+      "apellidos": "Condori Salazar",
+      "email": "oscar.condori0595@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0596",
+      "nombres": "Patricia",
+      "apellidos": "Condori Salazar",
+      "email": "patricia.condori0596@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0597",
+      "nombres": "Raúl",
+      "apellidos": "Condori Salazar",
+      "email": "raul.condori0597@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0598",
+      "nombres": "Carmen",
+      "apellidos": "Condori Salazar",
+      "email": "carmen.condori0598@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0599",
+      "nombres": "Miguel",
+      "apellidos": "Condori Salazar",
+      "email": "miguel.condori0599@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0600",
+      "nombres": "Rosa",
+      "apellidos": "Condori Salazar",
+      "email": "rosa.condori0600@blenkir.edu.pe",
+      "salon": "6° A",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0601",
+      "nombres": "Mateo",
+      "apellidos": "Salazar Paredes",
+      "email": "mateo.salazar0601@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0602",
+      "nombres": "Valentina",
+      "apellidos": "Salazar Paredes",
+      "email": "valentina.salazar0602@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0603",
+      "nombres": "Santiago",
+      "apellidos": "Salazar Paredes",
+      "email": "santiago.salazar0603@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0604",
+      "nombres": "Luciana",
+      "apellidos": "Salazar Paredes",
+      "email": "luciana.salazar0604@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0605",
+      "nombres": "Sebastián",
+      "apellidos": "Salazar Paredes",
+      "email": "sebastian.salazar0605@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0606",
+      "nombres": "Camila",
+      "apellidos": "Salazar Paredes",
+      "email": "camila.salazar0606@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0607",
+      "nombres": "Diego",
+      "apellidos": "Salazar Paredes",
+      "email": "diego.salazar0607@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0608",
+      "nombres": "Isabella",
+      "apellidos": "Salazar Paredes",
+      "email": "isabella.salazar0608@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0609",
+      "nombres": "Alejandro",
+      "apellidos": "Salazar Paredes",
+      "email": "alejandro.salazar0609@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0610",
+      "nombres": "Sofía",
+      "apellidos": "Salazar Paredes",
+      "email": "sofia.salazar0610@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0611",
+      "nombres": "Daniel",
+      "apellidos": "Salazar Paredes",
+      "email": "daniel.salazar0611@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0612",
+      "nombres": "Mariana",
+      "apellidos": "Salazar Paredes",
+      "email": "mariana.salazar0612@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0613",
+      "nombres": "Andrés",
+      "apellidos": "Salazar Paredes",
+      "email": "andres.salazar0613@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0614",
+      "nombres": "Emilia",
+      "apellidos": "Salazar Paredes",
+      "email": "emilia.salazar0614@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0615",
+      "nombres": "Gabriel",
+      "apellidos": "Salazar Paredes",
+      "email": "gabriel.salazar0615@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0616",
+      "nombres": "Victoria",
+      "apellidos": "Salazar Paredes",
+      "email": "victoria.salazar0616@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0617",
+      "nombres": "Renato",
+      "apellidos": "Salazar Paredes",
+      "email": "renato.salazar0617@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0618",
+      "nombres": "Fiorella",
+      "apellidos": "Salazar Paredes",
+      "email": "fiorella.salazar0618@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0619",
+      "nombres": "Bruno",
+      "apellidos": "Salazar Paredes",
+      "email": "bruno.salazar0619@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0620",
+      "nombres": "Ariana",
+      "apellidos": "Salazar Paredes",
+      "email": "ariana.salazar0620@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0621",
+      "nombres": "Joaquín",
+      "apellidos": "Salazar Paredes",
+      "email": "joaquin.salazar0621@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0622",
+      "nombres": "Mía",
+      "apellidos": "Salazar Paredes",
+      "email": "mia.salazar0622@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0623",
+      "nombres": "Thiago",
+      "apellidos": "Salazar Paredes",
+      "email": "thiago.salazar0623@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0624",
+      "nombres": "Antonella",
+      "apellidos": "Salazar Paredes",
+      "email": "antonella.salazar0624@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0625",
+      "nombres": "Ian",
+      "apellidos": "Salazar Paredes",
+      "email": "ian.salazar0625@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0626",
+      "nombres": "Lucía",
+      "apellidos": "Salazar Paredes",
+      "email": "lucia.salazar0626@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0627",
+      "nombres": "Adrián",
+      "apellidos": "Salazar Paredes",
+      "email": "adrian.salazar0627@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0628",
+      "nombres": "Valeria",
+      "apellidos": "Salazar Paredes",
+      "email": "valeria.salazar0628@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0629",
+      "nombres": "Emilio",
+      "apellidos": "Salazar Paredes",
+      "email": "emilio.salazar0629@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0630",
+      "nombres": "Nicole",
+      "apellidos": "Salazar Paredes",
+      "email": "nicole.salazar0630@blenkir.edu.pe",
+      "salon": "6° B",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0631",
+      "nombres": "Rodrigo",
+      "apellidos": "Salazar Paredes",
+      "email": "rodrigo.salazar0631@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0632",
+      "nombres": "Paola",
+      "apellidos": "Salazar Paredes",
+      "email": "paola.salazar0632@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0633",
+      "nombres": "César",
+      "apellidos": "Salazar Paredes",
+      "email": "cesar.salazar0633@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0634",
+      "nombres": "Milagros",
+      "apellidos": "Salazar Paredes",
+      "email": "milagros.salazar0634@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0635",
+      "nombres": "Eduardo",
+      "apellidos": "Salazar Paredes",
+      "email": "eduardo.salazar0635@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0636",
+      "nombres": "Roxana",
+      "apellidos": "Salazar Paredes",
+      "email": "roxana.salazar0636@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0637",
+      "nombres": "Julio",
+      "apellidos": "Salazar Paredes",
+      "email": "julio.salazar0637@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0638",
+      "nombres": "Katherine",
+      "apellidos": "Salazar Paredes",
+      "email": "katherine.salazar0638@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0639",
+      "nombres": "Marco",
+      "apellidos": "Salazar Paredes",
+      "email": "marco.salazar0639@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0640",
+      "nombres": "Angela",
+      "apellidos": "Salazar Paredes",
+      "email": "angela.salazar0640@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0641",
+      "nombres": "Felipe",
+      "apellidos": "Salazar Paredes",
+      "email": "felipe.salazar0641@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0642",
+      "nombres": "Ruth",
+      "apellidos": "Salazar Paredes",
+      "email": "ruth.salazar0642@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0643",
+      "nombres": "Héctor",
+      "apellidos": "Salazar Paredes",
+      "email": "hector.salazar0643@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0644",
+      "nombres": "Gladys",
+      "apellidos": "Salazar Paredes",
+      "email": "gladys.salazar0644@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0645",
+      "nombres": "Óscar",
+      "apellidos": "Salazar Paredes",
+      "email": "oscar.salazar0645@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0646",
+      "nombres": "Patricia",
+      "apellidos": "Salazar Paredes",
+      "email": "patricia.salazar0646@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0647",
+      "nombres": "Raúl",
+      "apellidos": "Salazar Paredes",
+      "email": "raul.salazar0647@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0648",
+      "nombres": "Carmen",
+      "apellidos": "Salazar Paredes",
+      "email": "carmen.salazar0648@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0649",
+      "nombres": "Miguel",
+      "apellidos": "Salazar Paredes",
+      "email": "miguel.salazar0649@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0650",
+      "nombres": "Rosa",
+      "apellidos": "Salazar Paredes",
+      "email": "rosa.salazar0650@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0651",
+      "nombres": "Mateo",
+      "apellidos": "Paredes Silva",
+      "email": "mateo.paredes0651@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0652",
+      "nombres": "Valentina",
+      "apellidos": "Paredes Silva",
+      "email": "valentina.paredes0652@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0653",
+      "nombres": "Santiago",
+      "apellidos": "Paredes Silva",
+      "email": "santiago.paredes0653@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0654",
+      "nombres": "Luciana",
+      "apellidos": "Paredes Silva",
+      "email": "luciana.paredes0654@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0655",
+      "nombres": "Sebastián",
+      "apellidos": "Paredes Silva",
+      "email": "sebastian.paredes0655@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0656",
+      "nombres": "Camila",
+      "apellidos": "Paredes Silva",
+      "email": "camila.paredes0656@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0657",
+      "nombres": "Diego",
+      "apellidos": "Paredes Silva",
+      "email": "diego.paredes0657@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0658",
+      "nombres": "Isabella",
+      "apellidos": "Paredes Silva",
+      "email": "isabella.paredes0658@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0659",
+      "nombres": "Alejandro",
+      "apellidos": "Paredes Silva",
+      "email": "alejandro.paredes0659@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    },
+    {
+      "codigo": "EST-2026-0660",
+      "nombres": "Sofía",
+      "apellidos": "Paredes Silva",
+      "email": "sofia.paredes0660@blenkir.edu.pe",
+      "salon": "6° C",
+      "password": "mbappe29"
+    }
+  ]
+}
