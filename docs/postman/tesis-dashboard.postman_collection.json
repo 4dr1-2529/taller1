@@ -37,7 +37,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"director@blenkir.edu.pe\",\n  \"password\": \"Tesis2026!\"\n}"
+              "raw": "{\n  \"email\": \"director@blenkir.edu.pe\",\n  \"password\": \"mbappe29\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }
@@ -141,7 +141,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"profesor1@blenkir.edu.pe\",\n  \"password\": \"Tesis2026!\"\n}"
+              "raw": "{\n  \"email\": \"profesor1@blenkir.edu.pe\",\n  \"password\": \"mbappe29\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }
@@ -196,7 +196,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"estudiante0001@blenkir.edu.pe\",\n  \"password\": \"Tesis2026!\"\n}"
+              "raw": "{\n  \"email\": \"estudiante0001@blenkir.edu.pe\",\n  \"password\": \"mbappe29\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }

@@ -26,7 +26,7 @@
 
 Tras `npm run db:seed:demo`:
 
-- Director: `director@blenkir.edu.pe` / `Tesis2026!`
+- Director: `director@blenkir.edu.pe` / `mbappe29`
 - Profesor: `profesor1@blenkir.edu.pe`
 - Estudiante: `estudiante0001@blenkir.edu.pe`
 - Alias legacy (director/admin): `director@iep-huancayo.edu.pe`, `admin@iep-huancayo.edu.pe`

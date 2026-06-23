@@ -111,7 +111,7 @@ npm run db:seed --workspace=backend
 npm run db:seed:demo --workspace=backend
 ```
 
-Credenciales resultantes (contraseña **`Tesis2026!`**):
+Credenciales resultantes (contraseña **`mbappe29`**):
 
 | Rol | Email |
 |-----|-------|

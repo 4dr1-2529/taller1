@@ -327,6 +327,6 @@ El esquema Prisma (`backend/prisma/schema.prisma`) puede evolucionar hacia este 
 
 | Rol | Email | Password |
 |-----|-------|----------|
-| Director | director@blenkir.edu.pe | Tesis2026! |
-| Profesor 1–15 | profesor{N}@blenkir.edu.pe | Tesis2026! |
-| Estudiantes | estudiante{NNNN}@blenkir.edu.pe | Tesis2026! |
+| Director | director@blenkir.edu.pe | mbappe29 |
+| Profesor 1–15 | profesor{N}@blenkir.edu.pe | mbappe29 |
+| Estudiantes | estudiante{NNNN}@blenkir.edu.pe | mbappe29 |

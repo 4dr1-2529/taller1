@@ -54,9 +54,9 @@ async function main() {
 
   await test("login director (si existe seed)", async () => {
     const creds = [
-      { email: "director@blenkir.edu.pe", password: "Tesis2026!" },
-      { email: "director@iep-huancayo.edu.pe", password: "Tesis2026!" },
-      { email: "admin@iep-huancayo.edu.pe", password: "Tesis2026!" },
+      { email: "director@blenkir.edu.pe", password: "mbappe29" },
+      { email: "director@iep-huancayo.edu.pe", password: "mbappe29" },
+      { email: "admin@iep-huancayo.edu.pe", password: "mbappe29" },
     ];
     let token = null;
     for (const body of creds) {

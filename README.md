@@ -127,7 +127,7 @@ Si el login devuelve **500** con `Can't reach database server at localhost:3306`
 
 ### Credenciales demo (`db:seed:demo`)
 
-Contraseña para todos: **`Tesis2026!`**
+Contraseña para todos: **`mbappe29`**
 
 | Rol (UI) | Email | Rol sistema |
 |----------|-------|-------------|

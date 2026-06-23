@@ -66,7 +66,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
 ## Credenciales demo (post-seed)
 
-Contraseña para todos: **`Tesis2026!`**
+Contraseña para todos: **`mbappe29`**
 
 | Rol | Email |
 |-----|-------|

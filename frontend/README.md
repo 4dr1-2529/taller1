@@ -99,7 +99,7 @@ El estudiante **no** carga listados globales ni filtros de grado/sección; usa e
 
 ## Credenciales demo
 
-Contraseña: `Tesis2026!`
+Contraseña: `mbappe29`
 
 | Rol | Email |
 |-----|-------|

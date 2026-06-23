@@ -34,7 +34,7 @@ cd tesis-dashboard
 mysql -u root < database\blenkir-v3\01-schema.sql
 
 # 2. Hash bcrypt (requiere DEMO_PASSWORD)
-$env:DEMO_PASSWORD = "Tesis2026!"
+$env:DEMO_PASSWORD = "mbappe29"
 $hash = npm run db:demo-bcrypt --silent
 
 # 3. Estructura + usuarios director/profesores

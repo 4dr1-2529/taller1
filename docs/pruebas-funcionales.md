@@ -42,7 +42,7 @@
 | Profesor | `profesor1@blenkir.edu.pe` | Filtros salón, notas propias |
 | Estudiante | `estudiante0001@blenkir.edu.pe` | Sin filtros globales, solo `/estudiante/*` |
 
-Contraseña: `Tesis2026!`
+Contraseña: `mbappe29`
 
 ## Ejecución local
 
