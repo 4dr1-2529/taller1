@@ -33,13 +33,14 @@ async function wipeDemoData() {
   await prisma.grade.deleteMany();
   await prisma.enrollment.deleteMany();
   await prisma.horarioClase.deleteMany();
+  await prisma.teacherCourseAssignment.deleteMany();
+  await prisma.tutorSeccion.deleteMany();
   await prisma.matricula.deleteMany();
   await prisma.studentApoderado.deleteMany();
   await prisma.apoderado.deleteMany();
 
   const students = await prisma.student.deleteMany();
   await prisma.course.deleteMany();
-  await prisma.tutorSeccion.deleteMany();
   const teachers = await prisma.teacher.deleteMany();
 
   const demoRoles = await prisma.role.findMany({

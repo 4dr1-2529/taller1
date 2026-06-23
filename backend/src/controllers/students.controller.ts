@@ -1,5 +1,6 @@
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
+import bcrypt from "bcryptjs";
 import { prisma } from "../utils/prisma.js";
 import { studentSchema, updateStudentSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
@@ -7,6 +8,7 @@ import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 import { deriveLmsEngagement } from "../utils/lms-engagement.js";
+import { buildStudentAccountEmail, DEFAULT_INSTITUTION_PASSWORD } from "../utils/person-accounts.js";
 
 export async function listStudents(req: Request, res: Response, next: NextFunction) {
   try {
@@ -67,21 +69,55 @@ export async function createStudent(req: Request, res: Response, next: NextFunct
     const exists = await prisma.student.findUnique({ where: { codigo: data.codigo } });
     if (exists) throw new AppError(409, "Código de estudiante duplicado");
 
-    const student = await prisma.student.create({
-      data: {
-        codigo: data.codigo,
-        nombres: data.nombres,
-        apellidos: data.apellidos,
-        seccionId: toDbId(data.seccionId),
-        dni: data.dni,
-        email: data.correo || null,
-        telefono: data.telefono,
-        estado: data.estado ?? "activo",
-        promedioGeneral: data.promedioGeneral ?? 0,
-        asistenciaGeneral: data.asistenciaGeneral ?? 0,
-        fechaIngreso: new Date(),
-      },
-      include: { seccion: { include: { grado: { include: { nivel: true } } } } },
+    if (!data.dni && !data.correo) {
+      throw new AppError(400, "Indique DNI o correo para crear la cuenta de acceso del estudiante");
+    }
+
+    const loginEmail = buildStudentAccountEmail(
+      data.nombres,
+      data.apellidos,
+      data.dni ?? "00000000",
+      data.correo,
+    );
+
+    const emailTaken = await prisma.user.findUnique({ where: { email: loginEmail } });
+    if (emailTaken) throw new AppError(409, "Ya existe una cuenta con ese correo");
+
+    const rolEstudiante = await prisma.role.findUnique({ where: { codigo: "estudiante" } });
+    if (!rolEstudiante) throw new AppError(500, "Rol estudiante no configurado");
+
+    const passwordHash = await bcrypt.hash(DEFAULT_INSTITUTION_PASSWORD, 12);
+
+    const student = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          email: loginEmail,
+          passwordHash,
+          nombres: data.nombres,
+          apellidos: data.apellidos,
+          dni: data.dni,
+          telefono: data.telefono,
+          rolId: rolEstudiante.id,
+        },
+      });
+
+      return tx.student.create({
+        data: {
+          usuarioId: user.id,
+          codigo: data.codigo,
+          nombres: data.nombres,
+          apellidos: data.apellidos,
+          seccionId: toDbId(data.seccionId),
+          dni: data.dni,
+          email: loginEmail,
+          telefono: data.telefono,
+          estado: data.estado ?? "activo",
+          promedioGeneral: data.promedioGeneral ?? 0,
+          asistenciaGeneral: data.asistenciaGeneral ?? 0,
+          fechaIngreso: new Date(),
+        },
+        include: { seccion: { include: { grado: { include: { nivel: true } } } } },
+      });
     });
 
     await logAudit({

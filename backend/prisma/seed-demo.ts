@@ -1,50 +1,49 @@
 /**
  * Población demo Blenkir — 1 director, 15 profesores, 660 estudiantes (22 salones × 30)
+ * Cuentas: director@blenkir.edu.pe · pro{DNI}@ · nombre.apellido{DNI}@
  * Requiere: npm run db:seed
  * Ejecutar: npm run db:seed:demo
  */
 import { PrismaClient, type NivelRiesgo } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { seedTeacherAssignments } from "./seed-assignments.js";
-
-const prisma = new PrismaClient();
+import { seedBimesterGrades } from "./demo-data/seed-grades.js";
+import {
+  nextUniqueDni,
+  randomPeruvianPerson,
+  studentEmail,
+  teacherEmail,
+} from "./demo-data/peruvian-names.js";
 import { DEFAULT_INSTITUTION_PASSWORD } from "../scripts/default-password.mjs";
 
+const prisma = new PrismaClient();
 const PASSWORD = DEFAULT_INSTITUTION_PASSWORD;
-/** Máximo de alumnos por salón/sección (capacidad institucional). */
 const ALUMNOS_POR_SALON = 30;
+const DIRECTOR_EMAIL = "director@blenkir.edu.pe";
+
+const TEACHER_SPECIALTIES = [
+  "Inglés",
+  "Comunicación",
+  "Ciencias",
+  "Ciencias Sociales",
+  "Inglés",
+  "Educación Física",
+  "Matemática",
+  "Lenguaje",
+  "Religión",
+  "Taller",
+  "Geografía",
+  "Historia",
+  "Razonamiento",
+  "Geometría",
+  "Álgebra",
+] as const;
 
 async function getRolId(codigo: "admin" | "docente" | "estudiante") {
   const rol = await prisma.role.findUnique({ where: { codigo } });
   if (!rol) throw new Error(`Rol ${codigo} no encontrado — ejecute db:seed`);
   return rol.id;
 }
-
-const NOMBRES = [
-  "Mateo", "Valentina", "Santiago", "Luciana", "Sebastián", "Camila", "Diego", "Isabella",
-  "Alejandro", "Sofía", "Daniel", "Mariana", "Andrés", "Emilia", "Gabriel", "Victoria",
-];
-const APELLIDOS = [
-  "Quispe", "Flores", "García", "Torres", "Mamani", "Rojas", "Díaz", "Chávez", "Vega", "Castro",
-];
-
-const PROFESORES: { nombres: string; apellidos: string; esp: string }[] = [
-  { nombres: "María", apellidos: "Quispe", esp: "Inglés" },
-  { nombres: "José", apellidos: "Flores", esp: "Comunicación" },
-  { nombres: "Ana", apellidos: "García", esp: "Ciencias" },
-  { nombres: "Luis", apellidos: "Torres", esp: "Ciencias Sociales" },
-  { nombres: "Rosa", apellidos: "Mamani", esp: "Inglés" },
-  { nombres: "Pedro", apellidos: "Rojas", esp: "Educación Física" },
-  { nombres: "Lucía", apellidos: "Díaz", esp: "Matemática" },
-  { nombres: "Jorge", apellidos: "Chávez", esp: "Lenguaje" },
-  { nombres: "Carmen", apellidos: "Vega", esp: "Religión" },
-  { nombres: "Miguel", apellidos: "Castro", esp: "Taller" },
-  { nombres: "Patricia", apellidos: "Silva", esp: "Geografía" },
-  { nombres: "Ricardo", apellidos: "Herrera", esp: "Historia" },
-  { nombres: "Elena", apellidos: "Morales", esp: "Razonamiento" },
-  { nombres: "Fernando", apellidos: "Paredes", esp: "Geometría" },
-  { nombres: "Gabriela", apellidos: "Salazar", esp: "Álgebra" },
-];
 
 function seccionesConfig(): { gradoNum: number; nombre: string }[] {
   const out: { gradoNum: number; nombre: string }[] = [];
@@ -60,72 +59,96 @@ function seccionesConfig(): { gradoNum: number; nombre: string }[] {
 async function main() {
   const totalEsperado = seccionesConfig().length * ALUMNOS_POR_SALON;
   console.log(
-    `Seed demo Blenkir — director, 15 profesores, ${totalEsperado} estudiantes (${ALUMNOS_POR_SALON}/salón)…`,
+    `Seed demo Blenkir — 1 director, 15 profesores, ${totalEsperado} estudiantes (${ALUMNOS_POR_SALON}/salón)…`,
   );
+
   const hash = await bcrypt.hash(PASSWORD, 12);
   const rolAdmin = await getRolId("admin");
   const rolDocente = await getRolId("docente");
   const rolEstudiante = await getRolId("estudiante");
 
+  const usedDni = new Set<string>();
+  const usedEmails = new Set<string>([DIRECTOR_EMAIL]);
+
   const anio = await prisma.anioLectivo.findFirst({ where: { anio: 2026 } });
   if (!anio) throw new Error("Ejecute npm run db:seed primero");
-  const periodo = await prisma.periodoAcademico.findFirst({
-    where: { anioLectivoId: anio.id, numero: 1 },
+
+  const periodos = await prisma.periodoAcademico.findMany({
+    where: { anioLectivoId: anio.id, numero: { in: [1, 2] } },
+    orderBy: { numero: "asc" },
   });
-  if (!periodo) throw new Error("Periodo académico no encontrado");
+  if (periodos.length < 2) {
+    throw new Error("Faltan bimestres I y II — ejecute npm run db:seed");
+  }
+  const periodo1 = periodos.find((p) => p.numero === 1)!;
+
+  const directorPerson = randomPeruvianPerson();
+  const directorDni = nextUniqueDni(usedDni);
 
   await prisma.user.upsert({
-    where: { email: "director@blenkir.edu.pe" },
-    update: { passwordHash: hash, rolId: rolAdmin },
-    create: {
-      email: "director@blenkir.edu.pe",
+    where: { email: DIRECTOR_EMAIL },
+    update: {
       passwordHash: hash,
-      nombres: "Carlos",
-      apellidos: "Ramírez Vargas",
-      dni: "12345678",
+      rolId: rolAdmin,
+      nombres: directorPerson.nombres,
+      apellidos: directorPerson.apellidos,
+      dni: directorDni,
+      activo: true,
+    },
+    create: {
+      email: DIRECTOR_EMAIL,
+      passwordHash: hash,
+      nombres: directorPerson.nombres,
+      apellidos: directorPerson.apellidos,
+      dni: directorDni,
       rolId: rolAdmin,
     },
   });
 
-  // Alias legacy (README / docs anteriores)
-  for (const legacyEmail of ["director@iep-huancayo.edu.pe", "admin@iep-huancayo.edu.pe"]) {
-    await prisma.user.upsert({
-      where: { email: legacyEmail },
-      update: { passwordHash: hash, rolId: rolAdmin, activo: true },
-      create: {
-        email: legacyEmail,
-        passwordHash: hash,
-        nombres: "Carlos",
-        apellidos: "Ramírez Vargas",
-        rolId: rolAdmin,
-      },
-    });
-  }
-
   const teacherIds: bigint[] = [];
-  for (let i = 0; i < PROFESORES.length; i++) {
-    const p = PROFESORES[i];
-    const email = `profesor${i + 1}@blenkir.edu.pe`;
+  for (let i = 0; i < TEACHER_SPECIALTIES.length; i++) {
+    const person = randomPeruvianPerson();
+    const dni = nextUniqueDni(usedDni);
+    const email = teacherEmail(dni);
+    usedEmails.add(email);
+    const codigo = `DOC-${String(i + 1).padStart(3, "0")}`;
+
     const user = await prisma.user.upsert({
       where: { email },
-      update: { passwordHash: hash, rolId: rolDocente },
+      update: {
+        passwordHash: hash,
+        rolId: rolDocente,
+        nombres: person.nombres,
+        apellidos: person.apellidos,
+        dni,
+        activo: true,
+      },
       create: {
         email,
         passwordHash: hash,
-        nombres: p.nombres,
-        apellidos: p.apellidos,
+        nombres: person.nombres,
+        apellidos: person.apellidos,
+        dni,
         rolId: rolDocente,
       },
     });
+
     const teacher = await prisma.teacher.upsert({
-      where: { codigo: `DOC-${String(i + 1).padStart(3, "0")}` },
-      update: { usuarioId: user.id, email },
+      where: { codigo },
+      update: {
+        usuarioId: user.id,
+        email,
+        nombres: person.nombres,
+        apellidos: person.apellidos,
+        especialidad: TEACHER_SPECIALTIES[i]!,
+        activo: true,
+      },
       create: {
         usuarioId: user.id,
-        codigo: `DOC-${String(i + 1).padStart(3, "0")}`,
-        nombres: p.nombres,
-        apellidos: p.apellidos,
-        especialidad: p.esp,
+        codigo,
+        nombres: person.nombres,
+        apellidos: person.apellidos,
+        especialidad: TEACHER_SPECIALTIES[i]!,
         email,
       },
     });
@@ -143,6 +166,7 @@ async function main() {
 
   let studentNum = 0;
   const config = seccionesConfig();
+
   for (const cfg of config) {
     const sec = secciones.find((s) => s.grado.numero === cfg.gradoNum && s.nombre === cfg.nombre);
     if (!sec) continue;
@@ -150,31 +174,54 @@ async function main() {
     for (let i = 0; i < ALUMNOS_POR_SALON; i++) {
       studentNum++;
       const num = String(studentNum).padStart(4, "0");
-      const email = `estudiante${num}@blenkir.edu.pe`;
-      const nom = NOMBRES[i % NOMBRES.length]!;
-      const ape = `${APELLIDOS[(studentNum + i) % APELLIDOS.length]!} ${APELLIDOS[(studentNum * 2) % APELLIDOS.length]!}`;
+      const codigo = `EST-2026-${num}`;
+      const person = randomPeruvianPerson();
+      const dni = nextUniqueDni(usedDni);
+      const email = studentEmail(person.nombres, person.apellidos, dni, usedEmails);
+
       const promedio = 8 + ((studentNum * 7) % 110) / 10;
       const asistencia = 72 + ((studentNum * 3) % 28);
       const estado = studentNum % 17 === 0 ? "en_riesgo" : studentNum % 53 === 0 ? "retirado" : "activo";
       const nivel: NivelRiesgo =
         promedio < 11 || asistencia < 75 ? "alto" : promedio < 13 || asistencia < 85 ? "medio" : "bajo";
 
+      const existing = await prisma.student.findUnique({ where: { codigo } });
+
       const user = await prisma.user.upsert({
         where: { email },
-        update: { passwordHash: hash, rolId: rolEstudiante },
+        update: {
+          passwordHash: hash,
+          rolId: rolEstudiante,
+          nombres: person.nombres,
+          apellidos: person.apellidos,
+          dni,
+          activo: true,
+        },
         create: {
           email,
           passwordHash: hash,
-          nombres: nom,
-          apellidos: ape,
-          dni: String(70000000 + studentNum).padStart(8, "0"),
+          nombres: person.nombres,
+          apellidos: person.apellidos,
+          dni,
           rolId: rolEstudiante,
         },
       });
 
+      if (existing?.usuarioId && existing.usuarioId !== user.id) {
+        await prisma.user.update({
+          where: { id: existing.usuarioId },
+          data: { activo: false },
+        });
+      }
+
       const student = await prisma.student.upsert({
-        where: { codigo: `EST-2026-${num}` },
+        where: { codigo },
         update: {
+          usuarioId: user.id,
+          nombres: person.nombres,
+          apellidos: person.apellidos,
+          dni,
+          email,
           seccionId: sec.id,
           promedioGeneral: promedio,
           asistenciaGeneral: asistencia,
@@ -182,10 +229,10 @@ async function main() {
         },
         create: {
           usuarioId: user.id,
-          codigo: `EST-2026-${num}`,
-          nombres: nom,
-          apellidos: ape,
-          dni: String(70000000 + studentNum).padStart(8, "0"),
+          codigo,
+          nombres: person.nombres,
+          apellidos: person.apellidos,
+          dni,
           email,
           seccionId: sec.id,
           promedioGeneral: promedio,
@@ -197,7 +244,7 @@ async function main() {
 
       await prisma.matricula.upsert({
         where: { estudianteId_anioLectivoId: { estudianteId: student.id, anioLectivoId: anio.id } },
-        update: {},
+        update: { seccionId: sec.id, estado: "activa" },
         create: {
           estudianteId: student.id,
           seccionId: sec.id,
@@ -207,11 +254,8 @@ async function main() {
         },
       });
 
-      // Inscripciones a curso: no se generan masivamente (evita ~15× estudiantes registros).
-      // Las notas y el LMS usan datos del estudiante; inscribir a curso es opcional vía API.
-
       await prisma.lmsIndicadorEstudiante.upsert({
-        where: { studentId_periodoId: { studentId: student.id, periodoId: periodo.id } },
+        where: { studentId_periodoId: { studentId: student.id, periodoId: periodo1.id } },
         update: {
           frecuenciaAcceso: 40 + ((studentNum * 5) % 55),
           tiempoPlataforma: 2 + (studentNum % 8),
@@ -222,7 +266,7 @@ async function main() {
         },
         create: {
           studentId: student.id,
-          periodoId: periodo.id,
+          periodoId: periodo1.id,
           frecuenciaAcceso: 40 + ((studentNum * 5) % 55),
           tiempoPlataforma: 2 + (studentNum % 8),
           tareasRatio: 0.45 + ((studentNum * 3) % 55) / 100,
@@ -239,7 +283,12 @@ async function main() {
           where: {
             studentId_anioSemana: { studentId: student.id, anioSemana: `2026-W${10 + w}` },
           },
-          update: { actividadPct: weekPct, minutos: Math.round(weekPct * 2.5), horasPlataforma: Math.round(weekPct * 0.08 * 10) / 10, conexiones: Math.max(1, Math.round(weekPct / 12)) },
+          update: {
+            actividadPct: weekPct,
+            minutos: Math.round(weekPct * 2.5),
+            horasPlataforma: Math.round(weekPct * 0.08 * 10) / 10,
+            conexiones: Math.max(1, Math.round(weekPct / 12)),
+          },
           create: {
             studentId: student.id,
             anioSemana: `2026-W${10 + w}`,
@@ -252,6 +301,7 @@ async function main() {
       }
 
       if (studentNum <= 120 || studentNum % 5 === 0) {
+        await prisma.prediction.deleteMany({ where: { studentId: student.id } });
         const pred = await prisma.prediction.create({
           data: {
             studentId: student.id,
@@ -260,11 +310,12 @@ async function main() {
             nivelRiesgo: nivel,
             probabilidad: nivel === "alto" ? 0.85 : nivel === "medio" ? 0.55 : 0.15,
             probabilidadAbandono: nivel === "alto" ? 0.85 : nivel === "medio" ? 0.55 : 0.15,
-            periodoId: periodo.id,
+            periodoId: periodo1.id,
           },
         });
 
         if (nivel !== "bajo") {
+          await prisma.alert.deleteMany({ where: { studentId: student.id } });
           await prisma.alert.create({
             data: {
               studentId: student.id,
@@ -285,8 +336,14 @@ async function main() {
     }
   }
 
+  await seedBimesterGrades(
+    prisma,
+    anio.id,
+    periodos.map((p) => p.id),
+  );
+
   const sala = await prisma.mensajeSala.findUnique({ where: { roomId: "global-institucion" } });
-  const director = await prisma.user.findUnique({ where: { email: "director@blenkir.edu.pe" } });
+  const director = await prisma.user.findUnique({ where: { email: DIRECTOR_EMAIL } });
   if (sala && director) {
     const exists = await prisma.chatMessage.findFirst({
       where: { salaId: sala.id, remitenteId: director.id },
@@ -296,37 +353,50 @@ async function main() {
         data: {
           salaId: sala.id,
           remitenteId: director.id,
-          contenido: "Bienvenidos al año lectivo 2026 — I.E.P. Blenkir. Revisen sus indicadores de riesgo en el dashboard.",
+          contenido:
+            "Bienvenidos al año lectivo 2026 — I.E.P. Blenkir. Revisen sus indicadores de riesgo en el dashboard.",
         },
       });
     }
   }
 
-  const maria = await prisma.teacher.findFirst({ where: { codigo: "DOC-001" } });
-  if (maria) {
-    console.log(`  ${maria.nombres} ${maria.apellidos} — asignaciones según catálogo docente`);
+  const sampleTeacher = await prisma.teacher.findFirst({ where: { codigo: "DOC-001" } });
+  if (sampleTeacher) {
+    console.log(`  Ej. profesor: ${sampleTeacher.email} (${sampleTeacher.nombres} ${sampleTeacher.apellidos})`);
   }
 
-  const removedEnrollments = await prisma.enrollment.deleteMany({});
   const matCount = await prisma.matricula.count({ where: { estado: "activa" } });
+  const gradeCount = await prisma.grade.count();
+  const userStudents = await prisma.user.count({ where: { rolId: rolEstudiante, activo: true } });
+  const userTeachers = await prisma.user.count({ where: { rolId: rolDocente, activo: true } });
 
   const seccionesCheck = await prisma.seccion.findMany({
     include: { grado: true, _count: { select: { estudiantes: true } } },
     orderBy: [{ grado: { numero: "asc" } }, { nombre: "asc" }],
   });
   const fueraDeLimite = seccionesCheck.filter((s) => s._count.estudiantes !== ALUMNOS_POR_SALON);
-  if (fueraDeLimite.length) {
-    for (const s of fueraDeLimite) {
-      console.warn(
-        `  ⚠ ${s.grado.numero}° ${s.nombre}: ${s._count.estudiantes} alumnos (esperado ${ALUMNOS_POR_SALON})`,
-      );
-    }
+  for (const s of fueraDeLimite) {
+    console.warn(
+      `  ⚠ ${s.grado.numero}° ${s.nombre}: ${s._count.estudiantes} alumnos (esperado ${ALUMNOS_POR_SALON})`,
+    );
   }
 
+  const sampleStudent = await prisma.student.findFirst({
+    where: { codigo: "EST-2026-0001" },
+    select: { email: true, nombres: true, apellidos: true, dni: true },
+  });
+
   console.log(
-    `OK — ${studentNum} estudiantes · ${teacherIds.length} profesores · ${matCount} matrículas · ${seccionesCheck.length} salones × ${ALUMNOS_POR_SALON} · inscripciones curso eliminadas: ${removedEnrollments.count}`,
+    `OK — ${studentNum} estudiantes · ${teacherIds.length} profesores · ${matCount} matrículas · ${gradeCount} notas`,
   );
-  console.log(`Login: director@blenkir.edu.pe / ${PASSWORD}`);
+  console.log(`Cuentas — director: 1 · profesores: ${userTeachers} · estudiantes: ${userStudents}`);
+  console.log(`Login director: ${DIRECTOR_EMAIL} / ${PASSWORD}`);
+  if (sampleStudent?.email) {
+    console.log(`Login estudiante ejemplo: ${sampleStudent.email} / ${PASSWORD}`);
+  }
+  if (sampleTeacher?.email) {
+    console.log(`Login profesor ejemplo: ${sampleTeacher.email} / ${PASSWORD}`);
+  }
 }
 
 main()

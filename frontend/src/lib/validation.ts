@@ -229,6 +229,9 @@ export function validateStudentForm(form: StudentFormInput): FieldErrors {
     const a = validatePercentString(form.asistenciaGeneral, false);
     if (a) errors.asistenciaGeneral = a;
   }
+  if (!form.dni.trim() && !form.correo.trim()) {
+    errors.dni = "Indique DNI o correo para crear la cuenta de acceso";
+  }
   return errors;
 }
 

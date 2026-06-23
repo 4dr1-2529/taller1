@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { motion } from "framer-motion";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Shuffle } from "lucide-react";
 import { toast } from "sonner";
 import { MiniProgressBar } from "@/components/ui/MiniProgressBar";
 import { attachPredictions } from "@/lib/aggregates";
@@ -23,6 +23,7 @@ import {
   PersonNameInput,
   PhoneInput,
 } from "@/components/ui/ValidatedInputs";
+import { randomPeruvianPerson } from "@/lib/peruvian-names";
 import {
   type FieldErrors,
   firstError,
@@ -89,6 +90,17 @@ export function StudentsView({
     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
   };
 
+  function fillRandomPeruvianNames() {
+    const { nombres, apellidos } = randomPeruvianPerson();
+    setErrors((p) => {
+      const next = { ...p };
+      delete next.nombres;
+      delete next.apellidos;
+      return next;
+    });
+    setNewStudent((p) => ({ ...p, nombres, apellidos }));
+  }
+
   return (
     <div className="space-y-6">
       <div className={canEdit ? "grid gap-6 xl:grid-cols-2" : ""}>
@@ -125,7 +137,7 @@ export function StudentsView({
                   required
                 />
               </FormField>
-              <FormField label="DNI" error={errors.dni} hint="8 dígitos numéricos (Perú)">
+              <FormField label="DNI" error={errors.dni} hint="8 dígitos — necesario para crear cuenta (o use correo)">
                 <DniInput
                   autoComplete="off"
                   placeholder="12345678"
@@ -136,6 +148,17 @@ export function StudentsView({
                   }}
                 />
               </FormField>
+              <div className="form-grid-full flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs text-[var(--text-muted)]">Nombres y apellidos</p>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition hover:border-[var(--brand-orange)] hover:text-[var(--brand-orange)]"
+                  onClick={fillRandomPeruvianNames}
+                >
+                  <Shuffle className="h-3.5 w-3.5" />
+                  Generar nombres peruanos
+                </button>
+              </div>
               <FormField label="Nombres" error={errors.nombres}>
                 <PersonNameInput
                   value={newStudent.nombres}
