@@ -34,6 +34,17 @@ if (!result.ok && result.reason === "P3009") {
   console.log("[railway-start] migraciones OK");
 }
 
+if (process.env.RUN_DEMO_SEED === "1") {
+  console.log("[railway-start] RUN_DEMO_SEED=1 — poblando demo en segundo plano…");
+  const seed = spawn("node", ["scripts/railway-seed-demo.mjs"], {
+    cwd: backendRoot,
+    env: process.env,
+    stdio: "inherit",
+    detached: true,
+  });
+  seed.unref();
+}
+
 console.log("[railway-start] iniciando API");
 const api = spawn("node", ["dist/index.js"], {
   stdio: "inherit",
