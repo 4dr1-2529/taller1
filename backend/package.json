@@ -29,6 +29,7 @@
     "db:reseed": "npm run db:reset:full",
     "db:demo-bcrypt": "node scripts/print-demo-bcrypt.mjs",
     "db:update-passwords": "node scripts/update-all-passwords.mjs",
+    "railway:seed:demo": "node scripts/railway-seed-demo.mjs",
     "db:legacy-users": "tsx scripts/upsert-legacy-users.ts",
     "test": "node --test tests/*.test.mjs && tsx --test tests/schemas.test.ts tests/teacher-scope.test.ts tests/validation-fields.test.ts tests/estudiante-scope.test.ts",
     "db:bootstrap": "tsx prisma/bootstrap-admin.ts",

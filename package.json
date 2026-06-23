@@ -32,6 +32,7 @@
     "prisma:migrate:deploy": "npm run prisma:migrate:deploy --workspace=backend",
     "db:railway:fix-p3009": "npm run db:railway:fix-p3009 --workspace=backend",
     "start:prod": "npm run start:prod --workspace=backend",
+    "railway:seed:demo": "npm run railway:seed:demo --workspace=backend",
     "db:legacy-users": "npm run db:legacy-users --workspace=backend",
     "db:bootstrap": "npm run db:bootstrap --workspace=backend",
     "db:studio": "npm run db:studio --workspace=backend",
