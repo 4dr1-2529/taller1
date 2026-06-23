@@ -1,10 +1,14 @@
 /**
  * Seed demo — asignación docente institucional
- * 1°–2°: un tutor dicta todos los cursos del aula
- * 3°–6°: polidocencia — 2 cursos por docente, máx. 6 salones distintos
+ * 1°–2°: un tutor exclusivo por salón (dicta todos los cursos de ese aula)
+ * 3°–6°: polidocencia — 2 cursos por docente, máx. 6–8 salones (POLIDOCENCIA_MAX_SALONES)
  */
 import type { PrismaClient } from "@prisma/client";
-import { assignTutorToSection, createCourseAssignment } from "../src/services/teacher-assignment.service.js";
+import {
+  assignTutorToSection,
+  createCourseAssignment,
+  syncCourseOffering,
+} from "../src/services/teacher-assignment.service.js";
 import {
   MAX_POLIDOCENCIA_SECTIONS,
   TEACHER_COURSE_PAIRS,
@@ -56,26 +60,104 @@ async function tryAssign(
   }
 }
 
+/** Fase 3 (solo seed): completa huecos sin límite de salones para cobertura total. */
+async function forceAssignSlot(
+  prisma: PrismaClient,
+  slot: PoliSlot,
+  anioLectivoId: bigint,
+  states: TeacherPoliState[],
+  assignedKeys: Set<string>,
+): Promise<boolean> {
+  if (assignedKeys.has(slot.key)) return true;
+
+  const seccion = await prisma.seccion.findFirst({
+    where: { id: slot.seccionId },
+    include: { grado: { include: { nivel: true } } },
+  });
+  if (!seccion) return false;
+
+  const candidates = states
+    .filter((t) => t.courseCodes.includes(slot.cursoCodigo))
+    .sort((a, b) => a.load - b.load);
+
+  for (const teacher of candidates) {
+    const other = await prisma.teacherCourseAssignment.findFirst({
+      where: {
+        cursoId: slot.cursoId,
+        seccionId: slot.seccionId,
+        anioLectivoId,
+        activo: true,
+        profesorId: { not: teacher.profesorId },
+      },
+    });
+    if (other) continue;
+
+    try {
+      const row = await prisma.teacherCourseAssignment.upsert({
+        where: {
+          profesorId_cursoId_seccionId_anioLectivoId: {
+            profesorId: teacher.profesorId,
+            cursoId: slot.cursoId,
+            seccionId: slot.seccionId,
+            anioLectivoId,
+          },
+        },
+        create: {
+          profesorId: teacher.profesorId,
+          cursoId: slot.cursoId,
+          gradoId: seccion.gradoId,
+          seccionId: slot.seccionId,
+          anioLectivoId,
+          esTutor: false,
+          activo: true,
+        },
+        update: { activo: true, esTutor: false, gradoId: seccion.gradoId },
+      });
+
+      await syncCourseOffering(row, seccion);
+      teacher.sectionIds.add(String(slot.seccionId));
+      teacher.load++;
+      assignedKeys.add(slot.key);
+      return true;
+    } catch {
+      continue;
+    }
+  }
+  return false;
+}
+
 export async function seedTeacherAssignments(
   prisma: PrismaClient,
-  teacherIds: bigint[],
+  tutorTeacherIds: bigint[],
+  poliTeacherIds: bigint[],
   secciones: SeccionRow[],
   anioLectivoId: bigint,
 ) {
-  console.log("  Asignaciones docentes (tutor 1°-2°, polidocencia 3°-6°)…");
+  console.log("  Asignaciones docentes (8 tutores 1°-2°, polidocencia 3°-6°)…");
+
+  await prisma.teacherCourseAssignment.deleteMany({ where: { anioLectivoId } });
+  await prisma.tutorSeccion.deleteMany({ where: { anioLectivoId } });
+  await prisma.course.deleteMany({ where: { anioLectivoId } });
 
   const seccionesTutor = secciones
     .filter((s) => s.grado.numero <= 2)
     .sort((a, b) => a.grado.numero - b.grado.numero || a.nombre.localeCompare(b.nombre));
 
+  if (seccionesTutor.length !== tutorTeacherIds.length) {
+    throw new Error(
+      `Se requieren ${seccionesTutor.length} tutores (1 por salón 1°-2°), recibidos: ${tutorTeacherIds.length}`,
+    );
+  }
+
   for (let i = 0; i < seccionesTutor.length; i++) {
     const sec = seccionesTutor[i]!;
     await assignTutorToSection({
-      profesorId: String(teacherIds[i % teacherIds.length]!),
+      profesorId: String(tutorTeacherIds[i]!),
       seccionId: String(sec.id),
       anioLectivoId: String(anioLectivoId),
     });
   }
+  console.log(`  Tutoría 1°-2°: ${seccionesTutor.length} salones · ${tutorTeacherIds.length} tutores exclusivos`);
 
   const seccionesPoli = secciones
     .filter((s) => s.grado.numero >= 3)
@@ -108,7 +190,7 @@ export async function seedTeacherAssignments(
     }
   }
 
-  const states: TeacherPoliState[] = teacherIds.map((profesorId, idx) => ({
+  const states: TeacherPoliState[] = poliTeacherIds.map((profesorId, idx) => ({
     profesorId,
     courseCodes: TEACHER_COURSE_PAIRS[idx] ?? TEACHER_COURSE_PAIRS[idx % TEACHER_COURSE_PAIRS.length]!,
     sectionIds: new Set<string>(),
@@ -117,7 +199,7 @@ export async function seedTeacherAssignments(
 
   const assignedKeys = new Set<string>();
 
-  // Fase 1: repartir salones base entre docentes (máx. 6) y dictar sus 2 cursos ahí
+  // Fase 1: repartir salones base entre docentes y dictar sus 2 cursos ahí
   let sectionCursor = 0;
   for (const teacher of states) {
     while (teacher.sectionIds.size < MAX_POLIDOCENCIA_SECTIONS && sectionCursor < seccionesPoli.length) {
@@ -143,7 +225,7 @@ export async function seedTeacherAssignments(
     }
   }
 
-  // Fase 2: completar huecos con docentes que tengan cupo
+  // Fase 2: completar huecos respetando límites institucionales
   for (const slot of slots) {
     if (assignedKeys.has(slot.key)) continue;
     const secKey = String(slot.seccionId);
@@ -163,6 +245,12 @@ export async function seedTeacherAssignments(
     for (const teacher of candidates) {
       if (await tryAssign(teacher, slot, anioLectivoId, assignedKeys)) break;
     }
+  }
+
+  // Fase 3: garantizar 100% cobertura curso–salón (solo seed)
+  for (const slot of slots) {
+    if (assignedKeys.has(slot.key)) continue;
+    await forceAssignSlot(prisma, slot, anioLectivoId, states, assignedKeys);
   }
 
   const assigned = assignedKeys.size;

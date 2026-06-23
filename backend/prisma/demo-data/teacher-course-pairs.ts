@@ -1,3 +1,10 @@
+import {
+  MAX_POLIDOCENCIA_COURSES,
+  MAX_POLIDOCENCIA_SECTIONS,
+} from "../../src/config/polidocencia.js";
+
+export { MAX_POLIDOCENCIA_COURSES, MAX_POLIDOCENCIA_SECTIONS };
+
 /** Pares de cursos por docente (3°–6°): exactamente 2 materias por profesor. */
 export const TEACHER_COURSE_PAIRS = [
   ["ING", "REL"],
@@ -16,6 +23,3 @@ export const TEACHER_COURSE_PAIRS = [
   ["HIS", "CIU"],
   ["GEG", "GEO"],
 ] as const satisfies readonly (readonly [string, string])[];
-
-export const MAX_POLIDOCENCIA_COURSES = 2;
-export const MAX_POLIDOCENCIA_SECTIONS = 6;

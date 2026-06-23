@@ -11,12 +11,18 @@ import { courseListInclude, courseDisplayName } from "../utils/course-label.js";
 
 export async function listGrades(req: Request, res: Response, next: NextFunction) {
   try {
-    const { studentId, courseId, periodoId } = req.query;
+    const { studentId, courseId, periodoId, periodoNumero } = req.query;
     const scope = await resolveStudentScope(req.user!);
     const where: Record<string, unknown> = { student: scope };
     if (studentId) where.studentId = toDbId(studentId as string);
     if (courseId) where.cursoOfertaId = toDbId(courseId as string);
-    if (periodoId) where.periodoId = toDbId(periodoId as string);
+    if (periodoId) {
+      where.periodoId = toDbId(periodoId as string);
+    } else if (periodoNumero != null && periodoNumero !== "") {
+      where.periodoId = await resolvePeriodoId(undefined, Number(periodoNumero));
+    }
+
+    const take = courseId ? 5000 : 500;
 
     const rows = await prisma.grade.findMany({
       where,
@@ -26,7 +32,7 @@ export async function listGrades(req: Request, res: Response, next: NextFunction
         periodo: { select: { id: true, numero: true, nombre: true } },
       },
       orderBy: [{ periodo: { numero: "desc" } }, { createdAt: "desc" }],
-      take: 300,
+      take,
     });
 
     const items = rows.map((g) => ({
@@ -36,6 +42,8 @@ export async function listGrades(req: Request, res: Response, next: NextFunction
       courseId: idToString(g.cursoOfertaId),
       cursoOfertaId: idToString(g.cursoOfertaId),
       periodoId: idToString(g.periodoId),
+      bimestre: g.periodo.numero,
+      nota: Number(g.nota),
       course: g.cursoOferta
         ? {
             ...g.cursoOferta,

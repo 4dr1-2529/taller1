@@ -1,7 +1,7 @@
 /**
  * Asignación docente institucional:
  * - 1° y 2°: tutor dicta todos los cursos del aula (esTutor=true)
- * - 3° a 6°: polidocencia — 2 cursos por docente, máx. 6 salones distintos
+ * - 3° a 6°: polidocencia — 2 cursos por docente, máx. 6–8 salones (POLIDOCENCIA_MAX_SALONES)
  */
 import type { Prisma } from "@prisma/client";
 import { AppError } from "../middleware/errorHandler.js";
@@ -13,6 +13,12 @@ import {
   requireActiveSeccion,
   type SeccionWithGrado,
 } from "../utils/course-section.js";
+import {
+  MAX_POLIDOCENCIA_COURSES,
+  MAX_POLIDOCENCIA_SECTIONS,
+} from "../config/polidocencia.js";
+
+export { MAX_POLIDOCENCIA_COURSES, MAX_POLIDOCENCIA_SECTIONS };
 
 export type AssignmentFilters = {
   profesorId?: string;
@@ -41,9 +47,6 @@ export type CreateTutorInput = {
 function isTutorGrade(numero: number): boolean {
   return numero >= 1 && numero <= 2;
 }
-
-export const MAX_POLIDOCENCIA_COURSES = 2;
-export const MAX_POLIDOCENCIA_SECTIONS = 6;
 
 async function assertPolidocenciaTeacherLimits(
   profesorId: bigint,

@@ -30,12 +30,17 @@ type GradeRow = {
   id: string;
   studentId: string;
   courseId: string;
-  periodo: string;
-  bimestre: number;
-  nota: number;
+  periodo?: string;
+  bimestre?: number;
+  nota: number | string;
   student?: { codigo: string; nombres: string; apellidos: string };
   course?: { codigo: string; nombre: string };
 };
+
+function parseNota(value: unknown): number | null {
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+}
 
 type GradesViewProps = {
   students: Student[];
@@ -86,43 +91,61 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
   }, [items, filters.courseId, filters.bimestre]);
 
   const summary = useMemo(() => {
+    if (!filtersReady) {
+      return {
+        total: filteredStudents.length,
+        conNota: "—" as const,
+        promedio: "—" as const,
+        aprob: "—" as const,
+        riesgo: "—" as const,
+        desap: "—" as const,
+      };
+    }
+
     let aprob = 0;
     let riesgo = 0;
     let desap = 0;
     for (const s of filteredStudents) {
       const g = gradeByStudent.get(s.id);
-      const ref = g?.nota ?? s.metrics.promedioGeneral;
+      const ref = g ? parseNota(g.nota) : null;
+      if (ref == null) continue;
       const e = notaEstado(ref);
       if (e === "Aprobado") aprob++;
       else if (e === "En riesgo") riesgo++;
       else desap++;
     }
-    const notas = [...gradeByStudent.values()].map((g) => g.nota);
-    const avg = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
+    const notas = [...gradeByStudent.values()]
+      .map((g) => parseNota(g.nota))
+      .filter((n): n is number => n != null);
+    const avg = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : null;
     return {
       total: filteredStudents.length,
       conNota: notas.length,
-      promedio: avg.toFixed(1),
+      promedio: avg != null ? avg.toFixed(1) : "—",
       aprob,
       riesgo,
       desap,
     };
-  }, [filteredStudents, gradeByStudent]);
+  }, [filteredStudents, gradeByStudent, filtersReady]);
 
   const load = useCallback(async () => {
-    if (!api.hasToken) return;
+    if (!api.hasToken || !filtersReady) {
+      setItems([]);
+      return;
+    }
     setLoading(true);
     try {
+      const periodoNumero = Number(filters.bimestre);
       const res = isDocente
-        ? await api.getProfesorGrades(undefined, filters.courseId || undefined)
-        : await api.getGrades(undefined, filters.courseId || undefined);
+        ? await api.getProfesorGrades(undefined, filters.courseId, periodoNumero)
+        : await api.getGrades(undefined, filters.courseId, periodoNumero);
       setItems(res.items as GradeRow[]);
     } catch {
       setItems([]);
     } finally {
       setLoading(false);
     }
-  }, [filters.courseId, isDocente]);
+  }, [filters.courseId, filters.bimestre, filtersReady, isDocente]);
 
   useEffect(() => {
     if (isAuthenticated) void load();
@@ -301,7 +324,7 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
                     const g = gradeByStudent.get(s.id);
                     const grado = parseGradoNumero(s.nivel);
                     const sec = parseSeccionLetra(s.nivel);
-                    const ref = g?.nota ?? null;
+                    const ref = g ? parseNota(g.nota) : null;
                     const estado = ref != null ? notaEstado(ref) : "—";
                     return (
                       <tr key={s.id}>

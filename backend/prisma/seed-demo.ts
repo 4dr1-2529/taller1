@@ -1,5 +1,5 @@
 /**
- * Población demo Blenkir — 1 director, 15 profesores, 660 estudiantes (22 salones × 30)
+ * Población demo Blenkir — 1 director, 8 tutores (1°-2°), 15 docentes polidocencia (3°-6°), 660 estudiantes
  * Cuentas: director@blenkir.edu.pe · pro{DNI}@ · nombre.apellido{DNI}@
  * Requiere: npm run db:seed
  * Ejecutar: npm run db:seed:demo
@@ -8,6 +8,7 @@ import { PrismaClient, type NivelRiesgo } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { seedTeacherAssignments } from "./seed-assignments.js";
 import { seedBimesterGrades } from "./demo-data/seed-grades.js";
+import { TUTOR_SALON_LABELS } from "./demo-data/tutor-labels.js";
 import {
   nextUniqueDni,
   randomPeruvianPerson,
@@ -21,12 +22,11 @@ const PASSWORD = DEFAULT_INSTITUTION_PASSWORD;
 const ALUMNOS_POR_SALON = 30;
 const DIRECTOR_EMAIL = "director@blenkir.edu.pe";
 
-const TEACHER_SPECIALTIES = [
+const POLI_SPECIALTIES = [
   "Inglés",
   "Comunicación",
   "Ciencias",
   "Ciencias Sociales",
-  "Inglés",
   "Educación Física",
   "Matemática",
   "Lenguaje",
@@ -37,6 +37,7 @@ const TEACHER_SPECIALTIES = [
   "Razonamiento",
   "Geometría",
   "Álgebra",
+  "Arte",
 ] as const;
 
 async function getRolId(codigo: "admin" | "docente" | "estudiante") {
@@ -58,8 +59,9 @@ function seccionesConfig(): { gradoNum: number; nombre: string }[] {
 
 async function main() {
   const totalEsperado = seccionesConfig().length * ALUMNOS_POR_SALON;
+  const totalProfesores = TUTOR_SALON_LABELS.length + POLI_SPECIALTIES.length;
   console.log(
-    `Seed demo Blenkir — 1 director, 15 profesores, ${totalEsperado} estudiantes (${ALUMNOS_POR_SALON}/salón)…`,
+    `Seed demo Blenkir — 1 director, ${totalProfesores} profesores (${TUTOR_SALON_LABELS.length} tutores 1°-2° + ${POLI_SPECIALTIES.length} polidocencia), ${totalEsperado} estudiantes (${ALUMNOS_POR_SALON}/salón)…`,
   );
 
   const hash = await bcrypt.hash(PASSWORD, 12);
@@ -105,13 +107,11 @@ async function main() {
     },
   });
 
-  const teacherIds: bigint[] = [];
-  for (let i = 0; i < TEACHER_SPECIALTIES.length; i++) {
+  async function upsertTeacher(codigo: string, especialidad: string): Promise<bigint> {
     const person = randomPeruvianPerson();
     const dni = nextUniqueDni(usedDni);
     const email = teacherEmail(dni);
     usedEmails.add(email);
-    const codigo = `DOC-${String(i + 1).padStart(3, "0")}`;
 
     const user = await prisma.user.upsert({
       where: { email },
@@ -140,7 +140,7 @@ async function main() {
         email,
         nombres: person.nombres,
         apellidos: person.apellidos,
-        especialidad: TEACHER_SPECIALTIES[i]!,
+        especialidad,
         activo: true,
       },
       create: {
@@ -148,19 +148,34 @@ async function main() {
         codigo,
         nombres: person.nombres,
         apellidos: person.apellidos,
-        especialidad: TEACHER_SPECIALTIES[i]!,
+        especialidad,
         email,
       },
     });
-    teacherIds.push(teacher.id);
+    return teacher.id;
   }
+
+  const tutorTeacherIds: bigint[] = [];
+  for (let i = 0; i < TUTOR_SALON_LABELS.length; i++) {
+    const label = TUTOR_SALON_LABELS[i]!;
+    const codigo = `DOC-${String(i + 1).padStart(3, "0")}`;
+    tutorTeacherIds.push(await upsertTeacher(codigo, label.especialidad));
+  }
+
+  const poliTeacherIds: bigint[] = [];
+  for (let i = 0; i < POLI_SPECIALTIES.length; i++) {
+    const codigo = `DOC-${String(TUTOR_SALON_LABELS.length + i + 1).padStart(3, "0")}`;
+    poliTeacherIds.push(await upsertTeacher(codigo, POLI_SPECIALTIES[i]!));
+  }
+
+  const teacherIds = [...tutorTeacherIds, ...poliTeacherIds];
 
   const secciones = await prisma.seccion.findMany({
     include: { grado: true },
     orderBy: [{ grado: { numero: "asc" } }, { nombre: "asc" }],
   });
 
-  await seedTeacherAssignments(prisma, teacherIds, secciones, anio.id);
+  await seedTeacherAssignments(prisma, tutorTeacherIds, poliTeacherIds, secciones, anio.id);
 
   const modelo = await prisma.mlModelo.findFirst({ where: { esProduccion: true } });
 
@@ -362,7 +377,11 @@ async function main() {
 
   const sampleTeacher = await prisma.teacher.findFirst({ where: { codigo: "DOC-001" } });
   if (sampleTeacher) {
-    console.log(`  Ej. profesor: ${sampleTeacher.email} (${sampleTeacher.nombres} ${sampleTeacher.apellidos})`);
+    console.log(`  Ej. tutor 1° A: ${sampleTeacher.email} (${sampleTeacher.nombres} ${sampleTeacher.apellidos})`);
+  }
+  const samplePoli = await prisma.teacher.findFirst({ where: { codigo: "DOC-009" } });
+  if (samplePoli) {
+    console.log(`  Ej. polidocencia: ${samplePoli.email} (${samplePoli.nombres} ${samplePoli.apellidos})`);
   }
 
   const matCount = await prisma.matricula.count({ where: { estado: "activa" } });
@@ -387,7 +406,7 @@ async function main() {
   });
 
   console.log(
-    `OK — ${studentNum} estudiantes · ${teacherIds.length} profesores · ${matCount} matrículas · ${gradeCount} notas`,
+    `OK — ${studentNum} estudiantes · ${teacherIds.length} profesores (${TUTOR_SALON_LABELS.length} tutores + ${POLI_SPECIALTIES.length} polidocencia) · ${matCount} matrículas · ${gradeCount} notas (I–II bimestre)`,
   );
   console.log(`Cuentas — director: 1 · profesores: ${userTeachers} · estudiantes: ${userStudents}`);
   console.log(`Login director: ${DIRECTOR_EMAIL} / ${PASSWORD}`);
@@ -395,7 +414,10 @@ async function main() {
     console.log(`Login estudiante ejemplo: ${sampleStudent.email} / ${PASSWORD}`);
   }
   if (sampleTeacher?.email) {
-    console.log(`Login profesor ejemplo: ${sampleTeacher.email} / ${PASSWORD}`);
+    console.log(`Login tutor ejemplo: ${sampleTeacher.email} / ${PASSWORD}`);
+  }
+  if (samplePoli?.email) {
+    console.log(`Login polidocencia ejemplo: ${samplePoli.email} / ${PASSWORD}`);
   }
 }
 

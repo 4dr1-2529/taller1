@@ -452,10 +452,11 @@ class ApiClient {
     );
   }
 
-  async getProfesorGrades(studentId?: string, courseId?: string) {
+  async getProfesorGrades(studentId?: string, courseId?: string, periodoNumero?: number) {
     const params = new URLSearchParams();
     if (studentId) params.set("studentId", studentId);
     if (courseId) params.set("courseId", courseId);
+    if (periodoNumero != null) params.set("periodoNumero", String(periodoNumero));
     const q = params.toString() ? `?${params}` : "";
     return this.request<{ items: unknown[] }>(`/profesor/notas${q}`);
   }
@@ -547,10 +548,11 @@ class ApiClient {
     );
   }
 
-  async getGrades(studentId?: string, courseId?: string) {
+  async getGrades(studentId?: string, courseId?: string, periodoNumero?: number) {
     const params = new URLSearchParams();
     if (studentId) params.set("studentId", studentId);
     if (courseId) params.set("courseId", courseId);
+    if (periodoNumero != null) params.set("periodoNumero", String(periodoNumero));
     const q = params.toString() ? `?${params}` : "";
     return this.request<{ items: unknown[] }>(`/grades${q}`);
   }
