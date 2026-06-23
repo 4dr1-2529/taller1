@@ -17,6 +17,7 @@ import {
 } from "../utils/course-section.js";
 import { getActiveAnioLectivoId } from "../utils/academic-period.js";
 import { getRolId } from "../utils/rol.js";
+import { countActiveAssignmentsForTeacher } from "../services/teacher-assignment.service.js";
 import { courseListInclude, courseDisplayName } from "../utils/course-label.js";
 
 const courseSelect = {
@@ -314,9 +315,46 @@ export async function updateTeacher(req: Request, res: Response, next: NextFunct
   }
 }
 
+export async function getTeacherDetail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { getTeacherWorkload } = await import("../services/teacher-assignment.service.js");
+    const id = paramBigIntId(req);
+    const teacher = await prisma.teacher.findFirst({
+      where: { id, activo: true },
+      include: {
+        usuario: { select: { id: true, email: true, activo: true } },
+      },
+    });
+    if (!teacher) throw new AppError(404, "Profesor no encontrado");
+    const workload = await getTeacherWorkload(id);
+    sendSuccess(res, {
+      teacher: {
+        id: idToString(teacher.id),
+        codigo: teacher.codigo,
+        nombres: teacher.nombres,
+        apellidos: teacher.apellidos,
+        especialidad: teacher.especialidad,
+        correo: teacher.email,
+        telefono: teacher.telefono,
+        userId: teacher.usuarioId ? idToString(teacher.usuarioId) : null,
+      },
+      workload,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export async function deleteTeacher(req: Request, res: Response, next: NextFunction) {
   try {
     const id = paramBigIntId(req);
+    const activeAssignments = await countActiveAssignmentsForTeacher(id);
+    if (activeAssignments > 0) {
+      throw new AppError(
+        409,
+        "No se puede desactivar: el profesor tiene asignaciones activas. Desactive las asignaciones primero.",
+      );
+    }
     const teacher = await prisma.teacher.findUnique({ where: { id }, select: { usuarioId: true } });
 
     await prisma.$transaction(async (tx) => {

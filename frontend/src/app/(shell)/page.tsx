@@ -39,6 +39,7 @@ import {
   defaultCourseForm,
   type NewCourseForm,
 } from "@/components/views/CoursesView";
+import { TeacherAssignmentsView } from "@/components/views/TeacherAssignmentsView";
 import { GradesView } from "@/components/views/GradesView";
 import { ProfessorGradesView } from "@/components/views/ProfessorGradesView";
 import { AttendanceView } from "@/components/views/AttendanceView";
@@ -55,6 +56,7 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Dashboard",
     "Estudiantes",
     "Profesores",
+    "Asignaciones",
     "Cursos",
     "Matrículas",
     "Notas",
@@ -120,6 +122,8 @@ function sectionSubtitle(section: AppSection, role: string): string {
       return "Registro y seguimiento con puntaje predictivo.";
     case "Profesores":
       return "Docentes y cursos asignados.";
+    case "Asignaciones":
+      return "Asignación docente: tutor de aula (1°-2°) o por curso (3°-6° polidocencia).";
     case "Cursos":
       return "Oferta académica por sección.";
     case "Matrículas":
@@ -306,6 +310,10 @@ export default function Home() {
             onCreateAccount={createTeacherAccount}
             canEdit={isDirector}
           />
+        );
+      case "Asignaciones":
+        return (
+          <TeacherAssignmentsView teachers={teachers} secciones={secciones} />
         );
       case "Cursos":
         return (

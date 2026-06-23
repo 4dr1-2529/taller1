@@ -138,6 +138,23 @@ export type Teacher = {
   activo: boolean;
 };
 
+export type TeacherAssignment = {
+  id: string;
+  profesorId: string;
+  cursoId: string;
+  gradoId: string;
+  seccionId: string;
+  anioLectivoId: string;
+  cursoOfertaId: string | null;
+  esTutor: boolean;
+  activo: boolean;
+  tipoAsignacion: string;
+  curso?: { id: string; codigo: string; nombre: string };
+  grado?: { id: string; numero: number; nombre: string; label: string };
+  seccion?: { id: string; nombre: string; label: string };
+  profesor?: { id: string; codigo: string; nombres: string; apellidos: string; nombre: string };
+};
+
 export type Course = {
   id: string;
   codigo: string;
@@ -343,6 +360,54 @@ class ApiClient {
     return this.request<{ teacher: Teacher }>(`/teachers/${id}/account`, {
       method: "POST",
       body: JSON.stringify({ password }),
+    });
+  }
+
+  async getTeacherDetail(id: string) {
+    return this.request<{
+      teacher: Teacher;
+      workload: {
+        tipoAsignacion: string;
+        esTutor: boolean;
+        cursos: { id: string; nombre: string; codigo: string }[];
+        grados: string[];
+        secciones: string[];
+        cargaAcademica: number;
+        totalAlumnos: number;
+        asignaciones: { curso: string; salon: string; esTutor: boolean }[];
+      };
+    }>(`/teachers/${id}/detail`);
+  }
+
+  async getTeacherAssignments(params?: Record<string, string>) {
+    const q = new URLSearchParams(params);
+    const suffix = q.toString() ? `?${q}` : "";
+    return this.request<{ items: TeacherAssignment[]; total: number }>(`/teacher-assignments${suffix}`);
+  }
+
+  async createTeacherAssignment(payload: {
+    profesorId: string;
+    cursoId: string;
+    seccionId: string;
+    anioLectivoId?: string;
+    esTutor?: boolean;
+  }) {
+    return this.request<{ item: TeacherAssignment }>("/teacher-assignments", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async createTutorAssignment(payload: { profesorId: string; seccionId: string; anioLectivoId?: string }) {
+    return this.request<{ tutor: boolean; totalCursos: number; seccionId: string }>(
+      "/teacher-assignments/tutor",
+      { method: "POST", body: JSON.stringify(payload) },
+    );
+  }
+
+  async deactivateTeacherAssignment(id: string) {
+    return this.request<{ id: string; activo: boolean }>(`/teacher-assignments/${id}/deactivate`, {
+      method: "PATCH",
     });
   }
 

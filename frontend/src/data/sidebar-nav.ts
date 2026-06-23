@@ -17,7 +17,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     id: "academic",
     label: "Gestión académica",
-    items: ["Estudiantes", "Profesores", "Cursos", "Matrículas", "Notas", "Asistencia", "Actividad LMS"],
+    items: ["Estudiantes", "Profesores", "Asignaciones", "Cursos", "Matrículas", "Notas", "Asistencia", "Actividad LMS"],
   },
   {
     id: "ai",
@@ -43,6 +43,7 @@ export const SECTION_BREADCRUMB: Record<AppSection, string[]> = {
   Dashboard: ["Inicio", "Panel principal"],
   Estudiantes: ["Académico", "Estudiantes"],
   Profesores: ["Académico", "Profesores"],
+  Asignaciones: ["Académico", "Asignaciones docentes"],
   Cursos: ["Académico", "Cursos"],
   Matrículas: ["Académico", "Matrículas"],
   Notas: ["Académico", "Notas"],

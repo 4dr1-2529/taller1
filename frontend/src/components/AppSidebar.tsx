@@ -34,6 +34,7 @@ const ICONS: Record<AppSection, React.ComponentType<{ className?: string }>> = {
   Alertas: AlertTriangle,
   Estudiantes: Users,
   Profesores: GraduationCap,
+  Asignaciones: UserPlus,
   Cursos: BookOpen,
   Matrículas: UserPlus,
   Notas: ClipboardList,

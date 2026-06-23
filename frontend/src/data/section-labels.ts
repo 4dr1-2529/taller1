@@ -4,6 +4,7 @@ export const SECTION_LABELS: Record<AppSection, string> = {
   Dashboard: "Dashboard",
   Estudiantes: "Estudiantes",
   Profesores: "Profesores",
+  Asignaciones: "Asignaciones docentes",
   Cursos: "Cursos",
   Matrículas: "Matrículas",
   Notas: "Notas",

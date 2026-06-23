@@ -9,7 +9,15 @@ import {
   createTeacherAccount,
   updateTeacher,
   deleteTeacher,
+  getTeacherDetail,
 } from "../controllers/teachers.controller.js";
+import {
+  listTeacherAssignments,
+  getTeacherAssignment,
+  postTeacherAssignment,
+  postTutorAssignment,
+  patchDeactivateAssignment,
+} from "../controllers/teacher-assignments.controller.js";
 import { listCourses, createCourse, updateCourse, deleteCourse } from "../controllers/courses.controller.js";
 import { dashboardStats, predict } from "../controllers/predict.controller.js";
 import { listPredictions, getPrediction } from "../controllers/predictions.controller.js";
@@ -94,10 +102,17 @@ router.put("/students/:id", authenticate, authorize("admin"), updateStudent);
 router.delete("/students/:id", authenticate, authorize("admin"), deleteStudent);
 
 router.get("/teachers", authenticate, listTeachers);
+router.get("/teachers/:id/detail", authenticate, authorize("admin"), getTeacherDetail);
 router.post("/teachers", authenticate, authorize("admin"), createTeacher);
 router.post("/teachers/:id/account", authenticate, authorize("admin"), createTeacherAccount);
 router.put("/teachers/:id", authenticate, authorize("admin"), updateTeacher);
 router.delete("/teachers/:id", authenticate, authorize("admin"), deleteTeacher);
+
+router.get("/teacher-assignments", authenticate, authorize("admin"), listTeacherAssignments);
+router.get("/teacher-assignments/:id", authenticate, authorize("admin"), getTeacherAssignment);
+router.post("/teacher-assignments", authenticate, authorize("admin"), postTeacherAssignment);
+router.post("/teacher-assignments/tutor", authenticate, authorize("admin"), postTutorAssignment);
+router.patch("/teacher-assignments/:id/deactivate", authenticate, authorize("admin"), patchDeactivateAssignment);
 
 router.get("/profesor/dashboard", authenticate, authorize("docente"), profesorDashboard);
 router.get("/profesor/grados", authenticate, authorize("docente"), profesorGrados);

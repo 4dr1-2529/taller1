@@ -114,6 +114,7 @@ model AnioLectivo {
   tutoresSeccion    TutorSeccion[]
   cursosOferta      Course[]
   matriculas        Matricula[]
+  asignacionesDocente TeacherCourseAssignment[]
   dashboardSnapshots DashboardSnapshot[]
 
   @@unique([institucionId, anio], map: "uk_anio_inst")
@@ -164,6 +165,7 @@ model Grado {
   nivel       NivelEducativo @relation(fields: [nivelId], references: [id], onDelete: Cascade)
   secciones   Seccion[]
   cursosGrado CursoGrado[]
+  asignacionesDocente TeacherCourseAssignment[]
 
   @@unique([nivelId, numero], map: "uk_grado_nivel_num")
   @@index([nivelId], map: "idx_grado_nivel")
@@ -183,6 +185,7 @@ model Seccion {
   tutoresSeccion TutorSeccion[]
   cursosOferta   Course[]
   matriculas     Matricula[]
+  asignacionesDocente TeacherCourseAssignment[]
 
   @@unique([gradoId, nombre], map: "uk_seccion_grado_nombre")
   @@index([gradoId], map: "idx_seccion_grado")
@@ -212,6 +215,7 @@ model CursoCatalogo {
   area         AreaCurricular @relation(fields: [areaId], references: [id], onDelete: Restrict)
   cursosGrado  CursoGrado[]
   cursosOferta Course[]
+  asignacionesDocente TeacherCourseAssignment[]
 
   @@unique([codigo], map: "uk_curso_codigo")
   @@index([areaId], map: "idx_curso_area")
@@ -349,6 +353,7 @@ model Teacher {
   usuario        User?          @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
   tutoresSeccion TutorSeccion[]
   cursosOferta   Course[]
+  asignacionesDocente TeacherCourseAssignment[]
   auditorias     AuditLog[]
 
   @@unique([codigo], map: "uk_profesor_codigo")
@@ -443,6 +448,34 @@ model TutorSeccion {
   @@map("tutor_seccion")
 }
 
+/// Asignación docente: tutor (1°–2°) o por curso (3°–6° polidocencia).
+model TeacherCourseAssignment {
+  id            BigInt   @id @default(autoincrement())
+  profesorId    BigInt   @map("profesor_id")
+  cursoId       BigInt   @map("curso_id")
+  gradoId       BigInt   @map("grado_id")
+  seccionId     BigInt   @map("seccion_id")
+  anioLectivoId BigInt   @map("anio_lectivo_id")
+  cursoOfertaId BigInt?  @map("curso_oferta_id")
+  esTutor       Boolean  @default(false) @map("es_tutor")
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  profesor    Teacher       @relation(fields: [profesorId], references: [id], onDelete: Restrict)
+  curso       CursoCatalogo @relation(fields: [cursoId], references: [id], onDelete: Restrict)
+  grado       Grado         @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+  seccion     Seccion       @relation(fields: [seccionId], references: [id], onDelete: Cascade)
+  anioLectivo AnioLectivo   @relation(fields: [anioLectivoId], references: [id], onDelete: Cascade)
+  cursoOferta Course?       @relation(fields: [cursoOfertaId], references: [id], onDelete: SetNull)
+
+  @@unique([profesorId, cursoId, seccionId, anioLectivoId], map: "uk_asig_prof_cur_sec_anio")
+  @@unique([cursoId, seccionId, anioLectivoId], map: "uk_asig_cur_sec_anio")
+  @@index([profesorId, activo], map: "idx_asig_profesor")
+  @@index([seccionId, anioLectivoId], map: "idx_asig_seccion_anio")
+  @@map("asignacion_docente")
+}
+
 model Course {
   id            BigInt   @id @default(autoincrement())
   cursoId       BigInt   @map("curso_id")
@@ -462,6 +495,7 @@ model Course {
   calificaciones Grade[]
   lmsEntregasTarea LmsEntregaTarea[]
   salasMensaje   MensajeSala[]
+  asignacionesDocente TeacherCourseAssignment[]
 
   @@unique([codigo], map: "uk_oferta_codigo")
   @@unique([cursoId, seccionId, anioLectivoId], map: "uk_oferta_curso_sec_anio")

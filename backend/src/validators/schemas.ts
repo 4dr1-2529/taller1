@@ -203,3 +203,33 @@ export const updateAttendanceSchema = attendanceSchema.partial().extend({
   studentId: z.string().min(1).optional(),
   fecha: z.string().optional(),
 });
+
+export const createAssignmentSchema = z.object({
+  profesorId: z.string().min(1, "Seleccione profesor"),
+  cursoId: z.string().min(1, "Seleccione curso del catálogo"),
+  seccionId: z.string().min(1, "Seleccione sección"),
+  anioLectivoId: z.string().optional(),
+  esTutor: z.boolean().optional(),
+});
+
+export const createTutorAssignmentSchema = z.object({
+  profesorId: z.string().min(1, "Seleccione profesor"),
+  seccionId: z.string().min(1, "Seleccione sección"),
+  anioLectivoId: z.string().optional(),
+});
+
+export const listAssignmentsQuerySchema = z.object({
+  profesorId: z.string().optional(),
+  cursoId: z.string().optional(),
+  gradoId: z.string().optional(),
+  seccionId: z.string().optional(),
+  anioLectivoId: z.string().optional(),
+  esTutor: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((v) => (v === undefined ? undefined : v === "true")),
+  activo: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((v) => (v === undefined ? true : v === "true")),
+});

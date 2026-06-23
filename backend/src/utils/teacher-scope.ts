@@ -15,11 +15,20 @@ export async function getTeacherIdFromUser(userId: string): Promise<bigint | nul
 }
 
 export async function getTeacherSectionIds(teacherId: bigint): Promise<bigint[]> {
-  const courses = await prisma.course.findMany({
-    where: { profesorId: teacherId, activo: true },
-    select: { seccionId: true },
-  });
-  return [...new Set(courses.map((c) => c.seccionId).filter((id): id is bigint => id != null))];
+  const [fromAssignments, fromCourses] = await Promise.all([
+    prisma.teacherCourseAssignment.findMany({
+      where: { profesorId: teacherId, activo: true },
+      select: { seccionId: true },
+    }),
+    prisma.course.findMany({
+      where: { profesorId: teacherId, activo: true },
+      select: { seccionId: true },
+    }),
+  ]);
+  const ids = [...fromAssignments, ...fromCourses]
+    .map((c) => c.seccionId)
+    .filter((id): id is bigint => id != null);
+  return [...new Set(ids)];
 }
 
 export function studentWhereForSectionIds(
@@ -44,5 +53,18 @@ export async function resolveTeacherCourseWhere(user: ScopeUser): Promise<Prisma
   if (user.role !== "docente") return { id: { in: [] } };
   const teacherId = await getTeacherIdFromUser(user.sub);
   if (!teacherId) return { id: { in: [] } };
+
+  const assignments = await prisma.teacherCourseAssignment.findMany({
+    where: { profesorId: teacherId, activo: true, cursoOfertaId: { not: null } },
+    select: { cursoOfertaId: true },
+  });
+  const offeringIds = assignments
+    .map((a) => a.cursoOfertaId)
+    .filter((id): id is bigint => id != null);
+
+  if (offeringIds.length) {
+    return { activo: true, id: { in: offeringIds } };
+  }
+
   return { activo: true, profesorId: teacherId };
 }

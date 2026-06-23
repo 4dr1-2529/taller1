@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 import {
@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "@/services/api";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import type { Teacher } from "@/types/academic";
 import { PageSection } from "@/components/ui/PageSection";
@@ -115,6 +116,21 @@ export function TeachersView({
   const [accountPassword, setAccountPassword] = useState("");
   const [formErrors, setFormErrors] = useState<FieldErrors>({});
   const [editErrors, setEditErrors] = useState<FieldErrors>({});
+  const [workloadById, setWorkloadById] = useState<
+    Record<
+      string,
+      Awaited<ReturnType<typeof api.getTeacherDetail>>["workload"] | "loading" | "error"
+    >
+  >({});
+
+  useEffect(() => {
+    if (!expandedId || editingId === expandedId) return;
+    setWorkloadById((p) => ({ ...p, [expandedId]: "loading" }));
+    void api
+      .getTeacherDetail(expandedId)
+      .then((r) => setWorkloadById((p) => ({ ...p, [expandedId]: r.workload })))
+      .catch(() => setWorkloadById((p) => ({ ...p, [expandedId]: "error" })));
+  }, [expandedId, editingId]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -451,15 +467,8 @@ export function TeachersView({
                     </button>
                   </div>) : null}
 
-                {open && courses.length > 0 ? (
-                  <ul className="grid gap-2 border-t border-[var(--border-subtle)] px-4 py-3 sm:grid-cols-2">
-                    {courses.map((c) => (
-                      <li key={c.id} className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)]/30 px-3 py-2 text-sm">
-                        <span className="font-medium text-[var(--text-primary)]">{c.nombre}</span> · {c.codigo}
-                        <p className="text-xs text-[var(--text-secondary)]">{seccionLabel(secciones, c.seccionId)}</p>
-                      </li>
-                    ))}
-                  </ul>
+                {open && !editing ? (
+                  <TeacherWorkloadPanel workload={workloadById[teacher.id]} courses={courses} secciones={secciones} />
                 ) : null}
               </li>
             );
@@ -467,6 +476,65 @@ export function TeachersView({
         </ul>
         {filtered.length === 0 ? <p className="mt-6 text-center text-sm text-[var(--text-muted)]">Sin docentes registrados.</p> : null}
       </motion.article>
+    </div>
+  );
+}
+
+function TeacherWorkloadPanel({
+  workload,
+  courses,
+  secciones,
+}: {
+  workload: Awaited<ReturnType<typeof api.getTeacherDetail>>["workload"] | "loading" | "error" | undefined;
+  courses: Teacher["courses"];
+  secciones: SeccionOption[];
+}) {
+  if (workload === "loading" || workload === undefined) {
+    return <p className="border-t border-[var(--border-subtle)] px-4 py-3 text-sm text-[var(--text-muted)]">Cargando carga académica…</p>;
+  }
+  if (workload === "error") {
+    return (
+      <ul className="grid gap-2 border-t border-[var(--border-subtle)] px-4 py-3 sm:grid-cols-2">
+        {(courses ?? []).map((c) => (
+          <li key={c.id} className="rounded-lg border border-[var(--border-subtle)] px-3 py-2 text-sm">
+            <span className="font-medium">{c.nombre}</span>
+            <p className="text-xs text-[var(--text-muted)]">{seccionLabel(secciones, c.seccionId)}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <div className="border-t border-[var(--border-subtle)] px-4 py-4 space-y-3 text-sm">
+      <p>
+        <span className="font-semibold text-[var(--text-primary)]">Tipo: </span>
+        {workload.tipoAsignacion}
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <p className="text-xs text-[var(--text-muted)]">Cursos que dicta</p>
+          <ul className="mt-1 list-disc pl-4">
+            {workload.cursos.map((c) => (
+              <li key={c.id}>{c.nombre}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs text-[var(--text-muted)]">Grados</p>
+          <p className="mt-1">{workload.grados.join(", ") || "—"}</p>
+        </div>
+        <div>
+          <p className="text-xs text-[var(--text-muted)]">Secciones</p>
+          <p className="mt-1">{workload.secciones.join(", ") || "—"}</p>
+        </div>
+        <div>
+          <p className="text-xs text-[var(--text-muted)]">Alumnos / carga</p>
+          <p className="mt-1">
+            {workload.totalAlumnos} alumnos · {workload.cargaAcademica} asignaciones
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

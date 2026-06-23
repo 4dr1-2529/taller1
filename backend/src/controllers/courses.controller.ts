@@ -144,6 +144,13 @@ export async function updateCourse(req: Request, res: Response, next: NextFuncti
 export async function deleteCourse(req: Request, res: Response, next: NextFunction) {
   try {
     const id = paramBigIntId(req);
+    const gradeCount = await prisma.grade.count({ where: { cursoOfertaId: id } });
+    if (gradeCount > 0) {
+      throw new AppError(
+        409,
+        "No se puede eliminar: el curso tiene notas registradas. Desactive la asignación docente.",
+      );
+    }
     await prisma.course.update({
       where: { id },
       data: { activo: false },

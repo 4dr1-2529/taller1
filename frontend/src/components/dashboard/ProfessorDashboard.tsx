@@ -88,6 +88,7 @@ export function ProfessorDashboard() {
   }
 
   const { kpis } = data;
+  const workload = data.workload;
   const riskPie = [
     { name: "Bajo", value: kpis.byLevel.bajo },
     { name: "Medio", value: kpis.byLevel.medio },
@@ -99,14 +100,20 @@ export function ProfessorDashboard() {
       <div>
         <h2 className="text-xl font-bold text-[var(--text-primary)]">Mi panel docente</h2>
         <p className="text-sm text-[var(--text-secondary)]">
-          Indicadores solo de sus cursos, secciones y estudiantes asignados.
+          {workload?.tipoAsignacion ?? "Indicadores de sus cursos, secciones y estudiantes asignados."}
         </p>
+        {workload?.cursos.length ? (
+          <p className="mt-1 text-xs text-[var(--text-muted)]">
+            Cursos: {workload.cursos.map((c) => c.nombre).join(" · ")} — Salones: {workload.secciones.join(", ")}
+          </p>
+        ) : null}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <KpiCard label="Estudiantes asignados" value={kpis.totalStudents} icon={Users} />
-        <KpiCard label="Cursos asignados" value={kpis.totalCourses ?? 0} icon={BookOpen} />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
+        <KpiCard label="Estudiantes asignados" value={kpis.totalAlumnos ?? kpis.totalStudents} icon={Users} />
+        <KpiCard label="Cursos asignados" value={kpis.totalCourses ?? workload?.cursos.length ?? 0} icon={BookOpen} />
         <KpiCard label="Secciones asignadas" value={kpis.misSecciones ?? 0} icon={Layers} />
+        <KpiCard label="Notas pendientes (B1-B2)" value={kpis.notasPendientes ?? 0} icon={GraduationCap} />
         <KpiCard label="Alertas activas" value={kpis.openAlerts} icon={AlertTriangle} />
         <KpiCard label="Promedio general" value={kpis.avgGrade} suffix="/20" icon={GraduationCap} />
         <KpiCard label="Asistencia promedio" value={kpis.avgAttendance} suffix="%" icon={TrendingUp} />

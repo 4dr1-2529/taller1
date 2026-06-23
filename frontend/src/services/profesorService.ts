@@ -43,12 +43,26 @@ export type ProfesorDashboardData = {
     totalStudents: number;
     totalCourses?: number;
     misSecciones?: number;
+    totalAlumnos?: number;
+    notasPendientes?: number;
     openAlerts: number;
     avgGrade: number;
     avgAttendance: number;
     avgRisk: number;
     byLevel: { bajo: number; medio: number; alto: number };
   };
+  workload?: {
+    tipoAsignacion: string;
+    cursos: { id: string; nombre: string; codigo: string }[];
+    grados: string[];
+    secciones: string[];
+    cargaAcademica: number;
+    totalAlumnos: number;
+  };
+  cursosAsignados?: { id: string; nombre: string; codigo: string }[];
+  seccionesAsignadas?: string[];
+  gradosAsignados?: string[];
+  avgBySection?: { salon: string; promedio: number }[];
   riskBySection: { label: string; alto: number; medio: number; bajo: number; total: number }[];
   alertsBySalonShort: { salon: string; count: number }[];
   attendanceByGrado: { grado: string; asistencia: number }[];

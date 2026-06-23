@@ -5,6 +5,7 @@
  */
 import { PrismaClient, type NivelRiesgo } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { seedTeacherAssignments } from "./seed-assignments.js";
 
 const prisma = new PrismaClient();
 const PASSWORD = "Tesis2026!";
@@ -134,40 +135,7 @@ async function main() {
     orderBy: [{ grado: { numero: "asc" } }, { nombre: "asc" }],
   });
 
-  let tutorIdx = 0;
-  for (const sec of secciones) {
-    await prisma.tutorSeccion.upsert({
-      where: { seccionId_anioLectivoId: { seccionId: sec.id, anioLectivoId: anio.id } },
-      update: {},
-      create: {
-        seccionId: sec.id,
-        profesorId: teacherIds[tutorIdx % teacherIds.length]!,
-        anioLectivoId: anio.id,
-      },
-    });
-    tutorIdx++;
-
-    const cursosGrado = await prisma.cursoGrado.findMany({
-      where: { gradoId: sec.gradoId },
-      include: { curso: true },
-    });
-
-    for (let ci = 0; ci < cursosGrado.length; ci++) {
-      const cg = cursosGrado[ci]!;
-      const codigo = `${cg.curso.codigo}-${sec.grado.numero}${sec.nombre}-2026`;
-      await prisma.course.upsert({
-        where: { codigo },
-        update: {},
-        create: {
-          cursoId: cg.cursoId,
-          seccionId: sec.id,
-          profesorId: teacherIds[(ci + Number(sec.id)) % teacherIds.length]!,
-          anioLectivoId: anio.id,
-          codigo,
-        },
-      });
-    }
-  }
+  await seedTeacherAssignments(prisma, teacherIds, secciones, anio.id);
 
   const modelo = await prisma.mlModelo.findFirst({ where: { esProduccion: true } });
 
@@ -333,17 +301,8 @@ async function main() {
   }
 
   const maria = await prisma.teacher.findFirst({ where: { codigo: "DOC-001" } });
-  const ingles = await prisma.cursoCatalogo.findFirst({ where: { codigo: "ING" } });
-  if (maria && ingles) {
-    for (const nombre of ["A", "D"] as const) {
-      const sec = secciones.find((s) => s.grado.numero === 2 && s.nombre === nombre);
-      if (!sec) continue;
-      await prisma.course.updateMany({
-        where: { seccionId: sec.id, cursoId: ingles.id, anioLectivoId: anio.id },
-        data: { profesorId: maria.id },
-      });
-    }
-    console.log("  María Quispe → Inglés en 2° A y 2° D");
+  if (maria) {
+    console.log(`  ${maria.nombres} ${maria.apellidos} — asignaciones según catálogo docente`);
   }
 
   const removedEnrollments = await prisma.enrollment.deleteMany({});
