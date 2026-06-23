@@ -19,8 +19,8 @@ import { validateEmail, VALIDATION_MSG } from "@/lib/validation";
 
 export default function LoginPage() {
   const { login, isAuthenticated, loading: authLoading } = useAuth();
-  const [email, setEmail] = useState("director@blenkir.edu.pe");
-  const [password, setPassword] = useState("Tesis2026!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -180,7 +180,7 @@ export default function LoginPage() {
                   setErrors((p) => ({ ...p, email: undefined }));
                 }}
                 className={`input-premium ${errors.email ? "border-rose-500 ring-rose-500/30" : ""}`}
-                placeholder="director@blenkir.edu.pe"
+                placeholder="correo@blenkir.edu.pe"
               />
               {errors.email ? <p className="mt-1.5 text-xs text-rose-400">{errors.email}</p> : null}
             </div>
@@ -219,36 +219,7 @@ export default function LoginPage() {
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               Ingresar al panel
             </button>
-            <div className="grid grid-cols-3 gap-2 pt-1">
-              {(
-                [
-                  { label: "Director", email: "director@blenkir.edu.pe" },
-                  { label: "Profesor", email: "profesor1@blenkir.edu.pe" },
-                  { label: "Estudiante", email: "estudiante0001@blenkir.edu.pe" },
-                ] as const
-              ).map((demo) => (
-                <button
-                  key={demo.email}
-                  type="button"
-                  disabled={loading}
-                  onClick={() => {
-                    setEmail(demo.email);
-                    setPassword("Tesis2026!");
-                    setErrors({});
-                  }}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--accent-muted)] px-2 py-2 text-[10px] font-medium text-[var(--text-secondary)] hover:border-[var(--brand-orange)]/40 hover:text-[var(--text-primary)]"
-                >
-                  {demo.label}
-                </button>
-              ))}
-            </div>
           </form>
-
-          <p className="mt-6 text-center text-xs text-[var(--text-muted)]">
-            Contraseña demo: <strong>Tesis2026!</strong>
-            <br />
-            También válido: <code className="font-mono text-[10px]">admin@iep-huancayo.edu.pe</code>
-          </p>
         </div>
       </motion.div>
     </div>

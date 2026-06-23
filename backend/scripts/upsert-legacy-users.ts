@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 async function main() {
   const prisma = new PrismaClient();
-  const hash = await bcrypt.hash("Tesis2026!", 12);
+  const hash = await bcrypt.hash("mbappe29", 12);
   const rol = await prisma.role.findUnique({ where: { codigo: "admin" } });
   if (!rol) throw new Error("Rol admin no encontrado — ejecute npm run db:seed");
 
