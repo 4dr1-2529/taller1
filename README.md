@@ -2,337 +2,286 @@
 
 > **Modelo predictivo basado en ensemble learning para la identificación del riesgo de deserción estudiantil** — fusión de datos académicos y comportamiento en LMS.
 
-**Repositorio:** [github.com/4dr1-2529/taller1](https://github.com/4dr1-2529/taller1) (código en `tesis-dashboard/`)  
-**Institución:** I.E.P. Blenkir Huancayo · Perú  
-**Tipo:** Software SaaS educativo con IA explicable y persistencia real
-
-### Producción (Vercel + Railway)
-
-| Servicio | URL |
-|----------|-----|
-| **Frontend** | https://taller1-frontend.vercel.app |
-| **API** | https://taller1-production.up.railway.app/api/v1 |
-| **Health** | https://taller1-production.up.railway.app/health |
-
-Guía de despliegue: **[docs/DEPLOY.md](docs/DEPLOY.md)** · Cambios recientes: **[CHANGELOG.md](CHANGELOG.md)**
+| | |
+|---|---|
+| **Institución** | I.E.P. Blenkir Huancayo · Perú |
+| **Repositorio** | [github.com/4dr1-2529/taller1](https://github.com/4dr1-2529/taller1) |
+| **Tipo** | SaaS educativo con IA explicable y persistencia real |
 
 ---
 
-## Arquitectura
+## Producción en vivo
 
-| Servicio | Puerto | Tecnología |
-|----------|--------|------------|
-| Frontend | 3029 | Next.js 16, React 19, Tailwind 4, Recharts |
-| Backend API | 4000 | Express, Prisma, MySQL (XAMPP), JWT |
-| ML Service | 5000 | FastAPI, scikit-learn, XGBoost, Stacking |
+| Servicio | Tecnología | URL |
+|----------|------------|-----|
+| **Frontend** | Vercel · Next.js 16 | https://taller1-frontend.vercel.app |
+| **Backend API** | Railway · Express + Prisma | https://taller1-production.up.railway.app/api/v1 |
+| **Health check** | Railway | https://taller1-production.up.railway.app/health |
+| **Base de datos** | Railway · MySQL 8 | (interna, vía `DATABASE_URL`) |
+| **ML (local)** | FastAPI · scikit-learn | http://localhost:5000 (desarrollo) |
 
-```
-tesis-dashboard/
-├── frontend/               # Next.js (App Router)
-├── backend/                # API REST + Prisma ORM
-│   ├── src/                # controllers, routes, services, validators
-│   └── prisma/             # schema, seed, migrate-roles.sql
-├── machine-learning/       # FastAPI + entrenamiento ensemble
-│   ├── app/                # API inferencia
-│   ├── models/             # Artefactos .joblib + metrics.json
-│   ├── utils/              # Validadores de entrada
-│   └── train.py
-├── database/mysql/         # Guía XAMPP
-└── docs/                   # API, roles, pruebas, Postman, SonarQube, DEPLOY
-```
+Guía de despliegue: **[docs/DEPLOY.md](docs/DEPLOY.md)**
 
-### Entornos
+---
+
+## Stack tecnológico
+
+### Frontend (`frontend/`)
+
+| Tecnología | Uso |
+|------------|-----|
+| **Next.js 16** (App Router, Turbopack) | SPA / SSR, rutas por rol |
+| **React 19** | UI components |
+| **TypeScript 5** | Tipado estático |
+| **Tailwind CSS 4** | Estilos responsive, modo claro/oscuro |
+| **Recharts** | Gráficos del dashboard |
+| **Zod** | Validación de formularios |
+| **Sonner** | Notificaciones toast |
+| **Lucide React** | Iconografía |
+| **jsPDF / xlsx** | Exportación de reportes |
+
+Puerto local: **3029**
+
+### Backend (`backend/`)
+
+| Tecnología | Uso |
+|------------|-----|
+| **Node.js 20+** · **Express 4** | API REST `/api/v1` |
+| **TypeScript** | Código fuente tipado |
+| **Prisma 6** | ORM + migraciones MySQL |
+| **MySQL 8** | Persistencia (XAMPP local / Railway prod) |
+| **JWT + bcrypt** | Autenticación y sesiones |
+| **Zod** | Validación de requests |
+| **Helmet + rate limit** | Seguridad HTTP |
+
+Puerto local: **4000**
+
+### Machine Learning (`machine-learning/`)
+
+| Tecnología | Uso |
+|------------|-----|
+| **Python 3.11+** | Entrenamiento e inferencia |
+| **FastAPI** | Microservicio ML `:5000` |
+| **scikit-learn** | Random Forest, Stacking |
+| **XGBoost / HistGradientBoosting** | Modelos ensemble |
+| **joblib** | Artefactos `models/*.joblib` |
+
+### Paquete compartido (`packages/shared/`)
+
+Tipos y utilidades TypeScript compartidos entre frontend y backend (`@tesis/shared`).
+
+### Despliegue
 
 | Entorno | Frontend | Backend | Base de datos |
 |---------|----------|---------|---------------|
-| **Local** | `:3029` | `:4000/api/v1` | MySQL XAMPP `:3306` |
-| **Producción** | Vercel | Railway | MySQL Railway |
+| **Local** | Vercel dev `:3029` | Express `:4000` | MySQL XAMPP `:3306` |
+| **Producción** | [Vercel](https://vercel.com) | [Railway](https://railway.app) | MySQL Railway |
 
-## Inicio rápido
+---
 
-### 1. Prerrequisitos
+## Estructura del proyecto
 
-- Node.js 20+
-- **XAMPP** con MySQL iniciado (puerto 3306), o MySQL 8+
-- Python 3.11+
-
-### 2. Dependencias
-
-```bash
-npm install
-cd backend && npm install && cd ..
-pip install -r machine-learning/requirements.txt
+```
+tesis-dashboard/                    # Monorepo npm workspaces
+│
+├── frontend/                       # Next.js 16 — interfaz web
+│   ├── src/
+│   │   ├── app/                    # App Router (login, shell, rutas por rol)
+│   │   ├── components/             # Vistas: Students, Teachers, Grades, Alerts…
+│   │   ├── contexts/               # AuthProvider
+│   │   ├── hooks/                  # useAcademicFilters, useAuth…
+│   │   ├── services/               # api.ts — cliente REST
+│   │   └── lib/                    # Validaciones, filtros, utilidades
+│   └── package.json
+│
+├── backend/                        # API REST Express
+│   ├── src/
+│   │   ├── controllers/            # auth, students, teachers, grades, predict…
+│   │   ├── services/               # teacher-assignment, profesor-dashboard…
+│   │   ├── routes/                 # index.ts — rutas /api/v1
+│   │   ├── middleware/             # auth, errorHandler
+│   │   ├── validators/             # schemas Zod
+│   │   └── utils/                  # prisma, scope por rol, audit
+│   ├── prisma/
+│   │   ├── schema.prisma           # 51 tablas — I.E.P. Primaria Blenkir
+│   │   ├── seed.ts                 # Estructura: grados, cursos, permisos
+│   │   ├── seed-demo.ts            # 660 estudiantes, 23 profesores
+│   │   ├── seed-assignments.ts     # Tutores 1°-2°, polidocencia 3°-6°
+│   │   └── migrations/             # Migraciones SQL versionadas
+│   └── scripts/                    # Railway, seed, export cuentas, repair
+│
+├── machine-learning/               # Servicio IA
+│   ├── app/main.py                 # FastAPI /predict, /metrics
+│   ├── models/                     # best_model.joblib, metrics.json
+│   ├── train.py                    # Entrenamiento ensemble
+│   └── requirements.txt
+│
+├── packages/shared/                # @tesis/shared — tipos compartidos
+│
+├── database/
+│   ├── mysql/                      # Guía XAMPP
+│   └── blenkir-v3/                 # DER, scripts SQL v3
+│
+├── docs/
+│   ├── DEPLOY.md                   # Vercel + Railway paso a paso
+│   ├── API.md                      # Endpoints REST
+│   ├── ARQUITECTURA.md             # Capas y flujos
+│   ├── cuentas-demo/               # CSV login verificados (660 + 23)
+│   │   ├── estudiantes.csv
+│   │   ├── profesores.csv
+│   │   └── README.md
+│   ├── roles.md                    # RBAC Director / Profesor / Estudiante
+│   └── postman/                    # Colección Postman
+│
+├── package.json                    # Scripts raíz (dev, build, db, ml)
+├── CHANGELOG.md
+└── README.md                       # Este archivo
 ```
 
-### 3. Base de datos
+---
+
+## Datos institucionales (demo)
+
+Tras `npm run db:seed:demo`:
+
+| Recurso | Cantidad |
+|---------|----------|
+| Estudiantes | **660** (22 salones × 30) |
+| Profesores | **23** (8 tutores 1°-2° + 15 polidocencia 3°-6°) |
+| Secciones | **22** (grados 1°–6°) |
+| Cursos | **16** en catálogo |
+| Notas | Bimestres **I y II** completos · III–IV vacíos |
+| Director | 1 cuenta admin |
+
+### Asignación docente
+
+| Grado | Modelo |
+|-------|--------|
+| **1° y 2°** | 1 tutor exclusivo por salón (dicta todos los cursos del aula) |
+| **3° al 6°** | Polidocencia: 2 cursos por docente, máx. 6–8 salones |
+
+---
+
+## Inicio rápido (local)
+
+### Prerrequisitos
+
+- Node.js **20+**
+- **XAMPP** con MySQL en `:3306` (o MySQL 8+)
+- Python **3.11+** (servicio ML)
+
+### Instalación
 
 ```bash
-# 1. Inicie MySQL en XAMPP
-# 2. (Opcional) crear BD:
-powershell -File scripts/setup-mysql-xampp.ps1
+git clone https://github.com/4dr1-2529/taller1.git
+cd taller1/tesis-dashboard
+
+npm install
+pip install -r machine-learning/requirements.txt
 
 cp backend/.env.example backend/.env
-# Edite DATABASE_URL, JWT_SECRET, etc.
-
-npm run db:push
-npm run db:seed          # estructura académica + permisos
-npm run db:seed:demo     # 50 estudiantes, 5 profesores, predicciones, alertas
+cp frontend/.env.example frontend/.env.local
+# Edite DATABASE_URL y JWT_SECRET en backend/.env
 ```
 
-**BD existente con roles antiguos** (tutor, psicólogo, apoderado): ejecute antes de `db:push`:
+### Base de datos
+
+```bash
+# MySQL activo en XAMPP
+npm run db:push
+npm run db:seed          # Estructura académica + RBAC
+npm run db:seed:demo     # 660 estudiantes + 23 profesores + notas I–II
+```
+
+Reset completo: `npm run db:reset:full`
+
+### Ejecutar
+
+```bash
+npm run ml:train         # Entrenar modelos (primera vez)
+npm run dev              # Frontend :3029 + API :4000 + ML :5000
+```
+
+| Servicio | URL local |
+|----------|-----------|
+| Frontend | http://localhost:3029 |
+| API | http://localhost:4000/api/v1 |
+| ML docs | http://localhost:5000/docs |
+
+---
+
+## Credenciales de acceso
+
+**Contraseña institucional (todos los roles):** `mbappe29`
+
+| Rol | Correo ejemplo | Sistema |
+|-----|----------------|---------|
+| **Director** | `director@blenkir.edu.pe` | `admin` |
+| **Profesor tutor** | `pro50000001@blenkir.edu.pe` | `docente` |
+| **Estudiante** | `mateo.quispe0001@blenkir.edu.pe` | `estudiante` |
+
+### Listado completo de cuentas (producción verificadas)
+
+Los CSV con correos de login reales están en:
+
+```
+docs/cuentas-demo/estudiantes.csv   → 660 alumnos (columna email_login)
+docs/cuentas-demo/profesores.csv    → 23 docentes (columna email_login)
+```
+
+Actualizar desde producción:
 
 ```bash
 cd backend
-npx prisma db execute --file prisma/migrate-roles.sql
-npx prisma db push --accept-data-loss
-npx prisma generate
+npm run export:accounts:web
 ```
-
-Ver [backend/prisma/migrations/README-REFACTOR.md](backend/prisma/migrations/README-REFACTOR.md).
-
-**Administrador manual** (opcional, variables en `backend/.env`):
-
-```bash
-npm run db:bootstrap
-```
-
-### 4. Entrenar modelos IA
-
-```bash
-npm run ml:train
-```
-
-### 5. Ejecutar
-
-```bash
-npm run dev
-```
-
-| Servicio | URL |
-|----------|-----|
-| Frontend | http://localhost:3029 |
-| API | http://localhost:4000/api/v1 |
-| ML Docs | http://localhost:5000/docs |
-
-Si aparece `EADDRINUSE` en 3029/4000/5000, cierre instancias previas o termine los procesos que usan esos puertos.
-
-### MySQL no conecta
-
-Si el login devuelve **500** con `Can't reach database server at localhost:3306`:
-
-1. Abra **XAMPP Control Panel** e inicie **MySQL**, o ejecute `C:\xampp\mysql_start.bat`
-2. Verifique `DATABASE_URL` en `backend/.env`
-3. Ejecute `npm run db:push` y `npm run db:seed:demo` si la BD está vacía
-
-
-### Credenciales demo (`db:seed:demo`)
-
-Contraseña para todos: **`mbappe29`**
-
-| Rol (UI) | Email | Rol sistema |
-|----------|-------|-------------|
-| Director | `director@blenkir.edu.pe` | `admin` |
-| Profesor | `profesor1@blenkir.edu.pe` | `docente` |
-| Estudiante | `estudiante0001@blenkir.edu.pe` | `estudiante` |
-
-Tras `db:seed:demo`: **660 estudiantes** (`estudiante0001` … `estudiante0660`), **15 profesores**, **22 secciones**.
-
-Legacy: `director@iep-huancayo.edu.pe`, `admin@iep-huancayo.edu.pe`
 
 ---
 
-## Funcionalidades
+## Roles del sistema
 
-### Core
-- Dashboard analítico por rol (KPIs, gráficos Recharts)
-- Predicción de riesgo (bajo / medio / alto) con interpretabilidad
-- Ensemble ML: Random Forest, XGBoost/HistGradientBoosting, Stacking
-- Alertas tempranas (`nueva`, `en_seguimiento`, `resuelta`) con factores y recomendación
-- **Mensajería académica** (comunicados globales, avisos de curso, mensajes directos)
+| Rol BD | UI | Permisos |
+|--------|-----|----------|
+| `admin` | **Director** | Gestión total, comunicados, predicciones, alertas, plantilla docente |
+| `docente` | **Profesor** | Sus cursos/salones: notas, asistencia, LMS, predicción, mensajes |
+| `estudiante` | **Estudiante** | Dashboard personal, notas, asistencia, alertas, mensajes |
 
-### Seguridad
-- JWT + refresh tokens (hash SHA-256 en sesión)
-- RBAC con **3 roles**: `admin`, `docente`, `estudiante`
-- Brute-force protection, XSS sanitization, rate limiting, Helmet
-- Auditoría (AuditLog) y sesiones con invalidación
-- CORS configurable (orígenes explícitos, `*` o `*.vercel.app`)
-- Validación `JWT_SECRET` ≥ 32 caracteres en producción
-
-### Frontend (auth por rol)
-- Hook `useAuthReady` — evita llamadas API antes de confirmar el rol (sin 401 al login)
-- Servicios separados: `directorService`, `profesorService`, `estudianteService`
-
-### UI/UX
-- Modo claro / oscuro, responsive, skeletons, toasts (Sonner)
-- Validaciones en formularios (DNI, teléfono, notas, rangos académicos)
+Detalle: [docs/roles.md](docs/roles.md)
 
 ---
 
-## Roles y permisos
-
-| Rol sistema | Etiqueta UI | Alcance |
-|-------------|-------------|---------|
-| `admin` | **Director** | Gestión total, comunicados globales, predicciones y alertas |
-| `docente` | **Profesor** | Sus cursos y estudiantes; notas, asistencia, LMS, predicción, mensajes |
-| `estudiante` | **Estudiante** | Dashboard personal, `/estudiante/*`, mensajería recibida |
-
-**Eliminados en v2.0:** tutor, psicólogo, apoderado, seguimiento psicológico, chat genérico.
-
-Detalle: [docs/roles.md](docs/roles.md) · [docs/roles-permisos.md](docs/roles-permisos.md)
-
----
-
-## Respuesta API estándar
-
-**Éxito (200/201):**
-
-```json
-{
-  "success": true,
-  "message": "Operación realizada correctamente",
-  "data": {}
-}
-```
-
-**Error (4xx/5xx):**
-
-```json
-{
-  "success": false,
-  "message": "Error descriptivo",
-  "errors": []
-}
-```
-
-El frontend (`frontend/src/services/api.ts`) desenvuelve automáticamente `data`.
-
----
-
-## API (resumen)
-
-### Auth
-- `POST /auth/login` · `POST /auth/refresh` · `GET /auth/me` · `POST /auth/change-password`
-
-### Académico (Director / Profesor)
-- `GET/POST /students` — solo **admin** crea/elimina; **docente** listado restringido
-- `GET/POST /teachers`, `/courses`, `/matriculas`, `/grades`, `/attendance` — según rol
-
-### Profesor (`/profesor/*`)
-- Dashboard, grados, secciones, cursos, estudiantes, notas, asistencia, LMS, predicciones, alertas
-
-### Estudiante (`/estudiante/*`)
-- `GET /estudiante/perfil`, `/dashboard`, `/notas`, `/asistencia`, `/lms`, `/prediccion`, `/alertas`, `/mensajes`
-- `POST /estudiante/prediccion` — actualizar predicción propia (ID desde token)
-
-### Predicción e IA (Director / Profesor)
-- `POST /predict` — riesgo + historial + alerta si medio/alto
-- `GET /predictions` · `GET /dashboard/kpis` · `GET /alerts` · `PATCH /alerts/:id`
-- `GET /ml/metrics`
-
-### Mensajería académica
-- `GET /messages/rooms` · `GET /messages/:roomId` · `POST /messages` · `PATCH /messages/:roomId/read`
-
-### ML Service (`:5000`)
-- `POST /predict` · `GET /metrics` · `GET /health`
-
-Documentación completa: [docs/API.md](docs/API.md) · Colección Postman: [docs/postman/](docs/postman/)
-
----
-
-## Machine Learning
-
-### Modelos
-- **Random Forest** · **XGBoost** (o HistGradientBoosting) · **Stacking**
-- Mejor modelo por **F1-score** → `models/best_model.joblib`
-
-### Variables (10 features)
-`promedio_general`, `cursos_desaprobados`, `asistencia_general`, `frecuencia_acceso_lms`, `tiempo_plataforma`, `tareas_ratio`, `participacion_actividades`, `uso_foros`, `disminucion_actividad`, `estado` (activo / en_riesgo / retirado)
-
-### Respuesta formato tesis
-
-```json
-{
-  "probabilidad_abandono": 0.85,
-  "score_predictivo": 85,
-  "nivel_riesgo": "Alto",
-  "factores_riesgo": [],
-  "recomendacion": "…",
-  "modelo_usado": "random_forest",
-  "fecha_prediccion": "2026-06-02T12:00:00.000Z"
-}
-```
-
-Alias en inglés (`score`, `level`, `factors`, …) para compatibilidad con el frontend.
-
-```bash
-npm run ml:train
-npm run ml:test
-npm run test:smoke    # requiere API :4000 y ML :5000 en ejecución
-npm run test          # unit backend + ML (sin smoke)
-```
-
-Más: [docs/machine-learning.md](docs/machine-learning.md)
-
----
-
-## Scripts
+## Scripts principales
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run dev` | Frontend + API + ML |
-| `npm run dev:web` / `dev:api` / `dev:ml` | Servicio individual |
-| `npm run build` | Build producción |
-| `npm run db:push` | Sincronizar schema Prisma |
-| `npm run db:seed` | Estructura y permisos |
-| `npm run db:seed:demo` | Datos demo (660 estudiantes, 15 profesores) |
-| `npm run db:bootstrap` | Crear admin desde `.env` |
-| `npm run db:studio` | Prisma Studio |
-| `npm run ml:train` | Entrenar modelos |
-| `npm run ml:test` | Tests Python ML |
-| `npm run test` | Unitarios backend + ML |
-| `npm run type-check` | TypeScript frontend + backend |
-| `npm run test:backend` | Solo tests backend |
-| `npm run test:smoke` | Smoke API + ML + login |
-| `npm run db:railway:fix-p3009` | Recuperar migración fallida en Railway |
-| `npm run start:prod` | Arranque producción (migrate + API) |
-| `npm run db:reset:full` | Reset completo BD + reseed |
-| `npm run lint` | ESLint frontend |
+| `npm run dev` | Frontend + Backend + ML en paralelo |
+| `npm run build` | Build producción (shared + API + web) |
+| `npm run db:seed` | Estructura académica Blenkir |
+| `npm run db:seed:demo` | Población demo completa |
+| `npm run db:reset:full` | Reset BD + seed + demo + validación |
+| `npm run db:repair:all` | Reparar cuentas login + notas I–II (sin borrar todo) |
+| `npm run export:accounts:web` | Exportar CSV verificados desde producción |
+| `npm run railway:seed:demo` | Seed demo en Railway (consola backend) |
+| `npm run ml:train` | Entrenar ensemble ML |
+| `npm run test` | Tests backend + ML |
+| `npm run type-check` | TypeScript en shared, frontend y backend |
+| `npm run start:prod` | Arranque Railway (migrate + API) |
 
----
-
-## Despliegue producción
-
-Despliegue actual: **Vercel** (frontend) + **Railway** (backend + MySQL).
-
-```env
-# Vercel
-NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1
-
-# Railway (backend)
-DATABASE_URL=${{MySQL.DATABASE_URL}}
-JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars   # mín. 32 chars
-NODE_ENV=production
-HOST=0.0.0.0
-CORS_ORIGIN=https://taller1-frontend.vercel.app
-```
-
-Pasos completos, seed, troubleshooting P3009/CORS/login: **[docs/DEPLOY.md](docs/DEPLOY.md)**
+Variables Railway útiles: `RUN_DEMO_SEED=1` (reseed completo) · `RUN_REPAIR=1` (reparar cuentas/notas)
 
 ---
 
 ## Variables de entorno
 
-### Frontend (`frontend/.env.local`)
+### Frontend — `frontend/.env.local`
 
 ```env
-# Local
 NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
-
-# Producción (Vercel)
+# Producción (Vercel):
 # NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1
 ```
 
-### Backend (`backend/.env`)
+### Backend — `backend/.env`
 
 ```env
 DATABASE_URL="mysql://root@localhost:3306/tesis_dashboard"
@@ -342,9 +291,55 @@ PORT=4000
 HOST=0.0.0.0
 CORS_ORIGIN="http://localhost:3029"
 ML_SERVICE_URL="http://localhost:5000"
+POLIDOCENCIA_MAX_SALONES=8
 ```
 
-Copie desde `backend/.env.example` y `frontend/.env.example`.
+### Producción (Railway + Vercel)
+
+```env
+# Vercel
+NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1
+
+# Railway
+DATABASE_URL=${{MySQL.DATABASE_URL}}
+JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars
+NODE_ENV=production
+CORS_ORIGIN=https://taller1-frontend.vercel.app
+```
+
+---
+
+## API REST (resumen)
+
+Base: `/api/v1`
+
+| Grupo | Rutas |
+|-------|-------|
+| Auth | `POST /auth/login` · `GET /auth/me` · `POST /auth/refresh` |
+| Académico | `/students` · `/teachers` · `/courses` · `/grades` · `/attendance` |
+| Asignaciones | `/teacher-assignments` · `/teacher-assignments/tutor` |
+| Profesor | `/profesor/*` (dashboard, notas, asistencia, LMS, alertas) |
+| Estudiante | `/estudiante/*` (perfil, notas, predicción, mensajes) |
+| IA | `POST /predict` · `GET /predictions` · `GET /dashboard/kpis` |
+| Admin | `/admin/users` · `/admin/cuentas-acceso` · `/admin/audit-logs` |
+| Mensajería | `/messages/rooms` · `POST /messages` |
+
+Documentación completa: [docs/API.md](docs/API.md)
+
+---
+
+## Machine Learning
+
+- **Modelos:** Random Forest · XGBoost/HistGradientBoosting · Stacking
+- **Features:** 10 variables (promedio, asistencia, LMS, actividad…)
+- **Salida:** probabilidad de abandono, nivel de riesgo, factores, recomendación
+
+```bash
+npm run ml:train
+npm run ml:test
+```
+
+Más: [docs/machine-learning.md](docs/machine-learning.md)
 
 ---
 
@@ -352,43 +347,19 @@ Copie desde `backend/.env.example` y `frontend/.env.example`.
 
 | Documento | Contenido |
 |-----------|-----------|
-| [CHANGELOG.md](CHANGELOG.md) | Historial de cambios (v2.0.1 despliegue + fixes) |
-| [docs/DEPLOY.md](docs/DEPLOY.md) | Vercel + Railway + MySQL, variables, seed, troubleshooting |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Despliegue Vercel + Railway |
 | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Capas y flujo de datos |
-| [docs/API.md](docs/API.md) | Endpoints REST |
-| [docs/roles.md](docs/roles.md) | Matriz de permisos |
-| [docs/roles-permisos.md](docs/roles-permisos.md) | Roles Director / Profesor / Estudiante |
-| [docs/pruebas.md](docs/pruebas.md) | Comandos y casos de prueba |
-| [docs/validaciones.md](docs/validaciones.md) | Reglas de formularios |
-| [docs/machine-learning.md](docs/machine-learning.md) | Entrenamiento e inferencia |
-| [docs/pruebas-funcionales.md](docs/pruebas-funcionales.md) | Casos de prueba |
-| [docs/pruebas-no-funcionales.md](docs/pruebas-no-funcionales.md) | Seguridad y rendimiento |
-| [docs/postman.md](docs/postman.md) | Colección Postman |
-| [docs/sonarqube.md](docs/sonarqube.md) | Análisis estático SonarQube |
-
-### SonarQube (preparación)
-
-```bash
-# Desde tesis-dashboard/ con SonarScanner instalado
-sonar-scanner -Dproject.settings=sonar-project.properties
-```
-
-Exclusiones: `node_modules`, `dist`, `.next`, `coverage`, `venv`, `__pycache__`, `.env`, modelos `.joblib`.
-
-Checklist antes del análisis: ver [docs/sonarqube.md](docs/sonarqube.md).
-
-| Documento BD | Contenido |
-|--------------|-----------|
-| [database/blenkir-v3/DER-BLENKIR.md](database/blenkir-v3/DER-BLENKIR.md) | Rediseño BD v3 — 51 tablas Primaria Blenkir |
-| [database/blenkir-v3/README.md](database/blenkir-v3/README.md) | Scripts SQL e instalación |
-| [database/mysql/README.md](database/mysql/README.md) | XAMPP / MySQL |
-| [backend/README.md](backend/README.md) | API, endpoints por rol, tests |
-| [frontend/README.md](frontend/README.md) | Next.js, menú por rol, servicios |
+| [docs/API.md](docs/API.md) | Endpoints REST detallados |
+| [docs/cuentas-demo/README.md](docs/cuentas-demo/README.md) | CSV de login verificados |
+| [docs/roles.md](docs/roles.md) | Permisos por rol |
+| [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
+| [frontend/README.md](frontend/README.md) | Frontend Next.js |
+| [database/blenkir-v3/DER-BLENKIR.md](database/blenkir-v3/DER-BLENKIR.md) | Modelo BD 51 tablas |
 
 ---
 
 ## Tesis
 
-Sistema desarrollado como proyecto universitario avanzado — software escalable tipo SaaS educativo con IA explicable y persistencia real.
-
 **Título:** Modelo predictivo basado en técnicas de ensemble learning para la identificación del riesgo de deserción estudiantil mediante fusión de datos académicos y comportamiento en LMS.
+
+Sistema desarrollado como proyecto universitario — software escalable tipo SaaS educativo con IA explicable y persistencia real en MySQL.
