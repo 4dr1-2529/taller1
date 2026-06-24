@@ -1,0 +1,4 @@
+
+> tesis-dashboard@2.0.0 ml:test
+> cd machine-learning && python tests/test_predict.py
+

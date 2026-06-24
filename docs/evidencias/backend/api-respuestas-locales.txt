@@ -1,0 +1,8 @@
+=== health === HTTP 200
+{"ok":true,"service":"tesis-dashboard-api"}
+
+=== login-director === HTTP 200
+{"success":true,"message":"Operación realizada correctamente","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJkaXJlY3RvckBibGVua2lyLmVkdS5wZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc4MjI1OTEzMSwiZXhwIjoxNzgyMjg3OTMxfQ.MFoaNLZqPIz1vwBP1cPuDwAPUui-ILGQlJVaxfmGQcI","refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODIyNTkxMzEsImV4cCI6MTc4Mjg2MzkzMX0.wIRrDduLfKPVCgoi-nkgXZtxzYu3-Ycxo26LHKqAxQE","user":{"id":"1","email":"director@blenkir.edu.pe","nombres":"Rosa","apellidos":"Ortiz Vásquez","role":"admin","teacherId":null}}}
+
+=== login-invalido === HTTP 400
+{"success":false,"message":"Datos inválidos","errors":[{"field":"password","message":"Mínimo 6 caracteres"}]}

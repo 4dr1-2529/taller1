@@ -1,0 +1,8 @@
+{
+  "name": "tesis-evidence",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "playwright": "^1.51.0"
+  }
+}

@@ -1,0 +1,8 @@
+
+> tesis-dashboard@2.0.0 lint
+> npm run lint --workspace=frontend
+
+
+> frontend@2.0.0 lint
+> eslint src
+
