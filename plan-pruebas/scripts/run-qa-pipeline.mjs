@@ -6,6 +6,7 @@ import { spawnSync } from "node:child_process";
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { PATHS } from "./lib/config.mjs";
+import { spawnPythonSync } from "./lib/spawn-python.mjs";
 const NPM = process.platform === "win32" ? "npm.cmd" : "npm";
 const NODE = process.execPath;
 
@@ -94,13 +95,13 @@ async function main() {
   mergeResults();
 
   try {
-    spawnSync("python", ["plan-pruebas/matriz-pruebas/generate_matriz.py"], {
-      cwd: PATHS.root,
-      encoding: "utf8",
-      timeout: 60000,
-      stdio: "pipe",
-    });
-    pipeline.steps.push({ name: "matriz-generada", ok: true });
+    const matrizScript = join(PATHS.matriz, "generate_matriz.py");
+    const r = spawnPythonSync([matrizScript], { cwd: PATHS.root });
+    const matrizOk = r.status === 0;
+    pipeline.steps.push({ name: "matriz-generada", ok: matrizOk, exitCode: r.status });
+    if (!matrizOk) {
+      console.warn("Matriz no regenerada — defina PYTHON_EXECUTABLE si necesita el xlsx.");
+    }
   } catch (e) {
     pipeline.steps.push({ name: "matriz-generada", ok: false, error: String(e) });
   }

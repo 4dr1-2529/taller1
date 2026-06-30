@@ -11,7 +11,6 @@ import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
 import numpy as np
 
@@ -56,6 +55,24 @@ def load_metrics() -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _model_metrics(metrics: dict, model_key: str | None = None) -> dict:
+    key = model_key or metrics.get("best_model", "random_forest")
+    block = metrics.get(key)
+    return block if isinstance(block, dict) else {}
+
+
+def _draw_box(ax, x: float, y: float, w: float, h: float, title: str, body: str) -> None:
+    rect = FancyBboxPatch(
+        (x, y), w, h, boxstyle="round,pad=0.04",
+        facecolor=PALETTE["card"], edgecolor=PALETTE["accent"], linewidth=1.5,
+    )
+    ax.add_patch(rect)
+    ax.text(x + w / 2, y + h - 0.35, title, ha="center", va="top",
+            fontsize=11, fontweight="bold", color=PALETTE["accent2"])
+    ax.text(x + w / 2, y + h / 2 - 0.15, body, ha="center", va="center",
+            fontsize=9, color=PALETTE["text"])
+
+
 def diagram_arquitectura() -> None:
     fig, ax = plt.subplots(figsize=(14, 7))
     ax.set_xlim(0, 14)
@@ -72,15 +89,7 @@ def diagram_arquitectura() -> None:
         (9.5, 1.6, 3.8, 1.6, "train.py", "generate_synthetic_data\nStackingClassifier"),
     ]
     for x, y, w, h, title, body in boxes:
-        rect = FancyBboxPatch(
-            (x, y), w, h, boxstyle="round,pad=0.04",
-            facecolor=PALETTE["card"], edgecolor=PALETTE["accent"], linewidth=1.5,
-        )
-        ax.add_patch(rect)
-        ax.text(x + w / 2, y + h - 0.35, title, ha="center", va="top",
-                fontsize=11, fontweight="bold", color=PALETTE["accent2"])
-        ax.text(x + w / 2, y + h / 2 - 0.15, body, ha="center", va="center",
-                fontsize=9, color=PALETTE["text"])
+        _draw_box(ax, x, y, w, h, title, body)
 
     arrows = [
         ((3.3, 5.2), (5.5, 4.5), "REST + JWT"),
@@ -237,14 +246,14 @@ def diagram_metricas_comparacion(metrics: dict) -> None:
 
 
 def diagram_confusion_matrix(metrics: dict, model_key: str | None = None) -> None:
-    model_key = model_key or metrics.get("best_model", "random_forest")
-    model_metrics = metrics.get(model_key)
-    if not isinstance(model_metrics, dict) or "confusion_matrix" not in model_metrics:
+    model_metrics = _model_metrics(metrics, model_key)
+    if "confusion_matrix" not in model_metrics:
         return
+    key = model_key or metrics.get("best_model", "random_forest")
     cm = np.array(model_metrics["confusion_matrix"])
     fig, ax = plt.subplots(figsize=(7, 6))
     im = ax.imshow(cm, cmap="Blues", aspect="auto")
-    _style_ax(ax, f"Matriz de confusión — {model_key} (test n={cm.sum()})")
+    _style_ax(ax, f"Matriz de confusión — {key} (test n={cm.sum()})")
     ax.set_xticks(range(3))
     ax.set_yticks(range(3))
     ax.set_xticklabels([f"Pred {c}" for c in CLASS_LABELS], color=PALETTE["text"])
@@ -320,8 +329,8 @@ def diagram_variables() -> None:
 
 
 def diagram_roc_curves(metrics: dict, model_key: str | None = None) -> None:
-    model_key = model_key or metrics.get("best_model", "random_forest")
-    model_metrics = metrics.get(model_key, {})
+    model_metrics = _model_metrics(metrics, model_key)
+    key = model_key or metrics.get("best_model", "random_forest")
     curves = model_metrics.get("roc_curves", {})
     if not curves:
         return
@@ -336,7 +345,7 @@ def diagram_roc_curves(metrics: dict, model_key: str | None = None) -> None:
         ax.plot(fpr, tpr, color=color, lw=2.2, label=f"{class_name} (AUC={auc_val:.3f})")
 
     ax.plot([0, 1], [0, 1], "--", color=PALETTE["muted"], lw=1, label="Azar")
-    _style_ax(ax, f"Curvas ROC OvR — {model_key}")
+    _style_ax(ax, f"Curvas ROC OvR — {key}")
     ax.set_xlabel("Tasa de falsos positivos (FPR)", color=PALETTE["muted"])
     ax.set_ylabel("Tasa de verdaderos positivos (TPR)", color=PALETTE["muted"])
     ax.legend(facecolor=PALETTE["card"], edgecolor=PALETTE["grid"], labelcolor=PALETTE["text"])
@@ -347,8 +356,9 @@ def diagram_roc_curves(metrics: dict, model_key: str | None = None) -> None:
 
 
 def diagram_auc_per_class(metrics: dict, model_key: str | None = None) -> None:
-    model_key = model_key or metrics.get("best_model", "random_forest")
-    per_class = metrics.get(model_key, {}).get("roc_auc_per_class", {})
+    model_metrics = _model_metrics(metrics, model_key)
+    key = model_key or metrics.get("best_model", "random_forest")
+    per_class = model_metrics.get("roc_auc_per_class", {})
     if not per_class:
         return
 
@@ -356,12 +366,12 @@ def diagram_auc_per_class(metrics: dict, model_key: str | None = None) -> None:
     vals = [per_class[n] for n in names]
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.bar(names, vals, color=CLASS_COLORS[: len(names)], edgecolor=PALETTE["grid"])
-    _style_ax(ax, f"AUC por clase (OvR) — {model_key}")
+    _style_ax(ax, f"AUC por clase (OvR) — {key}")
     ax.set_ylim(0, 1.08)
     ax.set_ylabel("AUC", color=PALETTE["muted"])
     for i, v in enumerate(vals):
         ax.text(i, v + 0.02, f"{v:.3f}", ha="center", color=PALETTE["text"], fontweight="bold")
-    macro = metrics.get(model_key, {}).get("roc_auc_ovr_macro")
+    macro = model_metrics.get("roc_auc_ovr_macro")
     if macro is not None:
         ax.text(0.98, 0.95, f"Macro: {macro:.3f}", transform=ax.transAxes, ha="right",
                 color=PALETTE["accent2"], fontsize=10)
@@ -370,6 +380,8 @@ def diagram_auc_per_class(metrics: dict, model_key: str | None = None) -> None:
 
 
 def build_analysis_report(metrics: dict, class_dist: list, importances: list | None) -> dict:
+    best_key = metrics.get("best_model", "random_forest")
+    best_block = _model_metrics(metrics, best_key)
     return {
         "source": "python-ia/scripts/generate_diagrams.py",
         "metrics_from": str(MODELS / "metrics.json"),
@@ -386,8 +398,8 @@ def build_analysis_report(metrics: dict, class_dist: list, importances: list | N
         "roc_auc": {
             "implemented_in_train_py": True,
             "computable_with_current_data": True,
-            "best_model_ovr_weighted": metrics.get(metrics.get("best_model", ""), {}).get("roc_auc_ovr_weighted"),
-            "best_model_ovr_macro": metrics.get(metrics.get("best_model", ""), {}).get("roc_auc_ovr_macro"),
+            "best_model_ovr_weighted": best_block.get("roc_auc_ovr_weighted"),
+            "best_model_ovr_macro": best_block.get("roc_auc_ovr_macro"),
         },
         "feature_importance_rf": dict(zip(metrics.get("features", []), importances or [])),
         "stacking_config": {
