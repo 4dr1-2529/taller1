@@ -218,7 +218,7 @@ export async function assignTutorToSection(input: CreateTutorInput) {
       select: { cursoId: true },
     });
 
-    const assignments = [];
+    const assignments: Awaited<ReturnType<typeof upsertTeacherCourseAssignment>>[] = [];
     for (const cg of cursosGrado) {
       await assertNoOtherTeacherForCourse(
         cg.cursoId,
@@ -228,25 +228,13 @@ export async function assignTutorToSection(input: CreateTutorInput) {
         tx,
       );
 
-      const row = await tx.teacherCourseAssignment.upsert({
-        where: {
-          profesorId_cursoId_seccionId_anioLectivoId: {
-            profesorId,
-            cursoId: cg.cursoId,
-            seccionId: seccion.id,
-            anioLectivoId,
-          },
-        },
-        create: {
-          profesorId,
-          cursoId: cg.cursoId,
-          gradoId: seccion.gradoId,
-          seccionId: seccion.id,
-          anioLectivoId,
-          esTutor: true,
-          activo: true,
-        },
-        update: { esTutor: true, activo: true, gradoId: seccion.gradoId },
+      const row = await upsertTeacherCourseAssignment(tx, {
+        profesorId,
+        cursoId: cg.cursoId,
+        gradoId: seccion.gradoId,
+        seccionId: seccion.id,
+        anioLectivoId,
+        esTutor: true,
       });
 
       await syncCourseOffering(row, seccion, tx);
@@ -290,47 +278,24 @@ export async function createCourseAssignment(input: CreateAssignmentInput) {
     );
 
     if (esTutor) {
-      await assertSingleTutor(seccion.id, anioLectivoId, profesorId, tx);
-      await tx.tutorSeccion.upsert({
-        where: { seccionId_anioLectivoId: { seccionId: seccion.id, anioLectivoId } },
-        create: { seccionId: seccion.id, profesorId, anioLectivoId, activo: true },
-        update: { profesorId, activo: true },
-      });
+      await upsertTutorSeccionRecord(tx, seccion.id, profesorId, anioLectivoId);
     }
 
-    const existing = await tx.teacherCourseAssignment.findUnique({
-      where: {
-        profesorId_cursoId_seccionId_anioLectivoId: {
-          profesorId,
-          cursoId,
-          seccionId: seccion.id,
-          anioLectivoId,
-        },
-      },
-    });
-    if (existing?.activo) {
-      throw new AppError(409, "Asignación activa duplicada para este profesor, curso y sección");
-    }
+    await assertNoActiveDuplicateAssignment(
+      tx,
+      profesorId,
+      cursoId,
+      seccion.id,
+      anioLectivoId,
+    );
 
-    const row = await tx.teacherCourseAssignment.upsert({
-      where: {
-        profesorId_cursoId_seccionId_anioLectivoId: {
-          profesorId,
-          cursoId,
-          seccionId: seccion.id,
-          anioLectivoId,
-        },
-      },
-      create: {
-        profesorId,
-        cursoId,
-        gradoId: seccion.gradoId,
-        seccionId: seccion.id,
-        anioLectivoId,
-        esTutor,
-        activo: true,
-      },
-      update: { esTutor, activo: true, gradoId: seccion.gradoId },
+    const row = await upsertTeacherCourseAssignment(tx, {
+      profesorId,
+      cursoId,
+      gradoId: seccion.gradoId,
+      seccionId: seccion.id,
+      anioLectivoId,
+      esTutor,
     });
 
     await syncCourseOffering(row, seccion, tx);
@@ -390,6 +355,88 @@ function mapAssignmentRow(
       : undefined,
     tipoAsignacion: row.esTutor ? "Tutor de aula" : "Docente por curso",
   };
+}
+
+function resolveTipoPrincipal(
+  assignments: Array<{ esTutor: boolean; grado: { numero: number } }>,
+): string {
+  if (assignments.length === 0) return "Docente por curso";
+  const hasTutor = assignments.some((a) => a.esTutor);
+  if (!hasTutor) return "Docente por curso";
+  const allPrimaryGrades = assignments.every((a) => a.grado.numero <= 2);
+  if (allPrimaryGrades) return "Tutor de aula";
+  return "Tutor y docente por curso";
+}
+
+async function upsertTutorSeccionRecord(
+  tx: Prisma.TransactionClient,
+  seccionId: bigint,
+  profesorId: bigint,
+  anioLectivoId: bigint,
+) {
+  await assertSingleTutor(seccionId, anioLectivoId, profesorId, tx);
+  await tx.tutorSeccion.upsert({
+    where: { seccionId_anioLectivoId: { seccionId, anioLectivoId } },
+    create: { seccionId, profesorId, anioLectivoId, activo: true },
+    update: { profesorId, activo: true },
+  });
+}
+
+async function assertNoActiveDuplicateAssignment(
+  tx: Prisma.TransactionClient,
+  profesorId: bigint,
+  cursoId: bigint,
+  seccionId: bigint,
+  anioLectivoId: bigint,
+) {
+  const existing = await tx.teacherCourseAssignment.findUnique({
+    where: {
+      profesorId_cursoId_seccionId_anioLectivoId: {
+        profesorId,
+        cursoId,
+        seccionId,
+        anioLectivoId,
+      },
+    },
+  });
+  if (existing?.activo) {
+    throw new AppError(409, "Asignación activa duplicada para este profesor, curso y sección");
+  }
+  return existing;
+}
+
+async function upsertTeacherCourseAssignment(
+  tx: Prisma.TransactionClient,
+  data: {
+    profesorId: bigint;
+    cursoId: bigint;
+    gradoId: bigint;
+    seccionId: bigint;
+    anioLectivoId: bigint;
+    esTutor: boolean;
+  },
+) {
+  const { profesorId, cursoId, gradoId, seccionId, anioLectivoId, esTutor } = data;
+  return tx.teacherCourseAssignment.upsert({
+    where: {
+      profesorId_cursoId_seccionId_anioLectivoId: {
+        profesorId,
+        cursoId,
+        seccionId,
+        anioLectivoId,
+      },
+    },
+    create: {
+      profesorId,
+      cursoId,
+      gradoId,
+      seccionId,
+      anioLectivoId,
+      esTutor,
+      activo: true,
+    },
+    update: { esTutor, activo: true, gradoId },
+  });
 }
 
 const assignmentInclude = {
@@ -537,12 +584,7 @@ export async function getTeacherWorkload(profesorId: bigint) {
       })
     : 0;
 
-  const tipoPrincipal =
-    assignments.some((a) => a.esTutor) && assignments.every((a) => a.grado.numero <= 2)
-      ? "Tutor de aula"
-      : assignments.some((a) => a.esTutor)
-        ? "Tutor y docente por curso"
-        : "Docente por curso";
+  const tipoPrincipal = resolveTipoPrincipal(assignments);
 
   const poliAssignments = assignments.filter((a) => !a.esTutor && a.grado.numero >= 3);
   const poliCourseIds = new Set(poliAssignments.map((a) => idToString(a.cursoId)));

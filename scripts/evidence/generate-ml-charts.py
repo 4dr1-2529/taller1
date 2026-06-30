@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
+import math
+import sysfrom pathlib import Path
 
 import joblib
 import matplotlib.pyplot as plt
@@ -105,10 +105,11 @@ def main():
             ax.set_title("Curvas ROC (One-vs-Rest) — modelo entrenado local")
             save_fig("curva-roc.png")
             try:
-                auc_macro = roc_auc_score(y_bin[:, : y_score.shape[1]], y_score, average="macro", multi_class="ovr")
-            except Exception:
-                auc_macro = float("nan")
-        else:
+                auc_macro = roc_auc_score(
+                    y_bin[:, : y_score.shape[1]], y_score, average="macro", multi_class="ovr"
+                )
+            except (ValueError, IndexError):
+                auc_macro = float("nan")        else:
             fig, ax = plt.subplots(figsize=(8, 4))
             ax.text(0.5, 0.5, "ROC no disponible: test set sin variabilidad\nen todas las clases (datos reales del split)",
                     ha="center", va="center", fontsize=11)
@@ -161,8 +162,7 @@ def main():
         "precision_weighted": round(float(precision_score(y_test, y_pred, average="weighted", zero_division=0)), 4),
         "recall_weighted": round(float(recall_score(y_test, y_pred, average="weighted", zero_division=0)), 4),
         "f1_weighted": round(float(f1_score(y_test, y_pred, average="weighted", zero_division=0)), 4),
-        "auc_macro_ovr": round(float(auc_macro), 4) if auc_macro == auc_macro else None,
-        "best_model_file": stored.get("best_model"),
+        "auc_macro_ovr": round(float(auc_macro), 4) if not math.isnan(auc_macro) else None,        "best_model_file": stored.get("best_model"),
         "n_test_samples": int(len(y_test)),
         "classification_report": classification_report(
             y_test, y_pred, labels=labels, target_names=class_names, zero_division=0
@@ -208,4 +208,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    finally:
+        plt.close("all")

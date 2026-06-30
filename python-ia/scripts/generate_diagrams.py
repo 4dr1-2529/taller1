@@ -12,7 +12,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+from matplotlib.patches import FancyBboxPatch
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -22,8 +22,7 @@ OUT = Path(__file__).resolve().parents[1] / "diagramas"
 OUT.mkdir(parents=True, exist_ok=True)
 
 sys.path.insert(0, str(ML))
-from train import generate_synthetic_data, evaluate_model  # noqa: E402
-from sklearn.model_selection import train_test_split  # noqa: E402
+from train import generate_synthetic_data  # noqa: E402
 
 PALETTE = {
     "bg": "#0f172a",
@@ -212,6 +211,8 @@ def diagram_distribucion_clases() -> None:
 
 def diagram_metricas_comparacion(metrics: dict) -> None:
     model_keys = [k for k in ("random_forest", "xgboost", "stacking") if k in metrics]
+    if not model_keys:
+        return
     labels = ["Random Forest", "XGBoost", "Stacking"][: len(model_keys)]
     metric_keys = ["accuracy", "precision", "recall", "f1_score", "roc_auc_ovr_weighted"]
     metric_labels = ["Accuracy", "Precision", "Recall", "F1", "AUC-OvR"]
@@ -222,7 +223,7 @@ def diagram_metricas_comparacion(metrics: dict) -> None:
     colors = [PALETTE["accent"], PALETTE["accent2"], PALETTE["accent3"], PALETTE["accent4"], "#a78bfa"]
 
     for i, (mk, ml) in enumerate(zip(metric_keys, metric_labels)):
-        vals = [metrics[m].get(mk, 0) for m in model_keys]
+        vals = [metrics.get(m, {}).get(mk, 0) for m in model_keys]
         ax.bar(x + (i - 2) * width, vals, width, label=ml, color=colors[i], edgecolor=PALETTE["grid"])
 
     _style_ax(ax, f"Comparación de métricas — mejor modelo: {metrics.get('best_model', 'N/A')}")
@@ -237,7 +238,10 @@ def diagram_metricas_comparacion(metrics: dict) -> None:
 
 def diagram_confusion_matrix(metrics: dict, model_key: str | None = None) -> None:
     model_key = model_key or metrics.get("best_model", "random_forest")
-    cm = np.array(metrics[model_key]["confusion_matrix"])
+    model_metrics = metrics.get(model_key)
+    if not isinstance(model_metrics, dict) or "confusion_matrix" not in model_metrics:
+        return
+    cm = np.array(model_metrics["confusion_matrix"])
     fig, ax = plt.subplots(figsize=(7, 6))
     im = ax.imshow(cm, cmap="Blues", aspect="auto")
     _style_ax(ax, f"Matriz de confusión — {model_key} (test n={cm.sum()})")
@@ -256,12 +260,12 @@ def diagram_confusion_matrix(metrics: dict, model_key: str | None = None) -> Non
     plt.close(fig)
 
 
-def diagram_feature_importance() -> None:
+def diagram_feature_importance() -> list[float] | None:
     import joblib
 
     path = MODELS / "random_forest_model.joblib"
     if not path.exists():
-        return
+        return None
     rf = joblib.load(path)
     names_path = MODELS / "features.joblib"
     names = joblib.load(names_path) if names_path.exists() else [f"f{i}" for i in range(10)]
@@ -396,29 +400,32 @@ def build_analysis_report(metrics: dict, class_dist: list, importances: list | N
 
 
 def main() -> None:
-    metrics = load_metrics()
-    print("Generando diagramas en", OUT)
-    diagram_arquitectura()
-    diagram_pipeline()
-    diagram_stacking()
-    class_dist = diagram_distribucion_clases()
-    diagram_metricas_comparacion(metrics)
-    diagram_confusion_matrix(metrics)
-    importances = diagram_feature_importance()
-    diagram_variables()
-    diagram_roc_curves(metrics)
-    diagram_auc_per_class(metrics)
+    try:
+        metrics = load_metrics()
+        print("Generando diagramas en", OUT)
+        diagram_arquitectura()
+        diagram_pipeline()
+        diagram_stacking()
+        class_dist = diagram_distribucion_clases()
+        diagram_metricas_comparacion(metrics)
+        diagram_confusion_matrix(metrics)
+        importances = diagram_feature_importance()
+        diagram_variables()
+        diagram_roc_curves(metrics)
+        diagram_auc_per_class(metrics)
 
-    report = build_analysis_report(metrics, class_dist, importances)
-    data_dir = Path(__file__).resolve().parents[1] / "datos"
-    data_dir.mkdir(exist_ok=True)
-    (data_dir / "analysis_report.json").write_text(
-        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-    (data_dir / "metrics_snapshot.json").write_text(
-        json.dumps(metrics, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-    print("Completado:", len(list(OUT.glob("*.png"))), "diagramas")
+        report = build_analysis_report(metrics, class_dist, importances)
+        data_dir = Path(__file__).resolve().parents[1] / "datos"
+        data_dir.mkdir(exist_ok=True)
+        (data_dir / "analysis_report.json").write_text(
+            json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        (data_dir / "metrics_snapshot.json").write_text(
+            json.dumps(metrics, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        print("Completado:", len(list(OUT.glob("*.png"))), "diagramas")
+    finally:
+        plt.close("all")
 
 
 if __name__ == "__main__":
