@@ -1,0 +1,15 @@
+{
+  "status": 403,
+  "ok": false,
+  "ms": 15,
+  "json": {
+    "success": false,
+    "message": "Permiso denegado",
+    "errors": [
+      {
+        "field": "_form",
+        "message": "FORBIDDEN"
+      }
+    ]
+  }
+}

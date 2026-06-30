@@ -356,4 +356,4 @@ El frontend **no llama FastAPI :5000**. La predicción se solicita al backend, q
 - [Python IA — Modelo predictivo](../python-ia/modelo-predictivo.md)
 - [Frontend README](../../frontend/README.md)
 - [Despliegue](../DEPLOY.md)
-- [Plan de pruebas ISO 29119](../iso-29119/plan-pruebas.md)
+- [Plan de pruebas ISO 29119](../../plan-pruebas/README.md)

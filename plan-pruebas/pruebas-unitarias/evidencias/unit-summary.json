@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-06-30T07:23:44.221Z",
+  "results": [
+    {
+      "name": "backend-unit",
+      "cmd": "npm run test --workspace=backend",
+      "exitCode": 0,
+      "ms": 5230,
+      "pass": true,
+      "tests": "1",
+      "outFile": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\pruebas-unitarias\\evidencias/backend-tests.log"
+    },
+    {
+      "name": "backend-smoke",
+      "cmd": "node backend/scripts/smoke-tests.mjs",
+      "exitCode": 0,
+      "ms": 2165,
+      "pass": true,
+      "tests": "4",
+      "outFile": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\pruebas-unitarias\\evidencias/smoke-tests.log"
+    },
+    {
+      "name": "ml-unit",
+      "cmd": "npm run ml:test",
+      "exitCode": 0,
+      "ms": 5085,
+      "pass": true,
+      "tests": "?",
+      "outFile": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\pruebas-unitarias\\evidencias/ml-tests.log"
+    }
+  ],
+  "aprobados": 3,
+  "fallidos": 0
+}

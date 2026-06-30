@@ -1,0 +1,8 @@
+{
+  "id": "TC-CN-director-profesores-listado.png",
+  "captura_inicial": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\login-director-ok.png",
+  "captura_resultado": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\profesores-listado.png",
+  "esperado": "Vista Profesores operativa",
+  "obtenido": "Pantalla renderizada sin error",
+  "estado": "Aprobado"
+}

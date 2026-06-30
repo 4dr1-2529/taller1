@@ -1,0 +1,452 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 348,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "kpis": {
+        "totalStudents": 660,
+        "totalTeachers": 23,
+        "totalSalones": 22,
+        "openAlerts": 166,
+        "avgRisk": 54.4,
+        "avgGrade": 13.5,
+        "avgAttendance": 85.5,
+        "byLevel": {
+          "bajo": 62,
+          "medio": 81,
+          "alto": 85
+        },
+        "alertsByLevel": {
+          "medio": 81,
+          "alto": 85
+        },
+        "institutionName": "I.E.P. Blenkir",
+        "directorName": "Miguel Quispe Navarro",
+        "directorEmail": "director@blenkir.edu.pe"
+      },
+      "riskTrend": [
+        {
+          "periodo": "2026-06",
+          "riesgoGlobal": 55,
+          "count": 120
+        }
+      ],
+      "riskBySection": [
+        {
+          "label": "Educación Primaria 1° Primaria B",
+          "alto": 11,
+          "medio": 13,
+          "bajo": 6,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 1° Primaria C",
+          "alto": 11,
+          "medio": 10,
+          "bajo": 9,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 1° Primaria D",
+          "alto": 11,
+          "medio": 9,
+          "bajo": 10,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 1° Primaria A",
+          "alto": 10,
+          "medio": 11,
+          "bajo": 9,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 3° Primaria B",
+          "alto": 4,
+          "medio": 0,
+          "bajo": 2,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 2° Primaria A",
+          "alto": 3,
+          "medio": 2,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 4° Primaria B",
+          "alto": 3,
+          "medio": 2,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 4° Primaria C",
+          "alto": 3,
+          "medio": 2,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 5° Primaria A",
+          "alto": 3,
+          "medio": 0,
+          "bajo": 3,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 5° Primaria C",
+          "alto": 3,
+          "medio": 2,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 6° Primaria C",
+          "alto": 3,
+          "medio": 2,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 2° Primaria B",
+          "alto": 2,
+          "medio": 2,
+          "bajo": 2,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 2° Primaria C",
+          "alto": 2,
+          "medio": 3,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 2° Primaria D",
+          "alto": 2,
+          "medio": 3,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 3° Primaria A",
+          "alto": 2,
+          "medio": 2,
+          "bajo": 2,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 3° Primaria C",
+          "alto": 2,
+          "medio": 3,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 4° Primaria A",
+          "alto": 2,
+          "medio": 2,
+          "bajo": 2,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 5° Primaria B",
+          "alto": 2,
+          "medio": 3,
+          "bajo": 1,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 6° Primaria A",
+          "alto": 2,
+          "medio": 2,
+          "bajo": 2,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 6° Primaria B",
+          "alto": 2,
+          "medio": 2,
+          "bajo": 2,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 3° Primaria D",
+          "alto": 1,
+          "medio": 3,
+          "bajo": 2,
+          "total": 30
+        },
+        {
+          "label": "Educación Primaria 4° Primaria D",
+          "alto": 1,
+          "medio": 3,
+          "bajo": 2,
+          "total": 30
+        }
+      ],
+      "riskByGrado": [
+        {
+          "grado": "1°",
+          "alto": 43,
+          "medio": 43,
+          "bajo": 34
+        },
+        {
+          "grado": "2°",
+          "alto": 9,
+          "medio": 10,
+          "bajo": 5
+        },
+        {
+          "grado": "3°",
+          "alto": 9,
+          "medio": 8,
+          "bajo": 7
+        },
+        {
+          "grado": "4°",
+          "alto": 9,
+          "medio": 9,
+          "bajo": 6
+        },
+        {
+          "grado": "5°",
+          "alto": 8,
+          "medio": 5,
+          "bajo": 5
+        },
+        {
+          "grado": "6°",
+          "alto": 7,
+          "medio": 6,
+          "bajo": 5
+        }
+      ],
+      "attendanceByGrado": [
+        {
+          "grado": "1°",
+          "asistencia": 85.5
+        },
+        {
+          "grado": "2°",
+          "asistencia": 85.5
+        },
+        {
+          "grado": "3°",
+          "asistencia": 85.4
+        },
+        {
+          "grado": "4°",
+          "asistencia": 85.4
+        },
+        {
+          "grado": "5°",
+          "asistencia": 85.8
+        },
+        {
+          "grado": "6°",
+          "asistencia": 85.4
+        }
+      ],
+      "lmsActivityByGrado": [
+        {
+          "grado": "1°",
+          "alta": 55,
+          "media": 65,
+          "baja": 0,
+          "sin": 0
+        },
+        {
+          "grado": "2°",
+          "alta": 54,
+          "media": 66,
+          "baja": 0,
+          "sin": 0
+        },
+        {
+          "grado": "3°",
+          "alta": 54,
+          "media": 66,
+          "baja": 0,
+          "sin": 0
+        },
+        {
+          "grado": "4°",
+          "alta": 54,
+          "media": 66,
+          "baja": 0,
+          "sin": 0
+        },
+        {
+          "grado": "5°",
+          "alta": 42,
+          "media": 48,
+          "baja": 0,
+          "sin": 0
+        },
+        {
+          "grado": "6°",
+          "alta": 41,
+          "media": 49,
+          "baja": 0,
+          "sin": 0
+        }
+      ],
+      "alertsBySalonShort": [
+        {
+          "salon": "1°A",
+          "count": 21
+        },
+        {
+          "salon": "1°B",
+          "count": 24
+        },
+        {
+          "salon": "1°C",
+          "count": 21
+        },
+        {
+          "salon": "1°D",
+          "count": 20
+        },
+        {
+          "salon": "2°A",
+          "count": 5
+        },
+        {
+          "salon": "2°B",
+          "count": 4
+        },
+        {
+          "salon": "2°C",
+          "count": 5
+        },
+        {
+          "salon": "2°D",
+          "count": 5
+        },
+        {
+          "salon": "3°A",
+          "count": 4
+        },
+        {
+          "salon": "3°B",
+          "count": 4
+        },
+        {
+          "salon": "3°C",
+          "count": 5
+        },
+        {
+          "salon": "3°D",
+          "count": 4
+        },
+        {
+          "salon": "4°A",
+          "count": 4
+        },
+        {
+          "salon": "4°B",
+          "count": 5
+        },
+        {
+          "salon": "4°C",
+          "count": 5
+        },
+        {
+          "salon": "4°D",
+          "count": 4
+        },
+        {
+          "salon": "5°A",
+          "count": 3
+        },
+        {
+          "salon": "5°B",
+          "count": 5
+        },
+        {
+          "salon": "5°C",
+          "count": 5
+        },
+        {
+          "salon": "6°A",
+          "count": 4
+        },
+        {
+          "salon": "6°B",
+          "count": 4
+        },
+        {
+          "salon": "6°C",
+          "count": 5
+        }
+      ],
+      "modelComparison": [
+        {
+          "modelo": "random forest",
+          "f1": 100,
+          "accuracy": 100
+        },
+        {
+          "modelo": "xgboost",
+          "f1": 100,
+          "accuracy": 100
+        },
+        {
+          "modelo": "stacking",
+          "f1": 100,
+          "accuracy": 100
+        }
+      ],
+      "featureImportance": [
+        {
+          "variable": "promedio_general",
+          "peso": 30
+        },
+        {
+          "variable": "cursos_desaprobados",
+          "peso": 28
+        },
+        {
+          "variable": "asistencia_general",
+          "peso": 26
+        },
+        {
+          "variable": "frecuencia_acceso_lms",
+          "peso": 24
+        },
+        {
+          "variable": "tiempo_plataforma",
+          "peso": 22
+        },
+        {
+          "variable": "tareas_ratio",
+          "peso": 20
+        },
+        {
+          "variable": "participacion_actividades",
+          "peso": 18
+        },
+        {
+          "variable": "uso_foros",
+          "peso": 16
+        },
+        {
+          "variable": "disminucion_actividad",
+          "peso": 14
+        },
+        {
+          "variable": "estado",
+          "peso": 12
+        }
+      ]
+    }
+  }
+}

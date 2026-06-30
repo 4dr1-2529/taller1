@@ -1,0 +1,13 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 232,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "service": "tesis-api",
+      "version": "2.0.0"
+    }
+  }
+}

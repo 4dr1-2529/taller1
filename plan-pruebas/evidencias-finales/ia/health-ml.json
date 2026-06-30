@@ -1,0 +1,5 @@
+{
+  "status": "healthy",
+  "service": "machine-learning",
+  "features": "promedio_general,cursos_desaprobados,asistencia_general,frecuencia_acceso_lms,tiempo_plataforma,tareas_ratio,participacion_actividades,uso_foros,disminucion_actividad,estado"
+}

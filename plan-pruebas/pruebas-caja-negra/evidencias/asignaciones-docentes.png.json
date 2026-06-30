@@ -1,0 +1,8 @@
+{
+  "id": "TC-CN-director-asignaciones-docentes.png",
+  "captura_inicial": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\login-director-ok.png",
+  "captura_resultado": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\asignaciones-docentes.png",
+  "esperado": "Vista Asignaciones docentes operativa",
+  "obtenido": "Pantalla renderizada sin error",
+  "estado": "Aprobado"
+}

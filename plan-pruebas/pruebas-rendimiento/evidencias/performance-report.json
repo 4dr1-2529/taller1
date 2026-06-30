@@ -1,0 +1,104 @@
+{
+  "timestamp": "2026-06-30T07:16:35.989Z",
+  "measurements": [
+    {
+      "name": "login-director",
+      "samples": [
+        1640,
+        1704,
+        2165
+      ],
+      "avgMs": 1836,
+      "minMs": 1640,
+      "maxMs": 2165
+    },
+    {
+      "name": "dashboard-kpis",
+      "samples": [
+        600,
+        626,
+        624
+      ],
+      "avgMs": 617,
+      "minMs": 600,
+      "maxMs": 626
+    },
+    {
+      "name": "students-list-limit100",
+      "samples": [
+        457,
+        463,
+        640
+      ],
+      "avgMs": 520,
+      "minMs": 457,
+      "maxMs": 640
+    },
+    {
+      "name": "predictions-historial",
+      "samples": [
+        63,
+        52,
+        137
+      ],
+      "avgMs": 84,
+      "minMs": 52,
+      "maxMs": 137
+    },
+    {
+      "name": "predict-ia",
+      "samples": [
+        684,
+        495,
+        509
+      ],
+      "avgMs": 563,
+      "minMs": 495,
+      "maxMs": 684
+    },
+    {
+      "name": "teachers-list",
+      "samples": [
+        342,
+        282,
+        232
+      ],
+      "avgMs": 285,
+      "minMs": 232,
+      "maxMs": 342
+    },
+    {
+      "name": "alerts-list",
+      "samples": [
+        395,
+        334,
+        331
+      ],
+      "avgMs": 353,
+      "minMs": 331,
+      "maxMs": 395
+    },
+    {
+      "name": "health-api",
+      "samples": [
+        21,
+        14,
+        14
+      ],
+      "avgMs": 16,
+      "minMs": 14,
+      "maxMs": 21
+    },
+    {
+      "name": "ml-health",
+      "samples": [
+        68,
+        37,
+        14
+      ],
+      "avgMs": 40,
+      "minMs": 14,
+      "maxMs": 68
+    }
+  ]
+}

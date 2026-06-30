@@ -1,0 +1,8 @@
+{
+  "id": "TC-CN-director-cursos-listado.png",
+  "captura_inicial": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\login-director-ok.png",
+  "captura_resultado": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\cursos-listado.png",
+  "esperado": "Vista Cursos operativa",
+  "obtenido": "Pantalla renderizada sin error",
+  "estado": "Aprobado"
+}

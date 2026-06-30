@@ -1,0 +1,15 @@
+{
+  "status": 401,
+  "ok": false,
+  "ms": 12,
+  "json": {
+    "success": false,
+    "message": "Token inválido o expirado",
+    "errors": [
+      {
+        "field": "_form",
+        "message": "INVALID_TOKEN"
+      }
+    ]
+  }
+}

@@ -1,0 +1,464 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 555,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "kpis": {
+        "totalStudents": 30,
+        "totalTeachers": 1,
+        "totalSalones": 1,
+        "openAlerts": 21,
+        "avgRisk": 52.6,
+        "avgGrade": 13.4,
+        "avgAttendance": 84.9,
+        "byLevel": {
+          "bajo": 9,
+          "medio": 11,
+          "alto": 10
+        },
+        "alertsByLevel": {
+          "medio": 11,
+          "alto": 10
+        },
+        "institutionName": "I.E.P. Blenkir",
+        "directorName": "Miguel Quispe Navarro",
+        "directorEmail": "director@blenkir.edu.pe",
+        "totalCourses": 13,
+        "misSecciones": 1,
+        "totalAlumnos": 30,
+        "notasPendientes": 0
+      },
+      "riskTrend": [
+        {
+          "periodo": "2026-06",
+          "riesgoGlobal": 52.6,
+          "count": 30
+        }
+      ],
+      "riskBySection": [
+        {
+          "label": "Educación Primaria 1° Primaria A",
+          "alto": 10,
+          "medio": 11,
+          "bajo": 9,
+          "total": 30
+        }
+      ],
+      "riskByGrado": [
+        {
+          "grado": "1°",
+          "alto": 10,
+          "medio": 11,
+          "bajo": 9
+        }
+      ],
+      "attendanceByGrado": [
+        {
+          "grado": "1°",
+          "asistencia": 84.9
+        }
+      ],
+      "lmsActivityByGrado": [
+        {
+          "grado": "1°",
+          "alta": 13,
+          "media": 17,
+          "baja": 0,
+          "sin": 0
+        }
+      ],
+      "alertsBySalonShort": [
+        {
+          "salon": "1°A",
+          "count": 21
+        }
+      ],
+      "modelComparison": [
+        {
+          "modelo": "random forest",
+          "f1": 100,
+          "accuracy": 100
+        },
+        {
+          "modelo": "xgboost",
+          "f1": 100,
+          "accuracy": 100
+        },
+        {
+          "modelo": "stacking",
+          "f1": 100,
+          "accuracy": 100
+        }
+      ],
+      "featureImportance": [
+        {
+          "variable": "promedio_general",
+          "peso": 30
+        },
+        {
+          "variable": "cursos_desaprobados",
+          "peso": 28
+        },
+        {
+          "variable": "asistencia_general",
+          "peso": 26
+        },
+        {
+          "variable": "frecuencia_acceso_lms",
+          "peso": 24
+        },
+        {
+          "variable": "tiempo_plataforma",
+          "peso": 22
+        },
+        {
+          "variable": "tareas_ratio",
+          "peso": 20
+        },
+        {
+          "variable": "participacion_actividades",
+          "peso": 18
+        },
+        {
+          "variable": "uso_foros",
+          "peso": 16
+        },
+        {
+          "variable": "disminucion_actividad",
+          "peso": 14
+        },
+        {
+          "variable": "estado",
+          "peso": 12
+        }
+      ],
+      "workload": {
+        "tipoAsignacion": "Tutor de aula",
+        "esTutor": true,
+        "cursos": [
+          {
+            "id": "16",
+            "nombre": "Educación Física",
+            "codigo": "EDF"
+          },
+          {
+            "id": "13",
+            "nombre": "Religión",
+            "codigo": "REL"
+          },
+          {
+            "id": "10",
+            "nombre": "Ciudadanía",
+            "codigo": "CIU"
+          },
+          {
+            "id": "7",
+            "nombre": "Razonamiento Verbal",
+            "codigo": "RZV"
+          },
+          {
+            "id": "1",
+            "nombre": "Aritmética",
+            "codigo": "ARI"
+          },
+          {
+            "id": "14",
+            "nombre": "Inglés",
+            "codigo": "ING"
+          },
+          {
+            "id": "11",
+            "nombre": "Geografía",
+            "codigo": "GEG"
+          },
+          {
+            "id": "8",
+            "nombre": "Cuerpo Humano",
+            "codigo": "CUH"
+          },
+          {
+            "id": "5",
+            "nombre": "Producción de Textos",
+            "codigo": "PDT"
+          },
+          {
+            "id": "15",
+            "nombre": "Taller",
+            "codigo": "TAL"
+          },
+          {
+            "id": "12",
+            "nombre": "Historia",
+            "codigo": "HIS"
+          },
+          {
+            "id": "9",
+            "nombre": "Mundo Físico",
+            "codigo": "MUF"
+          },
+          {
+            "id": "6",
+            "nombre": "Gramática",
+            "codigo": "GRA"
+          }
+        ],
+        "grados": [
+          "1°"
+        ],
+        "secciones": [
+          "1° A"
+        ],
+        "cargaAcademica": 13,
+        "totalAlumnos": 30,
+        "polidocencia": {
+          "cursosDistintos": 0,
+          "maxCursos": 2,
+          "salonesDistintos": 0,
+          "maxSalones": 8
+        },
+        "asignaciones": [
+          {
+            "curso": "Educación Física",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Religión",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Ciudadanía",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Razonamiento Verbal",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Aritmética",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Inglés",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Geografía",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Cuerpo Humano",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Producción de Textos",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Taller",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Historia",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Mundo Físico",
+            "salon": "1° A",
+            "esTutor": true
+          },
+          {
+            "curso": "Gramática",
+            "salon": "1° A",
+            "esTutor": true
+          }
+        ]
+      },
+      "avgByCourse": [
+        {
+          "courseId": "2706",
+          "nombre": "Aritmética",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2707",
+          "nombre": "Producción de Textos",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2708",
+          "nombre": "Gramática",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2709",
+          "nombre": "Razonamiento Verbal",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2710",
+          "nombre": "Cuerpo Humano",
+          "salon": "1°A",
+          "promedio": 13.3,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2711",
+          "nombre": "Mundo Físico",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2712",
+          "nombre": "Ciudadanía",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2713",
+          "nombre": "Geografía",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2714",
+          "nombre": "Historia",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2715",
+          "nombre": "Religión",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2716",
+          "nombre": "Inglés",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2717",
+          "nombre": "Taller",
+          "salon": "1°A",
+          "promedio": 13.3,
+          "totalNotas": 60
+        },
+        {
+          "courseId": "2718",
+          "nombre": "Educación Física",
+          "salon": "1°A",
+          "promedio": 13.4,
+          "totalNotas": 60
+        }
+      ],
+      "avgBySection": [
+        {
+          "salon": "1°A",
+          "promedio": 13.4
+        }
+      ],
+      "cursosAsignados": [
+        {
+          "id": "16",
+          "nombre": "Educación Física",
+          "codigo": "EDF"
+        },
+        {
+          "id": "13",
+          "nombre": "Religión",
+          "codigo": "REL"
+        },
+        {
+          "id": "10",
+          "nombre": "Ciudadanía",
+          "codigo": "CIU"
+        },
+        {
+          "id": "7",
+          "nombre": "Razonamiento Verbal",
+          "codigo": "RZV"
+        },
+        {
+          "id": "1",
+          "nombre": "Aritmética",
+          "codigo": "ARI"
+        },
+        {
+          "id": "14",
+          "nombre": "Inglés",
+          "codigo": "ING"
+        },
+        {
+          "id": "11",
+          "nombre": "Geografía",
+          "codigo": "GEG"
+        },
+        {
+          "id": "8",
+          "nombre": "Cuerpo Humano",
+          "codigo": "CUH"
+        },
+        {
+          "id": "5",
+          "nombre": "Producción de Textos",
+          "codigo": "PDT"
+        },
+        {
+          "id": "15",
+          "nombre": "Taller",
+          "codigo": "TAL"
+        },
+        {
+          "id": "12",
+          "nombre": "Historia",
+          "codigo": "HIS"
+        },
+        {
+          "id": "9",
+          "nombre": "Mundo Físico",
+          "codigo": "MUF"
+        },
+        {
+          "id": "6",
+          "nombre": "Gramática",
+          "codigo": "GRA"
+        }
+      ],
+      "seccionesAsignadas": [
+        "1° A"
+      ],
+      "gradosAsignados": [
+        "1°"
+      ]
+    }
+  }
+}

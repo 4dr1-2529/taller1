@@ -1,0 +1,22 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 18,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "user": {
+        "id": "5435",
+        "email": "mateo.quispe0001@blenkir.edu.pe",
+        "nombres": "Mateo",
+        "apellidos": "Quispe Flores",
+        "activo": true,
+        "createdAt": "2026-06-23T20:53:48.590Z",
+        "profesor": null,
+        "role": "estudiante",
+        "teacherId": null
+      }
+    }
+  }
+}

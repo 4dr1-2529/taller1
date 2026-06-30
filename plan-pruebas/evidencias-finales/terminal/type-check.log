@@ -1,0 +1,16 @@
+
+> tesis-dashboard@2.0.0 type-check
+> npm run type-check --workspace=@tesis/shared && npm run type-check --workspace=frontend && npm run type-check --workspace=backend
+
+
+> @tesis/shared@2.0.0 type-check
+> tsc --noEmit
+
+
+> frontend@2.0.0 type-check
+> tsc --noEmit
+
+
+> backend@2.0.0 type-check
+> tsc --noEmit
+

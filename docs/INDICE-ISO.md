@@ -14,7 +14,7 @@ Este índice centraliza toda la documentación técnica, de calidad (ISO) y de e
 |---|-----------|-------------------|
 | 1 | [iso-9001/macroproceso-academico.md](iso-9001/macroproceso-academico.md) | Macroproceso de gestión académica: entradas, procesos, salidas, responsables, KPI y evidencia de implementación en el sistema. Alineación ISO 9001. |
 | 2 | [iso-25010/calidad-software.md](iso-25010/calidad-software.md) | Modelo de calidad ISO/IEC 25010 con tabla de evidencias por característica (login, dashboard, IA, roles, notas, alertas, reportes). |
-| 3 | [iso-29119/plan-pruebas.md](iso-29119/plan-pruebas.md) | Plan formal de pruebas con 35+ casos (backend, frontend, BD, IA, seguridad, roles, dashboard, predicción, notas, reportes). |
+| 3 | [iso-29119/plan-pruebas.md](iso-29119/plan-pruebas.md) | Referencia ISO 29119 — plan operativo en [plan-pruebas/](../plan-pruebas/README.md) (54 casos). |
 
 ---
 
@@ -36,7 +36,7 @@ Este índice centraliza toda la documentación técnica, de calidad (ISO) y de e
 
 | # | Documento / carpeta | Descripción breve |
 |---|---------------------|-------------------|
-| 11 | [plan-pruebas/README.md](plan-pruebas/README.md) | Índice operativo del plan de pruebas y matriz de trazabilidad. |
+| 11 | [../plan-pruebas/README.md](../plan-pruebas/README.md) | Plan de pruebas operativo (raíz del repo): unitarias, integración, UAT, matriz 54 casos. |
 | 12 | [evidencias/README.md](evidencias/README.md) | Guía maestra de evidencias: dónde almacenar capturas, logs y artefactos. |
 | 13 | [evidencias/capturas/](evidencias/capturas/README.md) | Capturas generales del sistema web. |
 | 14 | [evidencias/backend/](evidencias/backend/README.md) | Logs de tests API, health Railway, Postman backend. |
@@ -72,13 +72,13 @@ docs/
 ├── INDICE-ISO.md              ← Usted está aquí
 ├── iso-9001/                  → Gestión de calidad (procesos)
 ├── iso-25010/                 → Calidad de software (producto)
-├── iso-29119/                 → Pruebas de software
+├── iso-29119/                 → Referencia ISO 29119 (enlace a plan-pruebas/)
 ├── arquitectura/              → Visión y capas del sistema
 ├── backend/ · frontend/ · python-ia/  → Detalle por tecnología
-├── plan-pruebas/              → Índice operativo QA
-├── evidencias/                → Repositorio de pruebas y capturas
+├── evidencias/                → Repositorio de capturas y artefactos
 ├── DEPLOY.md · pruebas*.md
-└── cuentas-demo/ · postman/
+
+plan-pruebas/                  → Plan de pruebas (raíz del repositorio)
 ```
 
 ---

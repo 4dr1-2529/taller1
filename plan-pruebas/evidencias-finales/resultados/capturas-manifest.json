@@ -1,0 +1,72 @@
+{
+  "captured_at": "2026-06-30T06:44:04.898Z",
+  "base_url": "http://localhost:3029",
+  "user": "director@blenkir.edu.pe",
+  "captures": [
+    {
+      "module": "login",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\login\\login.png",
+      "status": "OK"
+    },
+    {
+      "module": "dashboard",
+      "section": "Dashboard",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\dashboard\\dashboard.png",
+      "status": "OK"
+    },
+    {
+      "module": "profesores",
+      "section": "Profesores",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\profesores\\profesores.png",
+      "status": "OK"
+    },
+    {
+      "module": "cursos",
+      "section": "Cursos",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\cursos\\cursos.png",
+      "status": "OK"
+    },
+    {
+      "module": "estudiantes",
+      "section": "Estudiantes",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\estudiantes\\estudiantes.png",
+      "status": "OK"
+    },
+    {
+      "module": "usuarios",
+      "section": "Estudiantes",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\usuarios\\usuarios-estudiantes.png",
+      "status": "OK"
+    },
+    {
+      "module": "notas",
+      "section": "Notas",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\notas\\notas.png",
+      "status": "OK"
+    },
+    {
+      "module": "prediccion",
+      "section": "Predicción de riesgo",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\prediccion\\prediccion.png",
+      "status": "OK"
+    },
+    {
+      "module": "alertas",
+      "section": "Alertas tempranas",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\alertas\\alertas.png",
+      "status": "OK"
+    },
+    {
+      "module": "reportes",
+      "section": "Reportes",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\reportes\\reportes.png",
+      "status": "OK"
+    },
+    {
+      "module": "configuracion",
+      "section": "Asignaciones docentes",
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\configuracion\\configuracion-asignaciones.png",
+      "status": "OK"
+    }
+  ]
+}

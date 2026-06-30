@@ -128,10 +128,19 @@ tesis-dashboard/                    # Monorepo npm workspaces
 │   ├── arquitectura/               # Visión por capas
 │   ├── backend/ · frontend/ · python-ia/
 │   ├── evidencias/                 # Capturas y logs QA
-│   ├── plan-pruebas/
+│   ├── evidencias_finales/         # Paquete evidencias locales
 │   ├── DEPLOY.md
 │   ├── cuentas-demo/               # CSV login (660 + 23)
 │   └── postman/
+│
+├── plan-pruebas/                   # Plan de pruebas ISO 29119 (54 casos)
+│   ├── README.md
+│   ├── plan-general/
+│   ├── pruebas-unitarias/ · pruebas-caja-negra/
+│   ├── matriz-pruebas/
+│   └── evidencias-finales/
+│
+├── scripts/evidence/               # Pipeline generación evidencias
 │
 ├── package.json                    # Scripts raíz (dev, build, db, ml)
 ├── CHANGELOG.md
@@ -404,13 +413,22 @@ Documentación: [docs/python-ia/modelo-predictivo.md](docs/python-ia/modelo-pred
 |-------|-----------|---------|
 | **ISO 9001** | [docs/iso-9001/macroproceso-academico.md](docs/iso-9001/macroproceso-academico.md) | Macroproceso gestión académica, KPI, responsables |
 | **ISO/IEC 25010** | [docs/iso-25010/calidad-software.md](docs/iso-25010/calidad-software.md) | Calidad software con tabla de evidencias |
-| **ISO/IEC 29119** | [docs/iso-29119/plan-pruebas.md](docs/iso-29119/plan-pruebas.md) | Plan de pruebas (54 casos) |
+| **ISO/IEC 29119** | [docs/iso-29119/plan-pruebas.md](docs/iso-29119/plan-pruebas.md) | Referencia normativa → [plan-pruebas/](plan-pruebas/README.md) |
 
 Índice completo: **[docs/INDICE-ISO.md](docs/INDICE-ISO.md)**
 
 ---
 
 ## Plan de pruebas
+
+Índice completo: **[plan-pruebas/README.md](plan-pruebas/README.md)**
+
+| Recurso | Descripción |
+|---------|-------------|
+| [plan-pruebas/indice-pruebas.md](plan-pruebas/indice-pruebas.md) | Índice de todos los documentos de prueba |
+| [plan-pruebas/plan-general/plan-pruebas.md](plan-pruebas/plan-general/plan-pruebas.md) | Plan formal ISO 29119 (54 casos) |
+| [plan-pruebas/matriz-pruebas/matriz-casos.xlsx](plan-pruebas/matriz-pruebas/matriz-casos.xlsx) | Matriz editable |
+| [plan-pruebas/evidencias-finales/](plan-pruebas/evidencias-finales/) | Capturas, videos, resultados |
 
 | Comando | Alcance |
 |---------|---------|
@@ -420,9 +438,9 @@ Documentación: [docs/python-ia/modelo-predictivo.md](docs/python-ia/modelo-pred
 | `npm run lint` | ESLint frontend |
 | `npm run build` | Build producción completo |
 | `npm run test:smoke` | Integración API + ML (servicios activos) |
+| `npm run evidence:generate` | Genera evidencias locales |
 
-Plan formal: [docs/iso-29119/plan-pruebas.md](docs/iso-29119/plan-pruebas.md)  
-Índice operativo: [docs/plan-pruebas/README.md](docs/plan-pruebas/README.md)
+Referencia ISO: [docs/iso-29119/plan-pruebas.md](docs/iso-29119/plan-pruebas.md)
 
 ---
 
@@ -461,7 +479,7 @@ Guía: [docs/evidencias/README.md](docs/evidencias/README.md)
 |-----------|-----------|
 | [docs/INDICE-ISO.md](docs/INDICE-ISO.md) | Índice ISO, arquitectura y evidencias |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Despliegue Vercel + Railway |
-| [docs/iso-29119/plan-pruebas.md](docs/iso-29119/plan-pruebas.md) | Plan de pruebas formal |
+| [plan-pruebas/README.md](plan-pruebas/README.md) | Plan de pruebas ISO 29119 (54 casos) |
 | [docs/cuentas-demo/README.md](docs/cuentas-demo/README.md) | CSV de login verificados |
 | [docs/roles.md](docs/roles.md) | Permisos por rol |
 | [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |

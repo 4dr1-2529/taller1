@@ -1,0 +1,15 @@
+{
+  "status": 400,
+  "ok": false,
+  "ms": 16,
+  "json": {
+    "success": false,
+    "message": "Datos inválidos",
+    "errors": [
+      {
+        "field": "email",
+        "message": "Correo inválido"
+      }
+    ]
+  }
+}

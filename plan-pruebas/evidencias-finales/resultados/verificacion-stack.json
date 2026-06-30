@@ -1,0 +1,38 @@
+{
+  "executed_at": "2026-06-30T06:41:33.492Z",
+  "passed": 5,
+  "failed": 0,
+  "overall": "PASS",
+  "checks": [
+    {
+      "name": "Frontend HTTP",
+      "status": "PASS",
+      "detail": "GET http://localhost:3029 → 200",
+      "at": "2026-06-30T06:41:27.946Z"
+    },
+    {
+      "name": "Backend health",
+      "status": "PASS",
+      "detail": "{\"success\":true,\"message\":\"Operación realizada correctamente\",\"data\":{\"service\":\"tesis-api\",\"version\":\"2.0.0\"}}",
+      "at": "2026-06-30T06:41:28.805Z"
+    },
+    {
+      "name": "Base de datos (login director)",
+      "status": "PASS",
+      "detail": "JWT OK · students API 200",
+      "at": "2026-06-30T06:41:28.848Z"
+    },
+    {
+      "name": "IA / ML health",
+      "status": "PASS",
+      "detail": "{\"status\":\"healthy\",\"service\":\"machine-learning\",\"features\":\"promedio_general,cursos_desaprobados,asistencia_general,frecuencia_acceso_lms,tiempo_plataforma,tareas_ratio,participacion_actividades,uso_foros,disminucion_actividad,estado\"}",
+      "at": "2026-06-30T06:41:33.331Z"
+    },
+    {
+      "name": "IA / ML predict",
+      "status": "PASS",
+      "detail": "level=medio score=49.1 model=random_forest",
+      "at": "2026-06-30T06:41:33.350Z"
+    }
+  ]
+}

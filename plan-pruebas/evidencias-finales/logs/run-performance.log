@@ -1,0 +1,10 @@
+login-director: avg=1836ms min=1640 max=2165
+dashboard-kpis: avg=617ms min=600 max=626
+students-list-limit100: avg=520ms min=457 max=640
+predictions-historial: avg=84ms min=52 max=137
+predict-ia: avg=563ms min=495 max=684
+teachers-list: avg=285ms min=232 max=342
+alerts-list: avg=353ms min=331 max=395
+health-api: avg=16ms min=14 max=21
+ml-health: avg=40ms min=14 max=68
+

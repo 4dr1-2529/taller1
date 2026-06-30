@@ -1,0 +1,574 @@
+
+> tesis-dashboard@2.0.0 test
+> npm run test:unit && npm run test:backend && npm run ml:test
+
+
+> tesis-dashboard@2.0.0 test:unit
+> node backend/tests/prediction-format.test.mjs
+
+✓ nivel_riesgo en español
+✓ score_predictivo numérico
+✓ probabilidad_abandono
+✓ factores_riesgo array
+
+4 ok, 0 fallos
+
+> tesis-dashboard@2.0.0 test:backend
+> npm run test --workspace=backend
+
+
+> backend@2.0.0 test
+> node --test tests/*.test.mjs && tsx --test tests/schemas.test.ts tests/teacher-scope.test.ts tests/validation-fields.test.ts tests/estudiante-scope.test.ts
+
+TAP version 13
+# Subtest: Permisos DIRECTOR (admin)
+    # Subtest: acceso total gestión
+    ok 1 - acceso total gestión
+      ---
+      duration_ms: 2.8211
+      type: 'test'
+      ...
+    1..1
+ok 1 - Permisos DIRECTOR (admin)
+  ---
+  duration_ms: 7.7597
+  type: 'suite'
+  ...
+# Subtest: Permisos PROFESOR (docente)
+    # Subtest: no crea estudiantes ni profesores
+    ok 1 - no crea estudiantes ni profesores
+      ---
+      duration_ms: 0.7575
+      type: 'test'
+      ...
+    # Subtest: puede predecir en su ámbito
+    ok 2 - puede predecir en su ámbito
+      ---
+      duration_ms: 0.9282
+      type: 'test'
+      ...
+    # Subtest: bloqueo acceso no autorizado — eliminar asistencia global
+    ok 3 - bloqueo acceso no autorizado — eliminar asistencia global
+      ---
+      duration_ms: 0.4657
+      type: 'test'
+      ...
+    1..3
+ok 2 - Permisos PROFESOR (docente)
+  ---
+  duration_ms: 2.8976
+  type: 'suite'
+  ...
+# Subtest: Permisos ESTUDIANTE
+    # Subtest: solo información propia
+    ok 1 - solo información propia
+      ---
+      duration_ms: 0.497
+      type: 'test'
+      ...
+    1..1
+ok 3 - Permisos ESTUDIANTE
+  ---
+  duration_ms: 0.9901
+  type: 'suite'
+  ...
+# Subtest: Roles válidos del sistema
+    # Subtest: solo 3 roles
+    ok 1 - solo 3 roles
+      ---
+      duration_ms: 97.7414
+      type: 'test'
+      ...
+    1..1
+ok 4 - Roles válidos del sistema
+  ---
+  duration_ms: 98.8741
+  type: 'suite'
+  ...
+# ✓ nivel_riesgo en español
+# ✓ score_predictivo numérico
+# ✓ probabilidad_abandono
+# ✓ factores_riesgo array
+# 4 ok, 0 fallos
+# Subtest: tests\\prediction-format.test.mjs
+ok 2 - tests\\prediction-format.test.mjs
+  ---
+  duration_ms: 429.923
+  type: 'test'
+  ...
+# Subtest: API response envelope
+    # Subtest: éxito incluye success, message y data
+    ok 1 - éxito incluye success, message y data
+      ---
+      duration_ms: 5.517
+      type: 'test'
+      ...
+    # Subtest: error incluye success false y errors estructurados
+    ok 2 - error incluye success false y errors estructurados
+      ---
+      duration_ms: 0.6252
+      type: 'test'
+      ...
+    1..2
+ok 6 - API response envelope
+  ---
+  duration_ms: 20.784
+  type: 'suite'
+  ...
+# Subtest: Estudiante — reglas de visibilidad
+    # Subtest: solo usa endpoints /estudiante/* en frontend
+    ok 1 - solo usa endpoints /estudiante/* en frontend
+      ---
+      duration_ms: 3.179
+      type: 'test'
+      ...
+    # Subtest: no debe ver filtros globales de grado/sección
+    ok 2 - no debe ver filtros globales de grado/sección
+      ---
+      duration_ms: 0.5391
+      type: 'test'
+      ...
+    # Subtest: estudiante no accede a endpoints de profesor
+    ok 3 - estudiante no accede a endpoints de profesor
+      ---
+      duration_ms: 0.5193
+      type: 'test'
+      ...
+    # Subtest: estudiante no accede a endpoints de director
+    ok 4 - estudiante no accede a endpoints de director
+      ---
+      duration_ms: 2.7402
+      type: 'test'
+      ...
+    # Subtest: studentId del cliente no debe autorizar acceso ajeno
+    ok 5 - studentId del cliente no debe autorizar acceso ajeno
+      ---
+      duration_ms: 0.5315
+      type: 'test'
+      ...
+    1..5
+ok 7 - Estudiante — reglas de visibilidad
+  ---
+  duration_ms: 12.6131
+  type: 'suite'
+  ...
+# Subtest: Profesor — reglas de visibilidad
+    # Subtest: solo ve estudiantes de secciones donde dicta un curso
+    ok 1 - solo ve estudiantes de secciones donde dicta un curso
+      ---
+      duration_ms: 3.3439
+      type: 'test'
+      ...
+    # Subtest: director no aplica filtro de sección del profesor
+    ok 2 - director no aplica filtro de sección del profesor
+      ---
+      duration_ms: 0.4659
+      type: 'test'
+      ...
+    # Subtest: profesorId del cliente no debe usarse para autorizar
+    ok 3 - profesorId del cliente no debe usarse para autorizar
+      ---
+      duration_ms: 0.5899
+      type: 'test'
+      ...
+    1..3
+ok 8 - Profesor — reglas de visibilidad
+  ---
+  duration_ms: 9.6776
+  type: 'suite'
+  ...
+# Subtest: Permisos permitidos
+    # Subtest: director gestiona profesores
+    ok 1 - director gestiona profesores
+      ---
+      duration_ms: 1.9611
+      type: 'test'
+      ...
+    # Subtest: profesor predicción
+    ok 2 - profesor predicción
+      ---
+      duration_ms: 0.4372
+      type: 'test'
+      ...
+    # Subtest: estudiante ve riesgo
+    ok 3 - estudiante ve riesgo
+      ---
+      duration_ms: 0.5001
+      type: 'test'
+      ...
+    1..3
+ok 9 - Permisos permitidos
+  ---
+  duration_ms: 7.2894
+  type: 'suite'
+  ...
+# Subtest: Permisos prohibidos
+    # Subtest: estudiante no gestiona
+    ok 1 - estudiante no gestiona
+      ---
+      duration_ms: 0.4098
+      type: 'test'
+      ...
+    # Subtest: profesor no comunicados globales
+    ok 2 - profesor no comunicados globales
+      ---
+      duration_ms: 0.5335
+      type: 'test'
+      ...
+    1..2
+ok 10 - Permisos prohibidos
+  ---
+  duration_ms: 1.342
+  type: 'suite'
+  ...
+# Subtest: AUTH validación
+    # Subtest: login válido
+    ok 1 - login válido
+      ---
+      duration_ms: 5.9417
+      type: 'test'
+      ...
+    # Subtest: login inválido — email
+    ok 2 - login inválido — email
+      ---
+      duration_ms: 1.8962
+      type: 'test'
+      ...
+    1..2
+ok 11 - AUTH validación
+  ---
+  duration_ms: 10.7136
+  type: 'suite'
+  ...
+# Subtest: Rangos académicos
+    # Subtest: promedio 0-20
+    ok 1 - promedio 0-20
+      ---
+      duration_ms: 1.2577
+      type: 'test'
+      ...
+    # Subtest: asistencia 0-100
+    ok 2 - asistencia 0-100
+      ---
+      duration_ms: 0.708
+      type: 'test'
+      ...
+    1..2
+ok 12 - Rangos académicos
+  ---
+  duration_ms: 2.5011
+  type: 'suite'
+  ...
+# Subtest: Roles válidos
+    # Subtest: solo 3 roles
+    ok 1 - solo 3 roles
+      ---
+      duration_ms: 0.8564
+      type: 'test'
+      ...
+    1..1
+ok 13 - Roles válidos
+  ---
+  duration_ms: 1.1171
+  type: 'suite'
+  ...
+1..13
+# tests 27
+# suites 12
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 791.2901
+TAP version 13
+# Subtest: Estudiante — alcance y seguridad
+    # Subtest: rechaza studentId del cliente distinto al del token
+    ok 1 - rechaza studentId del cliente distinto al del token
+      ---
+      duration_ms: 118.067
+      type: 'test'
+      ...
+    # Subtest: permite petición sin studentId en query
+    ok 2 - permite petición sin studentId en query
+      ---
+      duration_ms: 0.8038
+      type: 'test'
+      ...
+    # Subtest: permite studentId coincidente con el token
+    ok 3 - permite studentId coincidente con el token
+      ---
+      duration_ms: 0.5679
+      type: 'test'
+      ...
+    1..3
+ok 1 - Estudiante — alcance y seguridad
+  ---
+  duration_ms: 123.5693
+  type: 'suite'
+  ...
+# Subtest: Estudiante — estado de notas
+    # Subtest: clasifica aprobado, en riesgo y desaprobado
+    ok 1 - clasifica aprobado, en riesgo y desaprobado
+      ---
+      duration_ms: 1.1166
+      type: 'test'
+      ...
+    1..1
+ok 2 - Estudiante — estado de notas
+  ---
+  duration_ms: 2.3305
+  type: 'suite'
+  ...
+# Subtest: AUTH
+    # Subtest: login válido
+    ok 1 - login válido
+      ---
+      duration_ms: 9.4483
+      type: 'test'
+      ...
+    # Subtest: login inválido — email
+    ok 2 - login inválido — email
+      ---
+      duration_ms: 3.7499
+      type: 'test'
+      ...
+    1..2
+ok 3 - AUTH
+  ---
+  duration_ms: 19.2721
+  type: 'suite'
+  ...
+# Subtest: Estudiantes
+    # Subtest: crear estudiante con campos obligatorios
+    ok 1 - crear estudiante con campos obligatorios
+      ---
+      duration_ms: 5.4066
+      type: 'test'
+      ...
+    # Subtest: nota fuera de rango
+    ok 2 - nota fuera de rango
+      ---
+      duration_ms: 1.8116
+      type: 'test'
+      ...
+    1..2
+ok 4 - Estudiantes
+  ---
+  duration_ms: 8.0009
+  type: 'suite'
+  ...
+# Subtest: Predicción y alertas
+    # Subtest: predict requiere studentId o metrics
+    ok 1 - predict requiere studentId o metrics
+      ---
+      duration_ms: 6.4869
+      type: 'test'
+      ...
+    # Subtest: estado de alerta válido
+    ok 2 - estado de alerta válido
+      ---
+      duration_ms: 3.3549
+      type: 'test'
+      ...
+    1..2
+ok 5 - Predicción y alertas
+  ---
+  duration_ms: 11.6747
+  type: 'suite'
+  ...
+# Subtest: Roles y contraseña
+    # Subtest: createUser solo roles permitidos
+    ok 1 - createUser solo roles permitidos
+      ---
+      duration_ms: 6.6696
+      type: 'test'
+      ...
+    # Subtest: changePassword exige contraseña segura
+    ok 2 - changePassword exige contraseña segura
+      ---
+      duration_ms: 1.4795
+      type: 'test'
+      ...
+    1..2
+ok 6 - Roles y contraseña
+  ---
+  duration_ms: 17.411
+  type: 'suite'
+  ...
+# Subtest: Cursos y asistencia
+    # Subtest: curso con nombre y sección
+    ok 1 - curso con nombre y sección
+      ---
+      duration_ms: 1.8639
+      type: 'test'
+      ...
+    # Subtest: asistencia con fecha
+    ok 2 - asistencia con fecha
+      ---
+      duration_ms: 1.8723
+      type: 'test'
+      ...
+    # Subtest: profesor con email válido
+    ok 3 - profesor con email válido
+      ---
+      duration_ms: 1.504
+      type: 'test'
+      ...
+    1..3
+ok 7 - Cursos y asistencia
+  ---
+  duration_ms: 7.1514
+  type: 'suite'
+  ...
+# Subtest: teacher scope (sección por curso)
+    # Subtest: agrupa secciones únicas de cursos del profesor
+    ok 1 - agrupa secciones únicas de cursos del profesor
+      ---
+      duration_ms: 28.2979
+      type: 'test'
+      ...
+    # Subtest: sin secciones → ningún estudiante
+    ok 2 - sin secciones → ningún estudiante
+      ---
+      duration_ms: 0.6832
+      type: 'test'
+      ...
+    # Subtest: con secciones → filtro por seccionId
+    ok 3 - con secciones → filtro por seccionId
+      ---
+      duration_ms: 2.2826
+      type: 'test'
+      ...
+    # Subtest: director no usa filtro de sección (admin ve todos activos)
+    ok 4 - director no usa filtro de sección (admin ve todos activos)
+      ---
+      duration_ms: 0.8443
+      type: 'test'
+      ...
+    1..4
+ok 8 - teacher scope (sección por curso)
+  ---
+  duration_ms: 38.83
+  type: 'suite'
+  ...
+# Subtest: zodToFieldErrors
+    # Subtest: devuelve field y message por campo
+    ok 1 - devuelve field y message por campo
+      ---
+      duration_ms: 31.2026
+      type: 'test'
+      ...
+    1..1
+ok 9 - zodToFieldErrors
+  ---
+  duration_ms: 36.4839
+  type: 'suite'
+  ...
+# Subtest: Campos de texto — sin números
+    # Subtest: rechaza nombres con dígitos
+    ok 1 - rechaza nombres con dígitos
+      ---
+      duration_ms: 1.9805
+      type: 'test'
+      ...
+    # Subtest: observación sin números
+    ok 2 - observación sin números
+      ---
+      duration_ms: 1.3533
+      type: 'test'
+      ...
+    # Subtest: nombre de curso sin números
+    ok 3 - nombre de curso sin números
+      ---
+      duration_ms: 1.1412
+      type: 'test'
+      ...
+    1..3
+ok 10 - Campos de texto — sin números
+  ---
+  duration_ms: 5.5173
+  type: 'suite'
+  ...
+# Subtest: Campos numéricos
+    # Subtest: nota entre 0 y 20
+    ok 1 - nota entre 0 y 20
+      ---
+      duration_ms: 3.1022
+      type: 'test'
+      ...
+    # Subtest: asistencia entre 0 y 100
+    ok 2 - asistencia entre 0 y 100
+      ---
+      duration_ms: 2.0554
+      type: 'test'
+      ...
+    # Subtest: DNI 8 dígitos
+    ok 3 - DNI 8 dígitos
+      ---
+      duration_ms: 2.2121
+      type: 'test'
+      ...
+    # Subtest: teléfono 9 dígitos
+    ok 4 - teléfono 9 dígitos
+      ---
+      duration_ms: 2.8021
+      type: 'test'
+      ...
+    1..4
+ok 11 - Campos numéricos
+  ---
+  duration_ms: 12.3482
+  type: 'suite'
+  ...
+# Subtest: Profesor — alcance simulado
+    # Subtest: no ve alumnos de secciones ajenas
+    ok 1 - no ve alumnos de secciones ajenas
+      ---
+      duration_ms: 1.8692
+      type: 'test'
+      ...
+    # Subtest: director ve todos los estudiantes
+    ok 2 - director ve todos los estudiantes
+      ---
+      duration_ms: 1.3062
+      type: 'test'
+      ...
+    1..2
+ok 12 - Profesor — alcance simulado
+  ---
+  duration_ms: 4.9901
+  type: 'suite'
+  ...
+# Subtest: Filtros profesor — limpieza dependiente
+    # Subtest: al cambiar grado limpia sección y curso
+    ok 1 - al cambiar grado limpia sección y curso
+      ---
+      duration_ms: 0.7117
+      type: 'test'
+      ...
+    # Subtest: al cambiar sección limpia curso
+    ok 2 - al cambiar sección limpia curso
+      ---
+      duration_ms: 0.432
+      type: 'test'
+      ...
+    1..2
+ok 13 - Filtros profesor — limpieza dependiente
+  ---
+  duration_ms: 1.8743
+  type: 'suite'
+  ...
+1..13
+# tests 31
+# suites 13
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2306.6524
+
+> tesis-dashboard@2.0.0 ml:test
+> cd machine-learning && python tests/test_predict.py
+

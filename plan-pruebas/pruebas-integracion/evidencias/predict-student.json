@@ -1,0 +1,92 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 696,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "prediction": {
+        "score": 42.9,
+        "level": "medio",
+        "probability": 0.067,
+        "probabilityAbandono": 0.067,
+        "factors": [
+          {
+            "key": "tareas_incompletas",
+            "label": "Tareas pendientes",
+            "contribution": 15
+          },
+          {
+            "key": "baja_asistencia",
+            "label": "Asistencia insuficiente",
+            "contribution": 2.4
+          }
+        ],
+        "modelName": "random_forest",
+        "recommendation": "Seguimiento preventivo: Tareas pendientes. Revisar avances quincenalmente en LMS y asistencia.",
+        "predictedAt": "2026-06-30T07:16:18.662837+00:00",
+        "inputData": {
+          "promedio_general": 15.7,
+          "asistencia_general": 81,
+          "frecuencia_acceso_lms": 67,
+          "tiempo_plataforma": 6.3,
+          "tareas_ratio": 0.5,
+          "cursos_desaprobados": 0,
+          "participacion_actividades": 67,
+          "uso_foros": 0.35,
+          "disminucion_actividad": 0,
+          "estado": "activo"
+        },
+        "id": "2511",
+        "studentId": "4411",
+        "probabilidad_abandono": 0.067,
+        "score_predictivo": 42.9,
+        "nivel_riesgo": "Medio",
+        "factores_riesgo": [
+          {
+            "key": "tareas_incompletas",
+            "label": "Tareas pendientes",
+            "contribution": 15
+          },
+          {
+            "key": "baja_asistencia",
+            "label": "Asistencia insuficiente",
+            "contribution": 2.4
+          }
+        ],
+        "recomendacion": "Seguimiento preventivo: Tareas pendientes. Revisar avances quincenalmente en LMS y asistencia.",
+        "modelo_usado": "random_forest",
+        "fecha_prediccion": "2026-06-30T07:16:18.662837+00:00",
+        "fecha": "2026-06-30T07:16:18.662837+00:00",
+        "datos_ingresados": {
+          "promedio_general": 15.7,
+          "asistencia_general": 81,
+          "frecuencia_acceso_lms": 67,
+          "tiempo_plataforma": 6.3,
+          "tareas_ratio": 0.5,
+          "cursos_desaprobados": 0,
+          "participacion_actividades": 67,
+          "uso_foros": 0.35,
+          "disminucion_actividad": 0,
+          "estado": "activo"
+        }
+      },
+      "alert": {
+        "id": "1828",
+        "studentId": "4411",
+        "prediccionId": "2511",
+        "titulo": "[MEDIA] Alerta temprana — riesgo medio",
+        "descripcion": "Score predictivo: 42.9/100. Probabilidad de abandono: 6.7%. Motivo principal: Tareas pendientes.",
+        "nivelRiesgo": "medio",
+        "score": "42.9",
+        "probabilidad": "0.067",
+        "estado": "nueva",
+        "recomendacion": "Seguimiento preventivo: Tareas pendientes. Revisar avances quincenalmente en LMS y asistencia.",
+        "createdAt": "2026-06-30T07:16:18.826Z",
+        "updatedAt": "2026-06-30T07:16:18.826Z"
+      },
+      "source": "machine-learning"
+    }
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "captured_at": "2026-06-30T07:39:45.392Z",
+  "captures": [
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\login-pantalla-inicial.png",
+      "caso": "TC-CN-01",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\login-director-ok.png",
+      "caso": "Login director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\dashboard-director-ok.png",
+      "section": "Dashboard",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\profesores-listado.png",
+      "section": "Profesores",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\estudiantes-listado-director.png",
+      "section": "Estudiantes",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\cursos-listado.png",
+      "section": "Cursos",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\notas-bimestre-1-ok.png",
+      "section": "Notas",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\prediccion-riesgo-alto-ok.png",
+      "section": "Predicción de riesgo",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\alertas-listado.png",
+      "section": "Alertas tempranas",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\reportes-vista-completa.png",
+      "section": "Reportes",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\asignaciones-docentes.png",
+      "section": "Asignaciones docentes",
+      "role": "director",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\login-profesor-ok.png",
+      "caso": "Login profesor",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\dashboard-profesor-ok.png",
+      "section": "Dashboard",
+      "role": "profesor",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\notas-profesor-bimestre.png",
+      "section": "Notas",
+      "role": "profesor",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\alertas-profesor.png",
+      "section": "Alertas tempranas",
+      "role": "profesor",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\login-alumno-ok.png",
+      "caso": "Login alumno",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\dashboard-alumno-ok.png",
+      "section": "Dashboard",
+      "role": "alumno",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\notas-alumno.png",
+      "section": "Mis notas",
+      "role": "alumno",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\asistencia-alumno.png",
+      "section": "Mi asistencia",
+      "role": "alumno",
+      "estado": "Aprobado"
+    },
+    {
+      "file": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\prediccion-alumno.png",
+      "section": "Mi riesgo",
+      "role": "alumno",
+      "estado": "Aprobado"
+    }
+  ]
+}

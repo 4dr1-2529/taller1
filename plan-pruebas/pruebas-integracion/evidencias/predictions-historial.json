@@ -1,0 +1,136 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 27,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "items": [
+        {
+          "id": "2510",
+          "studentId": "4620",
+          "modeloId": "1",
+          "score": 78,
+          "nivelRiesgo": "alto",
+          "probabilidad": "0.85",
+          "probabilidadAbandono": "0.85",
+          "periodoId": "1",
+          "createdAt": "2026-06-30T06:39:14.755Z",
+          "factores": [],
+          "student": {
+            "id": "4620",
+            "codigo": "EST-2026-0660",
+            "nombres": "Sofía",
+            "apellidos": "Paredes Silva",
+            "seccionId": "22"
+          },
+          "level": "alto",
+          "probability": 0.85,
+          "probabilityAbandono": 0.85,
+          "factors": [],
+          "meta": null
+        },
+        {
+          "id": "2509",
+          "studentId": "4615",
+          "modeloId": "1",
+          "score": 52,
+          "nivelRiesgo": "medio",
+          "probabilidad": "0.55",
+          "probabilidadAbandono": "0.55",
+          "periodoId": "1",
+          "createdAt": "2026-06-30T06:39:13.741Z",
+          "factores": [],
+          "student": {
+            "id": "4615",
+            "codigo": "EST-2026-0655",
+            "nombres": "Sebastián",
+            "apellidos": "Paredes Silva",
+            "seccionId": "22"
+          },
+          "level": "medio",
+          "probability": 0.55,
+          "probabilityAbandono": 0.55,
+          "factors": [],
+          "meta": null
+        },
+        {
+          "id": "2508",
+          "studentId": "4610",
+          "modeloId": "1",
+          "score": 52,
+          "nivelRiesgo": "medio",
+          "probabilidad": "0.55",
+          "probabilidadAbandono": "0.55",
+          "periodoId": "1",
+          "createdAt": "2026-06-30T06:39:13.195Z",
+          "factores": [],
+          "student": {
+            "id": "4610",
+            "codigo": "EST-2026-0650",
+            "nombres": "Rosa",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "22"
+          },
+          "level": "medio",
+          "probability": 0.55,
+          "probabilityAbandono": 0.55,
+          "factors": [],
+          "meta": null
+        },
+        {
+          "id": "2507",
+          "studentId": "4605",
+          "modeloId": "1",
+          "score": 78,
+          "nivelRiesgo": "alto",
+          "probabilidad": "0.85",
+          "probabilidadAbandono": "0.85",
+          "periodoId": "1",
+          "createdAt": "2026-06-30T06:39:12.824Z",
+          "factores": [],
+          "student": {
+            "id": "4605",
+            "codigo": "EST-2026-0645",
+            "nombres": "Óscar",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "22"
+          },
+          "level": "alto",
+          "probability": 0.85,
+          "probabilityAbandono": 0.85,
+          "factors": [],
+          "meta": null
+        },
+        {
+          "id": "2506",
+          "studentId": "4600",
+          "modeloId": "1",
+          "score": 25,
+          "nivelRiesgo": "bajo",
+          "probabilidad": "0.15",
+          "probabilidadAbandono": "0.15",
+          "periodoId": "1",
+          "createdAt": "2026-06-30T06:39:12.530Z",
+          "factores": [],
+          "student": {
+            "id": "4600",
+            "codigo": "EST-2026-0640",
+            "nombres": "Angela",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "22"
+          },
+          "level": "bajo",
+          "probability": 0.15,
+          "probabilityAbandono": 0.15,
+          "factors": [],
+          "meta": null
+        }
+      ],
+      "total": 228,
+      "page": 1,
+      "pages": 46
+    }
+  }
+}

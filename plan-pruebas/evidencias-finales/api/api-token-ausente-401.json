@@ -1,0 +1,15 @@
+{
+  "status": 401,
+  "ok": false,
+  "ms": 10,
+  "json": {
+    "success": false,
+    "message": "Token requerido",
+    "errors": [
+      {
+        "field": "_form",
+        "message": "UNAUTHORIZED"
+      }
+    ]
+  }
+}

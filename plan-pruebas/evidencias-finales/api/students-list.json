@@ -1,0 +1,800 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 48,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "items": [
+        {
+          "id": "4411",
+          "usuarioId": "5885",
+          "codigo": "EST-2026-0451",
+          "nombres": "Mateo",
+          "apellidos": "Castro Huamán",
+          "dni": "40000451",
+          "email": "mateo.castro0451@blenkir.edu.pe",
+          "telefono": null,
+          "seccionId": "16",
+          "estado": "activo",
+          "promedioGeneral": "15.7",
+          "asistenciaGeneral": "81",
+          "activo": true,
+          "fechaIngreso": "2026-03-01T00:00:00.000Z",
+          "createdAt": "2026-06-23T20:23:06.917Z",
+          "updatedAt": "2026-06-30T06:38:54.607Z",
+          "seccion": {
+            "id": "16",
+            "gradoId": "4",
+            "nombre": "D",
+            "capacidad": 30,
+            "activo": true,
+            "createdAt": "2026-06-02T23:15:59.840Z",
+            "grado": {
+              "id": "4",
+              "nivelId": "1",
+              "numero": 4,
+              "nombre": "4° Primaria",
+              "nivel": {
+                "id": "1",
+                "codigo": "primaria",
+                "nombre": "Educación Primaria"
+              }
+            }
+          },
+          "lmsActividades": [
+            {
+              "id": "17641",
+              "studentId": "4411",
+              "anioSemana": "2026-W11",
+              "actividadPct": "55",
+              "minutos": 138,
+              "horasPlataforma": "4.4",
+              "conexiones": 5,
+              "createdAt": "2026-06-23T20:23:06.945Z"
+            },
+            {
+              "id": "17642",
+              "studentId": "4411",
+              "anioSemana": "2026-W12",
+              "actividadPct": "63",
+              "minutos": 158,
+              "horasPlataforma": "5",
+              "conexiones": 5,
+              "createdAt": "2026-06-23T20:23:06.951Z"
+            },
+            {
+              "id": "17643",
+              "studentId": "4411",
+              "anioSemana": "2026-W13",
+              "actividadPct": "71",
+              "minutos": 178,
+              "horasPlataforma": "5.7",
+              "conexiones": 6,
+              "createdAt": "2026-06-23T20:23:06.960Z"
+            },
+            {
+              "id": "17644",
+              "studentId": "4411",
+              "anioSemana": "2026-W14",
+              "actividadPct": "79",
+              "minutos": 198,
+              "horasPlataforma": "6.3",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:06.967Z"
+            }
+          ],
+          "lmsIndicadores": [
+            {
+              "id": "4411",
+              "studentId": "4411",
+              "periodoId": "1",
+              "frecuenciaAcceso": "40",
+              "tiempoPlataforma": "5",
+              "tareasRatio": "0.78",
+              "participacion": "40",
+              "usoForos": "0.42",
+              "disminucionActividad": "26",
+              "updatedAt": "2026-06-30T06:38:54.627Z"
+            }
+          ],
+          "predicciones": [],
+          "alertas": [],
+          "lmsActivities": [
+            {
+              "id": "17641",
+              "studentId": "4411",
+              "anioSemana": "2026-W11",
+              "actividadPct": "55",
+              "minutos": 138,
+              "horasPlataforma": "4.4",
+              "conexiones": 5,
+              "createdAt": "2026-06-23T20:23:06.945Z"
+            },
+            {
+              "id": "17642",
+              "studentId": "4411",
+              "anioSemana": "2026-W12",
+              "actividadPct": "63",
+              "minutos": 158,
+              "horasPlataforma": "5",
+              "conexiones": 5,
+              "createdAt": "2026-06-23T20:23:06.951Z"
+            },
+            {
+              "id": "17643",
+              "studentId": "4411",
+              "anioSemana": "2026-W13",
+              "actividadPct": "71",
+              "minutos": 178,
+              "horasPlataforma": "5.7",
+              "conexiones": 6,
+              "createdAt": "2026-06-23T20:23:06.960Z"
+            },
+            {
+              "id": "17644",
+              "studentId": "4411",
+              "anioSemana": "2026-W14",
+              "actividadPct": "79",
+              "minutos": 198,
+              "horasPlataforma": "6.3",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:06.967Z"
+            }
+          ],
+          "lmsEngagement": "medio",
+          "lmsIndicador": {
+            "id": "4411",
+            "studentId": "4411",
+            "periodoId": "1",
+            "frecuenciaAcceso": "40",
+            "tiempoPlataforma": "5",
+            "tareasRatio": "0.78",
+            "participacion": "40",
+            "usoForos": "0.42",
+            "disminucionActividad": "26",
+            "updatedAt": "2026-06-30T06:38:54.627Z"
+          },
+          "predictions": [],
+          "alerts": []
+        },
+        {
+          "id": "4412",
+          "usuarioId": "5886",
+          "codigo": "EST-2026-0452",
+          "nombres": "Valentina",
+          "apellidos": "Castro Huamán",
+          "dni": "40000452",
+          "email": "valentina.castro0452@blenkir.edu.pe",
+          "telefono": null,
+          "seccionId": "16",
+          "estado": "activo",
+          "promedioGeneral": "16.4",
+          "asistenciaGeneral": "84",
+          "activo": true,
+          "fechaIngreso": "2026-03-01T00:00:00.000Z",
+          "createdAt": "2026-06-23T20:23:06.985Z",
+          "updatedAt": "2026-06-30T06:38:54.690Z",
+          "seccion": {
+            "id": "16",
+            "gradoId": "4",
+            "nombre": "D",
+            "capacidad": 30,
+            "activo": true,
+            "createdAt": "2026-06-02T23:15:59.840Z",
+            "grado": {
+              "id": "4",
+              "nivelId": "1",
+              "numero": 4,
+              "nombre": "4° Primaria",
+              "nivel": {
+                "id": "1",
+                "codigo": "primaria",
+                "nombre": "Educación Primaria"
+              }
+            }
+          },
+          "lmsActividades": [
+            {
+              "id": "17645",
+              "studentId": "4412",
+              "anioSemana": "2026-W11",
+              "actividadPct": "63",
+              "minutos": 158,
+              "horasPlataforma": "5",
+              "conexiones": 5,
+              "createdAt": "2026-06-23T20:23:07.005Z"
+            },
+            {
+              "id": "17646",
+              "studentId": "4412",
+              "anioSemana": "2026-W12",
+              "actividadPct": "71",
+              "minutos": 178,
+              "horasPlataforma": "5.7",
+              "conexiones": 6,
+              "createdAt": "2026-06-23T20:23:07.012Z"
+            },
+            {
+              "id": "17647",
+              "studentId": "4412",
+              "anioSemana": "2026-W13",
+              "actividadPct": "79",
+              "minutos": 198,
+              "horasPlataforma": "6.3",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.017Z"
+            },
+            {
+              "id": "17648",
+              "studentId": "4412",
+              "anioSemana": "2026-W14",
+              "actividadPct": "87",
+              "minutos": 218,
+              "horasPlataforma": "7",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.021Z"
+            }
+          ],
+          "lmsIndicadores": [
+            {
+              "id": "4412",
+              "studentId": "4412",
+              "periodoId": "1",
+              "frecuenciaAcceso": "45",
+              "tiempoPlataforma": "6",
+              "tareasRatio": "0.81",
+              "participacion": "45",
+              "usoForos": "0.44",
+              "disminucionActividad": "4",
+              "updatedAt": "2026-06-30T06:38:54.710Z"
+            }
+          ],
+          "predicciones": [],
+          "alertas": [],
+          "lmsActivities": [
+            {
+              "id": "17645",
+              "studentId": "4412",
+              "anioSemana": "2026-W11",
+              "actividadPct": "63",
+              "minutos": 158,
+              "horasPlataforma": "5",
+              "conexiones": 5,
+              "createdAt": "2026-06-23T20:23:07.005Z"
+            },
+            {
+              "id": "17646",
+              "studentId": "4412",
+              "anioSemana": "2026-W12",
+              "actividadPct": "71",
+              "minutos": 178,
+              "horasPlataforma": "5.7",
+              "conexiones": 6,
+              "createdAt": "2026-06-23T20:23:07.012Z"
+            },
+            {
+              "id": "17647",
+              "studentId": "4412",
+              "anioSemana": "2026-W13",
+              "actividadPct": "79",
+              "minutos": 198,
+              "horasPlataforma": "6.3",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.017Z"
+            },
+            {
+              "id": "17648",
+              "studentId": "4412",
+              "anioSemana": "2026-W14",
+              "actividadPct": "87",
+              "minutos": 218,
+              "horasPlataforma": "7",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.021Z"
+            }
+          ],
+          "lmsEngagement": "alto",
+          "lmsIndicador": {
+            "id": "4412",
+            "studentId": "4412",
+            "periodoId": "1",
+            "frecuenciaAcceso": "45",
+            "tiempoPlataforma": "6",
+            "tareasRatio": "0.81",
+            "participacion": "45",
+            "usoForos": "0.44",
+            "disminucionActividad": "4",
+            "updatedAt": "2026-06-30T06:38:54.710Z"
+          },
+          "predictions": [],
+          "alerts": []
+        },
+        {
+          "id": "4413",
+          "usuarioId": "5887",
+          "codigo": "EST-2026-0453",
+          "nombres": "Santiago",
+          "apellidos": "Castro Huamán",
+          "dni": "40000453",
+          "email": "santiago.castro0453@blenkir.edu.pe",
+          "telefono": null,
+          "seccionId": "16",
+          "estado": "activo",
+          "promedioGeneral": "17.1",
+          "asistenciaGeneral": "87",
+          "activo": true,
+          "fechaIngreso": "2026-03-01T00:00:00.000Z",
+          "createdAt": "2026-06-23T20:23:07.036Z",
+          "updatedAt": "2026-06-30T06:38:54.760Z",
+          "seccion": {
+            "id": "16",
+            "gradoId": "4",
+            "nombre": "D",
+            "capacidad": 30,
+            "activo": true,
+            "createdAt": "2026-06-02T23:15:59.840Z",
+            "grado": {
+              "id": "4",
+              "nivelId": "1",
+              "numero": 4,
+              "nombre": "4° Primaria",
+              "nivel": {
+                "id": "1",
+                "codigo": "primaria",
+                "nombre": "Educación Primaria"
+              }
+            }
+          },
+          "lmsActividades": [
+            {
+              "id": "17649",
+              "studentId": "4413",
+              "anioSemana": "2026-W11",
+              "actividadPct": "71",
+              "minutos": 178,
+              "horasPlataforma": "5.7",
+              "conexiones": 6,
+              "createdAt": "2026-06-23T20:23:07.057Z"
+            },
+            {
+              "id": "17650",
+              "studentId": "4413",
+              "anioSemana": "2026-W12",
+              "actividadPct": "79",
+              "minutos": 198,
+              "horasPlataforma": "6.3",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.065Z"
+            },
+            {
+              "id": "17651",
+              "studentId": "4413",
+              "anioSemana": "2026-W13",
+              "actividadPct": "87",
+              "minutos": 218,
+              "horasPlataforma": "7",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.070Z"
+            },
+            {
+              "id": "17652",
+              "studentId": "4413",
+              "anioSemana": "2026-W14",
+              "actividadPct": "95",
+              "minutos": 238,
+              "horasPlataforma": "7.6",
+              "conexiones": 8,
+              "createdAt": "2026-06-23T20:23:07.075Z"
+            }
+          ],
+          "lmsIndicadores": [
+            {
+              "id": "4413",
+              "studentId": "4413",
+              "periodoId": "1",
+              "frecuenciaAcceso": "50",
+              "tiempoPlataforma": "7",
+              "tareasRatio": "0.84",
+              "participacion": "50",
+              "usoForos": "0.46",
+              "disminucionActividad": "5",
+              "updatedAt": "2026-06-30T06:38:54.781Z"
+            }
+          ],
+          "predicciones": [],
+          "alertas": [],
+          "lmsActivities": [
+            {
+              "id": "17649",
+              "studentId": "4413",
+              "anioSemana": "2026-W11",
+              "actividadPct": "71",
+              "minutos": 178,
+              "horasPlataforma": "5.7",
+              "conexiones": 6,
+              "createdAt": "2026-06-23T20:23:07.057Z"
+            },
+            {
+              "id": "17650",
+              "studentId": "4413",
+              "anioSemana": "2026-W12",
+              "actividadPct": "79",
+              "minutos": 198,
+              "horasPlataforma": "6.3",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.065Z"
+            },
+            {
+              "id": "17651",
+              "studentId": "4413",
+              "anioSemana": "2026-W13",
+              "actividadPct": "87",
+              "minutos": 218,
+              "horasPlataforma": "7",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.070Z"
+            },
+            {
+              "id": "17652",
+              "studentId": "4413",
+              "anioSemana": "2026-W14",
+              "actividadPct": "95",
+              "minutos": 238,
+              "horasPlataforma": "7.6",
+              "conexiones": 8,
+              "createdAt": "2026-06-23T20:23:07.075Z"
+            }
+          ],
+          "lmsEngagement": "alto",
+          "lmsIndicador": {
+            "id": "4413",
+            "studentId": "4413",
+            "periodoId": "1",
+            "frecuenciaAcceso": "50",
+            "tiempoPlataforma": "7",
+            "tareasRatio": "0.84",
+            "participacion": "50",
+            "usoForos": "0.46",
+            "disminucionActividad": "5",
+            "updatedAt": "2026-06-30T06:38:54.781Z"
+          },
+          "predictions": [],
+          "alerts": []
+        },
+        {
+          "id": "4414",
+          "usuarioId": "5888",
+          "codigo": "EST-2026-0454",
+          "nombres": "Luciana",
+          "apellidos": "Castro Huamán",
+          "dni": "40000454",
+          "email": "luciana.castro0454@blenkir.edu.pe",
+          "telefono": null,
+          "seccionId": "16",
+          "estado": "activo",
+          "promedioGeneral": "17.8",
+          "asistenciaGeneral": "90",
+          "activo": true,
+          "fechaIngreso": "2026-03-01T00:00:00.000Z",
+          "createdAt": "2026-06-23T20:23:07.089Z",
+          "updatedAt": "2026-06-30T06:38:54.836Z",
+          "seccion": {
+            "id": "16",
+            "gradoId": "4",
+            "nombre": "D",
+            "capacidad": 30,
+            "activo": true,
+            "createdAt": "2026-06-02T23:15:59.840Z",
+            "grado": {
+              "id": "4",
+              "nivelId": "1",
+              "numero": 4,
+              "nombre": "4° Primaria",
+              "nivel": {
+                "id": "1",
+                "codigo": "primaria",
+                "nombre": "Educación Primaria"
+              }
+            }
+          },
+          "lmsActividades": [
+            {
+              "id": "17653",
+              "studentId": "4414",
+              "anioSemana": "2026-W11",
+              "actividadPct": "79",
+              "minutos": 198,
+              "horasPlataforma": "6.3",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.111Z"
+            },
+            {
+              "id": "17654",
+              "studentId": "4414",
+              "anioSemana": "2026-W12",
+              "actividadPct": "87",
+              "minutos": 218,
+              "horasPlataforma": "7",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.120Z"
+            },
+            {
+              "id": "17655",
+              "studentId": "4414",
+              "anioSemana": "2026-W13",
+              "actividadPct": "95",
+              "minutos": 238,
+              "horasPlataforma": "7.6",
+              "conexiones": 8,
+              "createdAt": "2026-06-23T20:23:07.128Z"
+            },
+            {
+              "id": "17656",
+              "studentId": "4414",
+              "anioSemana": "2026-W14",
+              "actividadPct": "100",
+              "minutos": 250,
+              "horasPlataforma": "8",
+              "conexiones": 8,
+              "createdAt": "2026-06-23T20:23:07.135Z"
+            }
+          ],
+          "lmsIndicadores": [
+            {
+              "id": "4414",
+              "studentId": "4414",
+              "periodoId": "1",
+              "frecuenciaAcceso": "55",
+              "tiempoPlataforma": "8",
+              "tareasRatio": "0.87",
+              "participacion": "55",
+              "usoForos": "0.48",
+              "disminucionActividad": "6",
+              "updatedAt": "2026-06-30T06:38:54.859Z"
+            }
+          ],
+          "predicciones": [],
+          "alertas": [],
+          "lmsActivities": [
+            {
+              "id": "17653",
+              "studentId": "4414",
+              "anioSemana": "2026-W11",
+              "actividadPct": "79",
+              "minutos": 198,
+              "horasPlataforma": "6.3",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.111Z"
+            },
+            {
+              "id": "17654",
+              "studentId": "4414",
+              "anioSemana": "2026-W12",
+              "actividadPct": "87",
+              "minutos": 218,
+              "horasPlataforma": "7",
+              "conexiones": 7,
+              "createdAt": "2026-06-23T20:23:07.120Z"
+            },
+            {
+              "id": "17655",
+              "studentId": "4414",
+              "anioSemana": "2026-W13",
+              "actividadPct": "95",
+              "minutos": 238,
+              "horasPlataforma": "7.6",
+              "conexiones": 8,
+              "createdAt": "2026-06-23T20:23:07.128Z"
+            },
+            {
+              "id": "17656",
+              "studentId": "4414",
+              "anioSemana": "2026-W14",
+              "actividadPct": "100",
+              "minutos": 250,
+              "horasPlataforma": "8",
+              "conexiones": 8,
+              "createdAt": "2026-06-23T20:23:07.135Z"
+            }
+          ],
+          "lmsEngagement": "alto",
+          "lmsIndicador": {
+            "id": "4414",
+            "studentId": "4414",
+            "periodoId": "1",
+            "frecuenciaAcceso": "55",
+            "tiempoPlataforma": "8",
+            "tareasRatio": "0.87",
+            "participacion": "55",
+            "usoForos": "0.48",
+            "disminucionActividad": "6",
+            "updatedAt": "2026-06-30T06:38:54.859Z"
+          },
+          "predictions": [],
+          "alerts": []
+        },
+        {
+          "id": "4415",
+          "usuarioId": "5889",
+          "codigo": "EST-2026-0455",
+          "nombres": "Sebastián",
+          "apellidos": "Castro Huamán",
+          "dni": "40000455",
+          "email": "sebastian.castro0455@blenkir.edu.pe",
+          "telefono": null,
+          "seccionId": "16",
+          "estado": "activo",
+          "promedioGeneral": "18.5",
+          "asistenciaGeneral": "93",
+          "activo": true,
+          "fechaIngreso": "2026-03-01T00:00:00.000Z",
+          "createdAt": "2026-06-23T20:23:07.156Z",
+          "updatedAt": "2026-06-30T06:38:54.919Z",
+          "seccion": {
+            "id": "16",
+            "gradoId": "4",
+            "nombre": "D",
+            "capacidad": 30,
+            "activo": true,
+            "createdAt": "2026-06-02T23:15:59.840Z",
+            "grado": {
+              "id": "4",
+              "nivelId": "1",
+              "numero": 4,
+              "nombre": "4° Primaria",
+              "nivel": {
+                "id": "1",
+                "codigo": "primaria",
+                "nombre": "Educación Primaria"
+              }
+            }
+          },
+          "lmsActividades": [
+            {
+              "id": "17657",
+              "studentId": "4415",
+              "anioSemana": "2026-W11",
+              "actividadPct": "17",
+              "minutos": 43,
+              "horasPlataforma": "1.4",
+              "conexiones": 1,
+              "createdAt": "2026-06-23T20:23:07.188Z"
+            },
+            {
+              "id": "17658",
+              "studentId": "4415",
+              "anioSemana": "2026-W12",
+              "actividadPct": "25",
+              "minutos": 63,
+              "horasPlataforma": "2",
+              "conexiones": 2,
+              "createdAt": "2026-06-23T20:23:07.198Z"
+            },
+            {
+              "id": "17659",
+              "studentId": "4415",
+              "anioSemana": "2026-W13",
+              "actividadPct": "33",
+              "minutos": 83,
+              "horasPlataforma": "2.6",
+              "conexiones": 3,
+              "createdAt": "2026-06-23T20:23:07.203Z"
+            },
+            {
+              "id": "17660",
+              "studentId": "4415",
+              "anioSemana": "2026-W14",
+              "actividadPct": "41",
+              "minutos": 103,
+              "horasPlataforma": "3.3",
+              "conexiones": 3,
+              "createdAt": "2026-06-23T20:23:07.211Z"
+            }
+          ],
+          "lmsIndicadores": [
+            {
+              "id": "4415",
+              "studentId": "4415",
+              "periodoId": "1",
+              "frecuenciaAcceso": "60",
+              "tiempoPlataforma": "9",
+              "tareasRatio": "0.9",
+              "participacion": "60",
+              "usoForos": "0.5",
+              "disminucionActividad": "0",
+              "updatedAt": "2026-06-30T06:38:54.945Z"
+            }
+          ],
+          "predicciones": [
+            {
+              "id": "2469",
+              "studentId": "4415",
+              "modeloId": "1",
+              "score": "25",
+              "nivelRiesgo": "bajo",
+              "probabilidad": "0.15",
+              "probabilidadAbandono": "0.15",
+              "periodoId": "1",
+              "createdAt": "2026-06-30T06:38:54.982Z"
+            }
+          ],
+          "alertas": [],
+          "lmsActivities": [
+            {
+              "id": "17657",
+              "studentId": "4415",
+              "anioSemana": "2026-W11",
+              "actividadPct": "17",
+              "minutos": 43,
+              "horasPlataforma": "1.4",
+              "conexiones": 1,
+              "createdAt": "2026-06-23T20:23:07.188Z"
+            },
+            {
+              "id": "17658",
+              "studentId": "4415",
+              "anioSemana": "2026-W12",
+              "actividadPct": "25",
+              "minutos": 63,
+              "horasPlataforma": "2",
+              "conexiones": 2,
+              "createdAt": "2026-06-23T20:23:07.198Z"
+            },
+            {
+              "id": "17659",
+              "studentId": "4415",
+              "anioSemana": "2026-W13",
+              "actividadPct": "33",
+              "minutos": 83,
+              "horasPlataforma": "2.6",
+              "conexiones": 3,
+              "createdAt": "2026-06-23T20:23:07.203Z"
+            },
+            {
+              "id": "17660",
+              "studentId": "4415",
+              "anioSemana": "2026-W14",
+              "actividadPct": "41",
+              "minutos": 103,
+              "horasPlataforma": "3.3",
+              "conexiones": 3,
+              "createdAt": "2026-06-23T20:23:07.211Z"
+            }
+          ],
+          "lmsEngagement": "medio",
+          "lmsIndicador": {
+            "id": "4415",
+            "studentId": "4415",
+            "periodoId": "1",
+            "frecuenciaAcceso": "60",
+            "tiempoPlataforma": "9",
+            "tareasRatio": "0.9",
+            "participacion": "60",
+            "usoForos": "0.5",
+            "disminucionActividad": "0",
+            "updatedAt": "2026-06-30T06:38:54.945Z"
+          },
+          "predictions": [
+            {
+              "id": "2469",
+              "studentId": "4415",
+              "modeloId": "1",
+              "score": "25",
+              "nivelRiesgo": "bajo",
+              "probabilidad": "0.15",
+              "probabilidadAbandono": "0.15",
+              "periodoId": "1",
+              "createdAt": "2026-06-30T06:38:54.982Z"
+            }
+          ],
+          "alerts": []
+        }
+      ],
+      "total": 660,
+      "page": 1,
+      "pages": 132
+    }
+  }
+}

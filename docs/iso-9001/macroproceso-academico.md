@@ -162,7 +162,7 @@ flowchart TB
 | **KPI-03** Notas registradas | Notas bimestre I–II / (estudiantes × cursos) | ≥ 95 % cobertura | `validate-demo-data.mjs` |
 | **KPI-04** Alertas resueltas | Resueltas / total alertas × 100 | Seguimiento documentado | PATCH `/alerts/:id` |
 | **KPI-05** Disponibilidad API | Uptime `/health` | ≥ 99 % mensual | Railway monitoring |
-| **KPI-06** F1 del modelo IA | F1-Score weighted en test set | ≥ 0.80 | `metrics.json` |
+| **KPI-06** F1 del modelo IA | F1-Score weighted en test set | ≥ 0.80 | `machine-learning/models/metrics.json` (F1=1.0, AUC=1.0) |
 | **KPI-07** Tiempo respuesta predict | ms POST `/predict` | < 3000 ms | Smoke tests |
 | **KPI-08** Cobertura docente | Salones con tutor/asignación | 22/22 secciones | `/teacher-assignments` |
 
@@ -183,28 +183,35 @@ flowchart TB
 
 ---
 
-## 10. Evidencia: implementación por etapa
+## 10. Trazabilidad código — ISO 9001:2015
 
-| Etapa | Evidencia en el sistema | Archivo / ruta |
-|-------|------------------------|----------------|
-| **Entrada académica** | CRUD estudiantes, matrículas | `StudentsView`, `POST /students`, `POST /matriculas` |
-| **Entrada evaluación** | Registro notas 0–20 | `GradesView`, `grades.controller.ts` |
-| **Entrada LMS** | Vista actividad plataforma | `LMSView`, tablas `lms_activity` |
-| **Validación** | Schemas Zod rechazan datos inválidos | `backend/tests/schemas.test.ts` |
-| **Persistencia** | 51 tablas MySQL | `prisma/schema.prisma` |
-| **RBAC** | 403 en endpoints no autorizados | `permissions.test.mjs` |
-| **Predicción** | POST `/predict` → nivel + factores | `predict.controller.ts`, `ml-client.ts` |
-| **Alertas** | Tabla `alert`, estados enum | `AlertsView`, `alerts.controller.ts` |
-| **Dashboard** | KPIs por rol sin 401 | `RoleDashboard`, `useAuthReady` |
-| **Reportes** | Export PDF/Excel | `ReportsView` |
-| **Auditoría** | Log acciones admin | `GET /admin/audit-logs` |
-| **Evidencias QA** | Capturas y logs | `docs/evidencias/` |
+| Norma | Característica | Módulo | Archivo | Implementación | Evidencia | Estado |
+|-------|----------------|--------|---------|----------------|-----------|--------|
+| ISO 9001 | 4.4 — Procesos del SGC | Macroproceso académico | `docs/iso-9001/macroproceso-academico.md` | Entradas → procesos → salidas documentados | Diagrama Mermaid §2.1 | ✅ Verificado |
+| ISO 9001 | 7.5 — Información documentada | Entrada estudiante | `frontend/src/components/views/StudentsView.tsx` | EN-01 ficha + `POST /students` | `evidencias-finales/estudiantes/estudiantes.png` | ✅ Verificado |
+| ISO 9001 | 7.5 — Información documentada | Matrículas | `frontend/src/components/views/EnrollmentsView.tsx` | EN-02 `POST /matriculas` | `seed-demo.ts` (660 matrículas) | ✅ Verificado |
+| ISO 9001 | 8.5 — Producción del servicio | Notas | `backend/src/controllers/grades.controller.ts` | EN-03 notas 0–20 bimestre | `evidencias-finales/notas/notas.png` | ✅ Verificado |
+| ISO 9001 | 8.5 — Producción del servicio | Asistencia | `backend/src/controllers/attendance.controller.ts` | EN-04 registro asistencia | `AttendanceView` + API `/attendance` | ✅ Verificado |
+| ISO 9001 | 8.5 — Producción del servicio | LMS | `frontend/src/components/views/LMSView.tsx` | EN-05 tablas `LmsActividad` | `prisma/schema.prisma` modelo LMS | ✅ Verificado |
+| ISO 9001 | 8.1 — Control operacional | Asignación docente | `frontend/src/components/views/TeacherAssignmentsView.tsx` | EN-06/07 tutor + polidocencia | `evidencias-finales/configuracion/configuracion-asignaciones.png` | ✅ Verificado |
+| ISO 9001 | 8.1 — Control operacional | Validación datos | `backend/src/validators/schemas.ts` | PR-01 Zod en todos los POST | `backend/tests/schemas.test.ts` | ✅ Verificado |
+| ISO 9001 | 8.1 — Control operacional | Persistencia | `backend/prisma/schema.prisma` | PR-03 51 tablas MySQL | `db:push` + seed 660 estudiantes | ✅ Verificado |
+| ISO 9001 | 8.1 — Control operacional | Control de acceso | `backend/src/middleware/auth.ts` | PR-04 `authorize(admin/docente/estudiante)` | `permissions.test.mjs` | ✅ Verificado |
+| ISO 9001 | 8.1 — Control operacional | Feature engineering | `backend/src/controllers/predict.controller.ts` | PR-05 agrega métricas → ML | `ml-client.ts` `buildMlPayload()` | ✅ Verificado |
+| ISO 9001 | 9.1 — Seguimiento y medición | Predicción IA | `machine-learning/train.py` | PR-06 RF+XGB+Stacking | `ia/metricas-ml.json`; F1=1.0 | ✅ Verificado |
+| ISO 9001 | 10.2 — Acción correctiva | Alertas | `backend/src/controllers/predict.controller.ts` | PR-07 crea `Alerta` si riesgo medio/alto | `evidencias-finales/alertas/alertas.png` | ✅ Verificado |
+| ISO 9001 | 9.1 — Seguimiento (KPI) | Dashboard | `backend/src/services/dashboard-analytics.service.ts` | PR-08 KPI-01 estudiantes en riesgo | `evidencias-finales/dashboard/dashboard.png` | ✅ Verificado |
+| ISO 9001 | 9.1 — Seguimiento (KPI) | Reportes | `frontend/src/components/views/ReportsView.tsx` | PR-09 export decisión institucional | `evidencias-finales/reportes/reportes.png` | ✅ Verificado |
+| ISO 9001 | 9.1 — Seguimiento (KPI) | Auditoría | `backend/src/controllers/admin.controller.ts` | PR-10 `GET /admin/audit-logs` | Rutas admin en `routes/index.ts` | ✅ Verificado |
+| ISO 9001 | 6.2 — Objetivos de calidad | KPI cobertura notas | `backend/scripts/validate-demo-data.mjs` | KPI-03 19 680 calificaciones demo | Salida `db:seed:demo` | ✅ Verificado |
+| ISO 9001 | 7.1.5 — Recursos de seguimiento | QA automatizado | `scripts/evidence/verify-stack.mjs` | Health frontend/backend/BD/IA | `verificacion-stack.json` (5/5 PASS) | ✅ Verificado |
+| ISO 9001 | 7.1.5 — Recursos de seguimiento | UAT por rol | `plan-pruebas/pruebas-aceptacion/` | Director, profesor, estudiante | `director.md`, `profesor.md`, `estudiante.md` | ✅ Verificado |
 
 ---
 
 ## 11. Referencias
 
 - [ISO 25010 — Calidad de software](../iso-25010/calidad-software.md)
-- [ISO 29119 — Plan de pruebas](../iso-29119/plan-pruebas.md)
-- [Arquitectura general](../arquitectura/arquitectura-general.md)
-- [Evidencias](../evidencias/README.md)
+- [ISO 29119 — Plan de pruebas](../../plan-pruebas/README.md)
+- [Trazabilidad normas](../../plan-pruebas/matriz-pruebas/trazabilidad.md)
+- [Evidencias QA](../../plan-pruebas/evidencias-finales/README.md)

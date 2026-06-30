@@ -1,0 +1,5646 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 67,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "items": [
+        {
+          "id": "91",
+          "usuarioId": "5412",
+          "codigo": "DOC-001",
+          "nombres": "Rosa",
+          "apellidos": "Paredes Silva",
+          "especialidad": "Tutor de aula — 1° A",
+          "email": "pro50000001@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.251Z",
+          "cursosOferta": [
+            {
+              "id": "2706",
+              "codigo": "ARI-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2712",
+              "codigo": "CIU-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2710",
+              "codigo": "CUH-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2718",
+              "codigo": "EDF-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2713",
+              "codigo": "GEG-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2708",
+              "codigo": "GRA-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2714",
+              "codigo": "HIS-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2716",
+              "codigo": "ING-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2711",
+              "codigo": "MUF-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2707",
+              "codigo": "PDT-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2715",
+              "codigo": "REL-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2709",
+              "codigo": "RZV-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2717",
+              "codigo": "TAL-1A",
+              "seccionId": "1",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5412",
+            "email": "pro50000001@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000001@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2706",
+              "codigo": "ARI-1A",
+              "nombre": "Aritmética",
+              "seccionId": "1"
+            },
+            {
+              "id": "2712",
+              "codigo": "CIU-1A",
+              "nombre": "Ciudadanía",
+              "seccionId": "1"
+            },
+            {
+              "id": "2710",
+              "codigo": "CUH-1A",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "1"
+            },
+            {
+              "id": "2718",
+              "codigo": "EDF-1A",
+              "nombre": "Educación Física",
+              "seccionId": "1"
+            },
+            {
+              "id": "2713",
+              "codigo": "GEG-1A",
+              "nombre": "Geografía",
+              "seccionId": "1"
+            },
+            {
+              "id": "2708",
+              "codigo": "GRA-1A",
+              "nombre": "Gramática",
+              "seccionId": "1"
+            },
+            {
+              "id": "2714",
+              "codigo": "HIS-1A",
+              "nombre": "Historia",
+              "seccionId": "1"
+            },
+            {
+              "id": "2716",
+              "codigo": "ING-1A",
+              "nombre": "Inglés",
+              "seccionId": "1"
+            },
+            {
+              "id": "2711",
+              "codigo": "MUF-1A",
+              "nombre": "Mundo Físico",
+              "seccionId": "1"
+            },
+            {
+              "id": "2707",
+              "codigo": "PDT-1A",
+              "nombre": "Producción de Textos",
+              "seccionId": "1"
+            },
+            {
+              "id": "2715",
+              "codigo": "REL-1A",
+              "nombre": "Religión",
+              "seccionId": "1"
+            },
+            {
+              "id": "2709",
+              "codigo": "RZV-1A",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "1"
+            },
+            {
+              "id": "2717",
+              "codigo": "TAL-1A",
+              "nombre": "Taller",
+              "seccionId": "1"
+            }
+          ],
+          "user": {
+            "id": "5412",
+            "email": "pro50000001@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5412"
+        },
+        {
+          "id": "92",
+          "usuarioId": "5413",
+          "codigo": "DOC-002",
+          "nombres": "Mateo",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Tutor de aula — 1° B",
+          "email": "pro50000002@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.279Z",
+          "cursosOferta": [
+            {
+              "id": "2719",
+              "codigo": "ARI-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2725",
+              "codigo": "CIU-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2723",
+              "codigo": "CUH-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2731",
+              "codigo": "EDF-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2726",
+              "codigo": "GEG-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2721",
+              "codigo": "GRA-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2727",
+              "codigo": "HIS-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2729",
+              "codigo": "ING-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2724",
+              "codigo": "MUF-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2720",
+              "codigo": "PDT-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2728",
+              "codigo": "REL-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2722",
+              "codigo": "RZV-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2730",
+              "codigo": "TAL-1B",
+              "seccionId": "2",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5413",
+            "email": "pro50000002@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000002@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2719",
+              "codigo": "ARI-1B",
+              "nombre": "Aritmética",
+              "seccionId": "2"
+            },
+            {
+              "id": "2725",
+              "codigo": "CIU-1B",
+              "nombre": "Ciudadanía",
+              "seccionId": "2"
+            },
+            {
+              "id": "2723",
+              "codigo": "CUH-1B",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "2"
+            },
+            {
+              "id": "2731",
+              "codigo": "EDF-1B",
+              "nombre": "Educación Física",
+              "seccionId": "2"
+            },
+            {
+              "id": "2726",
+              "codigo": "GEG-1B",
+              "nombre": "Geografía",
+              "seccionId": "2"
+            },
+            {
+              "id": "2721",
+              "codigo": "GRA-1B",
+              "nombre": "Gramática",
+              "seccionId": "2"
+            },
+            {
+              "id": "2727",
+              "codigo": "HIS-1B",
+              "nombre": "Historia",
+              "seccionId": "2"
+            },
+            {
+              "id": "2729",
+              "codigo": "ING-1B",
+              "nombre": "Inglés",
+              "seccionId": "2"
+            },
+            {
+              "id": "2724",
+              "codigo": "MUF-1B",
+              "nombre": "Mundo Físico",
+              "seccionId": "2"
+            },
+            {
+              "id": "2720",
+              "codigo": "PDT-1B",
+              "nombre": "Producción de Textos",
+              "seccionId": "2"
+            },
+            {
+              "id": "2728",
+              "codigo": "REL-1B",
+              "nombre": "Religión",
+              "seccionId": "2"
+            },
+            {
+              "id": "2722",
+              "codigo": "RZV-1B",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "2"
+            },
+            {
+              "id": "2730",
+              "codigo": "TAL-1B",
+              "nombre": "Taller",
+              "seccionId": "2"
+            }
+          ],
+          "user": {
+            "id": "5413",
+            "email": "pro50000002@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5413"
+        },
+        {
+          "id": "93",
+          "usuarioId": "5414",
+          "codigo": "DOC-003",
+          "nombres": "Valentina",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Tutor de aula — 1° C",
+          "email": "pro50000003@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.297Z",
+          "cursosOferta": [
+            {
+              "id": "2732",
+              "codigo": "ARI-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2738",
+              "codigo": "CIU-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2736",
+              "codigo": "CUH-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2744",
+              "codigo": "EDF-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2739",
+              "codigo": "GEG-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2734",
+              "codigo": "GRA-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2740",
+              "codigo": "HIS-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2742",
+              "codigo": "ING-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2737",
+              "codigo": "MUF-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2733",
+              "codigo": "PDT-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2741",
+              "codigo": "REL-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2735",
+              "codigo": "RZV-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2743",
+              "codigo": "TAL-1C",
+              "seccionId": "3",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5414",
+            "email": "pro50000003@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000003@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2732",
+              "codigo": "ARI-1C",
+              "nombre": "Aritmética",
+              "seccionId": "3"
+            },
+            {
+              "id": "2738",
+              "codigo": "CIU-1C",
+              "nombre": "Ciudadanía",
+              "seccionId": "3"
+            },
+            {
+              "id": "2736",
+              "codigo": "CUH-1C",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "3"
+            },
+            {
+              "id": "2744",
+              "codigo": "EDF-1C",
+              "nombre": "Educación Física",
+              "seccionId": "3"
+            },
+            {
+              "id": "2739",
+              "codigo": "GEG-1C",
+              "nombre": "Geografía",
+              "seccionId": "3"
+            },
+            {
+              "id": "2734",
+              "codigo": "GRA-1C",
+              "nombre": "Gramática",
+              "seccionId": "3"
+            },
+            {
+              "id": "2740",
+              "codigo": "HIS-1C",
+              "nombre": "Historia",
+              "seccionId": "3"
+            },
+            {
+              "id": "2742",
+              "codigo": "ING-1C",
+              "nombre": "Inglés",
+              "seccionId": "3"
+            },
+            {
+              "id": "2737",
+              "codigo": "MUF-1C",
+              "nombre": "Mundo Físico",
+              "seccionId": "3"
+            },
+            {
+              "id": "2733",
+              "codigo": "PDT-1C",
+              "nombre": "Producción de Textos",
+              "seccionId": "3"
+            },
+            {
+              "id": "2741",
+              "codigo": "REL-1C",
+              "nombre": "Religión",
+              "seccionId": "3"
+            },
+            {
+              "id": "2735",
+              "codigo": "RZV-1C",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "3"
+            },
+            {
+              "id": "2743",
+              "codigo": "TAL-1C",
+              "nombre": "Taller",
+              "seccionId": "3"
+            }
+          ],
+          "user": {
+            "id": "5414",
+            "email": "pro50000003@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5414"
+        },
+        {
+          "id": "94",
+          "usuarioId": "5415",
+          "codigo": "DOC-004",
+          "nombres": "Santiago",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Tutor de aula — 1° D",
+          "email": "pro50000004@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.316Z",
+          "cursosOferta": [
+            {
+              "id": "2745",
+              "codigo": "ARI-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2751",
+              "codigo": "CIU-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2749",
+              "codigo": "CUH-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2757",
+              "codigo": "EDF-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2752",
+              "codigo": "GEG-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2747",
+              "codigo": "GRA-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2753",
+              "codigo": "HIS-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2755",
+              "codigo": "ING-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2750",
+              "codigo": "MUF-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2746",
+              "codigo": "PDT-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2754",
+              "codigo": "REL-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2748",
+              "codigo": "RZV-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2756",
+              "codigo": "TAL-1D",
+              "seccionId": "4",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5415",
+            "email": "pro50000004@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000004@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2745",
+              "codigo": "ARI-1D",
+              "nombre": "Aritmética",
+              "seccionId": "4"
+            },
+            {
+              "id": "2751",
+              "codigo": "CIU-1D",
+              "nombre": "Ciudadanía",
+              "seccionId": "4"
+            },
+            {
+              "id": "2749",
+              "codigo": "CUH-1D",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "4"
+            },
+            {
+              "id": "2757",
+              "codigo": "EDF-1D",
+              "nombre": "Educación Física",
+              "seccionId": "4"
+            },
+            {
+              "id": "2752",
+              "codigo": "GEG-1D",
+              "nombre": "Geografía",
+              "seccionId": "4"
+            },
+            {
+              "id": "2747",
+              "codigo": "GRA-1D",
+              "nombre": "Gramática",
+              "seccionId": "4"
+            },
+            {
+              "id": "2753",
+              "codigo": "HIS-1D",
+              "nombre": "Historia",
+              "seccionId": "4"
+            },
+            {
+              "id": "2755",
+              "codigo": "ING-1D",
+              "nombre": "Inglés",
+              "seccionId": "4"
+            },
+            {
+              "id": "2750",
+              "codigo": "MUF-1D",
+              "nombre": "Mundo Físico",
+              "seccionId": "4"
+            },
+            {
+              "id": "2746",
+              "codigo": "PDT-1D",
+              "nombre": "Producción de Textos",
+              "seccionId": "4"
+            },
+            {
+              "id": "2754",
+              "codigo": "REL-1D",
+              "nombre": "Religión",
+              "seccionId": "4"
+            },
+            {
+              "id": "2748",
+              "codigo": "RZV-1D",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "4"
+            },
+            {
+              "id": "2756",
+              "codigo": "TAL-1D",
+              "nombre": "Taller",
+              "seccionId": "4"
+            }
+          ],
+          "user": {
+            "id": "5415",
+            "email": "pro50000004@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5415"
+        },
+        {
+          "id": "95",
+          "usuarioId": "5416",
+          "codigo": "DOC-005",
+          "nombres": "Luciana",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Tutor de aula — 2° A",
+          "email": "pro50000005@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.334Z",
+          "cursosOferta": [
+            {
+              "id": "2758",
+              "codigo": "ARI-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2764",
+              "codigo": "CIU-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2762",
+              "codigo": "CUH-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2770",
+              "codigo": "EDF-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2765",
+              "codigo": "GEG-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2760",
+              "codigo": "GRA-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2766",
+              "codigo": "HIS-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2768",
+              "codigo": "ING-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2763",
+              "codigo": "MUF-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2759",
+              "codigo": "PDT-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2767",
+              "codigo": "REL-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2761",
+              "codigo": "RZV-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2769",
+              "codigo": "TAL-2A",
+              "seccionId": "5",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5416",
+            "email": "pro50000005@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000005@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2758",
+              "codigo": "ARI-2A",
+              "nombre": "Aritmética",
+              "seccionId": "5"
+            },
+            {
+              "id": "2764",
+              "codigo": "CIU-2A",
+              "nombre": "Ciudadanía",
+              "seccionId": "5"
+            },
+            {
+              "id": "2762",
+              "codigo": "CUH-2A",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "5"
+            },
+            {
+              "id": "2770",
+              "codigo": "EDF-2A",
+              "nombre": "Educación Física",
+              "seccionId": "5"
+            },
+            {
+              "id": "2765",
+              "codigo": "GEG-2A",
+              "nombre": "Geografía",
+              "seccionId": "5"
+            },
+            {
+              "id": "2760",
+              "codigo": "GRA-2A",
+              "nombre": "Gramática",
+              "seccionId": "5"
+            },
+            {
+              "id": "2766",
+              "codigo": "HIS-2A",
+              "nombre": "Historia",
+              "seccionId": "5"
+            },
+            {
+              "id": "2768",
+              "codigo": "ING-2A",
+              "nombre": "Inglés",
+              "seccionId": "5"
+            },
+            {
+              "id": "2763",
+              "codigo": "MUF-2A",
+              "nombre": "Mundo Físico",
+              "seccionId": "5"
+            },
+            {
+              "id": "2759",
+              "codigo": "PDT-2A",
+              "nombre": "Producción de Textos",
+              "seccionId": "5"
+            },
+            {
+              "id": "2767",
+              "codigo": "REL-2A",
+              "nombre": "Religión",
+              "seccionId": "5"
+            },
+            {
+              "id": "2761",
+              "codigo": "RZV-2A",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "5"
+            },
+            {
+              "id": "2769",
+              "codigo": "TAL-2A",
+              "nombre": "Taller",
+              "seccionId": "5"
+            }
+          ],
+          "user": {
+            "id": "5416",
+            "email": "pro50000005@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5416"
+        },
+        {
+          "id": "96",
+          "usuarioId": "5417",
+          "codigo": "DOC-006",
+          "nombres": "Sebastián",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Tutor de aula — 2° B",
+          "email": "pro50000006@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.361Z",
+          "cursosOferta": [
+            {
+              "id": "2771",
+              "codigo": "ARI-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2777",
+              "codigo": "CIU-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2775",
+              "codigo": "CUH-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2783",
+              "codigo": "EDF-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2778",
+              "codigo": "GEG-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2773",
+              "codigo": "GRA-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2779",
+              "codigo": "HIS-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2781",
+              "codigo": "ING-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2776",
+              "codigo": "MUF-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2772",
+              "codigo": "PDT-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2780",
+              "codigo": "REL-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2774",
+              "codigo": "RZV-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2782",
+              "codigo": "TAL-2B",
+              "seccionId": "6",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5417",
+            "email": "pro50000006@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000006@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2771",
+              "codigo": "ARI-2B",
+              "nombre": "Aritmética",
+              "seccionId": "6"
+            },
+            {
+              "id": "2777",
+              "codigo": "CIU-2B",
+              "nombre": "Ciudadanía",
+              "seccionId": "6"
+            },
+            {
+              "id": "2775",
+              "codigo": "CUH-2B",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "6"
+            },
+            {
+              "id": "2783",
+              "codigo": "EDF-2B",
+              "nombre": "Educación Física",
+              "seccionId": "6"
+            },
+            {
+              "id": "2778",
+              "codigo": "GEG-2B",
+              "nombre": "Geografía",
+              "seccionId": "6"
+            },
+            {
+              "id": "2773",
+              "codigo": "GRA-2B",
+              "nombre": "Gramática",
+              "seccionId": "6"
+            },
+            {
+              "id": "2779",
+              "codigo": "HIS-2B",
+              "nombre": "Historia",
+              "seccionId": "6"
+            },
+            {
+              "id": "2781",
+              "codigo": "ING-2B",
+              "nombre": "Inglés",
+              "seccionId": "6"
+            },
+            {
+              "id": "2776",
+              "codigo": "MUF-2B",
+              "nombre": "Mundo Físico",
+              "seccionId": "6"
+            },
+            {
+              "id": "2772",
+              "codigo": "PDT-2B",
+              "nombre": "Producción de Textos",
+              "seccionId": "6"
+            },
+            {
+              "id": "2780",
+              "codigo": "REL-2B",
+              "nombre": "Religión",
+              "seccionId": "6"
+            },
+            {
+              "id": "2774",
+              "codigo": "RZV-2B",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "6"
+            },
+            {
+              "id": "2782",
+              "codigo": "TAL-2B",
+              "nombre": "Taller",
+              "seccionId": "6"
+            }
+          ],
+          "user": {
+            "id": "5417",
+            "email": "pro50000006@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5417"
+        },
+        {
+          "id": "97",
+          "usuarioId": "5418",
+          "codigo": "DOC-007",
+          "nombres": "Camila",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Tutor de aula — 2° C",
+          "email": "pro50000007@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.395Z",
+          "cursosOferta": [
+            {
+              "id": "2784",
+              "codigo": "ARI-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2790",
+              "codigo": "CIU-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2788",
+              "codigo": "CUH-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2796",
+              "codigo": "EDF-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2791",
+              "codigo": "GEG-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2786",
+              "codigo": "GRA-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2792",
+              "codigo": "HIS-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2794",
+              "codigo": "ING-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2789",
+              "codigo": "MUF-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2785",
+              "codigo": "PDT-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2793",
+              "codigo": "REL-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2787",
+              "codigo": "RZV-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2795",
+              "codigo": "TAL-2C",
+              "seccionId": "7",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5418",
+            "email": "pro50000007@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000007@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2784",
+              "codigo": "ARI-2C",
+              "nombre": "Aritmética",
+              "seccionId": "7"
+            },
+            {
+              "id": "2790",
+              "codigo": "CIU-2C",
+              "nombre": "Ciudadanía",
+              "seccionId": "7"
+            },
+            {
+              "id": "2788",
+              "codigo": "CUH-2C",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "7"
+            },
+            {
+              "id": "2796",
+              "codigo": "EDF-2C",
+              "nombre": "Educación Física",
+              "seccionId": "7"
+            },
+            {
+              "id": "2791",
+              "codigo": "GEG-2C",
+              "nombre": "Geografía",
+              "seccionId": "7"
+            },
+            {
+              "id": "2786",
+              "codigo": "GRA-2C",
+              "nombre": "Gramática",
+              "seccionId": "7"
+            },
+            {
+              "id": "2792",
+              "codigo": "HIS-2C",
+              "nombre": "Historia",
+              "seccionId": "7"
+            },
+            {
+              "id": "2794",
+              "codigo": "ING-2C",
+              "nombre": "Inglés",
+              "seccionId": "7"
+            },
+            {
+              "id": "2789",
+              "codigo": "MUF-2C",
+              "nombre": "Mundo Físico",
+              "seccionId": "7"
+            },
+            {
+              "id": "2785",
+              "codigo": "PDT-2C",
+              "nombre": "Producción de Textos",
+              "seccionId": "7"
+            },
+            {
+              "id": "2793",
+              "codigo": "REL-2C",
+              "nombre": "Religión",
+              "seccionId": "7"
+            },
+            {
+              "id": "2787",
+              "codigo": "RZV-2C",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "7"
+            },
+            {
+              "id": "2795",
+              "codigo": "TAL-2C",
+              "nombre": "Taller",
+              "seccionId": "7"
+            }
+          ],
+          "user": {
+            "id": "5418",
+            "email": "pro50000007@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5418"
+        },
+        {
+          "id": "98",
+          "usuarioId": "5419",
+          "codigo": "DOC-008",
+          "nombres": "Diego",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Tutor de aula — 2° D",
+          "email": "pro50000008@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.416Z",
+          "cursosOferta": [
+            {
+              "id": "2797",
+              "codigo": "ARI-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2803",
+              "codigo": "CIU-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2801",
+              "codigo": "CUH-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2809",
+              "codigo": "EDF-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2804",
+              "codigo": "GEG-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2799",
+              "codigo": "GRA-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2805",
+              "codigo": "HIS-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2807",
+              "codigo": "ING-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2802",
+              "codigo": "MUF-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2798",
+              "codigo": "PDT-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2806",
+              "codigo": "REL-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2800",
+              "codigo": "RZV-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2808",
+              "codigo": "TAL-2D",
+              "seccionId": "8",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5419",
+            "email": "pro50000008@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000008@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2797",
+              "codigo": "ARI-2D",
+              "nombre": "Aritmética",
+              "seccionId": "8"
+            },
+            {
+              "id": "2803",
+              "codigo": "CIU-2D",
+              "nombre": "Ciudadanía",
+              "seccionId": "8"
+            },
+            {
+              "id": "2801",
+              "codigo": "CUH-2D",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "8"
+            },
+            {
+              "id": "2809",
+              "codigo": "EDF-2D",
+              "nombre": "Educación Física",
+              "seccionId": "8"
+            },
+            {
+              "id": "2804",
+              "codigo": "GEG-2D",
+              "nombre": "Geografía",
+              "seccionId": "8"
+            },
+            {
+              "id": "2799",
+              "codigo": "GRA-2D",
+              "nombre": "Gramática",
+              "seccionId": "8"
+            },
+            {
+              "id": "2805",
+              "codigo": "HIS-2D",
+              "nombre": "Historia",
+              "seccionId": "8"
+            },
+            {
+              "id": "2807",
+              "codigo": "ING-2D",
+              "nombre": "Inglés",
+              "seccionId": "8"
+            },
+            {
+              "id": "2802",
+              "codigo": "MUF-2D",
+              "nombre": "Mundo Físico",
+              "seccionId": "8"
+            },
+            {
+              "id": "2798",
+              "codigo": "PDT-2D",
+              "nombre": "Producción de Textos",
+              "seccionId": "8"
+            },
+            {
+              "id": "2806",
+              "codigo": "REL-2D",
+              "nombre": "Religión",
+              "seccionId": "8"
+            },
+            {
+              "id": "2800",
+              "codigo": "RZV-2D",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "8"
+            },
+            {
+              "id": "2808",
+              "codigo": "TAL-2D",
+              "nombre": "Taller",
+              "seccionId": "8"
+            }
+          ],
+          "user": {
+            "id": "5419",
+            "email": "pro50000008@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5419"
+        },
+        {
+          "id": "99",
+          "usuarioId": "5420",
+          "codigo": "DOC-009",
+          "nombres": "Isabella",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Inglés",
+          "email": "pro50000009@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.436Z",
+          "cursosOferta": [
+            {
+              "id": "2810",
+              "codigo": "ING-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2812",
+              "codigo": "ING-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2814",
+              "codigo": "ING-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2816",
+              "codigo": "ING-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2818",
+              "codigo": "ING-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2820",
+              "codigo": "ING-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2822",
+              "codigo": "ING-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2824",
+              "codigo": "ING-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2811",
+              "codigo": "REL-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2813",
+              "codigo": "REL-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2815",
+              "codigo": "REL-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2817",
+              "codigo": "REL-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2819",
+              "codigo": "REL-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2821",
+              "codigo": "REL-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2823",
+              "codigo": "REL-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2825",
+              "codigo": "REL-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5420",
+            "email": "pro50000009@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 16
+          },
+          "correo": "pro50000009@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2810",
+              "codigo": "ING-3A",
+              "nombre": "Inglés",
+              "seccionId": "9"
+            },
+            {
+              "id": "2812",
+              "codigo": "ING-3B",
+              "nombre": "Inglés",
+              "seccionId": "10"
+            },
+            {
+              "id": "2814",
+              "codigo": "ING-3C",
+              "nombre": "Inglés",
+              "seccionId": "11"
+            },
+            {
+              "id": "2816",
+              "codigo": "ING-3D",
+              "nombre": "Inglés",
+              "seccionId": "12"
+            },
+            {
+              "id": "2818",
+              "codigo": "ING-4A",
+              "nombre": "Inglés",
+              "seccionId": "13"
+            },
+            {
+              "id": "2820",
+              "codigo": "ING-4B",
+              "nombre": "Inglés",
+              "seccionId": "14"
+            },
+            {
+              "id": "2822",
+              "codigo": "ING-4C",
+              "nombre": "Inglés",
+              "seccionId": "15"
+            },
+            {
+              "id": "2824",
+              "codigo": "ING-4D",
+              "nombre": "Inglés",
+              "seccionId": "16"
+            },
+            {
+              "id": "2811",
+              "codigo": "REL-3A",
+              "nombre": "Religión",
+              "seccionId": "9"
+            },
+            {
+              "id": "2813",
+              "codigo": "REL-3B",
+              "nombre": "Religión",
+              "seccionId": "10"
+            },
+            {
+              "id": "2815",
+              "codigo": "REL-3C",
+              "nombre": "Religión",
+              "seccionId": "11"
+            },
+            {
+              "id": "2817",
+              "codigo": "REL-3D",
+              "nombre": "Religión",
+              "seccionId": "12"
+            },
+            {
+              "id": "2819",
+              "codigo": "REL-4A",
+              "nombre": "Religión",
+              "seccionId": "13"
+            },
+            {
+              "id": "2821",
+              "codigo": "REL-4B",
+              "nombre": "Religión",
+              "seccionId": "14"
+            },
+            {
+              "id": "2823",
+              "codigo": "REL-4C",
+              "nombre": "Religión",
+              "seccionId": "15"
+            },
+            {
+              "id": "2825",
+              "codigo": "REL-4D",
+              "nombre": "Religión",
+              "seccionId": "16"
+            }
+          ],
+          "user": {
+            "id": "5420",
+            "email": "pro50000009@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5420"
+        },
+        {
+          "id": "100",
+          "usuarioId": "5421",
+          "codigo": "DOC-010",
+          "nombres": "Alejandro",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Comunicación",
+          "email": "pro50000010@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.463Z",
+          "cursosOferta": [
+            {
+              "id": "2826",
+              "codigo": "ING-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2828",
+              "codigo": "ING-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2830",
+              "codigo": "ING-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2832",
+              "codigo": "ING-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2834",
+              "codigo": "ING-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2836",
+              "codigo": "ING-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Inglés",
+                "codigo": "ING"
+              }
+            },
+            {
+              "id": "2926",
+              "codigo": "PDT-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2827",
+              "codigo": "PDT-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2829",
+              "codigo": "PDT-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2831",
+              "codigo": "PDT-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2833",
+              "codigo": "PDT-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2835",
+              "codigo": "PDT-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2837",
+              "codigo": "PDT-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5421",
+            "email": "pro50000010@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000010@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2826",
+              "codigo": "ING-5A",
+              "nombre": "Inglés",
+              "seccionId": "17"
+            },
+            {
+              "id": "2828",
+              "codigo": "ING-5B",
+              "nombre": "Inglés",
+              "seccionId": "18"
+            },
+            {
+              "id": "2830",
+              "codigo": "ING-5C",
+              "nombre": "Inglés",
+              "seccionId": "19"
+            },
+            {
+              "id": "2832",
+              "codigo": "ING-6A",
+              "nombre": "Inglés",
+              "seccionId": "20"
+            },
+            {
+              "id": "2834",
+              "codigo": "ING-6B",
+              "nombre": "Inglés",
+              "seccionId": "21"
+            },
+            {
+              "id": "2836",
+              "codigo": "ING-6C",
+              "nombre": "Inglés",
+              "seccionId": "22"
+            },
+            {
+              "id": "2926",
+              "codigo": "PDT-4C",
+              "nombre": "Producción de Textos",
+              "seccionId": "15"
+            },
+            {
+              "id": "2827",
+              "codigo": "PDT-5A",
+              "nombre": "Producción de Textos",
+              "seccionId": "17"
+            },
+            {
+              "id": "2829",
+              "codigo": "PDT-5B",
+              "nombre": "Producción de Textos",
+              "seccionId": "18"
+            },
+            {
+              "id": "2831",
+              "codigo": "PDT-5C",
+              "nombre": "Producción de Textos",
+              "seccionId": "19"
+            },
+            {
+              "id": "2833",
+              "codigo": "PDT-6A",
+              "nombre": "Producción de Textos",
+              "seccionId": "20"
+            },
+            {
+              "id": "2835",
+              "codigo": "PDT-6B",
+              "nombre": "Producción de Textos",
+              "seccionId": "21"
+            },
+            {
+              "id": "2837",
+              "codigo": "PDT-6C",
+              "nombre": "Producción de Textos",
+              "seccionId": "22"
+            }
+          ],
+          "user": {
+            "id": "5421",
+            "email": "pro50000010@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5421"
+        },
+        {
+          "id": "101",
+          "usuarioId": "5422",
+          "codigo": "DOC-011",
+          "nombres": "Sofía",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Ciencias",
+          "email": "pro50000011@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.496Z",
+          "cursosOferta": [
+            {
+              "id": "2927",
+              "codigo": "GRA-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2953",
+              "codigo": "GRA-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2963",
+              "codigo": "GRA-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2973",
+              "codigo": "GRA-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2983",
+              "codigo": "GRA-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2992",
+              "codigo": "GRA-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "3001",
+              "codigo": "GRA-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5422",
+            "email": "pro50000011@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 7
+          },
+          "correo": "pro50000011@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2927",
+              "codigo": "GRA-4C",
+              "nombre": "Gramática",
+              "seccionId": "15"
+            },
+            {
+              "id": "2953",
+              "codigo": "GRA-5A",
+              "nombre": "Gramática",
+              "seccionId": "17"
+            },
+            {
+              "id": "2963",
+              "codigo": "GRA-5B",
+              "nombre": "Gramática",
+              "seccionId": "18"
+            },
+            {
+              "id": "2973",
+              "codigo": "GRA-5C",
+              "nombre": "Gramática",
+              "seccionId": "19"
+            },
+            {
+              "id": "2983",
+              "codigo": "GRA-6A",
+              "nombre": "Gramática",
+              "seccionId": "20"
+            },
+            {
+              "id": "2992",
+              "codigo": "GRA-6B",
+              "nombre": "Gramática",
+              "seccionId": "21"
+            },
+            {
+              "id": "3001",
+              "codigo": "GRA-6C",
+              "nombre": "Gramática",
+              "seccionId": "22"
+            }
+          ],
+          "user": {
+            "id": "5422",
+            "email": "pro50000011@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5422"
+        },
+        {
+          "id": "102",
+          "usuarioId": "5423",
+          "codigo": "DOC-012",
+          "nombres": "Daniel",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Ciencias Sociales",
+          "email": "pro50000012@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.522Z",
+          "cursosOferta": [
+            {
+              "id": "2843",
+              "codigo": "GRA-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2857",
+              "codigo": "GRA-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2871",
+              "codigo": "GRA-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2885",
+              "codigo": "GRA-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2899",
+              "codigo": "GRA-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2913",
+              "codigo": "GRA-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2941",
+              "codigo": "GRA-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Gramática",
+                "codigo": "GRA"
+              }
+            },
+            {
+              "id": "2842",
+              "codigo": "PDT-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2856",
+              "codigo": "PDT-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2870",
+              "codigo": "PDT-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2884",
+              "codigo": "PDT-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2898",
+              "codigo": "PDT-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2912",
+              "codigo": "PDT-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            },
+            {
+              "id": "2940",
+              "codigo": "PDT-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Producción de Textos",
+                "codigo": "PDT"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5423",
+            "email": "pro50000012@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 14
+          },
+          "correo": "pro50000012@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2843",
+              "codigo": "GRA-3A",
+              "nombre": "Gramática",
+              "seccionId": "9"
+            },
+            {
+              "id": "2857",
+              "codigo": "GRA-3B",
+              "nombre": "Gramática",
+              "seccionId": "10"
+            },
+            {
+              "id": "2871",
+              "codigo": "GRA-3C",
+              "nombre": "Gramática",
+              "seccionId": "11"
+            },
+            {
+              "id": "2885",
+              "codigo": "GRA-3D",
+              "nombre": "Gramática",
+              "seccionId": "12"
+            },
+            {
+              "id": "2899",
+              "codigo": "GRA-4A",
+              "nombre": "Gramática",
+              "seccionId": "13"
+            },
+            {
+              "id": "2913",
+              "codigo": "GRA-4B",
+              "nombre": "Gramática",
+              "seccionId": "14"
+            },
+            {
+              "id": "2941",
+              "codigo": "GRA-4D",
+              "nombre": "Gramática",
+              "seccionId": "16"
+            },
+            {
+              "id": "2842",
+              "codigo": "PDT-3A",
+              "nombre": "Producción de Textos",
+              "seccionId": "9"
+            },
+            {
+              "id": "2856",
+              "codigo": "PDT-3B",
+              "nombre": "Producción de Textos",
+              "seccionId": "10"
+            },
+            {
+              "id": "2870",
+              "codigo": "PDT-3C",
+              "nombre": "Producción de Textos",
+              "seccionId": "11"
+            },
+            {
+              "id": "2884",
+              "codigo": "PDT-3D",
+              "nombre": "Producción de Textos",
+              "seccionId": "12"
+            },
+            {
+              "id": "2898",
+              "codigo": "PDT-4A",
+              "nombre": "Producción de Textos",
+              "seccionId": "13"
+            },
+            {
+              "id": "2912",
+              "codigo": "PDT-4B",
+              "nombre": "Producción de Textos",
+              "seccionId": "14"
+            },
+            {
+              "id": "2940",
+              "codigo": "PDT-4D",
+              "nombre": "Producción de Textos",
+              "seccionId": "16"
+            }
+          ],
+          "user": {
+            "id": "5423",
+            "email": "pro50000012@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5423"
+        },
+        {
+          "id": "103",
+          "usuarioId": "5424",
+          "codigo": "DOC-013",
+          "nombres": "Mariana",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Educación Física",
+          "email": "pro50000013@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.548Z",
+          "cursosOferta": [
+            {
+              "id": "2840",
+              "codigo": "RZM-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "2854",
+              "codigo": "RZM-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "2868",
+              "codigo": "RZM-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "2882",
+              "codigo": "RZM-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "2896",
+              "codigo": "RZM-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "2910",
+              "codigo": "RZM-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "2924",
+              "codigo": "RZM-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "2938",
+              "codigo": "RZM-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "3007",
+              "codigo": "RZM-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "3011",
+              "codigo": "RZM-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "3015",
+              "codigo": "RZM-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "3019",
+              "codigo": "RZM-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "3024",
+              "codigo": "RZM-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "3029",
+              "codigo": "RZM-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Matemático",
+                "codigo": "RZM"
+              }
+            },
+            {
+              "id": "2844",
+              "codigo": "RZV-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2858",
+              "codigo": "RZV-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2872",
+              "codigo": "RZV-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2886",
+              "codigo": "RZV-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2900",
+              "codigo": "RZV-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2914",
+              "codigo": "RZV-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2928",
+              "codigo": "RZV-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "2942",
+              "codigo": "RZV-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "3008",
+              "codigo": "RZV-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "3012",
+              "codigo": "RZV-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "3016",
+              "codigo": "RZV-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "3020",
+              "codigo": "RZV-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "3025",
+              "codigo": "RZV-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            },
+            {
+              "id": "3030",
+              "codigo": "RZV-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Razonamiento Verbal",
+                "codigo": "RZV"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5424",
+            "email": "pro50000013@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 28
+          },
+          "correo": "pro50000013@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2840",
+              "codigo": "RZM-3A",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "9"
+            },
+            {
+              "id": "2854",
+              "codigo": "RZM-3B",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "10"
+            },
+            {
+              "id": "2868",
+              "codigo": "RZM-3C",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "11"
+            },
+            {
+              "id": "2882",
+              "codigo": "RZM-3D",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "12"
+            },
+            {
+              "id": "2896",
+              "codigo": "RZM-4A",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "13"
+            },
+            {
+              "id": "2910",
+              "codigo": "RZM-4B",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "14"
+            },
+            {
+              "id": "2924",
+              "codigo": "RZM-4C",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "15"
+            },
+            {
+              "id": "2938",
+              "codigo": "RZM-4D",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "16"
+            },
+            {
+              "id": "3007",
+              "codigo": "RZM-5A",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "17"
+            },
+            {
+              "id": "3011",
+              "codigo": "RZM-5B",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "18"
+            },
+            {
+              "id": "3015",
+              "codigo": "RZM-5C",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "19"
+            },
+            {
+              "id": "3019",
+              "codigo": "RZM-6A",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "20"
+            },
+            {
+              "id": "3024",
+              "codigo": "RZM-6B",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "21"
+            },
+            {
+              "id": "3029",
+              "codigo": "RZM-6C",
+              "nombre": "Razonamiento Matemático",
+              "seccionId": "22"
+            },
+            {
+              "id": "2844",
+              "codigo": "RZV-3A",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "9"
+            },
+            {
+              "id": "2858",
+              "codigo": "RZV-3B",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "10"
+            },
+            {
+              "id": "2872",
+              "codigo": "RZV-3C",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "11"
+            },
+            {
+              "id": "2886",
+              "codigo": "RZV-3D",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "12"
+            },
+            {
+              "id": "2900",
+              "codigo": "RZV-4A",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "13"
+            },
+            {
+              "id": "2914",
+              "codigo": "RZV-4B",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "14"
+            },
+            {
+              "id": "2928",
+              "codigo": "RZV-4C",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "15"
+            },
+            {
+              "id": "2942",
+              "codigo": "RZV-4D",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "16"
+            },
+            {
+              "id": "3008",
+              "codigo": "RZV-5A",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "17"
+            },
+            {
+              "id": "3012",
+              "codigo": "RZV-5B",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "18"
+            },
+            {
+              "id": "3016",
+              "codigo": "RZV-5C",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "19"
+            },
+            {
+              "id": "3020",
+              "codigo": "RZV-6A",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "20"
+            },
+            {
+              "id": "3025",
+              "codigo": "RZV-6B",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "21"
+            },
+            {
+              "id": "3030",
+              "codigo": "RZV-6C",
+              "nombre": "Razonamiento Verbal",
+              "seccionId": "22"
+            }
+          ],
+          "user": {
+            "id": "5424",
+            "email": "pro50000013@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5424"
+        },
+        {
+          "id": "104",
+          "usuarioId": "5425",
+          "codigo": "DOC-014",
+          "nombres": "Andrés",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Matemática",
+          "email": "pro50000014@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.578Z",
+          "cursosOferta": [
+            {
+              "id": "2839",
+              "codigo": "ALG-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2867",
+              "codigo": "ALG-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2895",
+              "codigo": "ALG-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2923",
+              "codigo": "ALG-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2951",
+              "codigo": "ALG-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2971",
+              "codigo": "ALG-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2990",
+              "codigo": "ALG-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2838",
+              "codigo": "ARI-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2866",
+              "codigo": "ARI-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2894",
+              "codigo": "ARI-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2922",
+              "codigo": "ARI-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2950",
+              "codigo": "ARI-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2970",
+              "codigo": "ARI-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2989",
+              "codigo": "ARI-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5425",
+            "email": "pro50000014@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 14
+          },
+          "correo": "pro50000014@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2839",
+              "codigo": "ALG-3A",
+              "nombre": "Álgebra",
+              "seccionId": "9"
+            },
+            {
+              "id": "2867",
+              "codigo": "ALG-3C",
+              "nombre": "Álgebra",
+              "seccionId": "11"
+            },
+            {
+              "id": "2895",
+              "codigo": "ALG-4A",
+              "nombre": "Álgebra",
+              "seccionId": "13"
+            },
+            {
+              "id": "2923",
+              "codigo": "ALG-4C",
+              "nombre": "Álgebra",
+              "seccionId": "15"
+            },
+            {
+              "id": "2951",
+              "codigo": "ALG-5A",
+              "nombre": "Álgebra",
+              "seccionId": "17"
+            },
+            {
+              "id": "2971",
+              "codigo": "ALG-5C",
+              "nombre": "Álgebra",
+              "seccionId": "19"
+            },
+            {
+              "id": "2990",
+              "codigo": "ALG-6B",
+              "nombre": "Álgebra",
+              "seccionId": "21"
+            },
+            {
+              "id": "2838",
+              "codigo": "ARI-3A",
+              "nombre": "Aritmética",
+              "seccionId": "9"
+            },
+            {
+              "id": "2866",
+              "codigo": "ARI-3C",
+              "nombre": "Aritmética",
+              "seccionId": "11"
+            },
+            {
+              "id": "2894",
+              "codigo": "ARI-4A",
+              "nombre": "Aritmética",
+              "seccionId": "13"
+            },
+            {
+              "id": "2922",
+              "codigo": "ARI-4C",
+              "nombre": "Aritmética",
+              "seccionId": "15"
+            },
+            {
+              "id": "2950",
+              "codigo": "ARI-5A",
+              "nombre": "Aritmética",
+              "seccionId": "17"
+            },
+            {
+              "id": "2970",
+              "codigo": "ARI-5C",
+              "nombre": "Aritmética",
+              "seccionId": "19"
+            },
+            {
+              "id": "2989",
+              "codigo": "ARI-6B",
+              "nombre": "Aritmética",
+              "seccionId": "21"
+            }
+          ],
+          "user": {
+            "id": "5425",
+            "email": "pro50000014@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5425"
+        },
+        {
+          "id": "105",
+          "usuarioId": "5426",
+          "codigo": "DOC-015",
+          "nombres": "Emilia",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Lenguaje",
+          "email": "pro50000015@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:21:47.602Z",
+          "cursosOferta": [
+            {
+              "id": "2841",
+              "codigo": "GEO-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2869",
+              "codigo": "GEO-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2897",
+              "codigo": "GEO-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2925",
+              "codigo": "GEO-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2952",
+              "codigo": "GEO-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2972",
+              "codigo": "GEO-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2991",
+              "codigo": "GEO-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2849",
+              "codigo": "HIS-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2877",
+              "codigo": "HIS-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2905",
+              "codigo": "HIS-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2933",
+              "codigo": "HIS-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2956",
+              "codigo": "HIS-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2976",
+              "codigo": "HIS-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2995",
+              "codigo": "HIS-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5426",
+            "email": "pro50000015@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 14
+          },
+          "correo": "pro50000015@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2841",
+              "codigo": "GEO-3A",
+              "nombre": "Geometría",
+              "seccionId": "9"
+            },
+            {
+              "id": "2869",
+              "codigo": "GEO-3C",
+              "nombre": "Geometría",
+              "seccionId": "11"
+            },
+            {
+              "id": "2897",
+              "codigo": "GEO-4A",
+              "nombre": "Geometría",
+              "seccionId": "13"
+            },
+            {
+              "id": "2925",
+              "codigo": "GEO-4C",
+              "nombre": "Geometría",
+              "seccionId": "15"
+            },
+            {
+              "id": "2952",
+              "codigo": "GEO-5A",
+              "nombre": "Geometría",
+              "seccionId": "17"
+            },
+            {
+              "id": "2972",
+              "codigo": "GEO-5C",
+              "nombre": "Geometría",
+              "seccionId": "19"
+            },
+            {
+              "id": "2991",
+              "codigo": "GEO-6B",
+              "nombre": "Geometría",
+              "seccionId": "21"
+            },
+            {
+              "id": "2849",
+              "codigo": "HIS-3A",
+              "nombre": "Historia",
+              "seccionId": "9"
+            },
+            {
+              "id": "2877",
+              "codigo": "HIS-3C",
+              "nombre": "Historia",
+              "seccionId": "11"
+            },
+            {
+              "id": "2905",
+              "codigo": "HIS-4A",
+              "nombre": "Historia",
+              "seccionId": "13"
+            },
+            {
+              "id": "2933",
+              "codigo": "HIS-4C",
+              "nombre": "Historia",
+              "seccionId": "15"
+            },
+            {
+              "id": "2956",
+              "codigo": "HIS-5A",
+              "nombre": "Historia",
+              "seccionId": "17"
+            },
+            {
+              "id": "2976",
+              "codigo": "HIS-5C",
+              "nombre": "Historia",
+              "seccionId": "19"
+            },
+            {
+              "id": "2995",
+              "codigo": "HIS-6B",
+              "nombre": "Historia",
+              "seccionId": "21"
+            }
+          ],
+          "user": {
+            "id": "5426",
+            "email": "pro50000015@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5426"
+        },
+        {
+          "id": "106",
+          "usuarioId": "5427",
+          "codigo": "DOC-016",
+          "nombres": "Gabriel",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Religión",
+          "email": "pro50000016@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:31:16.275Z",
+          "cursosOferta": [
+            {
+              "id": "2847",
+              "codigo": "CIU-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2875",
+              "codigo": "CIU-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2903",
+              "codigo": "CIU-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2931",
+              "codigo": "CIU-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2954",
+              "codigo": "CIU-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2974",
+              "codigo": "CIU-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2993",
+              "codigo": "CIU-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2848",
+              "codigo": "GEG-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2876",
+              "codigo": "GEG-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2904",
+              "codigo": "GEG-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2932",
+              "codigo": "GEG-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2955",
+              "codigo": "GEG-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2975",
+              "codigo": "GEG-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2994",
+              "codigo": "GEG-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5427",
+            "email": "pro50000016@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 14
+          },
+          "correo": "pro50000016@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2847",
+              "codigo": "CIU-3A",
+              "nombre": "Ciudadanía",
+              "seccionId": "9"
+            },
+            {
+              "id": "2875",
+              "codigo": "CIU-3C",
+              "nombre": "Ciudadanía",
+              "seccionId": "11"
+            },
+            {
+              "id": "2903",
+              "codigo": "CIU-4A",
+              "nombre": "Ciudadanía",
+              "seccionId": "13"
+            },
+            {
+              "id": "2931",
+              "codigo": "CIU-4C",
+              "nombre": "Ciudadanía",
+              "seccionId": "15"
+            },
+            {
+              "id": "2954",
+              "codigo": "CIU-5A",
+              "nombre": "Ciudadanía",
+              "seccionId": "17"
+            },
+            {
+              "id": "2974",
+              "codigo": "CIU-5C",
+              "nombre": "Ciudadanía",
+              "seccionId": "19"
+            },
+            {
+              "id": "2993",
+              "codigo": "CIU-6B",
+              "nombre": "Ciudadanía",
+              "seccionId": "21"
+            },
+            {
+              "id": "2848",
+              "codigo": "GEG-3A",
+              "nombre": "Geografía",
+              "seccionId": "9"
+            },
+            {
+              "id": "2876",
+              "codigo": "GEG-3C",
+              "nombre": "Geografía",
+              "seccionId": "11"
+            },
+            {
+              "id": "2904",
+              "codigo": "GEG-4A",
+              "nombre": "Geografía",
+              "seccionId": "13"
+            },
+            {
+              "id": "2932",
+              "codigo": "GEG-4C",
+              "nombre": "Geografía",
+              "seccionId": "15"
+            },
+            {
+              "id": "2955",
+              "codigo": "GEG-5A",
+              "nombre": "Geografía",
+              "seccionId": "17"
+            },
+            {
+              "id": "2975",
+              "codigo": "GEG-5C",
+              "nombre": "Geografía",
+              "seccionId": "19"
+            },
+            {
+              "id": "2994",
+              "codigo": "GEG-6B",
+              "nombre": "Geografía",
+              "seccionId": "21"
+            }
+          ],
+          "user": {
+            "id": "5427",
+            "email": "pro50000016@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5427"
+        },
+        {
+          "id": "107",
+          "usuarioId": "5428",
+          "codigo": "DOC-017",
+          "nombres": "Victoria",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Taller",
+          "email": "pro50000017@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:31:16.291Z",
+          "cursosOferta": [
+            {
+              "id": "2845",
+              "codigo": "CUH-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2859",
+              "codigo": "CUH-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2873",
+              "codigo": "CUH-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2887",
+              "codigo": "CUH-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2901",
+              "codigo": "CUH-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2915",
+              "codigo": "CUH-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2929",
+              "codigo": "CUH-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2943",
+              "codigo": "CUH-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "3009",
+              "codigo": "CUH-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "3013",
+              "codigo": "CUH-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "3017",
+              "codigo": "CUH-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "3021",
+              "codigo": "CUH-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "3026",
+              "codigo": "CUH-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "3031",
+              "codigo": "CUH-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Cuerpo Humano",
+                "codigo": "CUH"
+              }
+            },
+            {
+              "id": "2846",
+              "codigo": "MUF-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2860",
+              "codigo": "MUF-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2874",
+              "codigo": "MUF-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2888",
+              "codigo": "MUF-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2902",
+              "codigo": "MUF-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2916",
+              "codigo": "MUF-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2930",
+              "codigo": "MUF-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "2944",
+              "codigo": "MUF-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "3010",
+              "codigo": "MUF-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "3014",
+              "codigo": "MUF-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "3018",
+              "codigo": "MUF-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "3022",
+              "codigo": "MUF-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "3027",
+              "codigo": "MUF-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            },
+            {
+              "id": "3032",
+              "codigo": "MUF-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Mundo Físico",
+                "codigo": "MUF"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5428",
+            "email": "pro50000017@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 28
+          },
+          "correo": "pro50000017@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2845",
+              "codigo": "CUH-3A",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "9"
+            },
+            {
+              "id": "2859",
+              "codigo": "CUH-3B",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "10"
+            },
+            {
+              "id": "2873",
+              "codigo": "CUH-3C",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "11"
+            },
+            {
+              "id": "2887",
+              "codigo": "CUH-3D",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "12"
+            },
+            {
+              "id": "2901",
+              "codigo": "CUH-4A",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "13"
+            },
+            {
+              "id": "2915",
+              "codigo": "CUH-4B",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "14"
+            },
+            {
+              "id": "2929",
+              "codigo": "CUH-4C",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "15"
+            },
+            {
+              "id": "2943",
+              "codigo": "CUH-4D",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "16"
+            },
+            {
+              "id": "3009",
+              "codigo": "CUH-5A",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "17"
+            },
+            {
+              "id": "3013",
+              "codigo": "CUH-5B",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "18"
+            },
+            {
+              "id": "3017",
+              "codigo": "CUH-5C",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "19"
+            },
+            {
+              "id": "3021",
+              "codigo": "CUH-6A",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "20"
+            },
+            {
+              "id": "3026",
+              "codigo": "CUH-6B",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "21"
+            },
+            {
+              "id": "3031",
+              "codigo": "CUH-6C",
+              "nombre": "Cuerpo Humano",
+              "seccionId": "22"
+            },
+            {
+              "id": "2846",
+              "codigo": "MUF-3A",
+              "nombre": "Mundo Físico",
+              "seccionId": "9"
+            },
+            {
+              "id": "2860",
+              "codigo": "MUF-3B",
+              "nombre": "Mundo Físico",
+              "seccionId": "10"
+            },
+            {
+              "id": "2874",
+              "codigo": "MUF-3C",
+              "nombre": "Mundo Físico",
+              "seccionId": "11"
+            },
+            {
+              "id": "2888",
+              "codigo": "MUF-3D",
+              "nombre": "Mundo Físico",
+              "seccionId": "12"
+            },
+            {
+              "id": "2902",
+              "codigo": "MUF-4A",
+              "nombre": "Mundo Físico",
+              "seccionId": "13"
+            },
+            {
+              "id": "2916",
+              "codigo": "MUF-4B",
+              "nombre": "Mundo Físico",
+              "seccionId": "14"
+            },
+            {
+              "id": "2930",
+              "codigo": "MUF-4C",
+              "nombre": "Mundo Físico",
+              "seccionId": "15"
+            },
+            {
+              "id": "2944",
+              "codigo": "MUF-4D",
+              "nombre": "Mundo Físico",
+              "seccionId": "16"
+            },
+            {
+              "id": "3010",
+              "codigo": "MUF-5A",
+              "nombre": "Mundo Físico",
+              "seccionId": "17"
+            },
+            {
+              "id": "3014",
+              "codigo": "MUF-5B",
+              "nombre": "Mundo Físico",
+              "seccionId": "18"
+            },
+            {
+              "id": "3018",
+              "codigo": "MUF-5C",
+              "nombre": "Mundo Físico",
+              "seccionId": "19"
+            },
+            {
+              "id": "3022",
+              "codigo": "MUF-6A",
+              "nombre": "Mundo Físico",
+              "seccionId": "20"
+            },
+            {
+              "id": "3027",
+              "codigo": "MUF-6B",
+              "nombre": "Mundo Físico",
+              "seccionId": "21"
+            },
+            {
+              "id": "3032",
+              "codigo": "MUF-6C",
+              "nombre": "Mundo Físico",
+              "seccionId": "22"
+            }
+          ],
+          "user": {
+            "id": "5428",
+            "email": "pro50000017@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5428"
+        },
+        {
+          "id": "108",
+          "usuarioId": "5429",
+          "codigo": "DOC-018",
+          "nombres": "Renato",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Geografía",
+          "email": "pro50000018@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:31:16.307Z",
+          "cursosOferta": [
+            {
+              "id": "2851",
+              "codigo": "EDF-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2893",
+              "codigo": "EDF-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2935",
+              "codigo": "EDF-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2969",
+              "codigo": "EDF-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2988",
+              "codigo": "EDF-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2997",
+              "codigo": "EDF-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "3006",
+              "codigo": "EDF-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2850",
+              "codigo": "TAL-3A",
+              "seccionId": "9",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2892",
+              "codigo": "TAL-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2934",
+              "codigo": "TAL-4C",
+              "seccionId": "15",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2987",
+              "codigo": "TAL-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2996",
+              "codigo": "TAL-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "3005",
+              "codigo": "TAL-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5429",
+            "email": "pro50000018@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 13
+          },
+          "correo": "pro50000018@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2851",
+              "codigo": "EDF-3A",
+              "nombre": "Educación Física",
+              "seccionId": "9"
+            },
+            {
+              "id": "2893",
+              "codigo": "EDF-3D",
+              "nombre": "Educación Física",
+              "seccionId": "12"
+            },
+            {
+              "id": "2935",
+              "codigo": "EDF-4C",
+              "nombre": "Educación Física",
+              "seccionId": "15"
+            },
+            {
+              "id": "2969",
+              "codigo": "EDF-5B",
+              "nombre": "Educación Física",
+              "seccionId": "18"
+            },
+            {
+              "id": "2988",
+              "codigo": "EDF-6A",
+              "nombre": "Educación Física",
+              "seccionId": "20"
+            },
+            {
+              "id": "2997",
+              "codigo": "EDF-6B",
+              "nombre": "Educación Física",
+              "seccionId": "21"
+            },
+            {
+              "id": "3006",
+              "codigo": "EDF-6C",
+              "nombre": "Educación Física",
+              "seccionId": "22"
+            },
+            {
+              "id": "2850",
+              "codigo": "TAL-3A",
+              "nombre": "Taller",
+              "seccionId": "9"
+            },
+            {
+              "id": "2892",
+              "codigo": "TAL-3D",
+              "nombre": "Taller",
+              "seccionId": "12"
+            },
+            {
+              "id": "2934",
+              "codigo": "TAL-4C",
+              "nombre": "Taller",
+              "seccionId": "15"
+            },
+            {
+              "id": "2987",
+              "codigo": "TAL-6A",
+              "nombre": "Taller",
+              "seccionId": "20"
+            },
+            {
+              "id": "2996",
+              "codigo": "TAL-6B",
+              "nombre": "Taller",
+              "seccionId": "21"
+            },
+            {
+              "id": "3005",
+              "codigo": "TAL-6C",
+              "nombre": "Taller",
+              "seccionId": "22"
+            }
+          ],
+          "user": {
+            "id": "5429",
+            "email": "pro50000018@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5429"
+        },
+        {
+          "id": "109",
+          "usuarioId": "5430",
+          "codigo": "DOC-019",
+          "nombres": "Fiorella",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Historia",
+          "email": "pro50000019@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:31:16.323Z",
+          "cursosOferta": [
+            {
+              "id": "2865",
+              "codigo": "EDF-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2879",
+              "codigo": "EDF-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2907",
+              "codigo": "EDF-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2921",
+              "codigo": "EDF-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2949",
+              "codigo": "EDF-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2959",
+              "codigo": "EDF-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            },
+            {
+              "id": "2979",
+              "codigo": "EDF-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Educación Física",
+                "codigo": "EDF"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5430",
+            "email": "pro50000019@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 7
+          },
+          "correo": "pro50000019@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2865",
+              "codigo": "EDF-3B",
+              "nombre": "Educación Física",
+              "seccionId": "10"
+            },
+            {
+              "id": "2879",
+              "codigo": "EDF-3C",
+              "nombre": "Educación Física",
+              "seccionId": "11"
+            },
+            {
+              "id": "2907",
+              "codigo": "EDF-4A",
+              "nombre": "Educación Física",
+              "seccionId": "13"
+            },
+            {
+              "id": "2921",
+              "codigo": "EDF-4B",
+              "nombre": "Educación Física",
+              "seccionId": "14"
+            },
+            {
+              "id": "2949",
+              "codigo": "EDF-4D",
+              "nombre": "Educación Física",
+              "seccionId": "16"
+            },
+            {
+              "id": "2959",
+              "codigo": "EDF-5A",
+              "nombre": "Educación Física",
+              "seccionId": "17"
+            },
+            {
+              "id": "2979",
+              "codigo": "EDF-5C",
+              "nombre": "Educación Física",
+              "seccionId": "19"
+            }
+          ],
+          "user": {
+            "id": "5430",
+            "email": "pro50000019@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5430"
+        },
+        {
+          "id": "110",
+          "usuarioId": "5431",
+          "codigo": "DOC-020",
+          "nombres": "Bruno",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Razonamiento",
+          "email": "pro50000020@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:31:16.338Z",
+          "cursosOferta": [
+            {
+              "id": "2957",
+              "codigo": "REL-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2967",
+              "codigo": "REL-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2977",
+              "codigo": "REL-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "3023",
+              "codigo": "REL-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "3028",
+              "codigo": "REL-6B",
+              "seccionId": "21",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "3033",
+              "codigo": "REL-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Religión",
+                "codigo": "REL"
+              }
+            },
+            {
+              "id": "2864",
+              "codigo": "TAL-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2878",
+              "codigo": "TAL-3C",
+              "seccionId": "11",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2906",
+              "codigo": "TAL-4A",
+              "seccionId": "13",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2920",
+              "codigo": "TAL-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2948",
+              "codigo": "TAL-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2958",
+              "codigo": "TAL-5A",
+              "seccionId": "17",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2968",
+              "codigo": "TAL-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            },
+            {
+              "id": "2978",
+              "codigo": "TAL-5C",
+              "seccionId": "19",
+              "cursoCatalogo": {
+                "nombre": "Taller",
+                "codigo": "TAL"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5431",
+            "email": "pro50000020@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 14
+          },
+          "correo": "pro50000020@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2957",
+              "codigo": "REL-5A",
+              "nombre": "Religión",
+              "seccionId": "17"
+            },
+            {
+              "id": "2967",
+              "codigo": "REL-5B",
+              "nombre": "Religión",
+              "seccionId": "18"
+            },
+            {
+              "id": "2977",
+              "codigo": "REL-5C",
+              "nombre": "Religión",
+              "seccionId": "19"
+            },
+            {
+              "id": "3023",
+              "codigo": "REL-6A",
+              "nombre": "Religión",
+              "seccionId": "20"
+            },
+            {
+              "id": "3028",
+              "codigo": "REL-6B",
+              "nombre": "Religión",
+              "seccionId": "21"
+            },
+            {
+              "id": "3033",
+              "codigo": "REL-6C",
+              "nombre": "Religión",
+              "seccionId": "22"
+            },
+            {
+              "id": "2864",
+              "codigo": "TAL-3B",
+              "nombre": "Taller",
+              "seccionId": "10"
+            },
+            {
+              "id": "2878",
+              "codigo": "TAL-3C",
+              "nombre": "Taller",
+              "seccionId": "11"
+            },
+            {
+              "id": "2906",
+              "codigo": "TAL-4A",
+              "nombre": "Taller",
+              "seccionId": "13"
+            },
+            {
+              "id": "2920",
+              "codigo": "TAL-4B",
+              "nombre": "Taller",
+              "seccionId": "14"
+            },
+            {
+              "id": "2948",
+              "codigo": "TAL-4D",
+              "nombre": "Taller",
+              "seccionId": "16"
+            },
+            {
+              "id": "2958",
+              "codigo": "TAL-5A",
+              "nombre": "Taller",
+              "seccionId": "17"
+            },
+            {
+              "id": "2968",
+              "codigo": "TAL-5B",
+              "nombre": "Taller",
+              "seccionId": "18"
+            },
+            {
+              "id": "2978",
+              "codigo": "TAL-5C",
+              "nombre": "Taller",
+              "seccionId": "19"
+            }
+          ],
+          "user": {
+            "id": "5431",
+            "email": "pro50000020@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5431"
+        },
+        {
+          "id": "111",
+          "usuarioId": "5432",
+          "codigo": "DOC-021",
+          "nombres": "Ariana",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Geometría",
+          "email": "pro50000021@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:31:16.353Z",
+          "cursosOferta": [
+            {
+              "id": "2853",
+              "codigo": "ALG-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2881",
+              "codigo": "ALG-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2909",
+              "codigo": "ALG-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2937",
+              "codigo": "ALG-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2961",
+              "codigo": "ALG-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2981",
+              "codigo": "ALG-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2999",
+              "codigo": "ALG-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Álgebra",
+                "codigo": "ALG"
+              }
+            },
+            {
+              "id": "2852",
+              "codigo": "ARI-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2880",
+              "codigo": "ARI-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2908",
+              "codigo": "ARI-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2936",
+              "codigo": "ARI-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2960",
+              "codigo": "ARI-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2980",
+              "codigo": "ARI-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            },
+            {
+              "id": "2998",
+              "codigo": "ARI-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Aritmética",
+                "codigo": "ARI"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5432",
+            "email": "pro50000021@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 14
+          },
+          "correo": "pro50000021@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2853",
+              "codigo": "ALG-3B",
+              "nombre": "Álgebra",
+              "seccionId": "10"
+            },
+            {
+              "id": "2881",
+              "codigo": "ALG-3D",
+              "nombre": "Álgebra",
+              "seccionId": "12"
+            },
+            {
+              "id": "2909",
+              "codigo": "ALG-4B",
+              "nombre": "Álgebra",
+              "seccionId": "14"
+            },
+            {
+              "id": "2937",
+              "codigo": "ALG-4D",
+              "nombre": "Álgebra",
+              "seccionId": "16"
+            },
+            {
+              "id": "2961",
+              "codigo": "ALG-5B",
+              "nombre": "Álgebra",
+              "seccionId": "18"
+            },
+            {
+              "id": "2981",
+              "codigo": "ALG-6A",
+              "nombre": "Álgebra",
+              "seccionId": "20"
+            },
+            {
+              "id": "2999",
+              "codigo": "ALG-6C",
+              "nombre": "Álgebra",
+              "seccionId": "22"
+            },
+            {
+              "id": "2852",
+              "codigo": "ARI-3B",
+              "nombre": "Aritmética",
+              "seccionId": "10"
+            },
+            {
+              "id": "2880",
+              "codigo": "ARI-3D",
+              "nombre": "Aritmética",
+              "seccionId": "12"
+            },
+            {
+              "id": "2908",
+              "codigo": "ARI-4B",
+              "nombre": "Aritmética",
+              "seccionId": "14"
+            },
+            {
+              "id": "2936",
+              "codigo": "ARI-4D",
+              "nombre": "Aritmética",
+              "seccionId": "16"
+            },
+            {
+              "id": "2960",
+              "codigo": "ARI-5B",
+              "nombre": "Aritmética",
+              "seccionId": "18"
+            },
+            {
+              "id": "2980",
+              "codigo": "ARI-6A",
+              "nombre": "Aritmética",
+              "seccionId": "20"
+            },
+            {
+              "id": "2998",
+              "codigo": "ARI-6C",
+              "nombre": "Aritmética",
+              "seccionId": "22"
+            }
+          ],
+          "user": {
+            "id": "5432",
+            "email": "pro50000021@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5432"
+        },
+        {
+          "id": "112",
+          "usuarioId": "5433",
+          "codigo": "DOC-022",
+          "nombres": "Joaquín",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Álgebra",
+          "email": "pro50000022@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:31:16.371Z",
+          "cursosOferta": [
+            {
+              "id": "2861",
+              "codigo": "CIU-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2889",
+              "codigo": "CIU-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2917",
+              "codigo": "CIU-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2945",
+              "codigo": "CIU-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2964",
+              "codigo": "CIU-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2984",
+              "codigo": "CIU-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "3002",
+              "codigo": "CIU-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Ciudadanía",
+                "codigo": "CIU"
+              }
+            },
+            {
+              "id": "2863",
+              "codigo": "HIS-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2891",
+              "codigo": "HIS-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2919",
+              "codigo": "HIS-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2947",
+              "codigo": "HIS-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2966",
+              "codigo": "HIS-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "2986",
+              "codigo": "HIS-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            },
+            {
+              "id": "3004",
+              "codigo": "HIS-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Historia",
+                "codigo": "HIS"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5433",
+            "email": "pro50000022@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 14
+          },
+          "correo": "pro50000022@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2861",
+              "codigo": "CIU-3B",
+              "nombre": "Ciudadanía",
+              "seccionId": "10"
+            },
+            {
+              "id": "2889",
+              "codigo": "CIU-3D",
+              "nombre": "Ciudadanía",
+              "seccionId": "12"
+            },
+            {
+              "id": "2917",
+              "codigo": "CIU-4B",
+              "nombre": "Ciudadanía",
+              "seccionId": "14"
+            },
+            {
+              "id": "2945",
+              "codigo": "CIU-4D",
+              "nombre": "Ciudadanía",
+              "seccionId": "16"
+            },
+            {
+              "id": "2964",
+              "codigo": "CIU-5B",
+              "nombre": "Ciudadanía",
+              "seccionId": "18"
+            },
+            {
+              "id": "2984",
+              "codigo": "CIU-6A",
+              "nombre": "Ciudadanía",
+              "seccionId": "20"
+            },
+            {
+              "id": "3002",
+              "codigo": "CIU-6C",
+              "nombre": "Ciudadanía",
+              "seccionId": "22"
+            },
+            {
+              "id": "2863",
+              "codigo": "HIS-3B",
+              "nombre": "Historia",
+              "seccionId": "10"
+            },
+            {
+              "id": "2891",
+              "codigo": "HIS-3D",
+              "nombre": "Historia",
+              "seccionId": "12"
+            },
+            {
+              "id": "2919",
+              "codigo": "HIS-4B",
+              "nombre": "Historia",
+              "seccionId": "14"
+            },
+            {
+              "id": "2947",
+              "codigo": "HIS-4D",
+              "nombre": "Historia",
+              "seccionId": "16"
+            },
+            {
+              "id": "2966",
+              "codigo": "HIS-5B",
+              "nombre": "Historia",
+              "seccionId": "18"
+            },
+            {
+              "id": "2986",
+              "codigo": "HIS-6A",
+              "nombre": "Historia",
+              "seccionId": "20"
+            },
+            {
+              "id": "3004",
+              "codigo": "HIS-6C",
+              "nombre": "Historia",
+              "seccionId": "22"
+            }
+          ],
+          "user": {
+            "id": "5433",
+            "email": "pro50000022@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5433"
+        },
+        {
+          "id": "113",
+          "usuarioId": "5434",
+          "codigo": "DOC-023",
+          "nombres": "Mía",
+          "apellidos": "Silva Herrera",
+          "especialidad": "Arte",
+          "email": "pro50000023@blenkir.edu.pe",
+          "telefono": null,
+          "activo": true,
+          "createdAt": "2026-06-23T20:31:16.388Z",
+          "cursosOferta": [
+            {
+              "id": "2862",
+              "codigo": "GEG-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2890",
+              "codigo": "GEG-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2918",
+              "codigo": "GEG-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2946",
+              "codigo": "GEG-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2965",
+              "codigo": "GEG-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2985",
+              "codigo": "GEG-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "3003",
+              "codigo": "GEG-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Geografía",
+                "codigo": "GEG"
+              }
+            },
+            {
+              "id": "2855",
+              "codigo": "GEO-3B",
+              "seccionId": "10",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2883",
+              "codigo": "GEO-3D",
+              "seccionId": "12",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2911",
+              "codigo": "GEO-4B",
+              "seccionId": "14",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2939",
+              "codigo": "GEO-4D",
+              "seccionId": "16",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2962",
+              "codigo": "GEO-5B",
+              "seccionId": "18",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "2982",
+              "codigo": "GEO-6A",
+              "seccionId": "20",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            },
+            {
+              "id": "3000",
+              "codigo": "GEO-6C",
+              "seccionId": "22",
+              "cursoCatalogo": {
+                "nombre": "Geometría",
+                "codigo": "GEO"
+              }
+            }
+          ],
+          "usuario": {
+            "id": "5434",
+            "email": "pro50000023@blenkir.edu.pe",
+            "activo": true
+          },
+          "_count": {
+            "cursosOferta": 14
+          },
+          "correo": "pro50000023@blenkir.edu.pe",
+          "courses": [
+            {
+              "id": "2862",
+              "codigo": "GEG-3B",
+              "nombre": "Geografía",
+              "seccionId": "10"
+            },
+            {
+              "id": "2890",
+              "codigo": "GEG-3D",
+              "nombre": "Geografía",
+              "seccionId": "12"
+            },
+            {
+              "id": "2918",
+              "codigo": "GEG-4B",
+              "nombre": "Geografía",
+              "seccionId": "14"
+            },
+            {
+              "id": "2946",
+              "codigo": "GEG-4D",
+              "nombre": "Geografía",
+              "seccionId": "16"
+            },
+            {
+              "id": "2965",
+              "codigo": "GEG-5B",
+              "nombre": "Geografía",
+              "seccionId": "18"
+            },
+            {
+              "id": "2985",
+              "codigo": "GEG-6A",
+              "nombre": "Geografía",
+              "seccionId": "20"
+            },
+            {
+              "id": "3003",
+              "codigo": "GEG-6C",
+              "nombre": "Geografía",
+              "seccionId": "22"
+            },
+            {
+              "id": "2855",
+              "codigo": "GEO-3B",
+              "nombre": "Geometría",
+              "seccionId": "10"
+            },
+            {
+              "id": "2883",
+              "codigo": "GEO-3D",
+              "nombre": "Geometría",
+              "seccionId": "12"
+            },
+            {
+              "id": "2911",
+              "codigo": "GEO-4B",
+              "nombre": "Geometría",
+              "seccionId": "14"
+            },
+            {
+              "id": "2939",
+              "codigo": "GEO-4D",
+              "nombre": "Geometría",
+              "seccionId": "16"
+            },
+            {
+              "id": "2962",
+              "codigo": "GEO-5B",
+              "nombre": "Geometría",
+              "seccionId": "18"
+            },
+            {
+              "id": "2982",
+              "codigo": "GEO-6A",
+              "nombre": "Geometría",
+              "seccionId": "20"
+            },
+            {
+              "id": "3000",
+              "codigo": "GEO-6C",
+              "nombre": "Geometría",
+              "seccionId": "22"
+            }
+          ],
+          "user": {
+            "id": "5434",
+            "email": "pro50000023@blenkir.edu.pe",
+            "activo": true
+          },
+          "userId": "5434"
+        }
+      ]
+    }
+  }
+}

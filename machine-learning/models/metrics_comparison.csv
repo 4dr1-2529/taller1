@@ -1,4 +1,4 @@
-model,accuracy,precision,recall,f1_score
-random_forest,1.0,1.0,1.0,1.0
-xgboost,1.0,1.0,1.0,1.0
-stacking,1.0,1.0,1.0,1.0
+model,accuracy,precision,recall,f1_score,roc_auc_ovr_weighted
+random_forest,1.0,1.0,1.0,1.0,1.0
+xgboost,1.0,1.0,1.0,1.0,1.0
+stacking,1.0,1.0,1.0,1.0,1.0

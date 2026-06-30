@@ -1,0 +1,8 @@
+{
+  "id": "TC-CN-director-notas-bimestre-1-ok.png",
+  "captura_inicial": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\login-director-ok.png",
+  "captura_resultado": "C:\\Users\\HP\\Music\\proyecto de taller\\tesis-dashboard\\plan-pruebas\\evidencias-finales\\capturas\\notas-bimestre-1-ok.png",
+  "esperado": "Vista Notas operativa",
+  "obtenido": "Pantalla renderizada sin error",
+  "estado": "Aprobado"
+}

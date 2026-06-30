@@ -67,7 +67,7 @@ async function main() {
       });
       if (r.ok) {
         const j = await r.json();
-        token = j.token;
+        token = j.data?.token ?? j.token;
         break;
       }
     }
@@ -103,14 +103,16 @@ async function main() {
     });
     if (!dash.ok) throw new Error(`dashboard ${dash.status}`);
     const dashJson = await dash.json();
-    if (!dashJson.kpis?.byLevel) throw new Error("dashboard sin byLevel");
+    const kpis = dashJson.data?.kpis ?? dashJson.kpis;
+    if (!kpis?.byLevel) throw new Error("dashboard sin byLevel");
 
     const students = await fetch(`${API}/students?limit=1`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (students.ok) {
       const st = await students.json();
-      const sid = st.items?.[0]?.id;
+      const items = st.data?.items ?? st.items;
+      const sid = items?.[0]?.id;
       if (sid) {
         const predRes = await fetch(`${API}/predict`, {
           method: "POST",
@@ -122,7 +124,7 @@ async function main() {
         });
         if (!predRes.ok) throw new Error(`predict student ${predRes.status}`);
         const pj = await predRes.json();
-        const p = pj.prediction;
+        const p = pj.data?.prediction ?? pj.prediction;
         if (p?.probabilidad_abandono == null && p?.probabilityAbandono == null && p?.probabilidad == null) {
           throw new Error("predicción sin probabilidad");
         }

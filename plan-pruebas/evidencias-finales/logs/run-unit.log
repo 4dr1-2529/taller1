@@ -1,0 +1,4 @@
+✓ backend-unit (9144ms) → C:\Users\HP\Music\proyecto de taller\tesis-dashboard\plan-pruebas\pruebas-unitarias\evidencias/backend-tests.log
+✗ backend-smoke (2798ms) → C:\Users\HP\Music\proyecto de taller\tesis-dashboard\plan-pruebas\pruebas-unitarias\evidencias/smoke-tests.log
+✓ ml-unit (6191ms) → C:\Users\HP\Music\proyecto de taller\tesis-dashboard\plan-pruebas\pruebas-unitarias\evidencias/ml-tests.log
+

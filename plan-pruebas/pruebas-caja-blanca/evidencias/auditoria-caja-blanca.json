@@ -1,0 +1,285 @@
+{
+  "timestamp": "2026-06-30T07:23:31.499Z",
+  "archivos_analizados": [
+    {
+      "categoria": "servicios",
+      "archivo": "backend/src/services/dashboard-analytics.service.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "servicios",
+      "archivo": "backend/src/services/estudiante.service.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "servicios",
+      "archivo": "backend/src/services/ml-client.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "servicios",
+      "archivo": "backend/src/services/profesor-dashboard.service.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "servicios",
+      "archivo": "backend/src/services/recommendations.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "servicios",
+      "archivo": "backend/src/services/risk-engine.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "servicios",
+      "archivo": "backend/src/services/teacher-assignment.service.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/academic-structure.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/accounts-export.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/admin.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/alerts.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/attendance.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/auth.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/courses.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/estudiante.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/grades.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/matriculas.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/messages.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/predict.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/predictions.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/profesor.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/reports.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/students.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/teacher-assignments.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "controladores",
+      "archivo": "backend/src/controllers/teachers.controller.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "middlewares",
+      "archivo": "backend/src/middleware/auth.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "middlewares",
+      "archivo": "backend/src/middleware/errorHandler.ts",
+      "cubierto_por_test": true
+    },
+    {
+      "categoria": "middlewares",
+      "archivo": "backend/src/middleware/sanitize.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "rutas",
+      "archivo": "backend/src/routes/index.ts",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "prisma",
+      "archivo": "backend/prisma/schema.prisma",
+      "cubierto_por_test": true
+    },
+    {
+      "categoria": "ia",
+      "archivo": "machine-learning/app/features.py",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "ia",
+      "archivo": "machine-learning/app/main.py",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "ia",
+      "archivo": "machine-learning/app/__init__.py",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "ia",
+      "archivo": "machine-learning/evaluate.py",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "ia",
+      "archivo": "machine-learning/tests/test_predict.py",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "ia",
+      "archivo": "machine-learning/train.py",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "ia",
+      "archivo": "machine-learning/utils/validators.py",
+      "cubierto_por_test": true
+    },
+    {
+      "categoria": "frontend_critico",
+      "archivo": "frontend/src/app/(shell)/page.tsx",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "frontend_critico",
+      "archivo": "frontend/src/app/(auth)/login/page.tsx",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "frontend_critico",
+      "archivo": "frontend/src/components/views/PredictionView.tsx",
+      "cubierto_por_test": false
+    },
+    {
+      "categoria": "frontend_critico",
+      "archivo": "frontend/src/components/views/GradesView.tsx",
+      "cubierto_por_test": false
+    }
+  ],
+  "funciones_revisadas": [],
+  "ramas_evaluadas": [
+    {
+      "rama": "authenticate sin token → 401",
+      "archivo": "backend/src/middleware/auth.ts",
+      "test": "smoke + run-api-tests"
+    },
+    {
+      "rama": "authorize admin only → 403 docente",
+      "archivo": "backend/src/routes/index.ts L100",
+      "test": "run-api-tests TC-SEC-03"
+    },
+    {
+      "rama": "estudiante scope studentId ajeno",
+      "archivo": "backend/src/utils/estudiante-scope.ts",
+      "test": "estudiante-scope.test.ts"
+    },
+    {
+      "rama": "heurística riesgo bajo/alto",
+      "archivo": "machine-learning/app/predict.py",
+      "test": "test_predict.py"
+    },
+    {
+      "rama": "ROLE_SECTIONS por rol",
+      "archivo": "frontend/src/app/(shell)/page.tsx",
+      "test": "capture-ui 3 roles"
+    }
+  ],
+  "validaciones_cubiertas": [
+    {
+      "validacion": "loginSchema",
+      "cubierta": true,
+      "evidencia": "backend/tests/schemas.test.ts"
+    },
+    {
+      "validacion": "gradeSchema",
+      "cubierta": true,
+      "evidencia": "backend/tests/schemas.test.ts"
+    },
+    {
+      "validacion": "predictSchema",
+      "cubierta": true,
+      "evidencia": "backend/tests/schemas.test.ts"
+    },
+    {
+      "validacion": "alertStatus",
+      "cubierta": true,
+      "evidencia": "backend/tests/schemas.test.ts"
+    },
+    {
+      "validacion": "createUser",
+      "cubierta": true,
+      "evidencia": "backend/tests/schemas.test.ts"
+    },
+    {
+      "validacion": "changePasswordSchema",
+      "cubierta": true,
+      "evidencia": "backend/tests/schemas.test.ts"
+    },
+    {
+      "validacion": "notaEstadoLabel",
+      "cubierta": true,
+      "evidencia": "backend/tests/estudiante-scope.test.ts"
+    },
+    {
+      "validacion": "rejectClientStudentId",
+      "cubierta": true,
+      "evidencia": "backend/tests/estudiante-scope.test.ts"
+    },
+    {
+      "validacion": "uniqueSectionIds",
+      "cubierta": true,
+      "evidencia": "backend/tests/teacher-scope.test.ts"
+    }
+  ]
+}

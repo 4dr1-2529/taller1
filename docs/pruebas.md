@@ -83,4 +83,4 @@ npm run dev   # en otra terminal
 npm run test:smoke
 ```
 
-Ver también [pruebas-funcionales.md](./pruebas-funcionales.md) y [pruebas-no-funcionales.md](./pruebas-no-funcionales.md).
+Ver también [plan-pruebas/](../plan-pruebas/README.md), [pruebas-funcionales.md](./pruebas-funcionales.md) y [pruebas-no-funcionales.md](./pruebas-no-funcionales.md).

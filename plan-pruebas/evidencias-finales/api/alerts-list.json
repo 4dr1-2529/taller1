@@ -1,0 +1,3204 @@
+{
+  "status": 200,
+  "ok": true,
+  "ms": 58,
+  "json": {
+    "success": true,
+    "message": "Operación realizada correctamente",
+    "data": {
+      "items": [
+        {
+          "id": "1827",
+          "titulo": "Riesgo alto — EST-2026-0660",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:14.778Z",
+          "updatedAt": "2026-06-30T06:39:14.778Z",
+          "student": {
+            "id": "4620",
+            "codigo": "EST-2026-0660",
+            "nombres": "Sofía",
+            "apellidos": "Paredes Silva",
+            "seccionId": "22",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:14.778Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1824",
+          "titulo": "Riesgo alto — EST-2026-0645",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:12.834Z",
+          "updatedAt": "2026-06-30T06:39:12.834Z",
+          "student": {
+            "id": "4605",
+            "codigo": "EST-2026-0645",
+            "nombres": "Óscar",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "22",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:12.834Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1823",
+          "titulo": "Riesgo alto — EST-2026-0635",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:12.220Z",
+          "updatedAt": "2026-06-30T06:39:12.220Z",
+          "student": {
+            "id": "4595",
+            "codigo": "EST-2026-0635",
+            "nombres": "Eduardo",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "22",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:12.220Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1822",
+          "titulo": "Riesgo alto — EST-2026-0630",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:11.400Z",
+          "updatedAt": "2026-06-30T06:39:11.400Z",
+          "student": {
+            "id": "4590",
+            "codigo": "EST-2026-0630",
+            "nombres": "Nicole",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "21",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:11.400Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1820",
+          "titulo": "Riesgo alto — EST-2026-0615",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:10.142Z",
+          "updatedAt": "2026-06-30T06:39:10.142Z",
+          "student": {
+            "id": "4575",
+            "codigo": "EST-2026-0615",
+            "nombres": "Gabriel",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "21",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:10.142Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1818",
+          "titulo": "Riesgo alto — EST-2026-0600",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:08.961Z",
+          "updatedAt": "2026-06-30T06:39:08.961Z",
+          "student": {
+            "id": "4560",
+            "codigo": "EST-2026-0600",
+            "nombres": "Rosa",
+            "apellidos": "Condori Salazar",
+            "seccionId": "20",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:08.961Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1816",
+          "titulo": "Riesgo alto — EST-2026-0585",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:06.976Z",
+          "updatedAt": "2026-06-30T06:39:06.976Z",
+          "student": {
+            "id": "4545",
+            "codigo": "EST-2026-0585",
+            "nombres": "Eduardo",
+            "apellidos": "Condori Salazar",
+            "seccionId": "20",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:06.976Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1814",
+          "titulo": "Riesgo alto — EST-2026-0570",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:04.760Z",
+          "updatedAt": "2026-06-30T06:39:04.760Z",
+          "student": {
+            "id": "4530",
+            "codigo": "EST-2026-0570",
+            "nombres": "Ariana",
+            "apellidos": "Condori Salazar",
+            "seccionId": "19",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:04.760Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1813",
+          "titulo": "Riesgo alto — EST-2026-0560",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:04.032Z",
+          "updatedAt": "2026-06-30T06:39:04.032Z",
+          "student": {
+            "id": "4520",
+            "codigo": "EST-2026-0560",
+            "nombres": "Sofía",
+            "apellidos": "Condori Salazar",
+            "seccionId": "19",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:04.032Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1811",
+          "titulo": "Riesgo alto — EST-2026-0550",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:03.345Z",
+          "updatedAt": "2026-06-30T06:39:03.345Z",
+          "student": {
+            "id": "4510",
+            "codigo": "EST-2026-0550",
+            "nombres": "Rosa",
+            "apellidos": "Huamán Condori",
+            "seccionId": "19",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:03.345Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1808",
+          "titulo": "Riesgo alto — EST-2026-0535",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:02.351Z",
+          "updatedAt": "2026-06-30T06:39:02.351Z",
+          "student": {
+            "id": "4495",
+            "codigo": "EST-2026-0535",
+            "nombres": "Eduardo",
+            "apellidos": "Huamán Condori",
+            "seccionId": "18",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:02.351Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1806",
+          "titulo": "Riesgo alto — EST-2026-0520",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:01.328Z",
+          "updatedAt": "2026-06-30T06:39:01.328Z",
+          "student": {
+            "id": "4480",
+            "codigo": "EST-2026-0520",
+            "nombres": "Ariana",
+            "apellidos": "Huamán Condori",
+            "seccionId": "18",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:01.328Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1804",
+          "titulo": "Riesgo alto — EST-2026-0505",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:00.219Z",
+          "updatedAt": "2026-06-30T06:39:00.219Z",
+          "student": {
+            "id": "4465",
+            "codigo": "EST-2026-0505",
+            "nombres": "Sebastián",
+            "apellidos": "Huamán Condori",
+            "seccionId": "17",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:00.219Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1803",
+          "titulo": "Riesgo alto — EST-2026-0495",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:59.406Z",
+          "updatedAt": "2026-06-30T06:38:59.406Z",
+          "student": {
+            "id": "4455",
+            "codigo": "EST-2026-0495",
+            "nombres": "Óscar",
+            "apellidos": "Castro Huamán",
+            "seccionId": "17",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:59.406Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1802",
+          "titulo": "Riesgo alto — EST-2026-0490",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:58.744Z",
+          "updatedAt": "2026-06-30T06:38:58.744Z",
+          "student": {
+            "id": "4450",
+            "codigo": "EST-2026-0490",
+            "nombres": "Angela",
+            "apellidos": "Castro Huamán",
+            "seccionId": "17",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:58.744Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1800",
+          "titulo": "Riesgo alto — EST-2026-0475",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:56.555Z",
+          "updatedAt": "2026-06-30T06:38:56.555Z",
+          "student": {
+            "id": "4435",
+            "codigo": "EST-2026-0475",
+            "nombres": "Ian",
+            "apellidos": "Castro Huamán",
+            "seccionId": "16",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:56.555Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1795",
+          "titulo": "Riesgo alto — EST-2026-0440",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:53.533Z",
+          "updatedAt": "2026-06-30T06:38:53.533Z",
+          "student": {
+            "id": "4400",
+            "codigo": "EST-2026-0440",
+            "nombres": "Angela",
+            "apellidos": "Vega Castro",
+            "seccionId": "15",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:53.533Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1794",
+          "titulo": "Riesgo alto — EST-2026-0430",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:52.669Z",
+          "updatedAt": "2026-06-30T06:38:52.669Z",
+          "student": {
+            "id": "4390",
+            "codigo": "EST-2026-0430",
+            "nombres": "Nicole",
+            "apellidos": "Vega Castro",
+            "seccionId": "15",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:52.669Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1793",
+          "titulo": "Riesgo alto — EST-2026-0425",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:52.268Z",
+          "updatedAt": "2026-06-30T06:38:52.268Z",
+          "student": {
+            "id": "4385",
+            "codigo": "EST-2026-0425",
+            "nombres": "Ian",
+            "apellidos": "Vega Castro",
+            "seccionId": "15",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:52.268Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1792",
+          "titulo": "Riesgo alto — EST-2026-0420",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:51.752Z",
+          "updatedAt": "2026-06-30T06:38:51.752Z",
+          "student": {
+            "id": "4380",
+            "codigo": "EST-2026-0420",
+            "nombres": "Ariana",
+            "apellidos": "Vega Castro",
+            "seccionId": "14",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:51.752Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1790",
+          "titulo": "Riesgo alto — EST-2026-0410",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:50.934Z",
+          "updatedAt": "2026-06-30T06:38:50.934Z",
+          "student": {
+            "id": "4370",
+            "codigo": "EST-2026-0410",
+            "nombres": "Sofía",
+            "apellidos": "Vega Castro",
+            "seccionId": "14",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:50.934Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1788",
+          "titulo": "Riesgo alto — EST-2026-0395",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:49.799Z",
+          "updatedAt": "2026-06-30T06:38:49.799Z",
+          "student": {
+            "id": "4355",
+            "codigo": "EST-2026-0395",
+            "nombres": "Óscar",
+            "apellidos": "Chávez Vega",
+            "seccionId": "14",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:49.799Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1786",
+          "titulo": "Riesgo alto — EST-2026-0380",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:48.616Z",
+          "updatedAt": "2026-06-30T06:38:48.616Z",
+          "student": {
+            "id": "4340",
+            "codigo": "EST-2026-0380",
+            "nombres": "Nicole",
+            "apellidos": "Chávez Vega",
+            "seccionId": "13",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:48.616Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1784",
+          "titulo": "Riesgo alto — EST-2026-0365",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:47.469Z",
+          "updatedAt": "2026-06-30T06:38:47.469Z",
+          "student": {
+            "id": "4325",
+            "codigo": "EST-2026-0365",
+            "nombres": "Gabriel",
+            "apellidos": "Chávez Vega",
+            "seccionId": "13",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:47.469Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1783",
+          "titulo": "Riesgo alto — EST-2026-0355",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:46.771Z",
+          "updatedAt": "2026-06-30T06:38:46.771Z",
+          "student": {
+            "id": "4315",
+            "codigo": "EST-2026-0355",
+            "nombres": "Sebastián",
+            "apellidos": "Chávez Vega",
+            "seccionId": "12",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:46.771Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1779",
+          "titulo": "Riesgo alto — EST-2026-0330",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:45.169Z",
+          "updatedAt": "2026-06-30T06:38:45.169Z",
+          "student": {
+            "id": "4290",
+            "codigo": "EST-2026-0330",
+            "nombres": "Nicole",
+            "apellidos": "Díaz Chávez",
+            "seccionId": "11",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:45.169Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1777",
+          "titulo": "Riesgo alto — EST-2026-0315",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:44.155Z",
+          "updatedAt": "2026-06-30T06:38:44.155Z",
+          "student": {
+            "id": "4275",
+            "codigo": "EST-2026-0315",
+            "nombres": "Gabriel",
+            "apellidos": "Díaz Chávez",
+            "seccionId": "11",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:44.155Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1774",
+          "titulo": "Riesgo alto — EST-2026-0300",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:43.049Z",
+          "updatedAt": "2026-06-30T06:38:43.049Z",
+          "student": {
+            "id": "4260",
+            "codigo": "EST-2026-0300",
+            "nombres": "Rosa",
+            "apellidos": "Rojas Díaz",
+            "seccionId": "10",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:43.049Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1773",
+          "titulo": "Riesgo alto — EST-2026-0290",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:42.367Z",
+          "updatedAt": "2026-06-30T06:38:42.367Z",
+          "student": {
+            "id": "4250",
+            "codigo": "EST-2026-0290",
+            "nombres": "Angela",
+            "apellidos": "Rojas Díaz",
+            "seccionId": "10",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:42.367Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1772",
+          "titulo": "Riesgo alto — EST-2026-0285",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:42.064Z",
+          "updatedAt": "2026-06-30T06:38:42.064Z",
+          "student": {
+            "id": "4245",
+            "codigo": "EST-2026-0285",
+            "nombres": "Eduardo",
+            "apellidos": "Rojas Díaz",
+            "seccionId": "10",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:42.064Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1771",
+          "titulo": "Riesgo alto — EST-2026-0280",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:41.747Z",
+          "updatedAt": "2026-06-30T06:38:41.747Z",
+          "student": {
+            "id": "4240",
+            "codigo": "EST-2026-0280",
+            "nombres": "Nicole",
+            "apellidos": "Rojas Díaz",
+            "seccionId": "10",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:41.747Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1770",
+          "titulo": "Riesgo alto — EST-2026-0270",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:40.808Z",
+          "updatedAt": "2026-06-30T06:38:40.808Z",
+          "student": {
+            "id": "4230",
+            "codigo": "EST-2026-0270",
+            "nombres": "Ariana",
+            "apellidos": "Rojas Díaz",
+            "seccionId": "9",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:40.808Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1768",
+          "titulo": "Riesgo alto — EST-2026-0255",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:39.245Z",
+          "updatedAt": "2026-06-30T06:38:39.245Z",
+          "student": {
+            "id": "4215",
+            "codigo": "EST-2026-0255",
+            "nombres": "Sebastián",
+            "apellidos": "Rojas Díaz",
+            "seccionId": "9",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 3
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:39.245Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1763",
+          "titulo": "Riesgo alto — EST-2026-0220",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:36.922Z",
+          "updatedAt": "2026-06-30T06:38:36.922Z",
+          "student": {
+            "id": "4180",
+            "codigo": "EST-2026-0220",
+            "nombres": "Ariana",
+            "apellidos": "Mamani Rojas",
+            "seccionId": "8",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:36.922Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1762",
+          "titulo": "Riesgo alto — EST-2026-0215",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:36.592Z",
+          "updatedAt": "2026-06-30T06:38:36.592Z",
+          "student": {
+            "id": "4175",
+            "codigo": "EST-2026-0215",
+            "nombres": "Gabriel",
+            "apellidos": "Mamani Rojas",
+            "seccionId": "8",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:36.592Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1760",
+          "titulo": "Riesgo alto — EST-2026-0205",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:35.937Z",
+          "updatedAt": "2026-06-30T06:38:35.937Z",
+          "student": {
+            "id": "4165",
+            "codigo": "EST-2026-0205",
+            "nombres": "Sebastián",
+            "apellidos": "Mamani Rojas",
+            "seccionId": "7",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:35.937Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1757",
+          "titulo": "Riesgo alto — EST-2026-0190",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:35.007Z",
+          "updatedAt": "2026-06-30T06:38:35.007Z",
+          "student": {
+            "id": "4150",
+            "codigo": "EST-2026-0190",
+            "nombres": "Angela",
+            "apellidos": "Torres Mamani",
+            "seccionId": "7",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:35.007Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1755",
+          "titulo": "Riesgo alto — EST-2026-0175",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:34.159Z",
+          "updatedAt": "2026-06-30T06:38:34.159Z",
+          "student": {
+            "id": "4135",
+            "codigo": "EST-2026-0175",
+            "nombres": "Ian",
+            "apellidos": "Torres Mamani",
+            "seccionId": "6",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:34.159Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1753",
+          "titulo": "Riesgo alto — EST-2026-0160",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:33.238Z",
+          "updatedAt": "2026-06-30T06:38:33.238Z",
+          "student": {
+            "id": "4120",
+            "codigo": "EST-2026-0160",
+            "nombres": "Sofía",
+            "apellidos": "Torres Mamani",
+            "seccionId": "6",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:33.238Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1752",
+          "titulo": "Riesgo alto — EST-2026-0150",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:32.654Z",
+          "updatedAt": "2026-06-30T06:38:32.654Z",
+          "student": {
+            "id": "4110",
+            "codigo": "EST-2026-0150",
+            "nombres": "Rosa",
+            "apellidos": "García Torres",
+            "seccionId": "5",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:32.654Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1751",
+          "titulo": "Riesgo alto — EST-2026-0145",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:32.386Z",
+          "updatedAt": "2026-06-30T06:38:32.386Z",
+          "student": {
+            "id": "4105",
+            "codigo": "EST-2026-0145",
+            "nombres": "Óscar",
+            "apellidos": "García Torres",
+            "seccionId": "5",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:32.386Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1750",
+          "titulo": "Riesgo alto — EST-2026-0140",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:32.113Z",
+          "updatedAt": "2026-06-30T06:38:32.113Z",
+          "student": {
+            "id": "4100",
+            "codigo": "EST-2026-0140",
+            "nombres": "Angela",
+            "apellidos": "García Torres",
+            "seccionId": "5",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 2
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:32.113Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1744",
+          "titulo": "Riesgo alto — EST-2026-0114",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:30.630Z",
+          "updatedAt": "2026-06-30T06:38:30.630Z",
+          "student": {
+            "id": "4074",
+            "codigo": "EST-2026-0114",
+            "nombres": "Emilia",
+            "apellidos": "García Torres",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:30.630Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1743",
+          "titulo": "Riesgo alto — EST-2026-0113",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:30.563Z",
+          "updatedAt": "2026-06-30T06:38:30.563Z",
+          "student": {
+            "id": "4073",
+            "codigo": "EST-2026-0113",
+            "nombres": "Andrés",
+            "apellidos": "García Torres",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:30.563Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1742",
+          "titulo": "Riesgo alto — EST-2026-0112",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:30.499Z",
+          "updatedAt": "2026-06-30T06:38:30.499Z",
+          "student": {
+            "id": "4072",
+            "codigo": "EST-2026-0112",
+            "nombres": "Mariana",
+            "apellidos": "García Torres",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:30.499Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1741",
+          "titulo": "Riesgo alto — EST-2026-0111",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:30.436Z",
+          "updatedAt": "2026-06-30T06:38:30.436Z",
+          "student": {
+            "id": "4071",
+            "codigo": "EST-2026-0111",
+            "nombres": "Daniel",
+            "apellidos": "García Torres",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:30.436Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1740",
+          "titulo": "Riesgo alto — EST-2026-0110",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:30.371Z",
+          "updatedAt": "2026-06-30T06:38:30.371Z",
+          "student": {
+            "id": "4070",
+            "codigo": "EST-2026-0110",
+            "nombres": "Sofía",
+            "apellidos": "García Torres",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:30.371Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1736",
+          "titulo": "Riesgo alto — EST-2026-0103",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:29.803Z",
+          "updatedAt": "2026-06-30T06:38:29.803Z",
+          "student": {
+            "id": "4063",
+            "codigo": "EST-2026-0103",
+            "nombres": "Santiago",
+            "apellidos": "García Torres",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:29.803Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1732",
+          "titulo": "Riesgo alto — EST-2026-0098",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:29.446Z",
+          "updatedAt": "2026-06-30T06:38:29.446Z",
+          "student": {
+            "id": "4058",
+            "codigo": "EST-2026-0098",
+            "nombres": "Carmen",
+            "apellidos": "Flores García",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:29.446Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1731",
+          "titulo": "Riesgo alto — EST-2026-0097",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:29.369Z",
+          "updatedAt": "2026-06-30T06:38:29.369Z",
+          "student": {
+            "id": "4057",
+            "codigo": "EST-2026-0097",
+            "nombres": "Raúl",
+            "apellidos": "Flores García",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:29.369Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1730",
+          "titulo": "Riesgo alto — EST-2026-0096",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:29.287Z",
+          "updatedAt": "2026-06-30T06:38:29.287Z",
+          "student": {
+            "id": "4056",
+            "codigo": "EST-2026-0096",
+            "nombres": "Patricia",
+            "apellidos": "Flores García",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:29.287Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1729",
+          "titulo": "Riesgo alto — EST-2026-0095",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:29.182Z",
+          "updatedAt": "2026-06-30T06:38:29.182Z",
+          "student": {
+            "id": "4055",
+            "codigo": "EST-2026-0095",
+            "nombres": "Óscar",
+            "apellidos": "Flores García",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:29.182Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1728",
+          "titulo": "Riesgo alto — EST-2026-0094",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:29.117Z",
+          "updatedAt": "2026-06-30T06:38:29.117Z",
+          "student": {
+            "id": "4054",
+            "codigo": "EST-2026-0094",
+            "nombres": "Gladys",
+            "apellidos": "Flores García",
+            "seccionId": "4",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:29.117Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1723",
+          "titulo": "Riesgo alto — EST-2026-0084",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:28.424Z",
+          "updatedAt": "2026-06-30T06:38:28.424Z",
+          "student": {
+            "id": "4044",
+            "codigo": "EST-2026-0084",
+            "nombres": "Milagros",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:28.424Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1721",
+          "titulo": "Riesgo alto — EST-2026-0082",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:28.304Z",
+          "updatedAt": "2026-06-30T06:38:28.304Z",
+          "student": {
+            "id": "4042",
+            "codigo": "EST-2026-0082",
+            "nombres": "Paola",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:28.304Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1720",
+          "titulo": "Riesgo alto — EST-2026-0081",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:28.237Z",
+          "updatedAt": "2026-06-30T06:38:28.237Z",
+          "student": {
+            "id": "4041",
+            "codigo": "EST-2026-0081",
+            "nombres": "Rodrigo",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:28.237Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1719",
+          "titulo": "Riesgo alto — EST-2026-0080",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:28.143Z",
+          "updatedAt": "2026-06-30T06:38:28.143Z",
+          "student": {
+            "id": "4040",
+            "codigo": "EST-2026-0080",
+            "nombres": "Nicole",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:28.143Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1718",
+          "titulo": "Riesgo alto — EST-2026-0079",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:28.070Z",
+          "updatedAt": "2026-06-30T06:38:28.070Z",
+          "student": {
+            "id": "4039",
+            "codigo": "EST-2026-0079",
+            "nombres": "Emilio",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:28.070Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1714",
+          "titulo": "Riesgo alto — EST-2026-0075",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:27.775Z",
+          "updatedAt": "2026-06-30T06:38:27.775Z",
+          "student": {
+            "id": "4035",
+            "codigo": "EST-2026-0075",
+            "nombres": "Ian",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:27.775Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1711",
+          "titulo": "Riesgo alto — EST-2026-0067",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:27.245Z",
+          "updatedAt": "2026-06-30T06:38:27.245Z",
+          "student": {
+            "id": "4027",
+            "codigo": "EST-2026-0067",
+            "nombres": "Renato",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:27.245Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1710",
+          "titulo": "Riesgo alto — EST-2026-0066",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:27.142Z",
+          "updatedAt": "2026-06-30T06:38:27.142Z",
+          "student": {
+            "id": "4026",
+            "codigo": "EST-2026-0066",
+            "nombres": "Victoria",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:27.142Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1709",
+          "titulo": "Riesgo alto — EST-2026-0065",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:27.073Z",
+          "updatedAt": "2026-06-30T06:38:27.073Z",
+          "student": {
+            "id": "4025",
+            "codigo": "EST-2026-0065",
+            "nombres": "Gabriel",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:27.073Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1708",
+          "titulo": "Riesgo alto — EST-2026-0064",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:26.991Z",
+          "updatedAt": "2026-06-30T06:38:26.991Z",
+          "student": {
+            "id": "4024",
+            "codigo": "EST-2026-0064",
+            "nombres": "Emilia",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:26.991Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1707",
+          "titulo": "Riesgo alto — EST-2026-0063",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:26.915Z",
+          "updatedAt": "2026-06-30T06:38:26.915Z",
+          "student": {
+            "id": "4023",
+            "codigo": "EST-2026-0063",
+            "nombres": "Andrés",
+            "apellidos": "Flores García",
+            "seccionId": "3",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:26.915Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1702",
+          "titulo": "Riesgo alto — EST-2026-0056",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:26.375Z",
+          "updatedAt": "2026-06-30T06:38:26.375Z",
+          "student": {
+            "id": "4016",
+            "codigo": "EST-2026-0056",
+            "nombres": "Camila",
+            "apellidos": "Flores García",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:26.375Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1698",
+          "titulo": "Riesgo alto — EST-2026-0051",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:25.947Z",
+          "updatedAt": "2026-06-30T06:38:25.947Z",
+          "student": {
+            "id": "4011",
+            "codigo": "EST-2026-0051",
+            "nombres": "Mateo",
+            "apellidos": "Flores García",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:25.947Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1697",
+          "titulo": "Riesgo alto — EST-2026-0050",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:25.869Z",
+          "updatedAt": "2026-06-30T06:38:25.869Z",
+          "student": {
+            "id": "4010",
+            "codigo": "EST-2026-0050",
+            "nombres": "Rosa",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:25.869Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1696",
+          "titulo": "Riesgo alto — EST-2026-0049",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:25.776Z",
+          "updatedAt": "2026-06-30T06:38:25.776Z",
+          "student": {
+            "id": "4009",
+            "codigo": "EST-2026-0049",
+            "nombres": "Miguel",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:25.776Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1695",
+          "titulo": "Riesgo alto — EST-2026-0048",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:25.709Z",
+          "updatedAt": "2026-06-30T06:38:25.709Z",
+          "student": {
+            "id": "4008",
+            "codigo": "EST-2026-0048",
+            "nombres": "Carmen",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:25.709Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1694",
+          "titulo": "Riesgo alto — EST-2026-0047",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:25.624Z",
+          "updatedAt": "2026-06-30T06:38:25.624Z",
+          "student": {
+            "id": "4007",
+            "codigo": "EST-2026-0047",
+            "nombres": "Raúl",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:25.624Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1690",
+          "titulo": "Riesgo alto — EST-2026-0038",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:24.911Z",
+          "updatedAt": "2026-06-30T06:38:24.911Z",
+          "student": {
+            "id": "3998",
+            "codigo": "EST-2026-0038",
+            "nombres": "Katherine",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:24.911Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1687",
+          "titulo": "Riesgo alto — EST-2026-0035",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:24.666Z",
+          "updatedAt": "2026-06-30T06:38:24.666Z",
+          "student": {
+            "id": "3995",
+            "codigo": "EST-2026-0035",
+            "nombres": "Eduardo",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:24.666Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1686",
+          "titulo": "Riesgo alto — EST-2026-0034",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:24.574Z",
+          "updatedAt": "2026-06-30T06:38:24.574Z",
+          "student": {
+            "id": "3994",
+            "codigo": "EST-2026-0034",
+            "nombres": "Milagros",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:24.574Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1685",
+          "titulo": "Riesgo alto — EST-2026-0033",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:24.466Z",
+          "updatedAt": "2026-06-30T06:38:24.466Z",
+          "student": {
+            "id": "3993",
+            "codigo": "EST-2026-0033",
+            "nombres": "César",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:24.466Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1684",
+          "titulo": "Riesgo alto — EST-2026-0032",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:24.380Z",
+          "updatedAt": "2026-06-30T06:38:24.380Z",
+          "student": {
+            "id": "3992",
+            "codigo": "EST-2026-0032",
+            "nombres": "Paola",
+            "apellidos": "Quispe Flores",
+            "seccionId": "2",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:24.380Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1680",
+          "titulo": "Riesgo alto — EST-2026-0028",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:24.037Z",
+          "updatedAt": "2026-06-30T06:38:24.037Z",
+          "student": {
+            "id": "3988",
+            "codigo": "EST-2026-0028",
+            "nombres": "Valeria",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:24.037Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1676",
+          "titulo": "Riesgo alto — EST-2026-0019",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:23.373Z",
+          "updatedAt": "2026-06-30T06:38:23.373Z",
+          "student": {
+            "id": "3979",
+            "codigo": "EST-2026-0019",
+            "nombres": "Bruno",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:23.373Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1675",
+          "titulo": "Riesgo alto — EST-2026-0018",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:23.293Z",
+          "updatedAt": "2026-06-30T06:38:23.293Z",
+          "student": {
+            "id": "3978",
+            "codigo": "EST-2026-0018",
+            "nombres": "Fiorella",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:23.293Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1674",
+          "titulo": "Riesgo alto — EST-2026-0017",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:23.208Z",
+          "updatedAt": "2026-06-30T06:38:23.208Z",
+          "student": {
+            "id": "3977",
+            "codigo": "EST-2026-0017",
+            "nombres": "Renato",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:23.208Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1673",
+          "titulo": "Riesgo alto — EST-2026-0016",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:23.125Z",
+          "updatedAt": "2026-06-30T06:38:23.125Z",
+          "student": {
+            "id": "3976",
+            "codigo": "EST-2026-0016",
+            "nombres": "Victoria",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:23.125Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1669",
+          "titulo": "Riesgo alto — EST-2026-0010",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:22.358Z",
+          "updatedAt": "2026-06-30T06:38:22.358Z",
+          "student": {
+            "id": "3970",
+            "codigo": "EST-2026-0010",
+            "nombres": "Sofía",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:22.358Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1665",
+          "titulo": "Riesgo alto — EST-2026-0004",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:21.637Z",
+          "updatedAt": "2026-06-30T06:38:21.637Z",
+          "student": {
+            "id": "3964",
+            "codigo": "EST-2026-0004",
+            "nombres": "Luciana",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:21.637Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1664",
+          "titulo": "Riesgo alto — EST-2026-0003",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:21.438Z",
+          "updatedAt": "2026-06-30T06:38:21.438Z",
+          "student": {
+            "id": "3963",
+            "codigo": "EST-2026-0003",
+            "nombres": "Santiago",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:21.438Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1663",
+          "titulo": "Riesgo alto — EST-2026-0002",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:21.009Z",
+          "updatedAt": "2026-06-30T06:38:21.009Z",
+          "student": {
+            "id": "3962",
+            "codigo": "EST-2026-0002",
+            "nombres": "Valentina",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:21.009Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1662",
+          "titulo": "Riesgo alto — EST-2026-0001",
+          "descripcion": "Alerta automática por perfil académico/LMS (alto).",
+          "level": "alto",
+          "status": "nueva",
+          "score": 78,
+          "probability": 0.85,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:20.822Z",
+          "updatedAt": "2026-06-30T06:38:20.822Z",
+          "student": {
+            "id": "3961",
+            "codigo": "EST-2026-0001",
+            "nombres": "Mateo",
+            "apellidos": "Quispe Flores",
+            "seccionId": "1",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 1
+              }
+            }
+          },
+          "nivel_riesgo": "Alto",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:20.822Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1826",
+          "titulo": "Riesgo medio — EST-2026-0655",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:13.755Z",
+          "updatedAt": "2026-06-30T06:39:13.755Z",
+          "student": {
+            "id": "4615",
+            "codigo": "EST-2026-0655",
+            "nombres": "Sebastián",
+            "apellidos": "Paredes Silva",
+            "seccionId": "22",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:13.755Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1825",
+          "titulo": "Riesgo medio — EST-2026-0650",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:13.206Z",
+          "updatedAt": "2026-06-30T06:39:13.206Z",
+          "student": {
+            "id": "4610",
+            "codigo": "EST-2026-0650",
+            "nombres": "Rosa",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "22",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:13.206Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1821",
+          "titulo": "Riesgo medio — EST-2026-0620",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:10.489Z",
+          "updatedAt": "2026-06-30T06:39:10.489Z",
+          "student": {
+            "id": "4580",
+            "codigo": "EST-2026-0620",
+            "nombres": "Ariana",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "21",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:10.489Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1819",
+          "titulo": "Riesgo medio — EST-2026-0610",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:09.725Z",
+          "updatedAt": "2026-06-30T06:39:09.725Z",
+          "student": {
+            "id": "4570",
+            "codigo": "EST-2026-0610",
+            "nombres": "Sofía",
+            "apellidos": "Salazar Paredes",
+            "seccionId": "21",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:09.725Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1817",
+          "titulo": "Riesgo medio — EST-2026-0590",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:07.713Z",
+          "updatedAt": "2026-06-30T06:39:07.713Z",
+          "student": {
+            "id": "4550",
+            "codigo": "EST-2026-0590",
+            "nombres": "Angela",
+            "apellidos": "Condori Salazar",
+            "seccionId": "20",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:07.713Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1815",
+          "titulo": "Riesgo medio — EST-2026-0580",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:06.438Z",
+          "updatedAt": "2026-06-30T06:39:06.438Z",
+          "student": {
+            "id": "4540",
+            "codigo": "EST-2026-0580",
+            "nombres": "Nicole",
+            "apellidos": "Condori Salazar",
+            "seccionId": "20",
+            "seccion": {
+              "nombre": "A",
+              "grado": {
+                "numero": 6
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:06.438Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1812",
+          "titulo": "Riesgo medio — EST-2026-0555",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:03.708Z",
+          "updatedAt": "2026-06-30T06:39:03.708Z",
+          "student": {
+            "id": "4515",
+            "codigo": "EST-2026-0555",
+            "nombres": "Sebastián",
+            "apellidos": "Condori Salazar",
+            "seccionId": "19",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:03.708Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1810",
+          "titulo": "Riesgo medio — EST-2026-0545",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:03.026Z",
+          "updatedAt": "2026-06-30T06:39:03.026Z",
+          "student": {
+            "id": "4505",
+            "codigo": "EST-2026-0545",
+            "nombres": "Óscar",
+            "apellidos": "Huamán Condori",
+            "seccionId": "19",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:03.026Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1809",
+          "titulo": "Riesgo medio — EST-2026-0540",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:02.700Z",
+          "updatedAt": "2026-06-30T06:39:02.700Z",
+          "student": {
+            "id": "4500",
+            "codigo": "EST-2026-0540",
+            "nombres": "Angela",
+            "apellidos": "Huamán Condori",
+            "seccionId": "18",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:02.700Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1807",
+          "titulo": "Riesgo medio — EST-2026-0525",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:01.683Z",
+          "updatedAt": "2026-06-30T06:39:01.683Z",
+          "student": {
+            "id": "4485",
+            "codigo": "EST-2026-0525",
+            "nombres": "Ian",
+            "apellidos": "Huamán Condori",
+            "seccionId": "18",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:01.683Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1805",
+          "titulo": "Riesgo medio — EST-2026-0515",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:39:00.970Z",
+          "updatedAt": "2026-06-30T06:39:00.970Z",
+          "student": {
+            "id": "4475",
+            "codigo": "EST-2026-0515",
+            "nombres": "Gabriel",
+            "apellidos": "Huamán Condori",
+            "seccionId": "18",
+            "seccion": {
+              "nombre": "B",
+              "grado": {
+                "numero": 5
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:39:00.970Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1801",
+          "titulo": "Riesgo medio — EST-2026-0480",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:57.163Z",
+          "updatedAt": "2026-06-30T06:38:57.163Z",
+          "student": {
+            "id": "4440",
+            "codigo": "EST-2026-0480",
+            "nombres": "Nicole",
+            "apellidos": "Castro Huamán",
+            "seccionId": "16",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:57.163Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1799",
+          "titulo": "Riesgo medio — EST-2026-0470",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:56.137Z",
+          "updatedAt": "2026-06-30T06:38:56.137Z",
+          "student": {
+            "id": "4430",
+            "codigo": "EST-2026-0470",
+            "nombres": "Ariana",
+            "apellidos": "Castro Huamán",
+            "seccionId": "16",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:56.137Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1798",
+          "titulo": "Riesgo medio — EST-2026-0460",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:55.367Z",
+          "updatedAt": "2026-06-30T06:38:55.367Z",
+          "student": {
+            "id": "4420",
+            "codigo": "EST-2026-0460",
+            "nombres": "Sofía",
+            "apellidos": "Castro Huamán",
+            "seccionId": "16",
+            "seccion": {
+              "nombre": "D",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:55.367Z",
+          "curso": null,
+          "profesor": null
+        },
+        {
+          "id": "1797",
+          "titulo": "Riesgo medio — EST-2026-0450",
+          "descripcion": "Alerta automática por perfil académico/LMS (medio).",
+          "level": "medio",
+          "status": "nueva",
+          "score": 52,
+          "probability": 0.55,
+          "recommendation": "Seguimiento académico y contacto con apoderado.",
+          "createdAt": "2026-06-30T06:38:54.584Z",
+          "updatedAt": "2026-06-30T06:38:54.584Z",
+          "student": {
+            "id": "4410",
+            "codigo": "EST-2026-0450",
+            "nombres": "Rosa",
+            "apellidos": "Vega Castro",
+            "seccionId": "15",
+            "seccion": {
+              "nombre": "C",
+              "grado": {
+                "numero": 4
+              }
+            }
+          },
+          "nivel_riesgo": "Medio",
+          "estado_label": "Nueva",
+          "factores_riesgo": [],
+          "fecha": "2026-06-30T06:38:54.584Z",
+          "curso": null,
+          "profesor": null
+        }
+      ],
+      "total": 100,
+      "salonSummary": [
+        {
+          "salon": "1°A",
+          "count": 10
+        },
+        {
+          "salon": "1°B",
+          "count": 11
+        },
+        {
+          "salon": "1°C",
+          "count": 11
+        },
+        {
+          "salon": "1°D",
+          "count": 11
+        },
+        {
+          "salon": "2°A",
+          "count": 3
+        },
+        {
+          "salon": "2°B",
+          "count": 2
+        },
+        {
+          "salon": "2°C",
+          "count": 2
+        },
+        {
+          "salon": "2°D",
+          "count": 2
+        },
+        {
+          "salon": "3°A",
+          "count": 2
+        },
+        {
+          "salon": "3°B",
+          "count": 4
+        },
+        {
+          "salon": "3°C",
+          "count": 2
+        },
+        {
+          "salon": "3°D",
+          "count": 1
+        },
+        {
+          "salon": "4°A",
+          "count": 2
+        },
+        {
+          "salon": "4°B",
+          "count": 3
+        },
+        {
+          "salon": "4°C",
+          "count": 4
+        },
+        {
+          "salon": "4°D",
+          "count": 4
+        },
+        {
+          "salon": "5°A",
+          "count": 3
+        },
+        {
+          "salon": "5°B",
+          "count": 5
+        },
+        {
+          "salon": "5°C",
+          "count": 5
+        },
+        {
+          "salon": "6°A",
+          "count": 4
+        },
+        {
+          "salon": "6°B",
+          "count": 4
+        },
+        {
+          "salon": "6°C",
+          "count": 5
+        }
+      ]
+    }
+  }
+}

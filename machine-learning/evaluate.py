@@ -34,7 +34,8 @@ def evaluate_saved_models() -> dict:
             continue
         model = joblib.load(p)
         preds = model.predict(X_test)
-        results[name] = evaluate_model(name, y_test, preds)
+        proba = model.predict_proba(X_test) if hasattr(model, "predict_proba") else None
+        results[name] = evaluate_model(name, y_test, preds, proba)
 
     out = REPORTS_DIR / "evaluation_report.json"
     with open(out, "w", encoding="utf-8") as f:
