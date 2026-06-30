@@ -8,12 +8,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   buildStudentAccountEmail,
-  DEFAULT_INSTITUTION_PASSWORD,
 } from "../src/utils/person-accounts.js";
+import { requireDemoPassword } from "./demo-env.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.resolve(__dirname, "../../docs/cuentas-demo");
-const PASSWORD = DEFAULT_INSTITUTION_PASSWORD;
+const PASSWORD = requireDemoPassword();
 const prisma = new PrismaClient();
 
 function csvEscape(v: unknown) {

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
-import { DEFAULT_INSTITUTION_PASSWORD } from "./default-password.mjs";
+import { requireDemoPassword } from "./demo-env.mjs";
 
-const password = process.argv[2] ?? DEFAULT_INSTITUTION_PASSWORD;
+const password = process.argv[2] ?? requireDemoPassword();
 const prisma = new PrismaClient();
 
 try {

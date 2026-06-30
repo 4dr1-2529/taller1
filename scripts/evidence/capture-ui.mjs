@@ -11,8 +11,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const BASE = process.env.WEB_URL ?? "http://localhost:3029";
 const EVIDENCE = join(ROOT, "plan-pruebas/evidencias-finales");
 
+import { requireDemoPassword } from "../../backend/scripts/demo-env.mjs";
+
 const EMAIL = process.env.QA_EMAIL ?? "director@blenkir.edu.pe";
-const PASSWORD = process.env.QA_PASSWORD ?? "mbappe29";
+const PASSWORD = process.env.QA_PASSWORD ?? requireDemoPassword();
 
 /** Carpeta → etiqueta visible en sidebar (admin) */
 const CAPTURES = [

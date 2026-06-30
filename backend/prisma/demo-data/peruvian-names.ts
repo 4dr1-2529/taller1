@@ -1,4 +1,4 @@
-/** Datos demográficos peruanos para seed institucional. */
+import { randomInt } from "node:crypto";
 export const PERUVIAN_FIRST_NAMES = [
   "Mateo", "Valentina", "Santiago", "Luciana", "Sebastián", "Camila", "Diego", "Isabella",
   "Alejandro", "Sofía", "Daniel", "Mariana", "Andrés", "Emilia", "Gabriel", "Victoria",
@@ -19,7 +19,7 @@ export const PERUVIAN_SURNAMES = [
 export type PeruvianPerson = { nombres: string; apellidos: string };
 
 function pick<T>(items: readonly T[]): T {
-  return items[Math.floor(Math.random() * items.length)]!;
+  return items[randomInt(items.length)]!;
 }
 
 function pickDistinct<T>(items: readonly T[], exclude: T): T {
@@ -63,7 +63,7 @@ function slugPart(value: string): string {
 /** Genera DNI peruano único de 8 dígitos (rango demo 40M–79M). */
 export function nextUniqueDni(used: Set<string>): string {
   for (let attempt = 0; attempt < 50_000; attempt++) {
-    const dni = String(40_000_000 + Math.floor(Math.random() * 39_999_999)).padStart(8, "0");
+    const dni = String(40_000_000 + randomInt(39_999_999)).padStart(8, "0");
     if (!used.has(dni)) {
       used.add(dni);
       return dni;

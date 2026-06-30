@@ -1,10 +1,13 @@
 /**
  * Pruebas smoke del API — requiere backend en :4000 y opcional ML en :5000
  * Ejecutar: node scripts/smoke-tests.mjs
+ * Requiere: DEMO_PASSWORD en backend/.env
  */
+import { requireDemoPassword } from "./demo-env.mjs";
+
 const API = process.env.API_URL ?? "http://localhost:4000/api/v1";
 const ML = process.env.ML_URL ?? "http://localhost:5000";
-
+const DEMO_PASSWORD = requireDemoPassword();
 let passed = 0;
 let failed = 0;
 
@@ -54,9 +57,9 @@ async function main() {
 
   await test("login director (si existe seed)", async () => {
     const creds = [
-      { email: "director@blenkir.edu.pe", password: "mbappe29" },
-      { email: "director@iep-huancayo.edu.pe", password: "mbappe29" },
-      { email: "admin@iep-huancayo.edu.pe", password: "mbappe29" },
+      { email: "director@blenkir.edu.pe", password: DEMO_PASSWORD },
+      { email: "director@iep-huancayo.edu.pe", password: DEMO_PASSWORD },
+      { email: "admin@iep-huancayo.edu.pe", password: DEMO_PASSWORD },
     ];
     let token = null;
     for (const body of creds) {

@@ -48,7 +48,7 @@
 | Estudiantes | 660 | `npm run db:seed:demo` |
 | Profesores | 23 | `docs/cuentas-demo/profesores.csv` |
 | Salones | 22 × 30 alumnos | `validate-demo-data.mjs` |
-| Contraseña demo | `mbappe29` | `backend/scripts/default-password.mjs` |
+| Contraseña demo | variable `DEMO_PASSWORD` | `backend/scripts/demo-env.mjs` |
 
 ---
 

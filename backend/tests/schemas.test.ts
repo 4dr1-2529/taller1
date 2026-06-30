@@ -19,7 +19,7 @@ import {
 describe("AUTH", () => {
   it("login válido", () => {
     assert.equal(
-      loginSchema.safeParse({ email: "dir@blenkir.edu.pe", password: "mbappe29" }).success,
+      loginSchema.safeParse({ email: "dir@blenkir.edu.pe", password: "ValidPass1" }).success,
       true,
     );
   });

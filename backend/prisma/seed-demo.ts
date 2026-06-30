@@ -14,14 +14,14 @@ import {
   deterministicTeacherDni,
   randomPeruvianPerson,
 } from "./demo-data/peruvian-names.js";
-import { DEFAULT_INSTITUTION_PASSWORD } from "../scripts/default-password.mjs";
+import { requireDemoPassword } from "../scripts/demo-env.mjs";
 import {
   buildStudentAccountEmail,
   buildTeacherAccountEmail,
 } from "../src/utils/person-accounts.js";
 
 const prisma = new PrismaClient();
-const PASSWORD = DEFAULT_INSTITUTION_PASSWORD;
+const PASSWORD = requireDemoPassword();
 const ALUMNOS_POR_SALON = 30;
 const DIRECTOR_EMAIL = "director@blenkir.edu.pe";
 

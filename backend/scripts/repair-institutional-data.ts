@@ -7,13 +7,13 @@ import { PrismaClient } from "@prisma/client";
 import { repairBimesterGrades } from "../prisma/demo-data/seed-grades.js";
 import {
   buildStudentAccountEmail,
-  DEFAULT_INSTITUTION_PASSWORD,
 } from "../src/utils/person-accounts.js";
+import { getInstitutionDefaultPassword } from "../src/config/institution-password.js";
 
 const prisma = new PrismaClient();
 
 async function syncStudentAccounts() {
-  const hash = await bcrypt.hash(DEFAULT_INSTITUTION_PASSWORD, 12);
+  const hash = await bcrypt.hash(getInstitutionDefaultPassword(), 12);
   const rol = await prisma.role.findUnique({ where: { codigo: "estudiante" } });
   if (!rol) throw new Error("Rol estudiante no encontrado");
 
@@ -109,7 +109,7 @@ async function main() {
 
   const repair = await repairBimesterGrades(prisma, anio.id, periodos.map((p) => p.id));
   console.log(`  Notas — ${repair.created} calificaciones nuevas · ${repair.missingBefore} huecos detectados`);
-  console.log(`OK — contraseña institucional: ${DEFAULT_INSTITUTION_PASSWORD}`);
+  console.log("OK — contraseña institucional sincronizada (DEMO_PASSWORD)");
 }
 
 main()

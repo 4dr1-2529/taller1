@@ -1,7 +1,8 @@
 import { sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
-import { buildStudentAccountEmail, DEFAULT_INSTITUTION_PASSWORD } from "../utils/person-accounts.js";
+import { buildStudentAccountEmail } from "../utils/person-accounts.js";
+import { getInstitutionDefaultPassword } from "../config/institution-password.js";
 
 /** Director: exportar correos de login reales (tabla usuario). */
 export async function exportAccessAccounts(_req: Request, res: Response, next: NextFunction) {
@@ -28,7 +29,7 @@ export async function exportAccessAccounts(_req: Request, res: Response, next: N
 
     sendSuccess(res, {
       generatedAt: new Date().toISOString(),
-      password: DEFAULT_INSTITUTION_PASSWORD,
+      password: getInstitutionDefaultPassword(),
       director: director
         ? { ...director, rol: "Director" }
         : { email: "director@blenkir.edu.pe", rol: "Director" },

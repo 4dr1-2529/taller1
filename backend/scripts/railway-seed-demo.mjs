@@ -34,4 +34,4 @@ execSync("tsx scripts/repair-institutional-data.ts", {
   env: process.env,
 });
 
-console.log("[railway-seed] OK — director@blenkir.edu.pe / mbappe29");
+console.log("[railway-seed] OK — cuentas demo listas (véase DEMO_PASSWORD en Railway)");

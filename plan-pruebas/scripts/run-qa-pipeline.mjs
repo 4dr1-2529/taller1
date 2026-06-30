@@ -2,7 +2,7 @@
  * Pipeline QA completo — plan-pruebas/
  * Uso: node plan-pruebas/scripts/run-qa-pipeline.mjs
  */
-import { execSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { PATHS } from "./lib/config.mjs";
@@ -59,20 +59,20 @@ function mergeResults() {
 
 function runValidation() {
   const checks = [
-    { name: "type-check", cmd: "npm run type-check" },
-    { name: "build", cmd: "npm run build" },
-    { name: "test", cmd: "npm run test" },
+    { name: "type-check", cmd: "npm", args: ["run", "type-check"] },
+    { name: "build", cmd: "npm", args: ["run", "build"] },
+    { name: "test", cmd: "npm", args: ["run", "test"] },
   ];
   for (const c of checks) {
     const t0 = Date.now();
-    let ok = true;
-    let output = "";
-    try {
-      output = execSync(c.cmd, { cwd: PATHS.root, encoding: "utf8", timeout: 600000 });
-    } catch (e) {
-      ok = false;
-      output = (e.stdout ?? "") + (e.stderr ?? "");
-    }
+    const r = spawnSync(c.cmd, c.args, {
+      cwd: PATHS.root,
+      encoding: "utf8",
+      timeout: 600000,
+      env: process.env,
+    });
+    const ok = r.status === 0;
+    const output = (r.stdout ?? "") + (r.stderr ?? "");
     const logFile = join(EVID, "terminal", `${c.name}.log`);
     writeFileSync(logFile, output);
     pipeline.steps.push({ name: `validacion-${c.name}`, ok, ms: Date.now() - t0, logFile });
@@ -90,10 +90,11 @@ async function main() {
   mergeResults();
 
   try {
-    execSync("python plan-pruebas/matriz-pruebas/generate_matriz.py", {
+    spawnSync("python", ["plan-pruebas/matriz-pruebas/generate_matriz.py"], {
       cwd: PATHS.root,
       encoding: "utf8",
       timeout: 60000,
+      stdio: "pipe",
     });
     pipeline.steps.push({ name: "matriz-generada", ok: true });
   } catch (e) {

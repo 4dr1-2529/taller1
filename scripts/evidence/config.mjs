@@ -1,11 +1,12 @@
 import path from "path";
 import { fileURLToPath } from "url";
+import { requireDemoPassword } from "../../backend/scripts/demo-env.mjs";
 
 const ROOT = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 
 export const BASE_URL = "http://localhost:3029";
 export const API_URL = "http://localhost:4000/api/v1";
-export const PASSWORD = "mbappe29";
+export const PASSWORD = () => requireDemoPassword();
 
 export const USERS = {
   director: { email: "director@blenkir.edu.pe", label: "Director" },

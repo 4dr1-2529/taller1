@@ -1,8 +1,4 @@
-/** Contraseña institucional por defecto para cuentas demo y nuevas matrículas. */
-export const DEFAULT_INSTITUTION_PASSWORD = "mbappe29";
-
-/** Correo de acceso estudiante: correo explícito o nombre.apellido + DNI. */
-export function buildStudentAccountEmail(
+/** Correo de acceso estudiante: correo explícito o nombre.apellido + DNI. */export function buildStudentAccountEmail(
   nombres: string,
   apellidos: string,
   dni: string,

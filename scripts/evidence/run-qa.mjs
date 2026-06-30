@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
-import { API_URL, OUT_QA, OUT_LEGACY } from "./config.mjs";
+import { API_URL, OUT_QA, OUT_LEGACY, PASSWORD } from "./config.mjs";
 
 const ROOT = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 
@@ -32,7 +32,7 @@ async function apiChecks() {
   const lines = [];
   const tests = [
     { name: "health", url: "http://localhost:4000/health" },
-    { name: "login-director", url: `${API_URL}/auth/login`, method: "POST", body: { email: "director@blenkir.edu.pe", password: "mbappe29" } },
+    { name: "login-director", url: `${API_URL}/auth/login`, method: "POST", body: { email: "director@blenkir.edu.pe", password: PASSWORD() } },
     { name: "login-invalido", url: `${API_URL}/auth/login`, method: "POST", body: { email: "bad@blenkir.edu.pe", password: "wrong" }, expectFail: true },
   ];
 

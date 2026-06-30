@@ -95,8 +95,15 @@ export const PERUVIAN_SURNAMES = [
   "Navarro",
 ] as const;
 
+function secureIndex(max: number): number {
+  if (max <= 0) return 0;
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return buf[0]! % max;
+}
+
 function pick<T>(items: readonly T[]): T {
-  return items[Math.floor(Math.random() * items.length)]!;
+  return items[secureIndex(items.length)]!;
 }
 
 function pickDistinct<T>(items: readonly T[], exclude: T): T {

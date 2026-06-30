@@ -1,5 +1,6 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { requireDemoPassword } from "../../backend/scripts/demo-env.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const PP = join(ROOT, "plan-pruebas");
@@ -25,8 +26,10 @@ export const URLS = {
   ml: process.env.ML_URL ?? "http://localhost:5000",
 };
 
+const demoPassword = () => requireDemoPassword();
+
 export const CREDS = {
-  director: { email: "director@blenkir.edu.pe", password: "mbappe29", role: "admin" },
-  profesor: { email: "pro50000001@blenkir.edu.pe", password: "mbappe29", role: "docente" },
-  estudiante: { email: "mateo.quispe0001@blenkir.edu.pe", password: "mbappe29", role: "estudiante" },
+  director: { email: "director@blenkir.edu.pe", get password() { return demoPassword(); }, role: "admin" },
+  profesor: { email: "pro50000001@blenkir.edu.pe", get password() { return demoPassword(); }, role: "docente" },
+  estudiante: { email: "mateo.quispe0001@blenkir.edu.pe", get password() { return demoPassword(); }, role: "estudiante" },
 };

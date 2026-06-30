@@ -5,6 +5,7 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { requireDemoPassword } from "../../backend/scripts/demo-env.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const OUT_DIR = join(ROOT, "plan-pruebas/evidencias-finales/resultados");
@@ -50,7 +51,7 @@ async function main() {
     const r = await fetch(`${API}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "director@blenkir.edu.pe", password: "mbappe29" }),
+      body: JSON.stringify({ email: "director@blenkir.edu.pe", password: requireDemoPassword() }),
       signal: AbortSignal.timeout(15000),
     });
     if (!r.ok) {

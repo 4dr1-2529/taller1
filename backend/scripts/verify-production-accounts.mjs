@@ -1,16 +1,13 @@
-/**
- * Verifica muestra de logins y confirma CSV de cuentas web.
- * Uso: node scripts/verify-production-accounts.mjs
- */
 import fs from "node:fs";
 import https from "node:https";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { requireDemoPassword } from "./demo-env.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.resolve(__dirname, "../../docs/cuentas-demo");
 const API_URL = (process.env.API_URL ?? "https://taller1-production.up.railway.app/api/v1").replace(/\/$/, "");
-const PASSWORD = process.env.INSTITUTION_PASSWORD ?? "mbappe29";
+const PASSWORD = process.env.INSTITUTION_PASSWORD?.trim() || requireDemoPassword();
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

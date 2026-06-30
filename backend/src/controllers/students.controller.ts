@@ -8,7 +8,8 @@ import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 import { deriveLmsEngagement } from "../utils/lms-engagement.js";
-import { buildStudentAccountEmail, DEFAULT_INSTITUTION_PASSWORD } from "../utils/person-accounts.js";
+import { buildStudentAccountEmail } from "../utils/person-accounts.js";
+import { getInstitutionDefaultPassword } from "../config/institution-password.js";
 
 export async function listStudents(req: Request, res: Response, next: NextFunction) {
   try {
@@ -86,7 +87,7 @@ export async function createStudent(req: Request, res: Response, next: NextFunct
     const rolEstudiante = await prisma.role.findUnique({ where: { codigo: "estudiante" } });
     if (!rolEstudiante) throw new AppError(500, "Rol estudiante no configurado");
 
-    const passwordHash = await bcrypt.hash(DEFAULT_INSTITUTION_PASSWORD, 12);
+    const passwordHash = await bcrypt.hash(getInstitutionDefaultPassword(), 12);
 
     const student = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({

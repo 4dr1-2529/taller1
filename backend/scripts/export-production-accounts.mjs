@@ -1,17 +1,14 @@
-/**
- * Exporta cuentas REALES (correo de login = tabla usuario) desde producción.
- * Uso: npm run export:accounts:web
- */
 import fs from "node:fs";
 import https from "node:https";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { requireDemoPassword } from "./demo-env.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.resolve(__dirname, "../../docs/cuentas-demo");
 const API_URL = (process.env.API_URL ?? "https://taller1-production.up.railway.app/api/v1").replace(/\/$/, "");
 const DIRECTOR_EMAIL = process.env.DIRECTOR_EMAIL ?? "director@blenkir.edu.pe";
-const DIRECTOR_PASSWORD = process.env.DIRECTOR_PASSWORD ?? "mbappe29";
+const DIRECTOR_PASSWORD = process.env.DIRECTOR_PASSWORD?.trim() || requireDemoPassword();
 
 function apiRequest(pathname, method, body, token) {
   return new Promise((resolve, reject) => {
