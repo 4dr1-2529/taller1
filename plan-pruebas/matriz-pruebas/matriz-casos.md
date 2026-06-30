@@ -8,7 +8,7 @@
 |----|------|--------|---------------|------|---------|----------|----------|--------|-----------|-----------|-------------|
 
 | TC-BE-01 | Integración | Backend | Health API | GET /api/v1/health sin auth | sin token | HTTP 200 | HTTP 200 (232ms) | Aprobado | Alta | evidencias-finales/api/health.json | QA Senior — plan-pruebas |
-| TC-BE-02 | Caja negra | Auth | Login Director | POST /auth/login director válido | director@blenkir.edu.pe / mbappe29 | 200 + JWT | 200 JWT (1165ms) | Aprobado | Alta | evidencias-finales/api/login-director-200.json | QA Senior — plan-pruebas |
+| TC-BE-02 | Caja negra | Auth | Login Director | POST /auth/login director válido | director@blenkir.edu.pe / DEMO_PASSWORD | 200 + JWT | 200 JWT (1165ms) | Aprobado | Alta | evidencias-finales/api/login-director-200.json | QA Senior — plan-pruebas |
 | TC-BE-03 | Caja negra | Auth | Login email inválido | POST /auth/login Zod | {email:x, password:123456} | 400 validación | HTTP 400 | Aprobado | Alta | evidencias-finales/api/login-invalido-400.json | QA Senior — plan-pruebas |
 | TC-BE-04 | Seguridad | Auth | Listar estudiantes sin token | GET /students sin Authorization | sin Bearer | 401 Token requerido | HTTP 401 | Aprobado | Alta | evidencias-finales/api/api-token-ausente-401.json | QA Senior — plan-pruebas |
 | TC-BE-05 | Seguridad | RBAC | Crear estudiante solo admin | POST /students token docente | token docente | 403 Permiso denegado | HTTP 403 | Aprobado | Alta | pruebas-seguridad/evidencias/docente-post-students.json | QA Senior — plan-pruebas |

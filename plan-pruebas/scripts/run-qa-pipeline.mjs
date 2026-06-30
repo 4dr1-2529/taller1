@@ -6,6 +6,8 @@ import { spawnSync } from "node:child_process";
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { PATHS } from "./lib/config.mjs";
+const NPM = process.platform === "win32" ? "npm.cmd" : "npm";
+const NODE = process.execPath;
 
 const SCRIPTS = join(PATHS.planPruebas, "scripts");
 const EVID = PATHS.evidenciasFinales;
@@ -25,7 +27,7 @@ const pipeline = {
 function runStep(name, script, { allowFail = false } = {}) {
   console.log(`\n=== ${name} ===`);
   const t0 = Date.now();
-  const r = spawnSync("node", [join(SCRIPTS, script)], {
+  const r = spawnSync(NODE, [join(SCRIPTS, script)], {
     cwd: PATHS.root,
     encoding: "utf8",
     timeout: 600000,
@@ -53,7 +55,9 @@ function mergeResults() {
     try {
       const j = JSON.parse(readFileSync(f, "utf8"));
       if (j.results) pipeline.cases.push(...j.results);
-    } catch {}
+    } catch (err) {
+      console.warn(`No se pudo leer resultados de ${f}:`, err instanceof Error ? err.message : err);
+    }
   }
 }
 
@@ -65,7 +69,7 @@ function runValidation() {
   ];
   for (const c of checks) {
     const t0 = Date.now();
-    const r = spawnSync(c.cmd, c.args, {
+    const r = spawnSync(NPM, c.args, {
       cwd: PATHS.root,
       encoding: "utf8",
       timeout: 600000,
@@ -175,6 +179,7 @@ Se ejecutó el pipeline QA completo contra el código y datos reales del proyect
 ${failSteps > 0 ? "- Algunos pasos del pipeline reportaron incidencias — revisar logs en `evidencias-finales/logs/`." : "- Sin fallos críticos en pipeline."}
 - Rendimiento depende de hardware local; umbrales documentados en \`pruebas-rendimiento/evidencias/reporte-rendimiento.md\`.
 - Capturas UI requieren Edge instalado y servicios en ejecución.
+- Contraseñas demo solo vía \`DEMO_PASSWORD\` en \`backend/.env\`; no versionar secretos en SQL ni migraciones.
 
 ## Recomendaciones
 

@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { requireDemoPassword } from "../../backend/scripts/demo-env.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
+const DIRECTOR_EMAIL = process.env.QA_EMAIL ?? "director@blenkir.edu.pe";
 const OUT_DIR = join(ROOT, "plan-pruebas/evidencias-finales/resultados");
 const API = process.env.API_URL ?? "http://localhost:4000/api/v1";
 const WEB = process.env.WEB_URL ?? "http://localhost:3029";
@@ -51,7 +52,7 @@ async function main() {
     const r = await fetch(`${API}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "director@blenkir.edu.pe", password: requireDemoPassword() }),
+      body: JSON.stringify({ email: DIRECTOR_EMAIL, password: requireDemoPassword() }),
       signal: AbortSignal.timeout(15000),
     });
     if (!r.ok) {
@@ -108,8 +109,8 @@ async function main() {
     if (metricsRes.ok) {
       writeFileSync(join(iaDir, "metricas-ml.json"), JSON.stringify(await metricsRes.json(), null, 2));
     }
-  } catch {
-    /* opcional */
+  } catch (err) {
+    console.warn("Evidencias ML opcionales omitidas:", err instanceof Error ? err.message : err);
   }
 
   const summary = {

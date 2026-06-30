@@ -39,7 +39,7 @@ npm run ml:train
 
 ## Credenciales
 
-Contraseña: **`mbappe29`**
+Contraseña: **`DEMO_PASSWORD`** en `backend/.env`
 
 | Rol | Email |
 |-----|-------|

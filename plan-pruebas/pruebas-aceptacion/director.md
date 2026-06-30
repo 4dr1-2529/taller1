@@ -1,6 +1,6 @@
 # Pruebas de aceptación — Director
 
-**Credencial:** `director@blenkir.edu.pe` / `mbappe29` · **Rol API:** `admin`
+**Credencial:** `director@blenkir.edu.pe` / `DEMO_PASSWORD` · **Rol API:** `admin`
 
 ---
 

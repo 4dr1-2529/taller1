@@ -1,6 +1,6 @@
 # Pruebas de aceptación — Profesor
 
-**Credencial:** `pro50000001@blenkir.edu.pe` / `mbappe29` · **Rol:** `docente`
+**Credencial:** `pro50000001@blenkir.edu.pe` / `DEMO_PASSWORD` · **Rol:** `docente`
 
 ---
 

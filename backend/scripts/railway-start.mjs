@@ -11,6 +11,7 @@ import {
   tryMigrateDeploy,
 } from "./p3009-recovery.mjs";
 import { prismaExecOrThrow } from "./prisma-exec.mjs";
+import { spawnTsx } from "./spawn-tsx.mjs";
 
 applyEnvAliases(process.env);
 
@@ -48,7 +49,7 @@ if (process.env.RUN_DEMO_SEED === "1") {
 
 if (process.env.RUN_REPAIR === "1") {
   console.log("[railway-start] RUN_REPAIR=1 — reparando cuentas y notas I–II…");
-  const repair = spawn("tsx", ["scripts/repair-institutional-data.ts"], {
+  const repair = spawnTsx(["scripts/repair-institutional-data.ts"], {
     cwd: backendRoot,
     env: process.env,
     stdio: "inherit",

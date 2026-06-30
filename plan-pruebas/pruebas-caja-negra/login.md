@@ -20,7 +20,7 @@
 | ID | Entrada | Resultado esperado | Evidencia / test |
 |----|---------|-------------------|------------------|
 | TC-CN-01 | Abrir `/login` | Formulario visible | login-pantalla-inicial.png |
-| TC-BE-02 | director@blenkir.edu.pe + mbappe29 | 200 + JWT | smoke login + schemas |
+| TC-BE-02 | director@blenkir.edu.pe + DEMO_PASSWORD | 200 + JWT | smoke login + schemas |
 | TC-BE-03 | email inválido `x` | Zod fail / 401 | schemas.test.ts |
 | TC-FE-09 | invalido@ + wrongpass | Toast Sonner error | login-error-controlado.png |
 | TC-INT-08 | Token en `api.ts` header | `Authorization: Bearer` | post-login requests |

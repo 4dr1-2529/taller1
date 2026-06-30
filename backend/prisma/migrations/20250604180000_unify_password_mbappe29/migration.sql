@@ -1,4 +1,3 @@
--- Unificar password_hash institucional (bcrypt cost 12). Valor plano: variable DEMO_PASSWORD al sembrar.
-UPDATE `usuario`
-SET `password_hash` = '$2a$12$73ROJQsPCkj3SvgwzKoRPOAYNKbvdylJefeUsqvNWtL09VM5O07xG',
-    `updated_at` = CURRENT_TIMESTAMP(3);
+-- Las contraseñas institucionales se aplican vía seed/repair (DEMO_PASSWORD en entorno).
+-- No almacenar hashes bcrypt en SQL: ver backend/scripts/update-all-passwords.mjs
+SELECT 1 AS password_policy_marker;

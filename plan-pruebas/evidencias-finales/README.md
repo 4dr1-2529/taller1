@@ -64,7 +64,7 @@ npm run dev:web   # :3029
 npm run evidence:generate
 ```
 
-**Credenciales captura:** `director@blenkir.edu.pe` / `mbappe29`
+**Credenciales captura:** `director@blenkir.edu.pe` / `DEMO_PASSWORD` (`backend/.env`)
 
 ---
 

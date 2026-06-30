@@ -1,6 +1,6 @@
 # Pruebas de aceptación — Alumno
 
-**Credencial:** `mateo.quispe0001@blenkir.edu.pe` / `mbappe29` · **Rol:** `estudiante`
+**Credencial:** `mateo.quispe0001@blenkir.edu.pe` / `DEMO_PASSWORD` · **Rol:** `estudiante`
 
 ---
 

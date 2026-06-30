@@ -32,7 +32,7 @@ Validar de forma **ejecutable y trazable** el sistema educativo predictivo (Next
 | ML | `http://localhost:5000` | `npm run dev:ml` |
 
 **Datos:** `npm run db:seed` + `npm run db:seed:demo`  
-**Credenciales:** `director@blenkir.edu.pe` · `pro50000001@blenkir.edu.pe` · `mateo.quispe0001@blenkir.edu.pe` · `mbappe29`
+**Credenciales:** `director@blenkir.edu.pe` · `pro50000001@blenkir.edu.pe` · `mateo.quispe0001@blenkir.edu.pe` · contraseña `DEMO_PASSWORD` en `backend/.env`
 
 ## 4. Herramientas
 
