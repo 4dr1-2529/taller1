@@ -16,9 +16,9 @@
 
 | Rol | Email | Contraseña |
 |-----|-------|------------|
-| Director | director@blenkir.edu.pe | mbappe29 |
-| Profesor | pro50000001@blenkir.edu.pe | mbappe29 |
-| Alumno | mateo.quispe0001@blenkir.edu.pe | mbappe29 |
+| Director | director@blenkir.edu.pe | DEMO_PASSWORD |
+| Profesor | pro50000001@blenkir.edu.pe | DEMO_PASSWORD |
+| Alumno | mateo.quispe0001@blenkir.edu.pe | DEMO_PASSWORD |
 
 ## Estructura de entrega
 

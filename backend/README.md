@@ -19,6 +19,7 @@ JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars
 NODE_ENV=production
 HOST=0.0.0.0
 CORS_ORIGIN=https://taller1-frontend.vercel.app
+DEMO_PASSWORD=<contraseña_demo_produccion>
 ```
 
 Guía completa: [../docs/DEPLOY.md](../docs/DEPLOY.md)
@@ -38,7 +39,7 @@ npm install
 npm run db:generate
 npm run db:push
 npm run db:seed
-npm run db:seed:demo   # 660 estudiantes, 23 profesores
+npm run db:seed:demo   # 660 estudiantes, 23 profesores (requiere DEMO_PASSWORD)
 ```
 
 ## Desarrollo

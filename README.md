@@ -124,6 +124,7 @@ tesis-dashboard/                    # Monorepo npm workspaces
 │
 ├── docs/
 │   ├── INDICE-ISO.md               # Índice documentación ISO
+│   ├── ARTICULOS Y ESTADO DEL ARTE/  # PDF papers + Word fichas (17–23)
 │   ├── iso-9001/ · iso-25010/ · iso-29119/
 │   ├── arquitectura/               # Visión por capas
 │   ├── backend/ · frontend/ · python-ia/
@@ -133,7 +134,10 @@ tesis-dashboard/                    # Monorepo npm workspaces
 │   ├── cuentas-demo/               # CSV login (660 + 23)
 │   └── postman/
 │
-├── plan-pruebas/                   # Plan de pruebas ISO 29119 (54 casos)
+├── estado-del-arte-software/       # Estado del arte tecnológico (7 capítulos)
+├── python-ia/                      # Diagramas ML + documentación IA
+│
+├── plan-pruebas/                   # Plan de pruebas ISO 29119 (86 casos)
 │   ├── README.md
 │   ├── plan-general/
 │   ├── pruebas-unitarias/ · pruebas-caja-negra/
@@ -183,14 +187,14 @@ Tras `npm run db:seed:demo`:
 
 ```bash
 git clone https://github.com/4dr1-2529/taller1.git
-cd taller1/tesis-dashboard
+cd taller1
 
 npm install
 pip install -r machine-learning/requirements.txt
 
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env.local
-# Edite DATABASE_URL y JWT_SECRET en backend/.env
+# Edite DATABASE_URL, JWT_SECRET y DEMO_PASSWORD en backend/.env
 ```
 
 ### Base de datos
@@ -221,7 +225,7 @@ npm run dev              # Frontend :3029 + API :4000 + ML :5000
 
 ## Credenciales de acceso
 
-**Contraseña institucional (todos los roles):** `mbappe29`
+**Contraseña demo:** variable `DEMO_PASSWORD` en `backend/.env` (véase `backend/.env.example`). No se versiona en el código.
 
 | Rol | Correo ejemplo | Sistema |
 |-----|----------------|---------|
@@ -273,6 +277,7 @@ Detalle: [docs/roles.md](docs/roles.md)
 | `npm run railway:seed:demo` | Seed demo en Railway (consola backend) |
 | `npm run ml:train` | Entrenar ensemble ML |
 | `npm run test` | Tests backend + ML |
+| `npm run qa:pipeline` | Pipeline QA completo (plan-pruebas/) |
 | `npm run type-check` | TypeScript en shared, frontend y backend |
 | `npm run start:prod` | Arranque Railway (migrate + API) |
 
@@ -301,6 +306,7 @@ HOST=0.0.0.0
 CORS_ORIGIN="http://localhost:3029"
 ML_SERVICE_URL="http://localhost:5000"
 POLIDOCENCIA_MAX_SALONES=8
+DEMO_PASSWORD="su_contraseña_demo_local"
 ```
 
 ### Producción (Railway + Vercel)
@@ -426,7 +432,7 @@ Documentación: [docs/python-ia/modelo-predictivo.md](docs/python-ia/modelo-pred
 | Recurso | Descripción |
 |---------|-------------|
 | [plan-pruebas/indice-pruebas.md](plan-pruebas/indice-pruebas.md) | Índice de todos los documentos de prueba |
-| [plan-pruebas/plan-general/plan-pruebas.md](plan-pruebas/plan-general/plan-pruebas.md) | Plan formal ISO 29119 (54 casos) |
+| [plan-pruebas/plan-general/plan-pruebas.md](plan-pruebas/plan-general/plan-pruebas.md) | Plan formal ISO 29119 (86 casos) |
 | [plan-pruebas/matriz-pruebas/matriz-casos.xlsx](plan-pruebas/matriz-pruebas/matriz-casos.xlsx) | Matriz editable |
 | [plan-pruebas/evidencias-finales/](plan-pruebas/evidencias-finales/) | Capturas, videos, resultados |
 
@@ -479,7 +485,9 @@ Guía: [docs/evidencias/README.md](docs/evidencias/README.md)
 |-----------|-----------|
 | [docs/INDICE-ISO.md](docs/INDICE-ISO.md) | Índice ISO, arquitectura y evidencias |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Despliegue Vercel + Railway |
-| [plan-pruebas/README.md](plan-pruebas/README.md) | Plan de pruebas ISO 29119 (54 casos) |
+| [plan-pruebas/README.md](plan-pruebas/README.md) | Plan de pruebas ISO 29119 (86 casos) |
+| [docs/ARTICULOS Y ESTADO DEL ARTE/README.md](docs/ARTICULOS%20Y%20ESTADO%20DEL%20ARTE/README.md) | Papers PDF + fichas Word estado del arte |
+| [estado-del-arte-software/README.md](estado-del-arte-software/README.md) | Estado del arte tecnológico (stack) |
 | [docs/cuentas-demo/README.md](docs/cuentas-demo/README.md) | CSV de login verificados |
 | [docs/roles.md](docs/roles.md) | Permisos por rol |
 | [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |

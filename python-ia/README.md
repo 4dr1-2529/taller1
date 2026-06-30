@@ -46,6 +46,10 @@ python python-ia/scripts/generate_diagrams.py
 | `machine-learning/models/features.joblib` | Orden `FEATURE_NAMES` |
 | `machine-learning/models/metrics.json` | Métricas de test |
 
+## Artículos científicos
+
+Papers y fichas Word: **[docs/ARTICULOS Y ESTADO DEL ARTE/](../docs/ARTICULOS%20Y%20ESTADO%20DEL%20ARTE/README.md)**
+
 ## Datos de análisis
 
 - `datos/metrics_snapshot.json` — copia de métricas al generar diagramas

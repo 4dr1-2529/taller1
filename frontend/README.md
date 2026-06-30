@@ -91,7 +91,7 @@ Esto evita 401 al entrar como Director, Profesor o Estudiante (sin necesidad de 
 
 | Rol UI | Secciones visibles |
 |--------|-------------------|
-| **Director** | Dashboard, Estudiantes, Profesores, Cursos, Matrículas, Notas, Asistencia, LMS, Predicción, Historial, Alertas, Mensajería, Reportes |
+| **Director** | Dashboard, Estudiantes, Profesores, Asignaciones, Cursos, Matrículas, Notas, Asistencia, LMS, Predicción, Historial, Alertas, Mensajería, Reportes |
 | **Profesor** | Dashboard, Estudiantes (sus salones), Cursos, Notas, Asistencia, LMS, Predicción, Historial, Alertas, Mensajería |
 | **Estudiante** | Dashboard, Mis notas, Mi asistencia, Mi actividad LMS, Mi riesgo, Mensajería |
 
@@ -99,7 +99,7 @@ El estudiante **no** carga listados globales ni filtros de grado/sección; usa e
 
 ## Credenciales demo
 
-Contraseña: `mbappe29`
+Contraseña: variable `DEMO_PASSWORD` en `backend/.env` (local) o Railway (producción).
 
 | Rol | Email |
 |-----|-------|
@@ -107,6 +107,6 @@ Contraseña: `mbappe29`
 | **Profesor tutor** | `pro50000001@blenkir.edu.pe` |
 | **Estudiante** | `mateo.quispe0001@blenkir.edu.pe` |
 
-Listado completo: [docs/cuentas-demo/](cuentas-demo/README.md) (660 alumnos + 23 docentes).
+Listado completo: [../docs/cuentas-demo/](../docs/cuentas-demo/README.md) (660 alumnos + 23 docentes).
 
 Ver [../README.md](../README.md) y [../docs/DEPLOY.md](../docs/DEPLOY.md) para seed y despliegue.

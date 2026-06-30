@@ -6,6 +6,23 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
 ---
 
+## [2.0.3] — 2026-06-30
+
+### Añadido
+
+- Carpeta **`docs/ARTICULOS Y ESTADO DEL ARTE/`** — papers PDF (17–23), fichas Word, referencias ML y variable de doble entrada
+- **`docs/ARTICULOS Y ESTADO DEL ARTE/README.md`** — índice de la biblioteca
+- Pipeline QA ejecutable: `npm run qa:pipeline` (86 casos, evidencias en `plan-pruebas/`)
+- Documentación estado del arte software (`estado-del-arte-software/`) enlazada a artículos científicos
+
+### Corregido
+
+- SonarCloud: seguridad y fiabilidad (credenciales por entorno, scripts QA, teacher-assignment, generate_diagrams)
+- README principal y módulos actualizados: `DEMO_PASSWORD` en lugar de contraseña hardcodeada
+- `.gitignore` y migraciones sin secretos en SQL
+
+---
+
 ## [2.0.2] — 2026-06-04
 
 ### Añadido
@@ -87,7 +104,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
 ## Credenciales demo (post-seed)
 
-Contraseña para todos: **`mbappe29`**
+Contraseña demo: variable **`DEMO_PASSWORD`** en entorno (véase `backend/.env.example`).
 
 | Rol | Email |
 |-----|-------|

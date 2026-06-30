@@ -14,7 +14,17 @@ Este índice centraliza toda la documentación técnica, de calidad (ISO) y de e
 |---|-----------|-------------------|
 | 1 | [iso-9001/macroproceso-academico.md](iso-9001/macroproceso-academico.md) | Macroproceso de gestión académica: entradas, procesos, salidas, responsables, KPI y evidencia de implementación en el sistema. Alineación ISO 9001. |
 | 2 | [iso-25010/calidad-software.md](iso-25010/calidad-software.md) | Modelo de calidad ISO/IEC 25010 con tabla de evidencias por característica (login, dashboard, IA, roles, notas, alertas, reportes). |
-| 3 | [iso-29119/plan-pruebas.md](iso-29119/plan-pruebas.md) | Referencia ISO 29119 — plan operativo en [plan-pruebas/](../plan-pruebas/README.md) (54 casos). |
+| 3 | [iso-29119/plan-pruebas.md](iso-29119/plan-pruebas.md) | Referencia ISO 29119 — plan operativo en [plan-pruebas/](../plan-pruebas/README.md) (86 casos). |
+
+---
+
+## 1b. Estado del arte e investigación
+
+| # | Documento | Descripción breve |
+|---|-----------|-------------------|
+| — | [ARTICULOS Y ESTADO DEL ARTE/README.md](ARTICULOS%20Y%20ESTADO%20DEL%20ARTE/README.md) | Papers PDF (17–23), fichas Word, referencias ML, variable de doble entrada. |
+| — | [../estado-del-arte-software/README.md](../estado-del-arte-software/README.md) | Estado del arte tecnológico del stack implementado (7 capítulos). |
+| — | [../python-ia/README.md](../python-ia/README.md) | Documentación científica del módulo IA y diagramas. |
 
 ---
 
@@ -36,7 +46,7 @@ Este índice centraliza toda la documentación técnica, de calidad (ISO) y de e
 
 | # | Documento / carpeta | Descripción breve |
 |---|---------------------|-------------------|
-| 11 | [../plan-pruebas/README.md](../plan-pruebas/README.md) | Plan de pruebas operativo (raíz del repo): unitarias, integración, UAT, matriz 54 casos. |
+| 11 | [../plan-pruebas/README.md](../plan-pruebas/README.md) | Plan de pruebas operativo: unitarias, integración, UAT, matriz 86 casos, `npm run qa:pipeline`. |
 | 12 | [evidencias/README.md](evidencias/README.md) | Guía maestra de evidencias: dónde almacenar capturas, logs y artefactos. |
 | 13 | [evidencias/capturas/](evidencias/capturas/README.md) | Capturas generales del sistema web. |
 | 14 | [evidencias/backend/](evidencias/backend/README.md) | Logs de tests API, health Railway, Postman backend. |
@@ -96,7 +106,7 @@ plan-pruebas/                  → Plan de pruebas (raíz del repositorio)
 
 ## 7. Credenciales demo (pruebas)
 
-Contraseña: **`mbappe29`**
+Contraseña: **`DEMO_PASSWORD`** en `backend/.env`
 
 | Rol | Email |
 |-----|-------|

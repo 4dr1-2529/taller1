@@ -6,9 +6,9 @@ Con servicios desplegados:
 |-------|--------------|
 | Health backend | `GET https://taller1-production.up.railway.app/health` |
 | Login web | https://taller1-frontend.vercel.app |
-| Director | `director@blenkir.edu.pe` / `mbappe29` |
-| Profesor tutor | `pro50000001@blenkir.edu.pe` / `mbappe29` |
-| Estudiante | `mateo.quispe0001@blenkir.edu.pe` / `mbappe29` |
+| Director | `director@blenkir.edu.pe` / `DEMO_PASSWORD` |
+| Profesor tutor | `pro50000001@blenkir.edu.pe` / `DEMO_PASSWORD` |
+| Estudiante | `mateo.quispe0001@blenkir.edu.pe` / `DEMO_PASSWORD` |
 
 Verificar por rol:
 

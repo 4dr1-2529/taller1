@@ -111,7 +111,7 @@ npm run db:seed --workspace=backend
 npm run db:seed:demo --workspace=backend
 ```
 
-Credenciales resultantes (contraseña **`mbappe29`**):
+Credenciales resultantes (contraseña en variable **`DEMO_PASSWORD`** en Railway):
 
 | Rol | Email |
 |-----|-------|
@@ -119,7 +119,7 @@ Credenciales resultantes (contraseña **`mbappe29`**):
 | Profesor tutor | `pro50000001@blenkir.edu.pe` |
 | Estudiante | `mateo.quispe0001@blenkir.edu.pe` |
 
-Contraseña: **`mbappe29`**. Listado completo en `docs/cuentas-demo/` (660 alumnos + 23 docentes).
+Defina `DEMO_PASSWORD` antes de `db:seed:demo` o `RUN_DEMO_SEED=1`. Listado completo en `docs/cuentas-demo/` (660 alumnos + 23 docentes).
 
 Datos demo: **660 estudiantes**, **23 profesores** (8 tutores + polidocencia), **22 secciones**, notas bimestres I–II, predicciones y alertas.
 

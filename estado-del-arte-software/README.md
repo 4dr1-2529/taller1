@@ -36,3 +36,9 @@ Documentación técnica basada **únicamente** en tecnologías implementadas en 
 4. Conclusión  
 
 **Proyecto:** I.E.P. BLENKIR — Sistema de predicción de riesgo de deserción estudiantil.
+
+## Biblioteca de artículos (PDF + Word)
+
+Papers científicos y fichas de estado del arte por artículo:
+
+**[docs/ARTICULOS Y ESTADO DEL ARTE/](../docs/ARTICULOS%20Y%20ESTADO%20DEL%20ARTE/README.md)** — artículos 17–23, referencias ML y variable de doble entrada.

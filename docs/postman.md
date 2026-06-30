@@ -26,7 +26,7 @@
 
 Tras `npm run db:seed:demo`:
 
-- Director: `director@blenkir.edu.pe` / `mbappe29`
-- Profesor tutor: `pro50000001@blenkir.edu.pe` / `mbappe29`
-- Estudiante: `mateo.quispe0001@blenkir.edu.pe` / `mbappe29`
+- Director: `director@blenkir.edu.pe` / `DEMO_PASSWORD`
+- Profesor tutor: `pro50000001@blenkir.edu.pe` / `DEMO_PASSWORD`
+- Estudiante: `mateo.quispe0001@blenkir.edu.pe` / `DEMO_PASSWORD`
 - Listado completo: `docs/cuentas-demo/estudiantes.csv` y `profesores.csv` (columna `email_login`)

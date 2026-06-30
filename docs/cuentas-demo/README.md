@@ -1,6 +1,6 @@
 # Cuentas de acceso — I.E.P. Blenkir (producción)
 
-**Contraseña para todas las cuentas:** `mbappe29`
+**Contraseña demo:** variable `DEMO_PASSWORD` en `backend/.env` (local) o Railway (producción). No se publica en el repositorio.
 
 ## Archivos (usar estos para entrar a la web)
 
