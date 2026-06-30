@@ -42,7 +42,7 @@ async function check(name, fn) {
     fail++;
   }
   results.push(entry);
-  console.log(`${entry.status === "PASS" ? "✓" : "✗"} ${name}: ${entry.detail}`);
+  console.log(`${entry.status === "PASS" ? "✓" : "✗"} ${name}`);
 }
 
 async function main() {
