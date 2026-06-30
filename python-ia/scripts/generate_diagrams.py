@@ -200,7 +200,7 @@ def diagram_stacking() -> None:
     plt.close(fig)
 
 
-def diagram_distribucion_clases() -> None:
+def diagram_distribucion_clases() -> list[int]:
     X, y = generate_synthetic_data(2500)
     counts = np.bincount(y, minlength=3)
     fig, ax = plt.subplots(figsize=(8, 5))

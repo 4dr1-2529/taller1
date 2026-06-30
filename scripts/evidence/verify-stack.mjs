@@ -5,15 +5,31 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CREDS, URLS } from "../../plan-pruebas/scripts/lib/config.mjs";
+import { CREDS } from "../../plan-pruebas/scripts/lib/config.mjs";
 import { apiFetch, login } from "../../plan-pruebas/scripts/lib/http.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const OUT_DIR = join(ROOT, "plan-pruebas/evidencias-finales/resultados");
+const SAFE_QA_HOSTS = new Set(["localhost", "127.0.0.1"]);
+const WEB = resolveQaUrl(process.env.WEB_URL, "http://localhost:3029");
+const API = resolveQaUrl(process.env.API_URL, "http://localhost:4000/api/v1");
+const ML = resolveQaUrl(process.env.ML_URL, "http://localhost:5000");
 
 const results = [];
 let ok = 0;
 let fail = 0;
+
+function resolveQaUrl(rawValue, fallback) {
+  const candidate = rawValue?.trim() ? rawValue.trim() : fallback;
+  const parsed = new URL(candidate);
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error(`URL inválida para QA: ${candidate}`);
+  }
+  if (!SAFE_QA_HOSTS.has(parsed.hostname)) {
+    throw new Error(`Host no permitido para QA local: ${parsed.hostname}`);
+  }
+  return parsed.toString().replace(/\/$/, "");
+}
 
 async function check(name, fn) {
   const entry = { name, status: "PASS", detail: "", at: new Date().toISOString() };
@@ -33,13 +49,13 @@ async function main() {
   mkdirSync(OUT_DIR, { recursive: true });
 
   await check("Frontend HTTP", async () => {
-    const r = await fetch(URLS.web, { signal: AbortSignal.timeout(15000) });
+    const r = await fetch(WEB, { signal: AbortSignal.timeout(15000) });
     if (!r.ok) throw new Error(`status ${r.status}`);
-    return `GET ${URLS.web} → ${r.status}`;
+    return `GET ${WEB} → ${r.status}`;
   });
 
   await check("Backend health", async () => {
-    const r = await fetch(`${URLS.api}/health`, { signal: AbortSignal.timeout(10000) });
+    const r = await fetch(`${API}/health`, { signal: AbortSignal.timeout(10000) });
     if (!r.ok) throw new Error(`status ${r.status}`);
     const j = await r.json();
     return JSON.stringify(j);
@@ -53,13 +69,13 @@ async function main() {
   });
 
   await check("IA / ML health", async () => {
-    const r = await fetch(`${URLS.ml}/health`, { signal: AbortSignal.timeout(10000) });
+    const r = await fetch(`${ML}/health`, { signal: AbortSignal.timeout(10000) });
     if (!r.ok) throw new Error(`status ${r.status}`);
     return await r.text();
   });
 
   await check("IA / ML predict", async () => {
-    const r = await fetch(`${URLS.ml}/predict`, {
+    const r = await fetch(`${ML}/predict`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -81,8 +97,8 @@ async function main() {
   mkdirSync(iaDir, { recursive: true });
   try {
     const [healthRes, metricsRes] = await Promise.all([
-      fetch(`${URLS.ml}/health`, { signal: AbortSignal.timeout(10000) }),
-      fetch(`${URLS.ml}/metrics`, { signal: AbortSignal.timeout(10000) }),
+      fetch(`${ML}/health`, { signal: AbortSignal.timeout(10000) }),
+      fetch(`${ML}/metrics`, { signal: AbortSignal.timeout(10000) }),
     ]);
     if (healthRes.ok) {
       writeFileSync(join(iaDir, "health-ml.json"), JSON.stringify(await healthRes.json(), null, 2));
@@ -108,4 +124,9 @@ async function main() {
   process.exit(fail > 0 ? 1 : 0);
 }
 
-main();
+try {
+  await main();
+} catch (err) {
+  console.error("Fallo en verificación de stack:", err instanceof Error ? err.message : err);
+  process.exit(1);
+}
