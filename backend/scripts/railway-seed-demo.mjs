@@ -5,12 +5,27 @@
  *
  * Requiere DATABASE_URL (inyectada por Railway) y estructura previa (migrate deploy).
  */
-import { execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { prismaExecOrThrow } from "./prisma-exec.mjs";
 
-const backendRoot = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(backendRoot, "../..");
+const backendRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const repoRoot = path.resolve(backendRoot, "..");
+const NPM = process.platform === "win32" ? "npm.cmd" : "npm";
+const NPX = process.platform === "win32" ? "npx.cmd" : "npx";
+
+function runOrExit(label, executable, args, cwd) {
+  const result = spawnSync(executable, args, {
+    stdio: "inherit",
+    cwd,
+    env: process.env,
+  });
+  if (result.status !== 0) {
+    console.error(`[railway-seed] ${label} falló (exit ${result.status})`);
+    process.exit(result.status ?? 1);
+  }
+}
 
 if (!process.env.DATABASE_URL?.trim()) {
   console.error("DATABASE_URL no definida. Ejecute en el servicio backend de Railway.");
@@ -18,20 +33,12 @@ if (!process.env.DATABASE_URL?.trim()) {
 }
 
 console.log("[railway-seed] migrate deploy…");
-execSync("npx prisma migrate deploy", { stdio: "inherit", cwd: backendRoot, env: process.env });
+prismaExecOrThrow(["migrate", "deploy"]);
 
 console.log("[railway-seed] reset + seed + demo…");
-execSync("npm run db:reset:full --workspace=backend", {
-  stdio: "inherit",
-  cwd: repoRoot,
-  env: process.env,
-});
+runOrExit("db:reset:full", NPM, ["run", "db:reset:full", "--workspace=backend"], repoRoot);
 
 console.log("[railway-seed] reparación final cuentas y notas…");
-execSync("tsx scripts/repair-institutional-data.ts", {
-  stdio: "inherit",
-  cwd: backendRoot,
-  env: process.env,
-});
+runOrExit("repair", NPX, ["tsx", "scripts/repair-institutional-data.ts"], backendRoot);
 
 console.log("[railway-seed] OK — cuentas demo listas (véase DEMO_PASSWORD en Railway)");

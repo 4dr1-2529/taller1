@@ -3,7 +3,8 @@
  * Recuperación manual P3009 — ver scripts/p3009-recovery.mjs
  * Uso: DATABASE_URL=... npm run db:railway:fix-p3009
  */
-import { backendRoot, recoverFailedInitMigration, run } from "./p3009-recovery.mjs";
+import { recoverFailedInitMigration } from "./p3009-recovery.mjs";
+import { prismaExecOrThrow } from "./prisma-exec.mjs";
 
 if (!process.env.DATABASE_URL) {
   console.error("ERROR: defina DATABASE_URL.");
@@ -12,7 +13,7 @@ if (!process.env.DATABASE_URL) {
 
 console.log("=== Recuperación Prisma P3009 ===\n");
 recoverFailedInitMigration();
-run("npx prisma generate");
+prismaExecOrThrow(["generate"]);
 
 console.log("\n✓ Listo. Redeploy o npm run start:prod");
 console.log("\nSeed opcional:");

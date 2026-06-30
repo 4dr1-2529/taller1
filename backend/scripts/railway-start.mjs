@@ -3,13 +3,14 @@
  * Arranque producción Railway: generate → migrate deploy → API.
  * Si detecta P3009, recupera automáticamente (BD vacía / demo).
  */
-import { execSync, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { applyEnvAliases, validateRailwayEnv } from "./env-aliases.mjs";
 import {
   backendRoot,
   recoverFailedInitMigration,
   tryMigrateDeploy,
 } from "./p3009-recovery.mjs";
+import { prismaExecOrThrow } from "./prisma-exec.mjs";
 
 applyEnvAliases(process.env);
 
@@ -20,7 +21,7 @@ if (envError) {
 }
 
 console.log("[railway-start] prisma generate");
-execSync("npx prisma generate", { stdio: "inherit", cwd: backendRoot, env: process.env });
+prismaExecOrThrow(["generate"]);
 
 console.log("[railway-start] prisma migrate deploy");
 const result = tryMigrateDeploy();
@@ -36,7 +37,7 @@ if (!result.ok && result.reason === "P3009") {
 
 if (process.env.RUN_DEMO_SEED === "1") {
   console.log("[railway-start] RUN_DEMO_SEED=1 — poblando demo en segundo plano…");
-  const seed = spawn("node", ["scripts/railway-seed-demo.mjs"], {
+  const seed = spawn(process.execPath, ["scripts/railway-seed-demo.mjs"], {
     cwd: backendRoot,
     env: process.env,
     stdio: "inherit",
@@ -57,7 +58,7 @@ if (process.env.RUN_REPAIR === "1") {
 }
 
 console.log("[railway-start] iniciando API");
-const api = spawn("node", ["dist/index.js"], {
+const api = spawn(process.execPath, ["dist/index.js"], {
   stdio: "inherit",
   cwd: backendRoot,
   env: process.env,
