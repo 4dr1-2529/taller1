@@ -1,6 +1,6 @@
-# Base de datos Blenkir v3
+# Base de datos Blenkir v3 (LEGACY)
 
-Rediseño completo para **I.E.P. Blenkir — Primaria** (660 estudiantes, 22 secciones, 16 cursos).
+Referencia histórica SQL para **I.E.P. Blenkir — Primaria**. No es la fuente vigente ni representa el tamaño demo actual. La fuente vigente es `backend/prisma/schema.prisma` y su seed crea 9 estudiantes demo.
 
 ## Recomendado (Prisma)
 
@@ -34,7 +34,7 @@ cd tesis-dashboard
 mysql -u root < database\blenkir-v3\01-schema.sql
 
 # 2. Hash bcrypt (requiere DEMO_PASSWORD)
-$env:DEMO_PASSWORD = "mbappe29"
+$env:DEMO_PASSWORD = "<valor-local-no-versionado>"
 $hash = npm run db:demo-bcrypt --silent
 
 # 3. Estructura + usuarios director/profesores

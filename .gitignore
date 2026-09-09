@@ -55,9 +55,14 @@ next-env.d.ts
 **/.venv/
 machine-learning/models/*.pkl
 machine-learning/models/training_history.json
+machine-learning/data/real/*
+!machine-learning/data/real/README.md
+machine-learning/models/production/*
 
 # SQL generado con datos sensibles (importar solo en local)
 database/blenkir-v3/03-seed-poblacion.sql
 
-# evidence tooling (instalar con npm en raíz, no commitear)
+# evidence tooling (instalar con npm en raï¿½z, no commitear)
 scripts/evidence/node_modules/
+*.db
+*.sqlite

@@ -33,6 +33,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const logout = useCallback(() => {
+    const currentToken = localStorage.getItem("tesis-token");
+    const currentRefreshToken = localStorage.getItem("tesis-refresh-token");
+    if (currentToken) {
+      api.setToken(currentToken);
+      void api.logout(currentRefreshToken).catch(() => undefined);
+    }
     setToken(null);
     setRefreshToken(null);
     setUser(null);

@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from app.features import build_feature_vector, proba_to_score
+from app.features import FEATURE_NAMES, build_feature_vector, proba_to_score
 from app.main import PredictInput, heuristic_predict, _normalize_input, predict
 from utils.validators import validate_predict_payload
 
@@ -50,7 +50,8 @@ class TestPredict(unittest.TestCase):
             "tareas_ratio": 0.7,
             "estado": "activo",
         })
-        self.assertEqual(vec.shape, (1, 10))
+        self.assertEqual(vec.shape, (1, 9))
+        self.assertNotIn("estado", FEATURE_NAMES)
 
     def test_proba_to_score(self):
         import numpy as np

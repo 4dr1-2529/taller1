@@ -37,7 +37,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"director@blenkir.edu.pe\",\n  \"password\": \"mbappe29\"\n}"
+              "raw": "{\n  \"email\": \"director.demo@blenkir.edu.pe\",\n  \"password\": \"<DEMO_PASSWORD>\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }
@@ -141,7 +141,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"pro50000001@blenkir.edu.pe\",\n  \"password\": \"mbappe29\"\n}"
+              "raw": "{\n  \"email\": \"profesor1.demo@blenkir.edu.pe\",\n  \"password\": \"<DEMO_PASSWORD>\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }
@@ -196,7 +196,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"mateo.quispe0001@blenkir.edu.pe\",\n  \"password\": \"mbappe29\"\n}"
+              "raw": "{\n  \"email\": \"alumno01.demo@blenkir.edu.pe\",\n  \"password\": \"<DEMO_PASSWORD>\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }

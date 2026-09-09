@@ -16,27 +16,10 @@ FEATURE_NAMES: list[str] = [
     "participacion_actividades",
     "uso_foros",
     "disminucion_actividad",
-    "estado",
 ]
 
 LEVEL_MAP = {0: "bajo", 1: "medio", 2: "alto"}
 LEVEL_TO_SCORE = {0: 25.0, 1: 52.0, 2: 78.0}
-
-
-def normalize_estado(estado: str | int | float) -> float:
-    """activo=1.0, en_riesgo/en riesgo=0.5, retirado=0.0"""
-    if isinstance(estado, (int, float)):
-        if estado >= 2:
-            return 0.0
-        if estado >= 1:
-            return 0.5
-        return 1.0
-    s = str(estado).lower().replace(" ", "_")
-    if s in ("activo", "active"):
-        return 1.0
-    if s in ("en_riesgo", "enriesgo", "riesgo"):
-        return 0.5
-    return 0.0
 
 
 def build_feature_vector(data: dict[str, Any]) -> np.ndarray:
@@ -51,7 +34,6 @@ def build_feature_vector(data: dict[str, Any]) -> np.ndarray:
         float(data.get("participacion_actividades", data.get("frecuencia_acceso_lms", 55))),
         float(data.get("uso_foros", 0.5)),
         float(data.get("disminucion_actividad", 0)),
-        normalize_estado(data.get("estado", "activo")),
     ]
     return np.array([row], dtype=np.float64)
 

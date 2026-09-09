@@ -135,7 +135,7 @@ export function computeLocalRisk(metrics: MetricsInput, estado: string): Predict
     level: levelFromScore(score),
     probability: score / 100,
     factors: factors.slice(0, 4),
-    modelName: "ensemble-rules-v2",
+    modelName: "rule-based-fallback-v2",
     meta: { pesos: { ...WEIGHTS }, umbrales: { ...RISK_THRESHOLDS } },
   };
 }

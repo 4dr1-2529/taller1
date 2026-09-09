@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -49,7 +50,6 @@ class PredictInput(BaseModel):
     participacion_actividades: float | None = None
     uso_foros: float = Field(0.5, ge=0, le=1)
     disminucion_actividad: float = Field(0, ge=0, le=100)
-    estado: str = "activo"
 
 
 class PredictOutput(BaseModel):
@@ -71,6 +71,7 @@ class PredictOutput(BaseModel):
     modelo_usado: str | None = None
     fecha_prediccion: str | None = None
     fecha: str | None = None
+    prediction_source: str = "ml_model"
 
 
 def _with_thesis_fields(out: PredictOutput) -> PredictOutput:
@@ -112,7 +113,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Tesis ML Service", version="2.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3029", "http://localhost:4000"],
+    allow_origins=[origin.strip() for origin in os.environ.get("ML_CORS_ORIGINS", "http://localhost:3029,http://localhost:4000").split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -134,7 +135,6 @@ def _normalize_input(data: PredictInput) -> dict[str, Any]:
         "participacion_actividades": participacion,
         "uso_foros": data.uso_foros,
         "disminucion_actividad": data.disminucion_actividad,
-        "estado": data.estado,
     }
 
 
@@ -157,11 +157,6 @@ def heuristic_predict(data: dict[str, Any]) -> PredictOutput:
         score += 22
     if data["disminucion_actividad"] > 20:
         score += 14
-    if data["estado"] in ("retirado", 0, 0.0):
-        score += 16
-    elif data["estado"] in ("en_riesgo", "en riesgo", 0.5):
-        score += 8
-
     score = min(100, max(0, score))
     level = "alto" if score >= 65 else "medio" if score >= 41 else "bajo"
     factors = build_factors(data)
@@ -177,6 +172,7 @@ def heuristic_predict(data: dict[str, Any]) -> PredictOutput:
             model_name="heuristic-fallback",
             predicted_at=now,
             input_data=data,
+            prediction_source="heuristic_fallback",
         )
     )
 
@@ -218,6 +214,7 @@ def predict(data: PredictInput) -> PredictOutput:
                 model_name=best_model_name,
                 predicted_at=now,
                 input_data=payload,
+                prediction_source="ml_model",
             )
         )
     except Exception as e:
@@ -236,4 +233,8 @@ def health() -> dict[str, str]:
         "status": "healthy" if model is not None else "no-model",
         "service": "machine-learning",
         "features": ",".join(feature_names or FEATURE_NAMES),
+        "modelLoaded": str(model is not None).lower(),
+        "modelName": best_model_name,
+        "dataMode": os.environ.get("ML_DATA_MODE", "real"),
+        "modelVersion": str((metrics or {}).get("model_version", "unknown")),
     }

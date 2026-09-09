@@ -47,7 +47,7 @@ export function validateRailwayEnv(env: NodeJS.ProcessEnv): string | null {
   const jwt = env.JWT_SECRET?.trim() ?? "";
   if (!jwt) {
     lines.push(
-      "- JWT_SECRET: obligatoria (no use JWT_SECRETO). Ejemplo: blenkir_tesis_2026_jwt_secret_min_32_chars",
+      "- JWT_SECRET: obligatoria (no use JWT_SECRETO). Genere un secreto aleatorio de al menos 64 caracteres.",
     );
   } else if (jwt.length < MIN_JWT_SECRET) {
     lines.push(

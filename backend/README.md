@@ -15,7 +15,7 @@ Variables mínimas en Railway:
 
 ```env
 DATABASE_URL=${{MySQL.DATABASE_URL}}
-JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars
+JWT_SECRET=<GENERAR_SECRETO_ALEATORIO_DE_AL_MENOS_64_CARACTERES>
 NODE_ENV=production
 HOST=0.0.0.0
 CORS_ORIGIN=https://taller1-frontend.vercel.app
@@ -39,7 +39,7 @@ npm install
 npm run db:generate
 npm run db:push
 npm run db:seed
-npm run db:seed:demo   # 660 estudiantes, 23 profesores (requiere DEMO_PASSWORD)
+npm run db:reset:demo  # 9 estudiantes, 3 profesores, 1 director (requiere DEMO_PASSWORD y RESET_DEMO_DB=1)
 ```
 
 ## Desarrollo

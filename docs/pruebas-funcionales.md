@@ -38,11 +38,11 @@
 
 | Rol | Credencial demo | Verificar |
 |-----|-----------------|-----------|
-| Director | `director@blenkir.edu.pe` | Totales globales, CRUD, reportes |
-| Profesor tutor | `pro50000001@blenkir.edu.pe` | Filtros salón, notas propias |
-| Estudiante | `mateo.quispe0001@blenkir.edu.pe` | Sin filtros globales, solo `/estudiante/*` |
+| Director | `director.demo@blenkir.edu.pe` | Totales globales, CRUD, reportes |
+| Profesor demo | `profesor1.demo@blenkir.edu.pe` | Filtros salón, notas propias |
+| Estudiante demo | `alumno01.demo@blenkir.edu.pe` | Sin filtros globales, solo `/estudiante/*` |
 
-Contraseña: `mbappe29`
+Contraseña: variable `DEMO_PASSWORD`; no se publica en documentación.
 
 ## Ejecución local
 

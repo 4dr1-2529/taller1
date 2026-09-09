@@ -43,11 +43,11 @@ En el dashboard de Railway → servicio **backend** → **Variables**:
 
 ```env
 DATABASE_URL=${{MySQL.DATABASE_URL}}
-JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars
+JWT_SECRET=<GENERAR_SECRETO_ALEATORIO_DE_AL_MENOS_64_CARACTERES>
 NODE_ENV=production
 HOST=0.0.0.0
 CORS_ORIGIN=https://taller1-frontend.vercel.app
-ML_SERVICE_URL=http://localhost:5000
+ML_SERVICE_URL=<URL_PUBLICA_DEL_SERVICIO_FASTAPI>
 ```
 
 | Variable | Notas |
@@ -119,9 +119,9 @@ Credenciales resultantes (contraseña en variable **`DEMO_PASSWORD`** en Railway
 | Profesor tutor | `pro50000001@blenkir.edu.pe` |
 | Estudiante | `mateo.quispe0001@blenkir.edu.pe` |
 
-Defina `DEMO_PASSWORD` antes de `db:seed:demo` o `RUN_DEMO_SEED=1`. Listado completo en `docs/cuentas-demo/` (660 alumnos + 23 docentes).
+Defina `DEMO_PASSWORD` antes de `db:seed:demo` o `RUN_DEMO_SEED=1`. La demo vigente contiene 9 estudiantes, 3 profesores y 1 director; las exportaciones de cuentas no se versionan.
 
-Datos demo: **660 estudiantes**, **23 profesores** (8 tutores + polidocencia), **22 secciones**, notas bimestres I–II, predicciones y alertas.
+Datos demo: **9 estudiantes**, **3 profesores**, **3 secciones**, notas, asistencia, LMS, predicciones y alertas mínimas.
 
 ### Reseed o reparación en Railway (sin consola)
 

@@ -6,7 +6,8 @@ Servicio **FastAPI** para predicción de riesgo de deserción (ensemble: Random 
 
 ```bash
 pip install -r requirements.txt
-python train.py
+ML_DATA_MODE=demo python train.py  # solo demostración técnica
+# Entrenamiento científico: ML_DATA_MODE=real DATASET_PATH=... python train.py
 python -m uvicorn app.main:app --reload --port 5000
 python -m unittest tests.test_predict -v
 ```
@@ -35,6 +36,6 @@ Tras `train.py` en `models/`:
 - `features.joblib` — orden de variables
 - `metrics.json` — comparación RF / boosting / stacking
 
-Sin modelos, `/predict` usa heurística de respaldo.
+Sin modelos, `/predict` usa un motor de respaldo explícitamente identificado como `heuristic_fallback`; no es Ensemble Learning. Los resultados demo no son evidencia científica.
 
 Documentación: [docs/machine-learning.md](../docs/machine-learning.md)

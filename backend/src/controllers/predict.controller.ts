@@ -88,12 +88,14 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
           probabilityAbandono: ml.probability_abandono ?? ml.probability,
           factors: ml.factors ?? local.factors,
           modelName: ml.model_name ?? "ml-service",
+          predictionSource: "ml_model" as const,
           recommendation: buildRecommendation(ml.level, ml.factors ?? [], ml.recommendation),
           predictedAt: ml.predicted_at ?? new Date().toISOString(),
           inputData: ml.input_data ?? buildMlPayload(metrics, estado, mlExtra),
         }
       : {
           ...local,
+          predictionSource: "rule_fallback" as const,
           probabilityAbandono: local.probability,
           recommendation: buildRecommendation(local.level, local.factors),
           predictedAt: new Date().toISOString(),

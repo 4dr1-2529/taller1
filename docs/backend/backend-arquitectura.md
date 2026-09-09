@@ -147,10 +147,10 @@ Diagrama completo en código: `backend/src/routes/index.ts`
 
 | Aspecto | Detalle |
 |---------|---------|
-| Schema | `backend/prisma/schema.prisma` — 51 tablas Blenkir v3 |
+| Schema | `backend/prisma/schema.prisma` — 52 modelos Prisma; comprobar con `npm run db:count-models` |
 | Cliente | `import { prisma } from "../utils/prisma.js"` |
 | Migraciones | `prisma/migrations/` — SQL versionado |
-| Seed | `seed.ts` (estructura) + `seed-demo.ts` (660 alumnos) |
+| Seed | `seed.ts` (estructura) + `seed-demo.ts` (9 alumnos demo) |
 | IDs | BigInt convertidos con `toDbId`, `idToString` |
 | Transacciones | `prisma.$transaction([...])` en operaciones compuestas |
 

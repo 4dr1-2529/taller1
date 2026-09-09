@@ -11,10 +11,11 @@ export type MlPredictResult = {
   recommendation?: string;
   predicted_at?: string;
   input_data?: Record<string, unknown>;
+  prediction_source?: "ml_model" | "rule_fallback" | "heuristic_fallback";
 };
 
 /** Construye payload extendido para el servicio ML (variables tesis). */
-export function buildMlPayload(metrics: MetricsInput, estado: string, extra?: {
+export function buildMlPayload(metrics: MetricsInput, _estado: string, extra?: {
   cursosDesaprobados?: number;
   tiempoPlataforma?: number;
   usoForos?: number;
@@ -27,10 +28,6 @@ export function buildMlPayload(metrics: MetricsInput, estado: string, extra?: {
   const disminucion =
     extra?.disminucionActividad ??
     (actividad.length >= 2 ? Math.max(0, actividad[0] - actividad[actividad.length - 1]) : 0);
-
-  let estadoStr = "activo";
-  if (estado === "en_riesgo" || estado === "en riesgo") estadoStr = "en_riesgo";
-  else if (estado === "retirado") estadoStr = "retirado";
 
   return {
     promedio_general: metrics.promedioGeneral,
@@ -46,7 +43,6 @@ export function buildMlPayload(metrics: MetricsInput, estado: string, extra?: {
     participacion_actividades: frecuencia,
     uso_foros: extra?.usoForos ?? 0.5,
     disminucion_actividad: disminucion,
-    estado: estadoStr,
   };
 }
 

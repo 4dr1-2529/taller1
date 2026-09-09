@@ -132,6 +132,24 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+export async function logout(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { refreshToken } = req.body ?? {};
+    await prisma.session.updateMany({
+      where: {
+        usuarioId: toDbId(req.user!.sub),
+        ...(refreshToken ? { tokenHash: hashToken(refreshToken) } : {}),
+        revocada: false,
+      },
+      data: { revocada: true },
+    });
+    await logAudit({ entidad: "User", entidadId: toDbId(req.user!.sub), accion: "LOGOUT", usuarioId: toDbId(req.user!.sub) });
+    sendSuccess(res, { loggedOut: true });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export async function me(req: Request, res: Response, next: NextFunction) {
   try {
     const user = await prisma.user.findUnique({

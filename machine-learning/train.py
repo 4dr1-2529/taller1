@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
 
 import joblib
@@ -23,6 +24,7 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 
 from app.features import FEATURE_NAMES
+from app.dataset import load_dataset
 
 try:
     from xgboost import XGBClassifier
@@ -51,7 +53,6 @@ def compute_risk_score(
     participacion: np.ndarray,
     uso_foros: np.ndarray,
     disminucion: np.ndarray,
-    estado: np.ndarray,
 ) -> np.ndarray:
     """Score de riesgo 0–100 — pesos calibrados para tres clases en datos sintéticos."""
     score = (
@@ -64,7 +65,6 @@ def compute_risk_score(
         + (70 - participacion) * 0.25 * 0.14
         + (0.5 - uso_foros) * 18 * 0.10
         + disminucion * 0.35 * 0.10
-        + (1 - estado) * 28
     )
     return np.clip(score, 0, 100)
 
@@ -86,7 +86,6 @@ def _generate_profile_block(
     tareas_rng: tuple[float, float],
     cursos_lambda: float,
     disminucion_rng: tuple[float, float],
-    estado_probs: tuple[float, float, float],
 ) -> tuple[np.ndarray, ...]:
     promedio = np.random.uniform(*promedio_rng, n)
     cursos_desaprobados = np.random.poisson(cursos_lambda, n).astype(float)
@@ -97,7 +96,6 @@ def _generate_profile_block(
     participacion = np.random.uniform(20, 95, n)
     uso_foros = np.random.uniform(0, 1, n)
     disminucion = np.random.uniform(*disminucion_rng, n)
-    estado = np.random.choice([1.0, 0.5, 0.0], n, p=estado_probs)
     return (
         promedio,
         cursos_desaprobados,
@@ -108,7 +106,6 @@ def _generate_profile_block(
         participacion,
         uso_foros,
         disminucion,
-        estado,
     )
 
 
@@ -128,7 +125,6 @@ def generate_synthetic_data(n_samples: int = 2500) -> tuple[np.ndarray, np.ndarr
             tareas_rng=(0.80, 1.0),
             cursos_lambda=0.4,
             disminucion_rng=(0.0, 12.0),
-            estado_probs=(0.92, 0.07, 0.01),
         ),
         _generate_profile_block(
             n_med,
@@ -138,7 +134,6 @@ def generate_synthetic_data(n_samples: int = 2500) -> tuple[np.ndarray, np.ndarr
             tareas_rng=(0.55, 0.82),
             cursos_lambda=1.2,
             disminucion_rng=(8.0, 25.0),
-            estado_probs=(0.55, 0.35, 0.10),
         ),
         _generate_profile_block(
             n_high,
@@ -148,7 +143,6 @@ def generate_synthetic_data(n_samples: int = 2500) -> tuple[np.ndarray, np.ndarr
             tareas_rng=(0.15, 0.55),
             cursos_lambda=2.8,
             disminucion_rng=(18.0, 40.0),
-            estado_probs=(0.15, 0.35, 0.50),
         ),
     ]
 
@@ -163,7 +157,6 @@ def generate_synthetic_data(n_samples: int = 2500) -> tuple[np.ndarray, np.ndarr
         participacion,
         uso_foros,
         disminucion,
-        estado,
     ) = arrays
 
     perm = np.random.permutation(n_samples)
@@ -178,7 +171,6 @@ def generate_synthetic_data(n_samples: int = 2500) -> tuple[np.ndarray, np.ndarr
         participacion,
         uso_foros,
         disminucion,
-        estado,
     ) = arrays
 
     labels = np.concatenate([
@@ -238,8 +230,15 @@ def evaluate_model(
 
 
 def train_models() -> None:
-    print("Generando datos sintéticos (variables tesis)...")
-    X, y = generate_synthetic_data(2500)
+    mode = os.environ.get("ML_DATA_MODE", "real").lower()
+    if mode == "demo":
+        print("ML_DATA_MODE=demo: generando datos sintéticos de demostración técnica...")
+        X, y = generate_synthetic_data(2500)
+        data_meta = {"data_source": "demo", "dataset_size": int(X.shape[0])}
+    else:
+        X, y, data_meta = load_dataset()
+        if len(np.unique(y)) < 2:
+            raise ValueError("El dataset real debe contener al menos dos clases observables.")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
@@ -341,6 +340,10 @@ def train_models() -> None:
         "best_f1_score": best_f1,
         "model_used": "XGBoost" if HAS_XGBOOST else "HistGradientBoosting",
         "n_samples": int(X.shape[0]),
+        "train_size": int(X_train.shape[0]),
+        "test_size": int(X_test.shape[0]),
+        "data_source": data_meta["data_source"],
+        "data_mode": mode,
         "n_features": len(FEATURE_NAMES),
         "features": FEATURE_NAMES,
         "class_labels": LABEL_NAMES,

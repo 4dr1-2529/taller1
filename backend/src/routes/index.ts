@@ -1,7 +1,7 @@
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
-import { login, refresh, me, changePassword } from "../controllers/auth.controller.js";
+import { login, refresh, logout, me, changePassword } from "../controllers/auth.controller.js";
 import { createStudent, getStudent, listStudents, updateStudent, deleteStudent } from "../controllers/students.controller.js";
 import {
   listTeachers,
@@ -87,6 +87,7 @@ router.get("/health", (_req, res) => {
 
 router.post("/auth/login", login);
 router.post("/auth/refresh", refresh);
+router.post("/auth/logout", authenticate, logout);
 router.get("/auth/me", authenticate, me);
 router.post("/auth/change-password", authenticate, changePassword);
 

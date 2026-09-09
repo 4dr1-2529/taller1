@@ -1,3 +1,7 @@
+# Arquitectura vigente
+
+La base oficial es MySQL 8 mediante Prisma. El servicio ML FastAPI se despliega de forma independiente y se configura con `ML_SERVICE_URL`; su CORS usa `ML_CORS_ORIGINS`. La demo contiene 1 director, 3 profesores y 9 estudiantes ficticios. El modelo predictivo no usa `estado` como característica.
+
 # Arquitectura
 
 ## Visión general

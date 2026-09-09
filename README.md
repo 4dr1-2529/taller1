@@ -20,6 +20,8 @@
 | **Base de datos** | Railway · MySQL 8 | (interna, vía `DATABASE_URL`) |
 | **ML (local)** | FastAPI · scikit-learn | http://localhost:5000 (desarrollo) |
 
+La demo del sistema contiene únicamente 1 director, 3 profesores y 9 estudiantes ficticios. El conteo oficial del schema es `npm run db:count-models` (52 modelos Prisma). El entrenamiento científico exige `DATASET_PATH`; no se generan datos sintéticos salvo `ML_DATA_MODE=demo`.
+
 Guía de despliegue: **[docs/DEPLOY.md](docs/DEPLOY.md)**
 
 ---
@@ -103,9 +105,9 @@ tesis-dashboard/                    # Monorepo npm workspaces
 │   │   ├── validators/             # schemas Zod
 │   │   └── utils/                  # prisma, scope por rol, audit
 │   ├── prisma/
-│   │   ├── schema.prisma           # 51 tablas — I.E.P. Primaria Blenkir
+│   │   ├── schema.prisma           # 52 modelos Prisma — fuente oficial
 │   │   ├── seed.ts                 # Estructura: grados, cursos, permisos
-│   │   ├── seed-demo.ts            # 660 estudiantes, 23 profesores
+│   │   ├── seed-demo.ts            # 9 estudiantes, 3 profesores, 1 director demo
 │   │   ├── seed-assignments.ts     # Tutores 1°-2°, polidocencia 3°-6°
 │   │   └── migrations/             # Migraciones SQL versionadas
 │   └── scripts/                    # Railway, seed, export cuentas, repair
@@ -203,7 +205,7 @@ cp frontend/.env.example frontend/.env.local
 # MySQL activo en XAMPP
 npm run db:push
 npm run db:seed          # Estructura académica + RBAC
-npm run db:seed:demo     # 660 estudiantes + 23 profesores + notas I–II
+npm run db:reset:demo    # requiere RESET_DEMO_DB=1 y DEMO_PASSWORD
 ```
 
 Reset completo: `npm run db:reset:full`
@@ -238,8 +240,7 @@ npm run dev              # Frontend :3029 + API :4000 + ML :5000
 Los CSV con correos de login reales están en:
 
 ```
-docs/cuentas-demo/estudiantes.csv   → 660 alumnos (columna email_login)
-docs/cuentas-demo/profesores.csv    → 23 docentes (columna email_login)
+docs/cuentas-demo/README.md         → instrucciones; no almacena credenciales
 ```
 
 Actualizar desde producción:
@@ -299,7 +300,7 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
 
 ```env
 DATABASE_URL="mysql://root@localhost:3306/tesis_dashboard"
-JWT_SECRET="blenkir_tesis_2026_jwt_secret_min_32_chars"
+JWT_SECRET="<GENERAR_SECRETO_ALEATORIO_DE_AL_MENOS_64_CARACTERES>"
 JWT_EXPIRES_IN="8h"
 PORT=4000
 HOST=0.0.0.0
@@ -317,7 +318,7 @@ NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1
 
 # Railway
 DATABASE_URL=${{MySQL.DATABASE_URL}}
-JWT_SECRET=blenkir_tesis_2026_jwt_secret_min_32_chars
+JWT_SECRET=<GENERAR_SECRETO_ALEATORIO_DE_AL_MENOS_64_CARACTERES>
 NODE_ENV=production
 CORS_ORIGIN=https://taller1-frontend.vercel.app
 ```
@@ -492,7 +493,7 @@ Guía: [docs/evidencias/README.md](docs/evidencias/README.md)
 | [docs/roles.md](docs/roles.md) | Permisos por rol |
 | [CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
 | [frontend/README.md](frontend/README.md) | Frontend Next.js |
-| [database/blenkir-v3/DER-BLENKIR.md](database/blenkir-v3/DER-BLENKIR.md) | Modelo BD 51 tablas |
+| [database/blenkir-v3/DER-BLENKIR.md](database/blenkir-v3/DER-BLENKIR.md) | Modelo SQL legacy; la fuente vigente es Prisma (52 modelos) |
 
 ---
 

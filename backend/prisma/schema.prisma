@@ -1,5 +1,5 @@
 // =============================================================================
-// I.E.P. BLENKIR — Esquema v3.0 (51 tablas)
+// I.E.P. BLENKIR — Esquema v3.0 (conteo oficial: npm run db:count-models)
 // Sistema de predicción de riesgo de deserción estudiantil (Primaria)
 // =============================================================================
 

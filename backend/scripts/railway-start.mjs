@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Arranque producción Railway: generate → migrate deploy → API.
- * Si detecta P3009, recupera automáticamente (BD vacía / demo).
+ * Si detecta P3009, detiene el despliegue sin borrar tablas.
  */
 import { spawn } from "node:child_process";
 import { applyEnvAliases, validateRailwayEnv } from "./env-aliases.mjs";

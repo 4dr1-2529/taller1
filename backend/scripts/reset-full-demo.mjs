@@ -6,6 +6,15 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+function assertDemoResetAllowed() {
+  if (process.env.RESET_DEMO_DB !== "1") {
+    throw new Error("Reset demo bloqueado: defina RESET_DEMO_DB=1 explícitamente.");
+  }
+  if (["production", "prod"].includes((process.env.NODE_ENV ?? "").toLowerCase())) {
+    throw new Error("Reset demo bloqueado en producción.");
+  }
+}
+
 async function wipeDemoData() {
   console.log("Limpiando datos académicos y demo…");
 
@@ -44,22 +53,27 @@ async function wipeDemoData() {
   const teachers = await prisma.teacher.deleteMany();
 
   const demoRoles = await prisma.role.findMany({
-    where: { codigo: { in: ["estudiante", "docente"] } },
+    where: { codigo: { in: ["admin", "docente", "estudiante"] } },
     select: { id: true },
   });
   const demoRoleIds = demoRoles.map((r) => r.id);
+  const sessions = await prisma.session.deleteMany({
+    where: { usuario: { rolId: { in: demoRoleIds } } },
+  });
   const users = await prisma.user.deleteMany({
     where: { rolId: { in: demoRoleIds } },
   });
 
   console.log(`  estudiantes eliminados: ${students.count}`);
   console.log(`  profesores eliminados: ${teachers.count}`);
+  console.log(`  sesiones eliminadas: ${sessions.count}`);
   console.log(`  usuarios demo eliminados: ${users.count}`);
 }
 
 async function main() {
+  assertDemoResetAllowed();
   await wipeDemoData();
-  console.log("OK — base lista para db:seed + db:seed:demo");
+  console.log("OK — usuarios demo eliminados; schema, migraciones y estructura institucional conservados.");
 }
 
 main()

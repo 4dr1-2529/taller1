@@ -42,10 +42,6 @@ def validate_predict_payload(data: dict[str, Any]) -> dict[str, Any]:
     uso_foros = num("uso_foros", 0.5, 0, 1)
     disminucion = num("disminucion_actividad", 0, 0, 100)
 
-    estado = str(data.get("estado_estudiante", data.get("estado", "activo"))).lower().replace(" ", "_")
-    if estado not in ("activo", "en_riesgo", "retirado"):
-        errors.append("estado_estudiante debe ser activo, en_riesgo o retirado")
-
     if errors:
         raise ValidationError("; ".join(errors))
 
@@ -59,5 +55,4 @@ def validate_predict_payload(data: dict[str, Any]) -> dict[str, Any]:
         "participacion_actividades": participacion,
         "uso_foros": uso_foros,
         "disminucion_actividad": disminucion,
-        "estado": estado,
     }

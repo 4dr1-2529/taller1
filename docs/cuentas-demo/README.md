@@ -1,16 +1,8 @@
-# Cuentas de acceso — I.E.P. Blenkir (producción)
+# Cuentas demo del sistema
 
 **Contraseña demo:** variable `DEMO_PASSWORD` en `backend/.env` (local) o Railway (producción). No se publica en el repositorio.
 
-## Archivos (usar estos para entrar a la web)
-
-| Archivo | Contenido |
-|---------|-----------|
-| **`estudiantes.csv`** | 660 alumnos — columna `email_login` |
-| **`profesores.csv`** | 23 docentes — columna `email_login` |
-| `cuentas.json` | Mismo datos en JSON + verificación |
-
-Sitio: https://taller1-frontend.vercel.app
+El seed vigente crea 1 director, 3 profesores y 9 estudiantes ficticios. Las contraseñas nunca se almacenan en este directorio.
 
 ## Actualizar desde producción (datos reales verificados)
 
@@ -27,6 +19,4 @@ Eso descarga correos de la tabla `usuario`, prueba logins y sobrescribe los CSV.
 
 En Railway → **taller1-production** → **Variables** → agregar `RUN_REPAIR=1` → redeploy → quitar la variable.
 
-## Ejemplos verificados
-
-Consulte las primeras filas de `estudiantes.csv` y `profesores.csv` tras ejecutar `export:accounts:web`.
+Los archivos exportados desde producción no se versionan. Configure `DEMO_PASSWORD` localmente y use `npm run db:reset:demo` con `RESET_DEMO_DB=1`.

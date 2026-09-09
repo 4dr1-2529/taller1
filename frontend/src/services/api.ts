@@ -318,6 +318,13 @@ class ApiClient {
     });
   }
 
+  async logout(refreshToken?: string | null) {
+    return this.request<{ loggedOut: boolean }>("/auth/logout", {
+      method: "POST",
+      body: JSON.stringify({ refreshToken }),
+    });
+  }
+
   async getMe() {
     return this.request<{ user: AuthUser }>("/auth/me");
   }

@@ -13,6 +13,7 @@ Errores: `{ "success": false, "message": "...", "errors": [{ "field", "message" 
 | GET | `/auth/me` | Perfil autenticado |
 | POST | `/auth/refresh` | Renovar token |
 | POST | `/auth/change-password` | Cambio de contraseña |
+| POST | `/auth/logout` | Revoca la sesión autenticada y su refresh token |
 
 ---
 
