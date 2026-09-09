@@ -1,6 +1,8 @@
 # Cuentas demo del sistema
 
-**Contraseña demo:** variable `DEMO_PASSWORD` en `backend/.env` (local) o Railway (producción). No se publica en el repositorio.
+`DEMO_PASSWORD=<CONFIGURAR_EN_VARIABLE_DE_ENTORNO>`
+
+No se publica ninguna contraseña en el repositorio.
 
 El seed vigente crea 1 director, 3 profesores y 9 estudiantes ficticios. Las contraseñas nunca se almacenan en este directorio.
 

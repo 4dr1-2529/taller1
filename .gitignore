@@ -10,6 +10,8 @@
 
 # production
 /build
+build/
+coverage/
 backend/dist/
 packages/shared/dist/
 
@@ -17,6 +19,13 @@ packages/shared/dist/
 .DS_Store
 *.pem
 *.js.map
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.backup
 
 # compiled artifacts in frontend src (should not be committed)
 frontend/src/**/*.js
@@ -58,6 +67,15 @@ machine-learning/models/training_history.json
 machine-learning/data/real/*
 !machine-learning/data/real/README.md
 machine-learning/models/production/*
+docs/cuentas-demo/*.csv
+docs/cuentas-demo/*.json
+docs/cuentas-demo/*.xlsx
+exports/
+backend/exports/
+temp/
+tmp/
+*.sqlite3
+Thumbs.db
 
 # SQL generado con datos sensibles (importar solo en local)
 database/blenkir-v3/03-seed-poblacion.sql
