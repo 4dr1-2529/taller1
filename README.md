@@ -317,7 +317,7 @@ DEMO_PASSWORD="su_contraseña_demo_local"
 NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1
 
 # Railway
-DATABASE_URL=${{MySQL.DATABASE_URL}}
+DATABASE_URL=${{MySQL.MYSQL_URL}}
 JWT_SECRET=<GENERAR_SECRETO_ALEATORIO_DE_AL_MENOS_64_CARACTERES>
 NODE_ENV=production
 CORS_ORIGIN=https://taller1-frontend.vercel.app

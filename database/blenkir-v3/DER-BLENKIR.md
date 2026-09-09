@@ -204,7 +204,7 @@ usuario ──< sesion, notificacion, auditoria
 
 ---
 
-## Variables ML (10 features — tesis)
+## Variables ML (9 features — tesis)
 
 Definidas en `ml_feature_def` y materializadas en `prediccion_feature_snapshot`:
 

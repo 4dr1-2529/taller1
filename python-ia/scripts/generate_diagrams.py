@@ -158,7 +158,7 @@ def diagram_stacking() -> None:
     rect = FancyBboxPatch((4.2, 6.5), 2.6, 0.9, boxstyle="round,pad=0.03",
                           facecolor=PALETTE["card"], edgecolor=PALETTE["text"], linewidth=1.5)
     ax.add_patch(rect)
-    ax.text(5.5, 6.95, "X (10 features)", ha="center", fontsize=10, color=PALETTE["text"])
+    ax.text(5.5, 6.95, "X (9 features)", ha="center", fontsize=10, color=PALETTE["text"])
 
     estimators = [
         (1.0, 4.2, "Random Forest\nn_estimators=150\nmax_depth=12", PALETTE["accent2"]),

@@ -12,7 +12,7 @@ El módulo IA es un **servicio FastAPI independiente** (`machine-learning/`, pue
 |------------|----------------|---------|
 | API ML | `app/main.py` | `/predict`, `/metrics`, `/health` |
 | Entrenamiento | `train.py` | Genera datos, entrena, guarda joblib |
-| Features | `app/features.py` | Vector 10D, factores, score |
+| Features | `app/features.py` | Vector 9D, factores, score |
 | Validación | `utils/validators.py` | Rangos de entrada API |
 | Cliente backend | `backend/src/services/ml-client.ts` | `predictWithMl()`, `buildMlPayload()` |
 | Controlador | `backend/src/controllers/predict.controller.ts` | `POST /predict` con persistencia Prisma |

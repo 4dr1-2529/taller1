@@ -40,7 +40,7 @@ export function validateRailwayEnv(env: NodeJS.ProcessEnv): string | null {
 
   if (!env.DATABASE_URL?.trim()) {
     lines.push(
-      "- DATABASE_URL: obligatoria. En Railway vincule la variable del plugin MySQL o use ${{MySQL.DATABASE_URL}}.",
+      "- DATABASE_URL: obligatoria. En Railway vincule la variable del plugin MySQL o use ${{MySQL.MYSQL_URL}}.",
     );
   }
 

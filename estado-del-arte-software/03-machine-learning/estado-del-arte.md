@@ -164,7 +164,7 @@ Valida stacking para identificación temprana de reprobación/riesgo con variabl
 
 ### Aplicación al proyecto
 
-`StudentPredictionView` y rutas `/predictions` del backend consumen el endpoint ML con el vector de 10 features. El artículo respalda el flujo completo: entrenamiento offline → modelo serializado → inferencia online para intervención temprana.
+`StudentPredictionView` y rutas `/predictions` del backend consumen el endpoint ML con el vector de 9 features. El artículo respalda el flujo completo: entrenamiento offline → modelo serializado → inferencia online para intervención temprana.
 
 ---
 

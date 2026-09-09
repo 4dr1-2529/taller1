@@ -42,7 +42,7 @@ Este documento ISO permanece en `docs/` como **referencia normativa**. El plan o
 | ISO/IEC 29119 | Diseño — caja negra predicción | Predicción | `plan-pruebas/pruebas-caja-negra/prediccion.md` | TC-CN-07, TC-IA-08 | `evidencias-finales/prediccion/prediccion.png` | ✅ Verificado |
 | ISO/IEC 29119 | Diseño — caja blanca API | Rutas | `plan-pruebas/pruebas-caja-blanca/api.md` | Mapa `routes/index.ts` | `backend/src/routes/index.ts` | ✅ Verificado |
 | ISO/IEC 29119 | Ejecución — pruebas unitarias backend | Backend | `backend/tests/*.test.{mjs,ts}` | 31 tests Node (`npm run test:backend`) | Ejecución: 31 pass / 0 fail | ✅ Verificado |
-| ISO/IEC 29119 | Ejecución — pruebas unitarias IA | ML | `machine-learning/tests/test_predict.py` | Vector 10D, heurística, endpoint | `npm run ml:test` — 6 OK | ✅ Verificado |
+| ISO/IEC 29119 | Ejecución — pruebas unitarias IA | ML | `machine-learning/tests/test_predict.py` | Vector 9D, heurística, endpoint | `npm run ml:test` — 6 OK | ✅ Verificado |
 | ISO/IEC 29119 | Ejecución — integración FE-BE | Auth + API | `plan-pruebas/pruebas-integracion/frontend-backend.md` | TC-INT-02 login + historial | `frontend/src/services/api.ts` | ✅ Verificado |
 | ISO/IEC 29119 | Ejecución — integración BE-IA | ML client | `plan-pruebas/pruebas-integracion/backend-ia.md` | `predictWithMl()` → FastAPI | `verify-stack.mjs` IA predict | ✅ Verificado |
 | ISO/IEC 29119 | Ejecución — integración BE-BD | Prisma | `plan-pruebas/pruebas-integracion/backend-bd.md` | Login + `GET /students` post-seed | `verificacion-stack.json` BD PASS | ✅ Verificado |

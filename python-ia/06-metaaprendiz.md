@@ -21,7 +21,7 @@ final_estimator=RandomForestClassifier(
 | Predicciones OOF de `rf` | CV 3-fold sobre `X_train` |
 | Predicciones OOF de `hgb` | CV 3-fold sobre `X_train` |
 
-Con `passthrough=False`, **no** recibe las 10 features originales — solo las salidas de los estimadores base (probabilidades o clases según configuración sklearn 1.6).
+Con `passthrough=False`, **no** recibe las 9 features originales — solo las salidas de los estimadores base (probabilidades o clases según configuración sklearn 1.6).
 
 ## Hiperparámetros del meta-RF
 

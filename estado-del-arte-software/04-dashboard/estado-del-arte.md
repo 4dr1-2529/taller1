@@ -155,7 +155,7 @@ Fundamenta sistemas de alerta temprana online con indicadores de engagement y da
 
 | EWS element | Proyecto |
 |-------------|----------|
-| Indicadores riesgo | 10 features ML |
+| Indicadores riesgo | 9 features ML |
 | Alertas | Modelo `Alerta`, `AlertsView` |
 | Roles facilitador | `docente`, `admin` |
 | Online / LMS | Actividad LMS en dashboard |

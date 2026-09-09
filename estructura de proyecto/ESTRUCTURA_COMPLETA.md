@@ -645,7 +645,7 @@ Healthcheck: `https://taller1-production.up.railway.app/health`
 
 Configuracion de `railway.toml`:
 
-- Builder: Nixpacks.
+- Builder: Railpack.
 - Build: instala dependencias, compila shared, genera Prisma y compila backend.
 - Start: `npm run start:prod --workspace=backend`.
 - Healthcheck: `/health`.
@@ -664,7 +664,7 @@ El arranque `backend/scripts/railway-start.mjs`:
 
 ### 8.3 Railway: MySQL
 
-El plugin MySQL de Railway entrega `DATABASE_URL` al servicio backend. La documentacion indica que la conexion interna utiliza `mysql.railway.internal:3306` mediante `${{MySQL.DATABASE_URL}}`.
+El plugin MySQL de Railway entrega `DATABASE_URL` al servicio backend. La documentacion indica que la conexion interna utiliza `mysql.railway.internal:3306` mediante `${{MySQL.MYSQL_URL}}`.
 
 Variables principales del backend:
 

@@ -14,7 +14,7 @@ API REST del sistema predictivo de deserción — **I.E.P. Blenkir Huancayo**.
 Variables mínimas en Railway:
 
 ```env
-DATABASE_URL=${{MySQL.DATABASE_URL}}
+DATABASE_URL=${{MySQL.MYSQL_URL}}
 JWT_SECRET=<GENERAR_SECRETO_ALEATORIO_DE_AL_MENOS_64_CARACTERES>
 NODE_ENV=production
 HOST=0.0.0.0

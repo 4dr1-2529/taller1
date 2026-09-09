@@ -118,7 +118,7 @@ Define infraestructura de analítica predictiva confiable: pipeline de datos, se
 
 ### Aplicación al proyecto
 
-Backend agrega datos de `Nota`, `Asistencia`, `ActividadLMS` antes de llamar al servicio ML con vector de 10 features. El artículo fundamenta no embeber ML dentro del servidor Express — decisión arquitectónica explícita del repositorio.
+Backend agrega datos de `Nota`, `Asistencia`, `ActividadLMS` antes de llamar al servicio ML con vector de 9 features. El artículo fundamenta no embeber ML dentro del servidor Express — decisión arquitectónica explícita del repositorio.
 
 ---
 

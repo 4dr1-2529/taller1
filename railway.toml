@@ -3,7 +3,8 @@
 # Servicio MySQL: añadir plugin MySQL y vincular DATABASE_URL al servicio backend.
 
 [build]
-builder = "NIXPACKS"
+# Railway Config as Code esta deprecado; los servicios nuevos se configuran desde Dashboard.
+builder = "RAILPACK"
 buildCommand = "npm install --include=dev && npm run build --workspace=@tesis/shared && npm run prisma:generate --workspace=backend && npm run build --workspace=backend"
 
 [deploy]

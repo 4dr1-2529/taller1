@@ -43,7 +43,7 @@ CASES = [
     ("TC-IA-02", "Unitaria", "IA", "pytest predict", "npm run ml:test", "test_predict.py", "6+ tests pass", "pruebas-unitarias/evidencias/ml-tests.log", "Aprobado", "Alta", "pruebas-unitarias/evidencias/ml-tests.log"),
     ("TC-IA-03", "Unitaria", "IA", "Heurística riesgo bajo", "promedio 16 asist 95", "payload bajo", "level=bajo", "test_heuristic_low_risk", "Aprobado", "Alta", "machine-learning/tests/test_predict.py"),
     ("TC-IA-04", "Unitaria", "IA", "Heurística riesgo alto", "promedio 8 retirado", "payload alto", "level medio|alto", "test_heuristic_high_risk", "Aprobado", "Alta", "machine-learning/tests/test_predict.py"),
-    ("TC-IA-05", "Unitaria", "IA", "Vector 10 features", "build_feature_vector", "FEATURE_NAMES", "shape (1,10)", "app/features.py", "Aprobado", "Alta", "machine-learning/app/features.py"),
+    ("TC-IA-05", "Unitaria", "IA", "Vector 9 features", "build_feature_vector", "FEATURE_NAMES", "shape (1,9)", "app/features.py", "Aprobado", "Alta", "machine-learning/app/features.py"),
     ("TC-IA-06", "Unitaria", "IA", "Formato tesis español", "toThesisPrediction", "ML response", "nivel_riesgo, probabilidad_abandono", "prediction-format.test.mjs", "Aprobado", "Alta", "pruebas-unitarias/evidencias/backend-tests.log"),
     ("TC-IA-07", "Integración", "IA", "ML health", "GET :5000/health", "sin auth", "200", "smoke + performance", "Aprobado", "Media", "evidencias-finales/ia/health-ml.json"),
     ("TC-IA-08", "Integración", "IA", "POST ML predict 3 perfiles", "bajo/medio/alto", "3 payloads", "level válido", "smoke-tests.mjs", "Aprobado", "Alta", "pruebas-unitarias/evidencias/smoke-tests.log"),
