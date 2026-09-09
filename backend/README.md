@@ -68,7 +68,7 @@ src/
 ├── utils/             # student-scope, teacher-scope, tokens (SHA-256)
 └── validators/        # Schemas Zod
 scripts/
-├── railway-start.mjs  # migrate deploy + auto-recovery P3009
+├── railway-start.mjs  # migrate deploy; detiene ante P3009
 ├── env-aliases.mjs    # Alias español → inglés en Railway
 └── p3009-recovery.mjs
 ```
@@ -116,7 +116,7 @@ Prefijo `/estudiante/*` — **studentId desde JWT**, sin aceptar ID del cliente:
 | Comando | Descripción |
 |---------|-------------|
 | `npm run start:prod` | Producción Railway (migrate + API) |
-| `npm run db:railway:fix-p3009` | Recuperar migración fallida |
+| `npm run db:railway:fix-p3009` | Reparación manual de migración fallida |
 | `npm run db:seed` / `db:seed:demo` | Datos iniciales y demo |
 | `npm run db:repair:all` | Reparar cuentas login + notas I–II sin reset total |
 | `npm run export:accounts:web` | Exportar CSV verificados desde producción |

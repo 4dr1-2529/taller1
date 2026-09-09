@@ -13,7 +13,7 @@ Microservicio de **inferencia y entrenamiento** que clasifica el riesgo de deser
 ## 2. Pipeline IA
 
 ```
-MySQL (vía backend) → 10 features → RF + XGBoost → Stacking → Meta-RF
+MySQL (vía backend) → 9 features → RF + XGBoost → Stacking → Meta-RF
     → best_model.joblib → /predict → Backend → Dashboard + Alertas
 ```
 

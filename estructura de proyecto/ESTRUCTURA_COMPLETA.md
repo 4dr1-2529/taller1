@@ -658,7 +658,7 @@ El arranque `backend/scripts/railway-start.mjs`:
 2. Valida el entorno.
 3. Ejecuta `prisma generate`.
 4. Ejecuta `prisma migrate deploy`.
-5. Intenta recuperar automaticamente un error P3009 de la migracion inicial.
+5. Si aparece P3009, detiene el despliegue y requiere reparación manual; no elimina tablas automáticamente.
 6. Puede lanzar seed demo o reparacion mediante flags temporales.
 7. Inicia `node dist/index.js`.
 
@@ -814,9 +814,9 @@ Estas pruebas son principalmente unitarias y de contrato. No demuestran por si s
 
 ### 13.2 Hallazgos de severidad alta
 
-#### A. Recuperacion P3009 con borrado total potencial
+#### A. Recuperación P3009 sin borrado automático
 
-`backend/scripts/railway-start.mjs` ejecuta `recoverFailedInitMigration()` automaticamente cuando detecta P3009. Esa rutina usa `railway-drop-all-tables.sql`, que elimina todas las tablas del schema antes de volver a migrar.
+`backend/scripts/railway-start.mjs` detiene el despliegue cuando `prisma migrate deploy` devuelve P3009. No ejecuta `DROP` ni elimina tablas; la reparación debe realizarse manualmente.
 
 Aunque los comentarios advierten que debe usarse solo con una BD vacia o de prueba, el flujo de arranque no exige una confirmacion interactiva ni una variable explicita de seguridad antes de ejecutarlo. En una BD productiva con datos, un error de migracion podria provocar perdida total.
 
@@ -918,7 +918,7 @@ La BD tiene `Permission` y `RolePermission`, pero las rutas se autorizan princip
 
 ### 13.7 Orden recomendado de mejoras
 
-1. Proteger la recuperacion P3009 y quitar el borrado automatico del arranque.
+1. Mantener la protección P3009 y la reparación manual sin borrado automático del arranque.
 2. Desplegar y monitorizar el servicio ML real, diferenciando claramente fallback y modelo.
 3. Guardar snapshots de features, modelo, version, periodo y origen en cada prediccion.
 4. Retirar o aislar scripts SQL legacy y actualizar referencias de 51 a 52 tablas.

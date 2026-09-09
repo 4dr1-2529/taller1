@@ -29,7 +29,7 @@ flowchart TB
   subgraph PROCESOS["PROCESOS"]
     P1[Limpieza y validación<br/>Zod + RBAC]
     P2[Integración BD<br/>Prisma + MySQL]
-    P3[Feature engineering<br/>10 variables tesis]
+    P3[Feature engineering<br/>9 variables tesis]
     P4[Predicción ensemble IA<br/>RF + XGBoost + Stacking]
     P5[Generación alertas<br/>nueva → seguimiento → resuelta]
   end
@@ -103,7 +103,7 @@ flowchart TB
 | PR-02 | **Limpieza / normalización** | Coerción numérica, sanitización XSS, rechazo IDs ajenos | `grades.controller`, `student-scope` |
 | PR-03 | **Almacenamiento** | Persistencia relacional transaccional | Prisma ORM → MySQL 8 |
 | PR-04 | **Control de acceso** | Filtrar datos por rol (Director / Profesor / Estudiante) | `authorize()`, `teacher-scope` |
-| PR-05 | **Extracción de features** | Consolidar 10 variables para ML | `predict.controller` + queries Prisma |
+| PR-05 | **Extracción de features** | Consolidar 9 variables para ML | `predict.controller` + queries Prisma |
 | PR-06 | **Predicción IA** | Clasificar riesgo bajo/medio/alto | FastAPI `/predict` — ensemble |
 | PR-07 | **Generación de alertas** | Crear alerta si riesgo ≥ umbral | Servicio predict → tabla `alert` |
 | PR-08 | **Visualización** | Presentar KPIs y detalle por rol | Next.js dashboards |

@@ -202,7 +202,7 @@ flowchart LR
 | Health | `GET /health` — timeout 120 s |
 | Variables | `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`, `NODE_ENV` |
 | Ops flags | `RUN_DEMO_SEED=1`, `RUN_REPAIR=1` (temporal) |
-| Recovery | P3009 auto-fix en `railway-start.mjs` |
+| Recovery | P3009 detiene el arranque; reparación manual |
 
 **URL producción:** https://taller1-production.up.railway.app/api/v1
 
@@ -212,7 +212,7 @@ flowchart LR
 
 ```
 predict.controller.ts
-    → extrae 10 features del estudiante (Prisma)
+    → extrae 9 features del estudiante (Prisma)
     → ml-client.ts POST ML_SERVICE_URL/predict
     → persiste prediction + evalúa alert
     → retorna formato tesis (español)

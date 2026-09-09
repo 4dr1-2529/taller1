@@ -56,7 +56,7 @@ flowchart TB
 ```
 1. Profesor/Director registra notas, asistencia, LMS → MySQL
 2. Usuario solicita predicción → Frontend → Backend
-3. Backend extrae 10 features → ML Service → nivel riesgo
+3. Backend extrae 9 features → ML Service → nivel riesgo
 4. Backend persiste prediction + genera alert si aplica
 5. Dashboard muestra KPIs, gauge, alertas según rol
 ```

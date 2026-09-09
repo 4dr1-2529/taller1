@@ -26,7 +26,7 @@ El modelo utiliza **ensemble learning** combinando múltiples algoritmos para ma
 machine-learning/
 ├── app/
 │   ├── main.py          # FastAPI: /predict, /health, /metrics
-│   └── features.py      # FEATURE_NAMES (10 variables)
+  │   └── features.py      # FEATURE_NAMES (9 variables)
 ├── models/
 │   ├── best_model.joblib       # Modelo seleccionado por F1
 │   ├── random_forest_model.joblib
@@ -48,7 +48,7 @@ machine-learning/
 ```mermaid
 flowchart LR
   D[Datos académicos + LMS<br/>MySQL vía Prisma] --> PP[Preprocesamiento<br/>validación rangos]
-  PP --> FE[Feature Engineering<br/>10 variables tesis]
+  PP --> FE[Feature Engineering<br/>9 variables tesis]
   FE --> RF[Random Forest<br/>150 árboles]
   FE --> XG[XGBoost / HGB<br/>gradient boosting]
   RF --> ST[Stacking<br/>meta-aprendizaje]
@@ -68,7 +68,7 @@ flowchart LR
 |-------|------------|-------------|
 | **1. Datos** | MySQL + Prisma | Notas, asistencia, LMS, matrícula del estudiante |
 | **2. Preprocesamiento** | `predict.controller.ts` | Validación, coerción numérica, manejo nulos |
-| **3. Feature Engineering** | `app/features.py` | Vector de 10 features normalizado |
+| **3. Feature Engineering** | `app/features.py` | Vector de 9 features normalizado |
 | **4. Random Forest** | `RandomForestClassifier` | Modelo base robusto, class_weight balanced |
 | **5. XGBoost** | `XGBClassifier` o HGB fallback | Boosting secuencial, alta precisión tabular |
 | **6. Stacking** | `StackingClassifier` | Combina RF + HGB con CV=3 |
@@ -125,7 +125,7 @@ Datos (BD) → Backend extrae features → POST ML/predict
 
 ## 5. Variables de entrada (features)
 
-10 variables alineadas con la tesis:
+9 variables alineadas con la tesis:
 
 | # | Feature | Descripción |
 |---|---------|-------------|
@@ -394,7 +394,7 @@ Frontend → POST /api/v1/predict → Backend → ML Service → MySQL
 
 ### 11.3 Fallback
 
-Si no existen modelos entrenados, el servicio aplica **heurística ponderada** con las mismas 10 variables.
+Si no existen modelos entrenados, el servicio aplica **heurística ponderada** con las mismas 9 variables.
 
 ---
 

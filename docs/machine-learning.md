@@ -7,7 +7,7 @@
 - **Stacking** — RF + HGB, meta RF
 - **Selección:** mejor F1-score → `models/best_model.joblib`
 
-## Variables (10 features)
+## Variables (9 features)
 
 `promedio_general`, `cursos_desaprobados`, `asistencia_general`, `frecuencia_acceso_lms`, `tiempo_plataforma`, `tareas_ratio`, `participacion_actividades`, `uso_foros`, `disminucion_actividad`, `estado`
 
