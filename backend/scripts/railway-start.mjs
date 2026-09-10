@@ -30,6 +30,7 @@ console.log("[railway-start] prisma migrate deploy");
 const result = tryMigrateDeploy();
 
 if (!result.ok && result.reason === "P3009") {
+  console.error(result.output);
   recoverFailedInitMigration();
 } else if (!result.ok) {
   console.error("[railway-start] migrate deploy falló (no P3009). Revise DATABASE_URL y logs.");

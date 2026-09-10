@@ -167,7 +167,7 @@ O manualmente (con `DATABASE_URL` de Railway):
 
 ```bash
 cd backend
-npx prisma migrate resolve --rolled-back "20250609120000_init"
+npx prisma migrate resolve --rolled-back "20250604000000_init"
 npx prisma db execute --file scripts/railway-drop-all-tables.sql --schema prisma/schema.prisma
 npx prisma generate
 npx prisma migrate deploy

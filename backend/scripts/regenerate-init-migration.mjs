@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { backendRoot, prismaExecOrThrow } from "./prisma-exec.mjs";
 
-const outPath = path.join(backendRoot, "prisma/migrations/20250609120000_init/migration.sql");
+const outPath = path.join(backendRoot, "prisma/migrations/20250604000000_init/migration.sql");
 
 const { stdout: sql } = prismaExecOrThrow(
   ["migrate", "diff", "--from-empty", "--to-schema-datamodel", "prisma/schema.prisma", "--script"],

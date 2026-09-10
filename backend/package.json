@@ -18,7 +18,7 @@
     "db:count-models": "node scripts/count-prisma-models.mjs",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:migrate:resolve-rolled-back": "prisma migrate resolve --rolled-back 20250609120000_init",
+    "db:migrate:resolve-rolled-back": "prisma migrate resolve --rolled-back 20250604000000_init",
     "db:migrate:regenerate-init": "node scripts/regenerate-init-migration.mjs",
     "db:railway:fix-p3009": "node scripts/railway-fix-p3009.mjs",
     "db:push": "prisma db push",
