@@ -39,24 +39,8 @@ export function AppShell({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35 }}
     >
-      <motion.div
-        className="app-orb app-orb-violet"
-        animate={{ x: [0, 24, 0], y: [0, -16, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        aria-hidden
-      />
-      <motion.div
-        className="app-orb app-orb-cyan"
-        animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        aria-hidden
-      />
-      <motion.div
-        className="app-orb app-orb-fuchsia"
-        animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.5, 0.35] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-        aria-hidden
-      />
+      <div className="app-orb app-orb-violet" aria-hidden />
+      <div className="app-orb app-orb-cyan" aria-hidden />
 
       <AppSidebar
         sections={sections}
@@ -71,12 +55,12 @@ export function AppShell({
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.4, delay: 0.05 }}
       >
-        <div className="app-content z-20 px-4 pt-4 md:px-8 md:pt-6 lg:pl-0">
+        <div className="app-content z-20 px-4 pt-3 sm:px-6 md:px-8 md:pt-5 lg:pl-7">
           <AppHeader activeSection={activeSection} subtitle={subtitle} />
         </div>
 
-        <main className="app-content flex-1 px-4 pb-10 pt-5 md:px-8 md:pb-12 md:pt-6">
-          <div className="mx-auto w-full max-w-[1680px] space-y-6">
+        <main className="app-content flex-1 px-4 pb-8 pt-4 sm:px-6 md:px-8 md:pb-10 md:pt-5 lg:pl-7">
+          <div className="mx-auto w-full max-w-[1680px] space-y-5">
             {dataSource !== "api" ? (
               <DataSourceBanner dataSource={dataSource} loading={loading} onRefresh={onRefresh} />
             ) : null}

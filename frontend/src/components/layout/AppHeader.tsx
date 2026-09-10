@@ -47,10 +47,8 @@ export function AppHeader({ activeSection, subtitle }: AppHeaderProps) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="glass-header relative overflow-hidden rounded-2xl px-5 py-5 md:px-8 md:py-5"
+      className="glass-header relative overflow-hidden rounded-[var(--radius-lg)] px-5 py-4 md:px-7 md:py-4"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.08),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(6,182,212,0.06),transparent_50%)]" />
-
       <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 flex-1">
           <nav className="mb-3 flex flex-wrap items-center gap-1.5 text-[13px]">
@@ -72,12 +70,12 @@ export function AppHeader({ activeSection, subtitle }: AppHeaderProps) {
 
           <motion.h1
             layout
-            className="text-2xl font-bold tracking-tight text-[var(--text-primary)] md:text-3xl"
+            className="text-2xl font-bold tracking-tight text-[var(--text-primary)] md:text-[2rem]"
           >
             {getSectionLabel(activeSection, user?.role)}
           </motion.h1>
 
-          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-[var(--text-secondary)] md:text-base">
+          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[var(--text-secondary)] md:text-[15px]">
             {subtitle}
           </p>
         </div>
@@ -91,11 +89,10 @@ export function AppHeader({ activeSection, subtitle }: AppHeaderProps) {
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--accent-muted)] p-1.5 pr-4 transition-all duration-200 hover:border-violet-500/30"
+              className="flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--accent-muted)] p-1.5 pr-4 transition-all duration-200 hover:border-[var(--brand-orange)]/40"
             >
               <div className="relative">
-                <div className="absolute -inset-[2px] rounded-lg bg-gradient-to-br from-violet-500 to-cyan-500 opacity-70 blur-[2px]" />
-                <span className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 via-purple-500 to-cyan-500 text-[15px] font-bold text-white shadow-lg shadow-violet-500/25">
+                <span className="relative flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-[var(--brand-navy)] text-[15px] font-bold text-white shadow-md">
                   {initials}
                 </span>
               </div>
