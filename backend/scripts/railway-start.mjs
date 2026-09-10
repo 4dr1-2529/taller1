@@ -6,11 +6,13 @@
 import { spawn } from "node:child_process";
 import { applyEnvAliases, validateRailwayEnv } from "./env-aliases.mjs";
 import {
-  backendRoot,
   recoverFailedInitMigration,
   tryMigrateDeploy,
 } from "./p3009-recovery.mjs";
-import { prismaExecOrThrow } from "./prisma-exec.mjs";
+import {
+  backendRoot,
+  prismaExecOrThrow,
+} from "./prisma-exec.mjs";
 import { spawnTsx } from "./spawn-tsx.mjs";
 
 applyEnvAliases(process.env);
