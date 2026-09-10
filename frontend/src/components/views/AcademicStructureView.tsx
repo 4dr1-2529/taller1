@@ -49,7 +49,7 @@ export function AcademicStructureView() {
 
   if (error) {
     return (
-      <div className="premium-card rounded-2xl p-5 md:p-6">
+      <div className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/10">
             <Layers className="h-4 w-4 text-rose-400" />
@@ -76,7 +76,7 @@ export function AcademicStructureView() {
       >
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-500/20 ring-1 ring-white/10">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
               <School className="h-4 w-4 text-violet-400" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
@@ -91,9 +91,9 @@ export function AcademicStructureView() {
 
       {/* Info Card */}
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <div className="premium-card rounded-2xl p-5 md:p-6">
+        <div className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
               <Layers className="h-5 w-5 text-violet-400" />
             </div>
             <div>

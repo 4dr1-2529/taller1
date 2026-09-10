@@ -27,7 +27,7 @@ export function PageSection({
   return (
     <motion.section
       className={clsx(
-        "relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-elevated)] backdrop-blur-xl",
+        "relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-elevated)] shadow-[var(--card-shadow)] backdrop-blur-xl",
         variant === "form" && "p-6 md:p-8",
         variant === "table" && "overflow-hidden",
         variant === "default" && "p-6 md:p-8",
@@ -37,17 +37,16 @@ export function PageSection({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-cyan-500/5 opacity-50" />
       <div className="relative z-10">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex gap-4">
             {Icon ? (
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20 ring-1 ring-violet-500/30 shadow-lg shadow-violet-500/10">
-                <Icon className="h-5 w-5 text-violet-400" aria-hidden />
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--brand-orange)]/25">
+                <Icon className="h-5 w-5 text-[var(--brand-orange)]" aria-hidden />
               </span>
             ) : null}
             <div>
-              <h3 className="text-lg font-semibold tracking-tight text-[var(--text-primary)] md:text-xl">
+              <h3 className="text-section-title font-semibold text-[var(--text-primary)]">
                 {title}
               </h3>
               {description ? (

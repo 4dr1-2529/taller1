@@ -22,11 +22,11 @@ function StatCard({
   accent: string;
 }) {
   return (
-    <div className="premium-card rounded-xl p-4">
+    <div className="premium-card rounded-[var(--radius-lg)] p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
-          <p className="mt-2 text-2xl font-bold text-[var(--text-primary)]">{value}</p>
+          <p className="text-metric mt-3 font-bold text-[var(--text-primary)]">{value}</p>
         </div>
         <div className={`rounded-lg p-2 ${accent}`}>
           <Icon className="h-5 w-5" />
@@ -44,10 +44,10 @@ export function InstitutionOverview({
   totalTeachers,
 }: Props) {
   return (
-    <section className="premium-card overflow-hidden rounded-2xl">
-      <div className="border-b border-[var(--border)] bg-gradient-to-r from-violet-500/10 via-cyan-500/5 to-transparent px-5 py-4">
+    <section className="premium-card overflow-hidden rounded-[var(--radius-lg)]">
+      <div className="border-b border-[var(--border)] bg-[var(--surface-muted)]/45 px-5 py-5">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="rounded-xl bg-violet-500/15 p-2.5 text-violet-400">
+            <div className="rounded-[var(--radius-md)] bg-[var(--accent-muted)] p-2.5 text-[var(--brand-orange)]">
             <Building2 className="h-5 w-5" />
           </div>
           <div>
@@ -72,7 +72,7 @@ export function InstitutionOverview({
           icon={GraduationCap}
           accent="bg-violet-500/15 text-violet-400"
         />
-        <div className="premium-card rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 md:col-span-1">
+        <div className="premium-card rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-5 md:col-span-1">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">Director</p>
@@ -81,7 +81,7 @@ export function InstitutionOverview({
                 <p className="mt-1 text-xs text-[var(--text-secondary)]">{directorEmail}</p>
               ) : null}
             </div>
-            <div className="rounded-lg bg-amber-500/15 p-2 text-amber-400">
+            <div className="rounded-[var(--radius-md)] bg-[var(--accent-muted)] p-2 text-[var(--brand-orange)]">
               <Shield className="h-5 w-5" />
             </div>
           </div>

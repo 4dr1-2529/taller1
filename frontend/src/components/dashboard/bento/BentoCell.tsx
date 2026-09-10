@@ -51,9 +51,9 @@ export function BentoCell({
       className={clsx(
         colClass[col],
         rowClass[row],
-        "bento-cell flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[var(--surface)]/80 backdrop-blur-xl",
-        variant === "hero" && "bento-cell-hero border-white/[0.1]",
-        variant === "muted" && "bg-white/[0.02]",
+        "bento-cell flex flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[var(--card-shadow)] backdrop-blur-xl",
+        variant === "hero" && "bento-cell-hero border-[var(--brand-orange)]/20",
+        variant === "muted" && "bg-[var(--surface-muted)]",
         className,
       )}
     >

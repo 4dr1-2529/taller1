@@ -11,13 +11,13 @@ export function RiskBadge({ level, score }: { level: RiskLevel; score?: number }
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold tabular-nums",
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums",
         level === "alto" &&
-          "bg-rose-500/15 text-rose-600 ring-1 ring-rose-500/30 dark:text-rose-300",
+          "bg-[var(--risk-high)]/12 text-[var(--risk-high)] ring-1 ring-[var(--risk-high)]/25",
         level === "medio" &&
-          "bg-amber-500/15 text-amber-700 ring-1 ring-amber-500/30 dark:text-amber-300",
+          "bg-[var(--risk-medium)]/12 text-[var(--risk-medium)] ring-1 ring-[var(--risk-medium)]/25",
         level === "bajo" &&
-          "bg-emerald-500/15 text-emerald-700 ring-1 ring-emerald-500/30 dark:text-emerald-300",
+          "bg-[var(--risk-low)]/12 text-[var(--risk-low)] ring-1 ring-[var(--risk-low)]/25",
         level !== "alto" && level !== "medio" && level !== "bajo" &&
           "bg-cyan-500/15 text-cyan-700 ring-1 ring-cyan-500/30 dark:text-cyan-300",
       )}

@@ -144,7 +144,7 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
 
       {student ? (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <div className="premium-card flex flex-col gap-3 rounded-2xl p-5 md:flex-row md:items-center md:justify-between md:p-6">
+        <div className="premium-card flex flex-col gap-3 rounded-[var(--radius-lg)] p-5 md:flex-row md:items-center md:justify-between md:p-6">
           <div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)]">Comportamiento en LMS</h3>
             <p className="text-sm text-[var(--text-muted)]">
@@ -173,7 +173,7 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
           variants={cardVariants}
           initial="hidden"
           animate="visible"
-          className="premium-card rounded-2xl p-5 md:p-6"
+          className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6"
         >
           <div className="flex items-center gap-3">
             <div
@@ -198,10 +198,10 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.05 }}
-          className="premium-card rounded-2xl p-5 md:p-6"
+          className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 ring-1 ring-white/10">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
               <Clock3 className="h-4 w-4 text-cyan-400" aria-hidden />
             </div>
             <h4 className="font-semibold text-[var(--text-primary)]">Tiempo en plataforma</h4>
@@ -216,7 +216,7 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.1 }}
-          className="premium-card rounded-2xl p-5 md:p-6"
+          className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 ring-1 ring-white/10">
@@ -240,7 +240,7 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
           className="premium-card rounded-2xl p-5 md:p-6"
         >
           <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
               <BarChart3 className="h-4 w-4 text-violet-400" />
             </div>
             <div>
@@ -295,7 +295,7 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.05 }}
-          className="premium-card rounded-2xl p-5 md:p-6"
+          className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6"
         >
           <div className="flex items-start gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 ring-1 ring-white/10">

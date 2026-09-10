@@ -60,10 +60,8 @@ export function DataTablePanel({
   return (
     <PageSection title={title} description={description} variant="table" className={clsx("overflow-hidden", className)}>
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 via-transparent to-cyan-500/5 opacity-0 transition-opacity duration-500 pointer-events-none" />
-
         {!(hideToolbarWhenEmpty && isEmpty) ? (
-        <div className="flex flex-col gap-4 border-b border-[var(--border-subtle)] bg-[var(--surface-elevated)]/40 px-5 py-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between md:px-6">
+        <div className="flex flex-col gap-4 border-b border-[var(--border-subtle)] bg-[var(--surface-muted)]/45 px-5 py-4 sm:flex-row sm:items-center sm:justify-between md:px-6">
           <SearchField
             className="min-w-0 flex-1 sm:max-w-sm"
             value={search}
@@ -82,13 +80,11 @@ export function DataTablePanel({
       </div>
 
       <div className="relative">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
-
         <div className="overflow-x-auto px-2 pb-2 md:px-4 md:pb-4">
           {isEmpty ? (
             <div className="empty-state-panel py-12 md:py-16">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500/12 to-cyan-500/10 ring-1 ring-[var(--border-subtle)]">
-                <Database className="h-7 w-7 text-violet-500/70 dark:text-violet-300/80" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
+                <Database className="h-7 w-7 text-[var(--brand-orange)]/80" />
               </div>
               <p className="mt-4 text-sm font-semibold text-[var(--text-primary)]">Sin registros en esta tabla</p>
               <p className="mt-1.5 max-w-sm text-center text-xs leading-relaxed text-[var(--text-muted)]">{emptyMessage}</p>

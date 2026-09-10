@@ -20,12 +20,12 @@ type Props = {
 
 function KpiCard({ label, value, suffix = "", icon: Icon }: { label: string; value: string | number; suffix?: string; icon: typeof Users }) {
   return (
-    <div className="premium-card rounded-xl p-4">
+    <div className="premium-card rounded-[var(--radius-lg)] p-5">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
         <Icon className="h-4 w-4 text-[var(--brand-orange)]" />
       </div>
-      <p className="mt-2 text-2xl font-bold text-[var(--text-primary)]">
+      <p className="text-metric mt-3 font-bold text-[var(--text-primary)]">
         {value}
         {suffix}
       </p>
@@ -58,7 +58,7 @@ export function RoleDashboard({ role, students, courses, matriculaStats = null, 
       (user ? `${user.nombres ?? ""} ${user.apellidos ?? ""}`.trim() : "Director institucional");
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         <InstitutionOverview
           institutionName={kpis?.institutionName ?? "I.E.P. Blenkir"}
           directorName={directorName || "Director institucional"}

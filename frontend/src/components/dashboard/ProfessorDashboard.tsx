@@ -26,8 +26,9 @@ import { profesorService, type ProfesorDashboardData } from "@/services/profesor
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import { AcademicTooltip, ChartCard } from "@/components/ui/ChartCard";
 
-const RISK_COLORS = ["#10b981", "#f59e0b", "#f43f5e"];
+const RISK_COLORS = ["var(--risk-low)", "var(--risk-medium)", "var(--risk-high)"];
 
 function KpiCard({
   label,
@@ -41,12 +42,12 @@ function KpiCard({
   icon: typeof Users;
 }) {
   return (
-    <div className="premium-card rounded-xl p-4">
+    <div className="premium-card rounded-[var(--radius-lg)] p-5">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
         <Icon className="h-4 w-4 text-[var(--brand-orange)]" />
       </div>
-      <p className="mt-2 text-2xl font-bold text-[var(--text-primary)]">
+      <p className="text-metric mt-3 font-bold text-[var(--text-primary)]">
         {value}
         {suffix}
       </p>
@@ -96,10 +97,11 @@ export function ProfessorDashboard() {
   ].filter((d) => d.value > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-[var(--text-primary)]">Mi panel docente</h2>
-        <p className="text-sm text-[var(--text-secondary)]">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-orange)]">Seguimiento académico</p>
+        <h2 className="text-page-title font-bold text-[var(--text-primary)]">Mi panel docente</h2>
+        <p className="mt-2 max-w-2xl text-[15px] text-[var(--text-secondary)]">
           {workload?.tipoAsignacion ?? "Indicadores de sus cursos, secciones y estudiantes asignados."}
         </p>
         {workload?.cursos.length ? (
@@ -128,16 +130,15 @@ export function ProfessorDashboard() {
         ]}
       />
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <article className="premium-card rounded-2xl p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--text-primary)]">Riesgo por sección</h3>
+      <div className="grid gap-5 xl:grid-cols-2">
+        <ChartCard title="Riesgo por sección" description="Distribución de estudiantes por nivel de riesgo." isEmpty={!data.riskBySection.length}>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.riskBySection.slice(0, 8)}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="label" tick={{ fontSize: 10 }} />
                 <YAxis allowDecimals={false} />
-                <Tooltip />
+                <Tooltip content={<AcademicTooltip />} />
                 <Legend />
                 <Bar dataKey="alto" name="Alto" fill="#f43f5e" stackId="a" />
                 <Bar dataKey="medio" name="Medio" fill="#f59e0b" stackId="a" />
@@ -145,10 +146,9 @@ export function ProfessorDashboard() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </article>
+        </ChartCard>
 
-        <article className="premium-card rounded-2xl p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--text-primary)]">Distribución de riesgo</h3>
+        <ChartCard title="Distribución de riesgo" description="Niveles presentes entre sus estudiantes." isEmpty={!riskPie.length}>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -157,56 +157,53 @@ export function ProfessorDashboard() {
                     <Cell key={i} fill={RISK_COLORS[i % RISK_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip content={<AcademicTooltip />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
-        </article>
+        </ChartCard>
 
-        <article className="premium-card rounded-2xl p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--text-primary)]">Alertas por sección</h3>
+        <ChartCard title="Alertas por sección" description="Casos abiertos que requieren seguimiento." isEmpty={!data.alertsBySalonShort.length}>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.alertsBySalonShort}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="salon" />
                 <YAxis allowDecimals={false} />
-                <Tooltip />
+                <Tooltip content={<AcademicTooltip />} />
                 <Bar dataKey="count" name="Alertas" fill="#f47c20" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </article>
+        </ChartCard>
 
-        <article className="premium-card rounded-2xl p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--text-primary)]">Promedio por curso</h3>
+        <ChartCard title="Promedio por curso" description="Rendimiento observado en sus cursos." isEmpty={!data.avgByCourse.length}>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.avgByCourse.slice(0, 10)}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="nombre" tick={{ fontSize: 9 }} />
                 <YAxis domain={[0, 20]} />
-                <Tooltip />
+                <Tooltip content={<AcademicTooltip />} />
                 <Bar dataKey="promedio" name="Promedio" fill="#6366f1" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </article>
+        </ChartCard>
 
-        <article className="premium-card rounded-2xl p-5 xl:col-span-2">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--text-primary)]">Asistencia por sección (grado)</h3>
+        <ChartCard title="Asistencia por sección (grado)" description="Promedio de asistencia disponible por grado." className="xl:col-span-2" isEmpty={!data.attendanceByGrado.length}>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.attendanceByGrado}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="grado" />
                 <YAxis domain={[0, 100]} />
-                <Tooltip />
+                <Tooltip content={<AcademicTooltip />} />
                 <Bar dataKey="asistencia" name="Asistencia %" fill="#22d3ee" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </article>
+        </ChartCard>
       </div>
     </div>
   );

@@ -27,6 +27,7 @@ export function SearchField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        aria-label={placeholder}
         className="input-premium search-field__input"
       />
       {value ? (

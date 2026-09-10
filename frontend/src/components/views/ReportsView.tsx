@@ -38,7 +38,7 @@ export function ReportsView({ students, courses }: ReportsViewProps) {
     <motion.section
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--card)] shadow-[var(--card-shadow)]"
+      className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--card)] shadow-[var(--card-shadow)]"
     >
       <div className="border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--brand-orange)]/10 via-transparent to-[var(--brand-navy)]/10 px-5 py-4 md:px-6">
         <div className="flex flex-wrap items-center gap-3">

@@ -28,12 +28,12 @@ function KpiCard({
   icon: typeof BookOpen;
 }) {
   return (
-    <div className="premium-card rounded-xl p-4">
+    <div className="premium-card rounded-[var(--radius-lg)] p-5">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
         <Icon className="h-4 w-4 text-[var(--brand-orange)]" />
       </div>
-      <p className="mt-2 text-2xl font-bold text-[var(--text-primary)]">
+      <p className="text-metric mt-3 font-bold text-[var(--text-primary)]">
         {value}
         {suffix}
       </p>
@@ -88,10 +88,13 @@ export function StudentDashboard() {
   const riskScore = resumen.ultimaPrediccion?.score ?? 0;
 
   return (
-    <div className="space-y-6">
-      <p className="text-sm text-[var(--text-secondary)]">
+    <div className="space-y-8">
+      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-muted)] px-5 py-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-orange)]">Tu resumen</p>
+        <p className="mt-2 text-[15px] text-[var(--text-secondary)]">
         Bienvenido, {profile.nombres}. Aquí tienes un resumen de tu situación académica.
-      </p>
+        </p>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <KpiCard label="Mi grado" value={kpis.grado} icon={GraduationCap} />
@@ -103,7 +106,7 @@ export function StudentDashboard() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="premium-card flex flex-col items-center justify-center rounded-xl p-6 lg:col-span-1">
+        <div className="premium-card flex flex-col items-center justify-center rounded-[var(--radius-lg)] p-6 lg:col-span-1">
           <p className="mb-2 text-xs font-semibold uppercase text-[var(--text-muted)]">Mi riesgo actual</p>
           {resumen.ultimaPrediccion ? (
             <>
@@ -117,8 +120,8 @@ export function StudentDashboard() {
           )}
         </div>
 
-        <div className="premium-card rounded-xl p-5 lg:col-span-2">
-          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Resumen reciente</h3>
+        <div className="premium-card rounded-[var(--radius-lg)] p-6 lg:col-span-2">
+          <h3 className="text-section-title font-semibold text-[var(--text-primary)]">Resumen reciente</h3>
           <dl className="mt-4 grid gap-3 sm:grid-cols-2 text-sm">
             <div>
               <dt className="text-[var(--text-muted)]">Última nota</dt>
@@ -154,21 +157,21 @@ export function StudentDashboard() {
             </div>
           </dl>
           {resumen.recomendacion ? (
-            <div className="mt-4 rounded-lg bg-[var(--surface-muted)] p-3 text-sm text-[var(--text-secondary)]">
+            <div className="surface-subtle mt-5 rounded-[var(--radius-md)] p-4 text-sm text-[var(--text-secondary)]">
               <strong className="text-[var(--text-primary)]">Recomendación:</strong> {resumen.recomendacion}
             </div>
           ) : null}
         </div>
       </div>
 
-      <div className="premium-card rounded-xl p-5">
-        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Mis alertas</h3>
+      <div className="premium-card rounded-[var(--radius-lg)] p-6">
+        <h3 className="text-section-title font-semibold text-[var(--text-primary)]">Mis alertas</h3>
         {alertasPreview.length === 0 ? (
           <p className="mt-3 text-sm text-[var(--text-muted)]">{ESTUDIANTE_MSG.sinAlertas}</p>
         ) : (
           <ul className="mt-3 space-y-3">
             {alertasPreview.map((a) => (
-              <li key={a.id} className="rounded-lg border border-[var(--border-subtle)] p-3 text-sm">
+              <li key={a.id} className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-muted)]/50 p-4 text-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-semibold text-[var(--text-primary)]">{a.titulo}</span>
                   <span className="text-xs text-[var(--text-muted)]">{a.nivel} · {a.estado}</span>

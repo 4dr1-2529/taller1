@@ -52,7 +52,7 @@ export function TablePagination({
       >
         Anterior
       </button>
-      <span className="rounded-lg bg-white/[0.04] px-2.5 py-1 ring-1 ring-white/[0.06]">
+      <span className="rounded-[var(--radius-sm)] bg-[var(--surface-muted)] px-2.5 py-1 ring-1 ring-[var(--border-subtle)]">
         {page} / {pages}
       </span>
       <button

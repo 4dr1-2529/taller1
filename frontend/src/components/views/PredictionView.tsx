@@ -188,11 +188,11 @@ export function PredictionView({
           show={{ grado: true, seccion: true, search: true }}
         />
       ) : null}
-      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
+      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h3 className="flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
-              <BrainCircuit className="h-5 w-5 text-violet-400" aria-hidden />
+              <BrainCircuit className="h-5 w-5 text-[var(--brand-orange)]" aria-hidden />
               Módulo de predicción (modelo conjunto)
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-[var(--text-secondary)]">
@@ -252,19 +252,19 @@ export function PredictionView({
           </article>
 
           {/* Interpretability */}
-          <article className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-violet-300">
+          <article className="surface-subtle rounded-[var(--radius-md)] p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--brand-orange)]">
               Interpretabilidad
             </p>
-            <p className="mt-2 text-sm text-violet-200/80">
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
               {typeof base.meta?.descripcion === "string" ? base.meta.descripcion : ""}
             </p>
-            <ul className="mt-3 list-disc space-y-1 pl-4 text-sm text-violet-200/80">
+            <ul className="mt-3 list-disc space-y-1 pl-4 text-sm text-[var(--text-secondary)]">
               {(Array.isArray(base.meta?.notas) ? base.meta.notas : []).map((n: string) => (
                 <li key={n}>{n}</li>
               ))}
             </ul>
-            <dl className="mt-4 grid grid-cols-2 gap-2 text-xs text-violet-200/80">
+            <dl className="mt-4 grid grid-cols-2 gap-2 text-xs text-[var(--text-secondary)]">
               {Object.entries(base.meta?.pesos ?? {}).map(([k, v]) => (
                 <div key={k} className="flex justify-between rounded-lg bg-white/5 px-2 py-1">
                   <dt className="capitalize">{k}</dt>
@@ -277,7 +277,7 @@ export function PredictionView({
       </motion.section>
 
       {/* Scenario Simulation */}
-      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
+      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
         <div className="flex items-center gap-2">
           <FlaskConical className="h-5 w-5 text-amber-400" aria-hidden />
           <h3 className="text-base font-semibold text-[var(--text-primary)]">Simulación de escenarios</h3>
@@ -355,7 +355,7 @@ export function PredictionView({
       </motion.section>
 
       {/* Server Prediction */}
-      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
+      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
             <Server className="h-5 w-5 text-[var(--text-secondary)]" aria-hidden />
@@ -371,7 +371,7 @@ export function PredictionView({
             type="button"
             onClick={() => void runApiPrediction()}
             disabled={apiLoading || !useApi || !api.hasToken}
-            className="rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:from-violet-500 hover:to-indigo-500 disabled:opacity-60"
+            className="btn-primary disabled:opacity-60"
           >
             {apiLoading ? "Consultando…" : "Ejecutar predicción en servidor"}
           </button>
@@ -409,9 +409,9 @@ export function PredictionView({
                 {new Date(apiResult.prediction.predictedAt).toLocaleString("es-PE")}
               </p>
             </article>
-            <article className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4">
-              <p className="text-xs font-semibold uppercase text-violet-300">Recomendación automática</p>
-              <p className="mt-2 text-sm text-violet-100/90">
+            <article className="surface-subtle rounded-[var(--radius-md)] p-4">
+              <p className="text-xs font-semibold uppercase text-[var(--brand-orange)]">Recomendación automática</p>
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
                 {apiResult.prediction.recomendacion ?? apiResult.prediction.recommendation}
               </p>
               {apiResult.alertCreated ? (
@@ -433,7 +433,7 @@ export function PredictionView({
         ) : null}
       </motion.section>
 
-      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-2xl p-5 md:p-6">
+      <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
         <MlMetricsSection />
       </motion.section>
     </div>
