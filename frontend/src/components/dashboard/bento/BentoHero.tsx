@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowDownRight, ArrowUpRight, Minus, AlertTriangle, Sparkles } from "lucide-react";
+import { RiskGauge } from "@/components/ui/RiskGauge";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import type { StudentWithPrediction } from "@/lib/aggregates";
 
@@ -25,80 +26,24 @@ export function BentoHero({
     trend.direction === "up" ? ArrowUpRight : trend.direction === "down" ? ArrowDownRight : Minus;
 
   return (
-    <div className="relative flex h-full flex-col justify-between p-6 sm:p-8 xl:p-9">
-      <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04)_0%,transparent_45%)]"
-        aria-hidden
-      />
-
-      <div className="relative">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
-          Inteligencia académica · Colegio Blenkir
-        </p>
-        <h2 className="mt-2 text-2xl font-bold tracking-tight text-[var(--text-primary)] md:text-3xl">
-          {greeting}
-        </h2>
-        <p className="mt-2 max-w-lg text-sm leading-relaxed text-[var(--text-secondary)]">
-          Riesgo agregado del cohorte, alertas activas y señales del modelo en una sola vista.
-        </p>
-      </div>
-
-      <div className="relative mt-8 grid gap-6 2xl:grid-cols-[1.2fr_1fr] 2xl:items-end">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
-            Índice de riesgo global
-          </p>
-          <div className="mt-2 flex items-baseline gap-3">
-            <span className="text-6xl font-bold tabular-nums tracking-tight text-[var(--text-primary)] md:text-7xl">
-              <AnimatedNumber value={globalRisk} />
-            </span>
-            <span className="text-lg text-[var(--text-muted)]">/ 100</span>
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ring-1 ${
-                trend.direction === "up"
-                  ? "bg-rose-500/10 text-[var(--risk-high)] ring-rose-500/20"
-                  : trend.direction === "down"
-                    ? "bg-emerald-500/10 text-[var(--risk-low)] ring-emerald-500/20"
-                    : "bg-white/5 text-[var(--text-secondary)] ring-white/10"
-              }`}
-            >
-              <TrendIcon className="h-3.5 w-3.5" />
-              {trend.label}
-            </span>
-            <span className="text-xs text-[var(--text-muted)]">{healthScore}% cohorte saludable</span>
-          </div>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-1">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-[var(--text-muted)]">Alertas tempranas</p>
-              <AlertTriangle className="h-4 w-4 text-amber-400" />
-            </div>
-            <p className="mt-2 text-3xl font-bold tabular-nums text-[var(--text-primary)]">{alerts}</p>
-            <p className="mt-1 text-[11px] text-[var(--text-secondary)]">Requieren seguimiento</p>
-          </div>
-          {topStudent ? (
-            <div className="rounded-xl border border-rose-500/15 bg-rose-500/[0.06] p-4">
-              <p className="text-xs text-[var(--risk-high)]/80">Prioridad máxima</p>
-              <p className="mt-1 break-words text-sm font-semibold text-[var(--text-primary)]">
-                {topStudent.nombres} {topStudent.apellidos}
-              </p>
-              <p className="mt-1 text-2xl font-bold tabular-nums text-[var(--risk-high)]">
-                {Math.round(topStudent.prediction.score)}
-                <span className="ml-1 text-xs font-normal text-[var(--risk-high)]/70">pts</span>
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-4">
-              <Sparkles className="h-4 w-4 text-violet-400" />
-              <p className="mt-2 text-sm text-[var(--text-secondary)]">Sin casos críticos ahora</p>
-            </div>
-          )}
+    <div className="command-hero">
+      <header><p className="intelligence-eyebrow">Panorama de riesgo</p><h3>{greeting}</h3>
+        <p>Riesgo del cohorte y señales para orientar el acompañamiento.</p></header>
+      <div className="command-hero__focus">
+        <RiskGauge score={globalRisk} level="" neutral valueLabel={<AnimatedNumber value={globalRisk} />} />
+        <div className="command-hero__context">
+          <p className="text-sm font-semibold">Índice de riesgo global</p>
+          <span className={`trend-pill ${trend.direction === "up" ? "text-[var(--risk-high)]" : trend.direction === "down" ? "text-[var(--risk-low)]" : "text-[var(--text-secondary)]"}`}>
+            <TrendIcon size={15} aria-hidden />{trend.label}
+          </span>
+          <p className="text-sm text-[var(--text-muted)]">{healthScore}% cohorte saludable</p>
+          <div className="command-alert-count"><AlertTriangle size={16} aria-hidden /><strong>{alerts}</strong><span>Alertas tempranas<br /><small>Requieren seguimiento</small></span></div>
         </div>
       </div>
+      {topStudent ? <div className="command-priority">
+        <span>Prioridad máxima</span><strong>{topStudent.nombres} {topStudent.apellidos}</strong>
+        <b>{Math.round(topStudent.prediction.score)} <small>pts</small></b>
+      </div> : <div className="command-priority"><Sparkles size={16} aria-hidden /><span>Sin casos críticos ahora</span></div>}
     </div>
   );
 }

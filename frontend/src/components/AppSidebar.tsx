@@ -109,12 +109,12 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
   const sidebarContent = (
     <div className="flex h-full min-h-0 flex-col">
       {/* Brand Section */}
-      <div className="sidebar-brand relative border-b border-white/10">
+      <div className="sidebar-brand intelligence-brand relative border-b border-white/10">
         <div className={clsx(compact && "justify-center")}>
           <BlenkirLogo size="sm" showText={!compact} />
           {!compact ? (
             <p className="mt-2 text-xs font-medium text-[var(--sidebar-muted)]">
-              Riesgo de deserción · LMS
+              Inteligencia académica
             </p>
           ) : null}
         </div>

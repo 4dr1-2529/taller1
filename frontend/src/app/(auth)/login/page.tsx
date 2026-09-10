@@ -65,14 +65,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="login-page">
+    <div className="login-page login-editorial">
       <div className="login-theme"><ThemeToggle /></div>
       <motion.aside className="login-brand"
         initial={reduced ? false : { opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
         transition={{ duration: reduced ? 0 : 0.3 }}>
         <div className="login-brand__top">
           <BlenkirLogo size="lg" />
-          <span className="login-brand__eyebrow">INTELIGENCIA ACADÉMICA</span>
+          <span className="login-brand__eyebrow">BLENKIR / INTELIGENCIA ACADÉMICA</span>
         </div>
         <div className="login-brand__story">
           <p className="login-kicker">Educación que mira hacia adelante</p>

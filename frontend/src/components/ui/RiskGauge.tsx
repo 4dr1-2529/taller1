@@ -1,13 +1,14 @@
 "use client";
 
 import clsx from "clsx";
+import type { ReactNode } from "react";
 
-export function RiskGauge({ score, level }: { score: number; level: string }) {
+export function RiskGauge({ score, level, neutral = false, valueLabel }: { score: number; level: string; neutral?: boolean; valueLabel?: ReactNode }) {
   const pct = Math.min(100, Math.max(0, score));
   const r = 52;
   const c = 2 * Math.PI * r;
   const offset = c - (pct / 100) * c;
-  const stroke =
+  const stroke = neutral ? "var(--chart-primary)" :
     level === "alto"
       ? "var(--risk-high)"
       : level === "medio"
@@ -32,7 +33,7 @@ export function RiskGauge({ score, level }: { score: number; level: string }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-bold tabular-nums text-[var(--text-primary)]">{Math.round(pct)}</span>
+        <span className="text-4xl font-bold tabular-nums text-[var(--text-primary)]">{valueLabel ?? Math.round(pct)}</span>
         <span className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">% riesgo</span>
         <span
           className={clsx(

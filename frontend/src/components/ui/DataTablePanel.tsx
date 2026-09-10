@@ -58,7 +58,7 @@ export function DataTablePanel({
   };
 
   return (
-    <PageSection title={title} description={description} variant="table" className={clsx("overflow-hidden", className)}>
+    <PageSection title={title} description={description} variant="table" className={clsx("records-panel overflow-hidden", className)}>
       <div className="relative">
         {!(hideToolbarWhenEmpty && isEmpty) ? (
         <div className="flex flex-col gap-4 border-b border-[var(--border-subtle)] bg-[var(--surface-muted)]/45 px-5 py-4 sm:flex-row sm:items-center sm:justify-between md:px-6">
@@ -80,7 +80,7 @@ export function DataTablePanel({
       </div>
 
       <div className="relative">
-        <div className="table-scroll overflow-x-auto pb-2 md:pb-4">
+        <div className="table-scroll records-scroll overflow-x-auto pb-2 md:pb-4">
           {isEmpty ? (
             <div className="empty-state-panel py-12 md:py-16">
                 <div className="flex h-14 w-14 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">

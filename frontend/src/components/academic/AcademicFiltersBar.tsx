@@ -55,7 +55,7 @@ export function AcademicFiltersBar({
   };
 
   return (
-    <div className="glass-card rounded-2xl p-5 sm:p-6">
+    <div className="academic-filter-bar">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
           <Filter className="h-4 w-4 text-[var(--brand-orange)]" />
@@ -66,7 +66,7 @@ export function AcademicFiltersBar({
           Limpiar
         </button>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+      <div className="academic-filter-bar__fields">
         {s.grado ? (
           <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Grado</span>

@@ -28,7 +28,7 @@ import {
 import { profesorService, type ProfesorDashboardData } from "@/services/profesorService";
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
-import { CardSkeleton } from "@/components/ui/Skeleton";
+import { DashboardSkeleton } from "@/components/ui/Skeleton";
 import { AcademicTooltip, ChartCard } from "@/components/ui/ChartCard";
 
 const RISK_COLORS: Record<string, string> = { Bajo: "var(--risk-low)", Medio: "var(--risk-medium)", Alto: "var(--risk-high)" };
@@ -51,11 +51,7 @@ export function ProfessorDashboard() {
 
   if (loading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-      </div>
+      <DashboardSkeleton />
     );
   }
 
@@ -76,49 +72,28 @@ export function ProfessorDashboard() {
   ].filter((d) => d.value > 0);
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="professor-dashboard space-y-6">
+      <div className="professor-intro">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-orange)]">Seguimiento académico</p>
-        <h2 className="text-page-title font-bold text-[var(--text-primary)]">Mi panel docente</h2>
+        <h2 className="text-page-title font-bold text-[var(--text-primary)]">Mi aula en foco</h2>
         <p className="mt-2 max-w-2xl text-[15px] text-[var(--text-secondary)]">
           {workload?.tipoAsignacion ?? "Indicadores de sus cursos, secciones y estudiantes asignados."}
         </p>
         {workload?.cursos.length ? (
-          <p className="mt-1 text-xs text-[var(--text-muted)]">
+          <p className="teaching-context">
             Cursos: {workload.cursos.map((c) => c.nombre).join(" · ")} — Salones: {workload.secciones.join(", ")}
           </p>
         ) : null}
       </div>
 
-      <div className="dashboard-metrics">
-        <KpiCard label="Estudiantes asignados" value={kpis.totalAlumnos ?? kpis.totalStudents} icon={Users} index={0} />
-        <KpiCard label="Cursos asignados" value={kpis.totalCourses ?? workload?.cursos.length ?? 0} icon={BookOpen} index={1} />
-        <KpiCard label="Alertas activas" value={kpis.openAlerts} icon={AlertTriangle} index={2} />
-        <KpiCard label="Promedio general" value={kpis.avgGrade} suffix="/20" icon={GraduationCap} index={3} />
-      </div>
-      <div className="dashboard-secondary grid gap-4 md:grid-cols-3">
-        <KpiCard label="Secciones asignadas" value={kpis.misSecciones ?? 0} icon={Layers} />
-        <KpiCard label="Notas pendientes (B1-B2)" value={kpis.notasPendientes ?? 0} icon={GraduationCap} />
-        <KpiCard label="Asistencia promedio" value={kpis.avgAttendance} suffix="%" icon={TrendingUp} />
-      </div>
-
-      <SummaryStatsRow
-        stats={[
-          { label: "Riesgo alto", value: kpis.byLevel.alto, tone: "danger" },
-          { label: "Riesgo medio", value: kpis.byLevel.medio, tone: "warning" },
-          { label: "Riesgo bajo", value: kpis.byLevel.bajo, tone: "success" },
-          { label: "Score promedio IA", value: kpis.avgRisk },
-        ]}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-2">
-        <ChartCard title="Riesgo por sección" description="Distribución de estudiantes por nivel de riesgo." isEmpty={!data.riskBySection.length}>
-          <div className="h-80 min-w-0">
+      <section className="teaching-focus grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <ChartCard title="Atención por sección" description="Estudiantes por nivel de riesgo en sus secciones. Compare dónde concentrar el acompañamiento." isEmpty={!data.riskBySection.length}>
+          <div className="min-w-0" style={{ height: Math.max(320, data.riskBySection.slice(0, 8).length * 48) }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.riskBySection.slice(0, 8)}>
+              <BarChart data={data.riskBySection.slice(0, 8)} layout="vertical" margin={{ left: 10, right: 20, top: 12, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="label" height={80} tick={<ChartCategoryTick />} />
-                <YAxis allowDecimals={false} />
+                <XAxis type="number" allowDecimals={false} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="label" interval={0} width={115} tick={<ChartCategoryTick vertical />} axisLine={false} tickLine={false} />
                 <Tooltip content={<AcademicTooltip />} />
                 <Legend />
                 <Bar isAnimationActive={false} dataKey="alto" name="Alto" fill="var(--risk-high)" stackId="a" />
@@ -133,17 +108,40 @@ export function ProfessorDashboard() {
           <div className="h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie isAnimationActive={false} data={riskPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label>
+                <Pie isAnimationActive={false} data={riskPie} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={64} outerRadius={100} paddingAngle={3}>
                   {riskPie.map((entry, i) => (
                     <Cell key={i} fill={RISK_COLORS[entry.name]} />
                   ))}
                 </Pie>
+                <Legend verticalAlign="bottom" iconType="circle" />
                 <Tooltip content={<AcademicTooltip />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </ChartCard>
 
+      </section>
+      <section className="teaching-summary"><p className="intelligence-eyebrow">Resumen docente</p><div className="metric-band">
+        <KpiCard label="Estudiantes asignados" value={kpis.totalAlumnos ?? kpis.totalStudents} icon={Users} index={0} />
+        <KpiCard label="Cursos asignados" value={kpis.totalCourses ?? workload?.cursos.length ?? 0} icon={BookOpen} index={1} />
+        <KpiCard label="Alertas activas" value={kpis.openAlerts} icon={AlertTriangle} index={2} />
+        <KpiCard label="Promedio general" value={kpis.avgGrade} suffix="/20" icon={GraduationCap} index={3} />
+
+        <KpiCard label="Secciones asignadas" value={kpis.misSecciones ?? 0} icon={Layers} />
+        <KpiCard label="Notas pendientes (B1-B2)" value={kpis.notasPendientes ?? 0} icon={GraduationCap} />
+        <KpiCard label="Asistencia promedio" value={kpis.avgAttendance} suffix="%" icon={TrendingUp} />
+      </div></section>
+
+      <SummaryStatsRow
+        stats={[
+          { label: "Riesgo alto", value: kpis.byLevel.alto, tone: "danger" },
+          { label: "Riesgo medio", value: kpis.byLevel.medio, tone: "warning" },
+          { label: "Riesgo bajo", value: kpis.byLevel.bajo, tone: "success" },
+          { label: "Score promedio IA", value: kpis.avgRisk },
+        ]}
+      />
+
+      <div className="teaching-analytics grid gap-6 xl:grid-cols-2">
         <ChartCard title="Alertas por sección" description="Casos abiertos que requieren seguimiento." isEmpty={!data.alertsBySalonShort.length}>
           <div className="h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">

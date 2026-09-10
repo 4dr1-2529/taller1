@@ -15,7 +15,7 @@ export function EmptyState({ title, description, showLogin, actionLabel }: Empty
   const reduced = useReducedMotion();
   return (
     <motion.div
-      className="relative overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--card)] px-5 py-12 sm:px-8 sm:py-16 text-center shadow-[var(--card-shadow)]"
+      className="intelligence-empty relative overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--card)] px-5 py-12 sm:px-8 sm:py-16 text-center shadow-[var(--card-shadow)]"
       initial={reduced ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduced ? 0 : 0.25 }}

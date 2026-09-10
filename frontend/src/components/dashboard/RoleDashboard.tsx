@@ -46,7 +46,7 @@ export function RoleDashboard({ role, students, courses, matriculaStats = null, 
       (user ? `${user.nombres ?? ""} ${user.apellidos ?? ""}`.trim() : "Director institucional");
 
     return (
-      <div className="space-y-8">
+      <div className="director-dashboard space-y-6">
         <InstitutionOverview
           institutionName={kpis?.institutionName ?? "I.E.P. Blenkir"}
           directorName={directorName || "Director institucional"}
@@ -54,15 +54,13 @@ export function RoleDashboard({ role, students, courses, matriculaStats = null, 
           totalStudents={totalStudents}
           totalTeachers={kpis?.totalTeachers ?? 0}
         />
-        <div className="dashboard-metrics">
+        <section className="institution-health" aria-label="Salud institucional"><p className="intelligence-eyebrow">Salud institucional</p><div className="metric-band">
           <KpiCard label="Total estudiantes" value={totalStudents} icon={Users} index={0} />
           <KpiCard label="Total profesores" value={kpis?.totalTeachers ?? "—"} icon={GraduationCap} index={1} />
           <KpiCard label="Total salones" value={kpis?.totalSalones ?? "—"} icon={BookOpen} index={2} />
           <KpiCard label="Alertas activas" value={kpis?.openAlerts ?? 0} icon={AlertTriangle} index={3} />
-        </div>
-        <div className="dashboard-secondary">
           <KpiCard label="Promedio institucional" value={kpis?.avgGrade ?? globalRiskScore(students)} suffix="/20" icon={BookOpen} />
-        </div>
+        </div></section>
         <BentoDashboard role={role} students={students} courses={courses} matriculaStats={matriculaStats} useApi={useApi} />
       </div>
     );

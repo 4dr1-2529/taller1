@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import clsx from "clsx";
-import { Bell, ChevronRight } from "lucide-react";
+import { Bell } from "lucide-react";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import type { StudentWithPrediction } from "@/lib/aggregates";
 
@@ -11,6 +11,7 @@ type BentoAlertsPanelProps = {
 };
 
 export function BentoAlertsPanel({ items }: BentoAlertsPanelProps) {
+  const reduced = useReducedMotion();
   return (
     <div className="bento-queue flex h-full flex-col p-6 sm:p-7">
       <div className="flex items-center justify-between gap-2">
@@ -34,18 +35,18 @@ export function BentoAlertsPanel({ items }: BentoAlertsPanelProps) {
           items.map((s, i) => (
             <motion.li
               key={s.id}
-              initial={{ opacity: 0, x: 8 }}
+              initial={reduced ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="group flex items-center gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-3 transition-colors hover:bg-white/[0.05]"
+              transition={{ duration: reduced ? 0 : 0.2, delay: reduced ? 0 : i * 0.03 }}
+              className="intervention-row"
             >
               <div
                 className={clsx(
-                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white",
-                  s.prediction.level === "alto" ? "bg-rose-500/80" : "bg-amber-500/80",
+                  "intervention-avatar",
+                  s.prediction.level === "alto" ? "text-[var(--risk-high)]" : "text-[var(--risk-medium)]",
                 )}
               >
-                {Math.round(s.prediction.score)}
+                {s.nombres.charAt(0)}{s.apellidos.charAt(0)}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-[var(--text-primary)]">
@@ -53,8 +54,7 @@ export function BentoAlertsPanel({ items }: BentoAlertsPanelProps) {
                 </p>
                 <p className="text-xs text-[var(--text-muted)]">{s.nivel}</p>
               </div>
-              <RiskBadge level={s.prediction.level} />
-              <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="intervention-score"><strong>{Math.round(s.prediction.score)}<small> pts</small></strong><RiskBadge level={s.prediction.level} /></div>
             </motion.li>
           ))
         )}

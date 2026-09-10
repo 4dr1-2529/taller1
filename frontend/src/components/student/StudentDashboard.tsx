@@ -14,8 +14,9 @@ import {
 import { estudianteService, type EstudianteDashboardData } from "@/services/estudianteService";
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
-import { CardSkeleton } from "@/components/ui/Skeleton";
+import { DashboardSkeleton } from "@/components/ui/Skeleton";
 import { RiskBadge } from "@/components/ui/RiskBadge";
+import { MiniProgressBar } from "@/components/ui/MiniProgressBar";
 import { RiskGauge } from "@/components/ui/RiskGauge";
 
 
@@ -43,11 +44,7 @@ export function StudentDashboard() {
 
   if (loading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-      </div>
+      <DashboardSkeleton />
     );
   }
 
@@ -66,7 +63,7 @@ export function StudentDashboard() {
   const riskScore = resumen.ultimaPrediccion?.score ?? 0;
 
   return (
-    <div className="space-y-8">
+    <div className="student-dashboard space-y-6">
       <div className="student-welcome rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-6 sm:p-8">
         <p className="text-page-title font-semibold text-[var(--text-primary)]">Mi progreso académico</p>
         <p className="mt-2 text-[15px] text-[var(--text-secondary)]">
@@ -74,19 +71,19 @@ export function StudentDashboard() {
         </p>
       </div>
 
-      <div className="dashboard-metrics">
+      <div className="metric-band student-metrics">
         <KpiCard label="Mi grado" value={kpis.grado} icon={GraduationCap} index={0} />
         <KpiCard label="Mi sección" value={kpis.salon} icon={Layers} index={1} />
         <KpiCard label="Mi promedio" value={kpis.promedioGeneral} suffix="/20" icon={BookOpen} index={2} />
         <KpiCard label="Mi asistencia" value={kpis.asistenciaGeneral} suffix="%" icon={TrendingUp} index={3} />
       </div>
-      <div className="dashboard-secondary grid gap-4 sm:grid-cols-2">
+      <div className="student-status-line metric-band">
         <KpiCard label="Mi nivel de riesgo" value={kpis.nivelRiesgo} icon={Sparkles} />
         <KpiCard label="Mis alertas activas" value={kpis.alertasActivas} icon={AlertTriangle} />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
-        <div className="premium-card flex flex-col items-center justify-center rounded-[var(--radius-lg)] p-6 xl:col-span-1">
+      <div className="student-progress-layout">
+        <div className="student-risk-panel">
           <p className="mb-2 text-xs font-semibold uppercase text-[var(--text-muted)]">Mi nivel de riesgo</p>
           {resumen.ultimaPrediccion ? (
             <>
@@ -100,9 +97,9 @@ export function StudentDashboard() {
           )}
         </div>
 
-        <div className="premium-card rounded-[var(--radius-lg)] p-6 xl:col-span-2">
+        <div className="student-activity-panel">
           <h3 className="text-section-title font-semibold text-[var(--text-primary)]">Mi actividad reciente</h3>
-          <dl className="mt-4 grid gap-3 sm:grid-cols-2 text-sm">
+          <dl className="learning-timeline">
             <div>
               <dt className="text-[var(--text-muted)]">Última nota</dt>
               <dd className="font-medium text-[var(--text-primary)]">
@@ -136,6 +133,7 @@ export function StudentDashboard() {
               </dd>
             </div>
           </dl>
+          {resumen.ultimaActividadLms ? <div className="learning-progress"><span>Actividad LMS · Semana {resumen.ultimaActividadLms.semana}</span><MiniProgressBar value={resumen.ultimaActividadLms.actividadPct} variant="cyan" /></div> : null}
           {resumen.recomendacion ? (
             <div className="surface-subtle mt-5 rounded-[var(--radius-md)] p-4 text-sm text-[var(--text-secondary)]">
               <strong className="text-[var(--text-primary)]">Recomendación:</strong> {resumen.recomendacion}
@@ -144,7 +142,7 @@ export function StudentDashboard() {
         </div>
       </div>
 
-      <div className="premium-card rounded-[var(--radius-lg)] p-6">
+      <div className="student-notices">
         <h3 className="text-section-title font-semibold text-[var(--text-primary)]">Mis alertas</h3>
         {alertasPreview.length === 0 ? (
           <p className="mt-3 text-sm text-[var(--text-muted)]">{ESTUDIANTE_MSG.sinAlertas}</p>

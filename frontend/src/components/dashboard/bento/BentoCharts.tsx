@@ -1,4 +1,5 @@
 "use client";
+import { AcademicTooltip, ChartEmptyState } from "@/components/ui/ChartCard";
 import { ChartCategoryTick } from "@/components/ui/ChartCategoryTick";
 
 import {
@@ -33,16 +34,17 @@ export function BentoRiskTrend({ data, highRisk }: BentoRiskTrendProps) {
       <header className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] ring-1 ring-white/10">
-            <TrendingUp className="h-4 w-4 text-violet-400" />
+            <TrendingUp className="h-4 w-4 text-[var(--chart-primary)]" />
           </span>
           <div>
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Tendencia de riesgo</h3>
-            <p className="text-xs text-[var(--text-secondary)]">Últimos 6 meses · cohorte activo</p>
+            <p className="text-xs text-[var(--text-secondary)]">Serie temporal disponible del cohorte</p>
           </div>
         </div>
         <span className="badge badge-danger text-[11px]">{highRisk} alto</span>
       </header>
       <div className="mt-4 h-80 min-w-0">
+        {data.length === 0 ? <ChartEmptyState message="Sin serie temporal disponible." /> : (
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 16, right: 16, bottom: 12, left: -15 }}>
             <defs>
@@ -54,7 +56,7 @@ export function BentoRiskTrend({ data, highRisk }: BentoRiskTrendProps) {
             <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
             <XAxis dataKey="periodo" tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
-            <Tooltip wrapperClassName="chart-tooltip" />
+            <Tooltip content={<AcademicTooltip />} />
             <Area isAnimationActive={false}
               type="monotone"
               dataKey="riesgoGlobal"
@@ -64,7 +66,7 @@ export function BentoRiskTrend({ data, highRisk }: BentoRiskTrendProps) {
               name="Riesgo"
             />
           </AreaChart>
-        </ResponsiveContainer>
+        </ResponsiveContainer>)}
       </div>
     </div>
   );
@@ -76,7 +78,7 @@ type BentoDistributionProps = {
 
 export function BentoDistribution({ data }: BentoDistributionProps) {
   return (
-    <div className="flex h-full flex-col p-5 md:p-6">
+    <div className="risk-distribution">
       <header className="flex items-center gap-3">
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] ring-1 ring-white/10">
           <Target className="h-4 w-4 text-amber-400" />
@@ -86,11 +88,12 @@ export function BentoDistribution({ data }: BentoDistributionProps) {
           <p className="text-xs text-[var(--text-secondary)]">Niveles de riesgo del cohorte</p>
         </div>
       </header>
-      <div className="relative mt-2 flex flex-1 items-center justify-center">
+      <div className="risk-distribution__body"><div className="risk-distribution__chart">
         {data.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={220}>
             <PieChart>
-              <Pie isAnimationActive={false} data={data} dataKey="value" innerRadius={52} outerRadius={78} paddingAngle={3} strokeWidth={0}>
+              <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" fill="var(--text-muted)" fontSize={12}>Riesgo</text>
+              <Pie isAnimationActive={false} data={data} dataKey="value" innerRadius={64} outerRadius={88} paddingAngle={3} strokeWidth={0}>
                 {data.map((e) => (
                   <Cell key={e.name} fill={e.fill} />
                 ))}
@@ -102,14 +105,14 @@ export function BentoDistribution({ data }: BentoDistributionProps) {
           <p className="text-sm text-[var(--text-muted)]">Sin datos</p>
         )}
       </div>
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className="risk-distribution__legend">
         {data.map((d) => (
           <span key={d.name} className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
             <span className="h-2 w-2 rounded-full" style={{ background: d.fill }} />
-            {d.name} ({d.value})
+            <span>{d.name}</span><strong>{d.value}</strong>
           </span>
         ))}
-      </div>
+      </div></div>
     </div>
   );
 }

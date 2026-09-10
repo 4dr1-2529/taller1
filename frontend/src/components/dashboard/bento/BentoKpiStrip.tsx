@@ -15,14 +15,14 @@ export type KpiItem = {
 export function BentoKpiStrip({ items }: { items: KpiItem[] }) {
   const reduced = useReducedMotion();
   return (
-    <div className="grid h-full grid-cols-1 sm:grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--border-subtle)] xl:grid-cols-4">
+    <div className="institution-pulse">
       {items.map((kpi, i) => (
         <motion.div
           key={kpi.label}
           initial={reduced ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, delay: reduced ? 0 : i * 0.04 }}
-          className="flex flex-col justify-between bg-[var(--surface)] p-5 sm:p-6"
+          className="institution-pulse__item"
         >
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">

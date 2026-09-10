@@ -47,7 +47,7 @@ export function AppHeader({ activeSection, subtitle }: AppHeaderProps) {
     <motion.header
       initial={reduced ? false : { opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.25 }}
-      className="app-header glass-header rounded-[var(--radius-lg)]">
+      className="app-header intelligence-header">
       <div className="app-header__top">
         <nav aria-label="Ruta de la página" className="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-[var(--text-muted)]">
           {crumbs.map((c, i) => <span key={c} className="flex items-center gap-1.5">

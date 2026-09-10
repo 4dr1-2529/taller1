@@ -67,9 +67,9 @@ export function BentoAnalyticsPanels({
   }));
 
   return (
-    <div className="grid gap-6 xl:grid-cols-2">
-      <ChartCard title="Evolución del riesgo (BD)">
-        <p className="mb-4 text-sm text-[var(--text-secondary)]">Seguimiento temporal disponible.</p>
+    <div className="institution-analytics-grid">
+      <ChartCard title="Evolución del riesgo (BD)" description="Seguimiento del riesgo durante los períodos disponibles.">
+
         {riskTrend.length < 1 ? (
           <ChartEmptyState message="Registre más períodos para visualizar una tendencia." />
         ) : (
@@ -85,15 +85,15 @@ export function BentoAnalyticsPanels({
         )}
       </ChartCard>
 
-      <ChartCard title="Riesgo por sección">
+      <ChartCard title="Riesgo por sección" description="Compare la composición de riesgo entre secciones.">
         {sectionChart.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para este período." />
         ) : (
           <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={sectionChart}>
+            <BarChart data={sectionChart} layout="vertical" margin={{ left: 8, right: 20, top: 10, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
-              <XAxis dataKey="name" height={80} tick={<ChartCategoryTick />} />
-              <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+              <XAxis type="number" allowDecimals={false} tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" interval={0} width={112} tick={<ChartCategoryTick vertical />} axisLine={false} tickLine={false} />
               <Tooltip content={<AcademicTooltip />} />
               <Legend />
               <Bar isAnimationActive={false} dataKey="Alto" stackId="a" fill="var(--risk-high)" />
@@ -104,7 +104,7 @@ export function BentoAnalyticsPanels({
         )}
       </ChartCard>
 
-      <ChartCard title="Riesgo por grado">
+      <ChartCard title="Riesgo por grado" description="Distribución de estudiantes por grado y nivel de riesgo.">
         {riskByGrado.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para este período." />
         ) : (
@@ -123,7 +123,7 @@ export function BentoAnalyticsPanels({
         )}
       </ChartCard>
 
-      <ChartCard title="Asistencia por grado (%)">
+      <ChartCard title="Asistencia por grado (%)" description="Porcentaje de asistencia disponible para cada grado.">
         {attendanceByGrado.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para este período." />
         ) : (
@@ -139,7 +139,7 @@ export function BentoAnalyticsPanels({
         )}
       </ChartCard>
 
-      <ChartCard title="Actividad LMS por grado">
+      <ChartCard title="Actividad LMS por grado" description="Niveles de actividad registrados en la plataforma.">
         {lmsActivityByGrado.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para este período." />
         ) : (
@@ -160,7 +160,7 @@ export function BentoAnalyticsPanels({
       </ChartCard>
 
       {alertsBySalonShort.length > 0 && (
-        <ChartCard title="Alertas por sección">
+        <ChartCard title="Alertas por sección" description="Casos abiertos por sección que requieren seguimiento.">
           <ResponsiveContainer width="100%" height={320}>
             <BarChart data={alertsBySalonShort}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
@@ -173,7 +173,7 @@ export function BentoAnalyticsPanels({
         </ChartCard>
       )}
 
-      <ChartCard title="Comparación de modelos (F1)">
+      <ChartCard title="Comparación de modelos (F1)" description="Rendimiento F1 de los modelos disponibles.">
         {modelComparison.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para comparar modelos." />
         ) : (
@@ -189,7 +189,7 @@ export function BentoAnalyticsPanels({
         )}
       </ChartCard>
 
-      <ChartCard title="Importancia de variables">
+      <ChartCard title="Importancia de variables" description="Peso de las variables presentado por el modelo.">
         <ResponsiveContainer width="100%" height={320}>
           <BarChart data={featureImportance} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />

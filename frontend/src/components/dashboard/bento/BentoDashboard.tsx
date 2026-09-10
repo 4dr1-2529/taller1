@@ -162,7 +162,7 @@ export function BentoDashboard({
 
   return (
     <div className="bento-grid">
-      <BentoCell col={8} row={2} delay={0} variant="hero" className="lg:row-span-2">
+      <BentoCell col={8} row={2} delay={0} variant="hero" className="command-risk-cell"><div className="command-risk-layout">
         <BentoHero
           greeting={dashboardGreeting(role)}
           globalRisk={globalRisk}
@@ -171,9 +171,10 @@ export function BentoDashboard({
           trend={trend}
           topStudent={topAtRisk[0]}
         />
-      </BentoCell>
+        <BentoDistribution data={riskDistribution} />
+      </div></BentoCell>
 
-      <BentoCell col={4} row={2} delay={0.05} className="lg:row-span-2">
+      <BentoCell col={4} row={2} delay={0.05}>
         <BentoAlertsPanel items={alertQueue} />
       </BentoCell>
 
@@ -181,12 +182,8 @@ export function BentoDashboard({
         <BentoKpiStrip items={kpis} />
       </BentoCell>
 
-      <BentoCell col={8} row={2} delay={0.1}>
+      <BentoCell col={12} row={2} delay={0.1} className="analytics-lead">
         <BentoRiskTrend data={riskHistory} highRisk={highRisk} />
-      </BentoCell>
-
-      <BentoCell col={4} row={2} delay={0.12}>
-        <BentoDistribution data={riskDistribution} />
       </BentoCell>
 
       <BentoCell col={6} row={2} delay={0.14}>
@@ -198,7 +195,8 @@ export function BentoDashboard({
       </BentoCell>
 
       {useApi && apiAnalytics && (
-        <BentoCell col={12} row={2} delay={0.18}>
+        <BentoCell col={12} row={2} delay={0.18} className="analytics-canvas">
+          <header className="analytics-heading"><p className="intelligence-eyebrow">Explorar las señales</p><h2>Analítica institucional</h2><p>Secciones, asistencia, actividad y modelos en perspectiva.</p></header>
           <BentoAnalyticsPanels
             riskTrend={apiAnalytics.riskTrend}
             riskBySection={apiAnalytics.riskBySection}

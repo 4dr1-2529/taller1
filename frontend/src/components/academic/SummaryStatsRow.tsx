@@ -16,7 +16,7 @@ export function SummaryStatsRow({ stats }: { stats: SummaryStat[] }) {
         <div
           key={s.label}
           className={clsx(
-            "premium-card rounded-xl px-5 py-4",
+            "summary-stat",
             s.tone === "brand" && "border-l-4 border-l-[var(--brand-orange)]",
             s.tone === "success" && "border-l-4 border-l-emerald-500",
             s.tone === "warning" && "border-l-4 border-l-amber-500",

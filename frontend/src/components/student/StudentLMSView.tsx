@@ -21,6 +21,7 @@ import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
+import { AcademicTooltip, ChartCard } from "@/components/ui/ChartCard";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 
 const PIE_COLORS = ["var(--risk-low)", "var(--risk-medium)"];
@@ -73,32 +74,29 @@ export function StudentLMSView() {
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="premium-card rounded-xl p-4">
-          <h3 className="mb-3 text-sm font-semibold">Actividad por semana</h3>
+        <ChartCard title="Actividad por semana" description="Participación registrada a lo largo de las semanas.">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartSemanal}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
               <XAxis dataKey="semana" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Bar isAnimationActive={false} dataKey="actividad" fill="#8b5cf6" name="Actividad %" radius={[4, 4, 0, 0]} />
+              <Tooltip content={<AcademicTooltip />} />
+              <Bar isAnimationActive={false} dataKey="actividad" fill="var(--chart-primary)" name="Actividad %" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-        <div className="premium-card rounded-xl p-4">
-          <h3 className="mb-3 text-sm font-semibold">Tiempo en plataforma por semana</h3>
+        </ChartCard>
+        <ChartCard title="Tiempo en plataforma por semana" description="Minutos dedicados al aprendizaje en la plataforma.">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartSemanal}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
               <XAxis dataKey="semana" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Line isAnimationActive={false} type="monotone" dataKey="minutos" stroke="#06b6d4" name="Minutos" strokeWidth={2} />
+              <Tooltip content={<AcademicTooltip />} />
+              <Line isAnimationActive={false} type="monotone" dataKey="minutos" stroke="var(--chart-secondary)" name="Minutos" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-        <div className="premium-card rounded-xl p-4">
-          <h3 className="mb-3 text-sm font-semibold">Entregas vs pendientes</h3>
+        </ChartCard>
+        <ChartCard title="Entregas vs pendientes" description="Estado de las tareas registradas.">
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie isAnimationActive={false} data={chartTareas} dataKey="valor" nameKey="tipo" innerRadius={50} outerRadius={80}>
@@ -106,13 +104,12 @@ export function StudentLMSView() {
                   <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip content={<AcademicTooltip />} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
-        </div>
-        <div className="premium-card rounded-xl p-4">
-          <h3 className="mb-3 text-sm font-semibold">Evolución de compromiso</h3>
+        </ChartCard>
+        <ChartCard title="Evolución de compromiso" description="Nivel de compromiso durante las semanas disponibles.">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart
               data={semanas.map((s) => ({
@@ -127,7 +124,7 @@ export function StudentLMSView() {
               <Line isAnimationActive={false} type="monotone" dataKey="valor" stroke="var(--risk-medium)" strokeWidth={2} dot />
             </LineChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
       </div>
 
       <DataTablePanel title="Detalle semanal" isEmpty={semanas.length === 0} emptyMessage={ESTUDIANTE_MSG.sinLms}>
