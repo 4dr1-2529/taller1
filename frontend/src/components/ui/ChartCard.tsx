@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import type { ReactNode } from "react";
 import { Database } from "lucide-react";
 import { PageSection } from "@/components/ui/PageSection";
@@ -24,7 +25,7 @@ export function ChartCard({
   emptyMessage = "No hay información suficiente para este período.",
 }: ChartCardProps) {
   return (
-    <PageSection title={title} description={description} action={action} className={className}>
+    <PageSection title={title} description={description} action={action} className={clsx("chart-card", className)}>
       {isEmpty ? <ChartEmptyState message={emptyMessage} /> : children}
     </PageSection>
   );
@@ -32,7 +33,7 @@ export function ChartCard({
 
 export function ChartEmptyState({ message }: { message: string }) {
   return (
-    <div className="flex min-h-48 flex-col items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] bg-[var(--surface-muted)]/50 px-6 py-10 text-center">
+    <div className="flex min-h-64 flex-col items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] bg-[var(--surface-muted)]/50 px-5 py-12 text-center">
       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-muted)] text-[var(--brand-orange)]">
         <Database className="h-5 w-5" aria-hidden />
       </span>
@@ -58,7 +59,7 @@ export function AcademicTooltip({ active, payload, label }: AcademicTooltipProps
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-elevated)] px-3 py-2.5 text-xs shadow-xl">
+    <div className="chart-tooltip rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-sm">
       {label != null ? <p className="mb-2 font-semibold text-[var(--text-primary)]">{label}</p> : null}
       <div className="space-y-1.5">
         {payload.map((entry, index) => (
@@ -67,7 +68,7 @@ export function AcademicTooltip({ active, payload, label }: AcademicTooltipProps
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color ?? "var(--accent)" }} />
               {entry.name ?? "Valor"}
             </span>
-            <span className="font-semibold tabular-nums text-[var(--text-primary)]">
+            <span className="font-semibold tabular-nums whitespace-nowrap text-[var(--text-primary)]">
               {entry.value ?? "Sin dato"}{entry.unit ?? ""}
             </span>
           </div>

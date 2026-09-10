@@ -9,10 +9,10 @@ export function RiskGauge({ score, level }: { score: number; level: string }) {
   const offset = c - (pct / 100) * c;
   const stroke =
     level === "alto"
-      ? "#fb7185"
+      ? "var(--risk-high)"
       : level === "medio"
-        ? "#fbbf24"
-        : "#34d399";
+        ? "var(--risk-medium)"
+        : "var(--risk-low)";
 
   return (
     <div className="relative mx-auto flex h-44 w-44 items-center justify-center">
@@ -28,7 +28,7 @@ export function RiskGauge({ score, level }: { score: number; level: string }) {
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={offset}
-          className="transition-all duration-700"
+          className="transition-all duration-300 motion-reduce:transition-none"
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -36,10 +36,10 @@ export function RiskGauge({ score, level }: { score: number; level: string }) {
         <span className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">% riesgo</span>
         <span
           className={clsx(
-            "mt-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
-            level === "alto" && "bg-rose-500/15 text-rose-500",
-            level === "medio" && "bg-amber-500/15 text-amber-600",
-            level === "bajo" && "bg-emerald-500/15 text-emerald-600",
+            "mt-1 rounded-full px-2 py-0.5 text-xs font-bold uppercase",
+            level === "alto" && "bg-rose-500/15 text-[var(--risk-high)]",
+            level === "medio" && "bg-amber-500/15 text-[var(--risk-medium)]",
+            level === "bajo" && "bg-emerald-500/15 text-[var(--risk-low)]",
           )}
         >
           {level}

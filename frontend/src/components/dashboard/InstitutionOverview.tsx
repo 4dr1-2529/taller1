@@ -25,7 +25,7 @@ function StatCard({
     <div className="premium-card rounded-[var(--radius-lg)] p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
+          <p className="text-sm font-medium text-[var(--text-muted)]">{label}</p>
           <p className="text-metric mt-3 font-bold text-[var(--text-primary)]">{value}</p>
         </div>
         <div className={`rounded-lg p-2 ${accent}`}>
@@ -45,7 +45,7 @@ export function InstitutionOverview({
 }: Props) {
   return (
     <section className="premium-card overflow-hidden rounded-[var(--radius-lg)]">
-      <div className="border-b border-[var(--border)] bg-[var(--surface-muted)]/45 px-5 py-5">
+      <div className="border-b border-[var(--border)] bg-[var(--surface-muted)]/45 px-6 py-5">
         <div className="flex flex-wrap items-center gap-3">
             <div className="rounded-[var(--radius-md)] bg-[var(--accent-muted)] p-2.5 text-[var(--brand-orange)]">
             <Building2 className="h-5 w-5" />
@@ -54,31 +54,31 @@ export function InstitutionOverview({
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
               Comunidad educativa
             </p>
-            <h2 className="text-lg font-bold text-[var(--text-primary)]">{institutionName}</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)]">{institutionName}</h2>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-4 p-5 md:grid-cols-3">
+      <div className="grid gap-5 p-6 sm:grid-cols-2 2xl:grid-cols-3">
         <StatCard
           label="Estudiantes matriculados"
           value={totalStudents}
           icon={Users}
-          accent="bg-cyan-500/15 text-cyan-400"
+          accent="bg-[var(--surface-muted)] text-[var(--chart-secondary)]"
         />
         <StatCard
           label="Profesores activos"
           value={totalTeachers}
           icon={GraduationCap}
-          accent="bg-violet-500/15 text-violet-400"
+          accent="bg-[var(--surface-muted)] text-[var(--chart-primary)]"
         />
-        <div className="premium-card rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-5 md:col-span-1">
+        <div className="premium-card rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-5 sm:col-span-2 2xl:col-span-1">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">Director</p>
               <p className="mt-2 text-lg font-bold text-[var(--text-primary)]">{directorName}</p>
               {directorEmail ? (
-                <p className="mt-1 text-xs text-[var(--text-secondary)]">{directorEmail}</p>
+                <p className="mt-1 break-all text-sm text-[var(--text-secondary)]">{directorEmail}</p>
               ) : null}
             </div>
             <div className="rounded-[var(--radius-md)] bg-[var(--accent-muted)] p-2 text-[var(--brand-orange)]">

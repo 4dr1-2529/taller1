@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Brain,
   GraduationCap,
   Loader2,
   Eye,
   EyeOff,
-  Sparkles,
   Shield,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -18,6 +17,7 @@ import { BlenkirLogo } from "@/components/branding/BlenkirLogo";
 import { validateEmail, VALIDATION_MSG } from "@/lib/validation";
 
 export default function LoginPage() {
+  const reduced = useReducedMotion();
   const { login, isAuthenticated, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,163 +65,81 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden">
-      <motion.div
-        className="pointer-events-none absolute inset-0"
-        animate={{
-          background: [
-            "radial-gradient(circle at 20% 20%, rgba(244,124,32,0.2), transparent 50%)",
-            "radial-gradient(circle at 80% 30%, rgba(31,58,95,0.25), transparent 45%)",
-            "radial-gradient(circle at 40% 80%, rgba(244,124,32,0.12), transparent 50%)",
-          ],
-        }}
-        transition={{ duration: 12, repeat: Infinity, repeatType: "reverse" }}
-      />
-
-      <div className="absolute right-4 top-4 z-20">
-        <ThemeToggle />
-      </div>
-
-      {/* Panel ilustración */}
-      <motion.aside
-        className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-[#1f3a5f] via-[#162d4a] to-[#0f172a] p-12 text-white lg:flex"
-        initial={{ opacity: 0, x: -24 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <motion.div
-          className="absolute -left-20 top-20 h-64 w-64 rounded-full bg-[#f47c20]/25 blur-3xl"
-          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -right-10 bottom-20 h-72 w-72 rounded-full bg-white/10 blur-3xl"
-          animate={{ scale: [1.1, 1, 1.1] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
-
-        <div className="relative z-10">
+    <div className="login-page">
+      <div className="login-theme"><ThemeToggle /></div>
+      <motion.aside className="login-brand"
+        initial={reduced ? false : { opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: reduced ? 0 : 0.3 }}>
+        <div className="login-brand__top">
           <BlenkirLogo size="lg" />
-          <p className="mt-4 text-xs font-medium uppercase tracking-widest text-orange-200/90">
-            Huancayo · Perú
-          </p>
-          <p className="mt-8 max-w-md text-lg leading-relaxed text-slate-300">
-            Plataforma inteligente de predicción de{" "}
-            <span className="gradient-text font-semibold">riesgo de deserción</span> estudiantil
-            basada en IA y análisis LMS.
-          </p>
+          <span className="login-brand__eyebrow">INTELIGENCIA ACADÉMICA</span>
         </div>
-
-        <motion.div
-          className="relative z-10 grid gap-4"
-          initial="hidden"
-          animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
-        >
-          {[
-            { icon: Brain, label: "Modelo conjunto IA", desc: "Bosque aleatorio · XGBoost · Stacking" },
-            { icon: Sparkles, label: "Predicción en tiempo real", desc: "Puntaje de riesgo 0–100" },
-            { icon: Shield, label: "Panel institucional", desc: "Director, profesor y estudiante" },
-          ].map((item) => (
-            <motion.div
-              key={item.label}
-              variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
-              className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur"
-            >
-              <item.icon className="h-8 w-8 text-[#f47c20]" />
-              <div>
-                <p className="font-semibold">{item.label}</p>
-                <p className="text-sm text-slate-400">{item.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </motion.aside>
-
-      {/* Formulario */}
-      <motion.div
-        className="flex w-full flex-col items-center justify-center p-6 lg:w-1/2"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <div className="glass-card w-full max-w-md rounded-3xl p-8 md:p-10">
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="rounded-xl bg-[#f47c20] p-3 text-white shadow-lg">
-              <GraduationCap className="h-7 w-7" />
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-                Panel institucional
-              </p>
-              <h2 className="gradient-text text-lg font-bold">Acceso institucional</h2>
-            </div>
+        <div className="login-brand__story">
+          <p className="login-kicker">Educación que mira hacia adelante</p>
+          <h1>Entender el presente.<br /><span>Acompañar el futuro.</span></h1>
+          <p>Una visión conectada del aprendizaje para acompañar a nuestra comunidad educativa.</p>
+          <div className="login-visual" aria-hidden>
+            <div className="login-visual__line" />
+            {[GraduationCap, Brain, Shield].map((Icon, i) => (
+              <div className="login-visual__node" key={i}><Icon /><span>{["Aprendizaje", "Análisis", "Acompañamiento"][i]}</span></div>
+            ))}
           </div>
-
-          <h2 className="hidden text-2xl font-bold text-[var(--text-primary)] lg:block">
-            Iniciar sesión
-          </h2>
-          <p className="mt-2 hidden text-sm text-[var(--text-secondary)] lg:block">
-            Ingrese sus credenciales del colegio para acceder al panel.
-          </p>
-
-          <form onSubmit={(e) => void handleSubmit(e)} className="mt-8 space-y-5">
+        </div>
+        <div className="login-capabilities">
+          {[
+            { icon: GraduationCap, label: "Seguimiento académico", desc: "Rendimiento, asistencia y actividad LMS." },
+            { icon: Brain, label: "Análisis de riesgo", desc: "Información para orientar el acompañamiento." },
+            { icon: Shield, label: "Una comunidad conectada", desc: "Un espacio para directores, docentes y estudiantes." },
+          ].map((item) => <div key={item.label} className="login-capability">
+            <item.icon aria-hidden />
+            <div><h2>{item.label}</h2><p>{item.desc}</p></div>
+          </div>)}
+        </div>
+        <p className="login-brand__footer">COLEGIO BLENKIR <span>Huancayo · Perú</span></p>
+      </motion.aside>
+      <motion.main className="login-access"
+        initial={reduced ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reduced ? 0 : 0.3, delay: reduced ? 0 : 0.08 }}>
+        <div className="login-mobile-brand"><BlenkirLogo size="md" /></div>
+        <div className="login-form-card">
+          <span className="login-form-mark"><GraduationCap aria-hidden /></span>
+          <p className="login-kicker">TU ESPACIO ACADÉMICO</p>
+          <h2>Bienvenido de nuevo</h2>
+          <p className="login-form-intro">Inicia sesión con tu cuenta del colegio para continuar.</p>
+          <form onSubmit={(e) => void handleSubmit(e)} className="mt-8 space-y-6">
             <div>
-              <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-[var(--text-primary)]">
-                Correo electrónico
-              </label>
-              <input
-                id="login-email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setErrors((p) => ({ ...p, email: undefined }));
-                }}
+              <label htmlFor="login-email" className="mb-2 block text-sm font-semibold">Correo electrónico</label>
+              <input id="login-email" type="email" required autoComplete="username"
+                value={email} onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
+                aria-invalid={!!errors.email} aria-describedby={errors.email ? "login-email-error" : undefined}
                 className={`input-premium ${errors.email ? "border-rose-500 ring-rose-500/30" : ""}`}
-                placeholder="correo@blenkir.edu.pe"
-              />
-              {errors.email ? <p className="mt-1.5 text-xs text-rose-400">{errors.email}</p> : null}
+                placeholder="correo@blenkir.edu.pe" />
+              {errors.email ? <p id="login-email-error" className="mt-2 text-xs text-[var(--danger)]">{errors.email}</p> : null}
             </div>
             <div>
-              <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-[var(--text-primary)]">
-                Contraseña
-              </label>
+              <label htmlFor="login-password" className="mb-2 block text-sm font-semibold">Contraseña</label>
               <div className="relative">
-                <input
-                  id="login-password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setErrors((p) => ({ ...p, password: undefined }));
-                  }}
-                  className={`input-premium pr-10 ${errors.password ? "border-rose-500 ring-rose-500/30" : ""}`}
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <input id="login-password" type={showPassword ? "text" : "password"} required minLength={6} autoComplete="current-password"
+                  value={password} onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
+                  aria-invalid={!!errors.password} aria-describedby={errors.password ? "login-password-error" : undefined}
+                  className={`input-premium pr-14 ${errors.password ? "border-rose-500 ring-rose-500/30" : ""}`}
+                  placeholder="Ingresa tu contraseña" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="login-password-toggle" aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}>
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              {errors.password ? (
-                <p className="mt-1.5 text-xs text-rose-400">{errors.password}</p>
-              ) : null}
+              {errors.password ? <p id="login-password-error" className="mt-2 text-xs text-[var(--danger)]">{errors.password}</p> : null}
             </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            <button type="submit" disabled={loading} className="btn-primary login-submit">
+              {loading ? <Loader2 className="h-4 w-4" /> : null}
               Ingresar al panel
             </button>
           </form>
+          <div className="login-form-footer"><Shield className="h-4 w-4" aria-hidden /><span>Acceso institucional · Colegio Blenkir</span></div>
         </div>
-      </motion.div>
+        <p className="login-access__footer">Tecnología al servicio del aprendizaje.</p>
+      </motion.main>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { ChartCategoryTick } from "@/components/ui/ChartCategoryTick";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -15,7 +16,7 @@ import { Brain } from "lucide-react";
 import { api } from "@/services/api";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 
-const COLORS = ["#818cf8", "#22d3ee", "#f59e0b", "#10b981"];
+const COLORS = ["var(--chart-primary)", "var(--chart-secondary)", "var(--risk-medium)", "var(--risk-low)"];
 
 type ModelMetrics = {
   accuracy: number;
@@ -82,7 +83,7 @@ export function MlMetricsSection() {
   if (error || !data || !Object.keys(data).length) {
     return (
       <p className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 px-4 py-3 text-sm text-[var(--text-secondary)]">
-        {error ?? "Sin métricas"} — Ejecute <code className="text-violet-400">npm run ml:train</code>
+        {error ?? "Sin métricas"} — Ejecute <code className="text-[var(--accent)]">npm run ml:train</code>
       </p>
     );
   }
@@ -101,7 +102,7 @@ export function MlMetricsSection() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Brain className="h-5 w-5 text-violet-400" aria-hidden />
+          <Brain className="h-5 w-5 text-[var(--accent)]" aria-hidden />
           <h3 className="text-base font-semibold text-[var(--text-primary)]">
             Comparación de modelos (ensemble learning)
           </h3>
@@ -112,12 +113,12 @@ export function MlMetricsSection() {
         </span>
       </div>
 
-      <div className="h-64">
+      <div className="h-80 min-w-0">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={compareData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-            <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--text-muted)" }} />
-            <YAxis unit="%" domain={[0, 100]} tick={{ fontSize: 11, fill: "var(--text-muted)" }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+            <XAxis dataKey="name" height={80} tick={<ChartCategoryTick />} />
+            <YAxis unit="%" domain={[0, 100]} tick={{ fontSize: 12, fill: "var(--text-muted)" }} />
             <Tooltip
               contentStyle={{
                 background: "var(--surface-elevated)",
@@ -126,10 +127,10 @@ export function MlMetricsSection() {
               }}
             />
             <Legend />
-            <Bar dataKey="accuracy" name="Accuracy" fill="#818cf8" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="precision" name="Precision" fill="#22d3ee" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="recall" name="Recall" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="f1" name="F1" fill="#10b981" radius={[4, 4, 0, 0]} />
+            <Bar isAnimationActive={false} dataKey="accuracy" name="Accuracy" fill="var(--chart-primary)" radius={[4, 4, 0, 0]} />
+            <Bar isAnimationActive={false} dataKey="precision" name="Precision" fill="var(--chart-secondary)" radius={[4, 4, 0, 0]} />
+            <Bar isAnimationActive={false} dataKey="recall" name="Recall" fill="var(--risk-medium)" radius={[4, 4, 0, 0]} />
+            <Bar isAnimationActive={false} dataKey="f1" name="F1" fill="var(--risk-low)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -154,10 +155,10 @@ export function MlMetricsSection() {
               <li>Recall: {(m.recall * 100).toFixed(1)}%</li>
               <li>F1-score: {(m.f1_score * 100).toFixed(1)}%</li>
             </ul>
-            <p className="mt-2 text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
+            <p className="mt-2 text-xs uppercase tracking-wide text-[var(--text-muted)]">
               Matriz de confusión
             </p>
-            <pre className="mt-1 overflow-auto rounded bg-black/20 p-2 text-[10px] text-emerald-300/90">
+            <pre className="mt-1 overflow-auto rounded bg-black/20 p-2 text-xs text-[var(--risk-low)]">
               {JSON.stringify(m.confusion_matrix)}
             </pre>
             <span

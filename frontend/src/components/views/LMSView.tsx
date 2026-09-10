@@ -36,8 +36,8 @@ const ENGAGEMENT_LABELS: Record<string, string> = {
 function engagementBadge(eng: string) {
   return clsx(
     "rounded-full px-2.5 py-0.5 text-xs font-semibold",
-    eng === "alto" && "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20",
-    eng === "medio" && "bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/20",
+    eng === "alto" && "bg-emerald-500/15 text-[var(--risk-low)] ring-1 ring-emerald-500/20",
+    eng === "medio" && "bg-amber-500/15 text-[var(--risk-medium)] ring-1 ring-amber-500/20",
     eng === "bajo" && "bg-rose-500/15 text-rose-400 ring-1 ring-rose-500/20",
   );
 }
@@ -95,8 +95,8 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
     const ok = student.metrics.lms.tareasEntregadas;
     const bad = Math.max(student.metrics.lms.tareasTotales - ok, 0);
     return [
-      { tipo: "Entregadas", valor: ok, fill: "#10b981" },
-      { tipo: "Pendientes / no entregadas", valor: bad, fill: "#f43f5e" },
+      { tipo: "Entregadas", valor: ok, fill: "var(--risk-low)" },
+      { tipo: "Pendientes / no entregadas", valor: bad, fill: "var(--risk-high)" },
     ];
   }, [student]);
 
@@ -105,7 +105,7 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } },
   };
 
   if (!student && filteredStudents.length === 0) {
@@ -202,7 +202,7 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
         >
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
-              <Clock3 className="h-4 w-4 text-cyan-400" aria-hidden />
+              <Clock3 className="h-4 w-4 text-[var(--chart-secondary)]" aria-hidden />
             </div>
             <h4 className="font-semibold text-[var(--text-primary)]">Tiempo en plataforma</h4>
           </div>
@@ -219,8 +219,8 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
           className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 ring-1 ring-white/10">
-              <Send className="h-4 w-4 text-amber-400" aria-hidden />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-muted)] ring-1 ring-white/10">
+              <Send className="h-4 w-4 text-[var(--risk-medium)]" aria-hidden />
             </div>
             <h4 className="font-semibold text-[var(--text-primary)]">Tareas</h4>
           </div>
@@ -241,20 +241,20 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
         >
           <div className="flex items-start gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
-              <BarChart3 className="h-4 w-4 text-violet-400" />
+              <BarChart3 className="h-4 w-4 text-[var(--accent)]" />
             </div>
             <div>
               <h4 className="text-sm font-semibold text-[var(--text-primary)]">Actividad y minutos por semana</h4>
               <p className="text-xs text-[var(--text-secondary)]">Porcentaje de actividad y minutos por semana</p>
             </div>
           </div>
-          <div className="mt-5 h-72">
+          <div className="mt-6 h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={weekly}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
-                <XAxis dataKey="semana" tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
-                <YAxis yAxisId="left" tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
-                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="semana" tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="left" tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
                 <Tooltip
                   wrapperClassName="chart-tooltip"
                   contentStyle={{
@@ -265,25 +265,25 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
                   }}
                 />
                 <Legend />
-                <Line
+                <Line isAnimationActive={false}
                   yAxisId="left"
                   type="monotone"
                   dataKey="actividad"
                   name="Actividad %"
-                  stroke="#818cf8"
+                  stroke="var(--chart-primary)"
                   strokeWidth={2.5}
-                  dot={{ r: 3, fill: "#6366f1", strokeWidth: 2, stroke: "#09090b" }}
-                  activeDot={{ r: 5, fill: "#818cf8", strokeWidth: 2, stroke: "#09090b" }}
+                  dot={{ r: 3, fill: "var(--chart-primary)", strokeWidth: 2, stroke: "#09090b" }}
+                  activeDot={{ r: 5, fill: "var(--chart-primary)", strokeWidth: 2, stroke: "#09090b" }}
                 />
-                <Line
+                <Line isAnimationActive={false}
                   yAxisId="right"
                   type="monotone"
                   dataKey="minutos"
                   name="Minutos"
-                  stroke="#22d3ee"
+                  stroke="var(--chart-secondary)"
                   strokeWidth={2.5}
                   dot={{ r: 3, fill: "#06b6d4", strokeWidth: 2, stroke: "#09090b" }}
-                  activeDot={{ r: 5, fill: "#22d3ee", strokeWidth: 2, stroke: "#09090b" }}
+                  activeDot={{ r: 5, fill: "var(--chart-secondary)", strokeWidth: 2, stroke: "#09090b" }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -298,20 +298,20 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
           className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6"
         >
           <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 ring-1 ring-white/10">
-              <Send className="h-4 w-4 text-emerald-400" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-muted)] ring-1 ring-white/10">
+              <Send className="h-4 w-4 text-[var(--risk-low)]" />
             </div>
             <div>
               <h4 className="text-sm font-semibold text-[var(--text-primary)]">Entregas vs pendientes</h4>
               <p className="text-xs text-[var(--text-secondary)]">Desglose de tareas entregadas y pendientes</p>
             </div>
           </div>
-          <div className="mt-5 h-72">
+          <div className="mt-6 h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={tareasData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
-                <XAxis dataKey="tipo" tick={{ fontSize: 10, fill: tickFill }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="tipo" tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
                 <Tooltip
                   wrapperClassName="chart-tooltip"
                   contentStyle={{
@@ -321,7 +321,7 @@ export function LMSView({ students, secciones = [] }: LMSViewProps) {
                     backdropFilter: "blur(12px)",
                   }}
                 />
-                <Bar dataKey="valor" name="Cantidad" radius={[6, 6, 0, 0]}>
+                <Bar isAnimationActive={false} dataKey="valor" name="Cantidad" radius={[6, 6, 0, 0]}>
                   {tareasData.map((row) => (
                     <Cell key={row.tipo} fill={row.fill} />
                   ))}

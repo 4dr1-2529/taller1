@@ -1,12 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { Bell, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { api, type ApiNotification } from "@/services/api";
 
 export function NotificationBell() {
+  const reduced = useReducedMotion();
   const { isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<ApiNotification[]>([]);
@@ -45,16 +46,16 @@ export function NotificationBell() {
           setOpen((o) => !o);
           void load();
         }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="relative rounded-xl p-2.5 text-[var(--text-secondary)] transition-colors hover:bg-white/5 hover:text-violet-400"
+        whileHover={reduced ? undefined : { scale: 1.02 }}
+        whileTap={reduced ? undefined : { scale: 0.98 }}
+        className="header-icon relative"
         aria-label="Notificaciones"
       >
         <Bell className="h-5 w-5" />
         <AnimatePresence>
           {unread > 0 && (
             <motion.span
-              className="absolute right-0.5 top-0.5 flex h-4.5 w-4.5 min-w-[18px] items-center justify-center rounded-full bg-gradient-to-r from-violet-500 to-cyan-500 px-1 text-[10px] font-bold text-white shadow-lg shadow-violet-500/30"
+              className="absolute right-0.5 top-0.5 flex h-4.5 w-4.5 min-w-[18px] items-center justify-center rounded-full bg-[var(--brand-navy)] px-1 text-[10px] font-bold text-white "
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
@@ -76,17 +77,17 @@ export function NotificationBell() {
               onClick={() => setOpen(false)}
             />
             <motion.div
-              className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-2xl border border-white/10 bg-[var(--bg-primary)]/90 shadow-2xl shadow-black/30 backdrop-blur-xl"
+              className="notification-panel"
               initial={{ opacity: 0, y: 8, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="border-b border-white/10 px-4 py-3">
+              <div className="border-b border-[var(--border-subtle)] px-4 py-3">
                 <p className="text-sm font-semibold tracking-tight text-[var(--text-primary)]">
                   Notificaciones
                   {unread > 0 && (
-                    <span className="ml-2 inline-flex items-center rounded-full bg-violet-500/20 px-2 py-0.5 text-xs font-medium text-violet-400">
+                    <span className="ml-2 inline-flex items-center rounded-full bg-[var(--accent-muted)] px-2 py-0.5 text-xs font-medium text-[var(--accent)]">
                       {unread}
                     </span>
                   )}
@@ -103,8 +104,8 @@ export function NotificationBell() {
                   items.map((n) => (
                     <motion.li
                       key={n.id}
-                      className={`group border-b border-white/5 px-4 py-3 transition-colors hover:bg-white/[0.03] ${
-                        !n.leida ? "bg-violet-500/5" : ""
+                      className={`group border-b border-[var(--border-subtle)] px-4 py-3 transition-colors hover:bg-white/[0.03] ${
+                        !n.leida ? "bg-[var(--surface-muted)]" : ""
                       }`}
                       initial={{ opacity: 0, x: -8 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -119,9 +120,9 @@ export function NotificationBell() {
                           <motion.button
                             type="button"
                             onClick={() => void markRead(n.id)}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="shrink-0 rounded-lg p-1.5 text-violet-400 opacity-0 transition-opacity hover:bg-violet-500/20 group-hover:opacity-100"
+                            whileHover={reduced ? undefined : { scale: 1.02 }}
+                            whileTap={reduced ? undefined : { scale: 0.98 }}
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-[var(--accent)] hover:bg-[var(--accent-muted)]"
                             aria-label="Marcar como leída"
                           >
                             <Check className="h-3.5 w-3.5" />

@@ -1,5 +1,7 @@
 "use client";
 
+import { DashboardMetricCard as KpiCard } from "@/components/dashboard/DashboardMetricCard";
+
 import { useEffect, useState } from "react";
 import { AlertTriangle, BookOpen, GraduationCap, Users } from "lucide-react";
 import { BentoDashboard } from "@/components/dashboard/bento/BentoDashboard";
@@ -18,20 +20,6 @@ type Props = {
   useApi?: boolean;
 };
 
-function KpiCard({ label, value, suffix = "", icon: Icon }: { label: string; value: string | number; suffix?: string; icon: typeof Users }) {
-  return (
-    <div className="premium-card rounded-[var(--radius-lg)] p-5">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
-        <Icon className="h-4 w-4 text-[var(--brand-orange)]" />
-      </div>
-      <p className="text-metric mt-3 font-bold text-[var(--text-primary)]">
-        {value}
-        {suffix}
-      </p>
-    </div>
-  );
-}
 
 export function RoleDashboard({ role, students, courses, matriculaStats = null, useApi = false }: Props) {
   const { user } = useAuth();
@@ -66,11 +54,13 @@ export function RoleDashboard({ role, students, courses, matriculaStats = null, 
           totalStudents={totalStudents}
           totalTeachers={kpis?.totalTeachers ?? 0}
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <KpiCard label="Total estudiantes" value={totalStudents} icon={Users} />
-          <KpiCard label="Total profesores" value={kpis?.totalTeachers ?? "—"} icon={GraduationCap} />
-          <KpiCard label="Total salones" value={kpis?.totalSalones ?? "—"} icon={BookOpen} />
-          <KpiCard label="Alertas activas" value={kpis?.openAlerts ?? 0} icon={AlertTriangle} />
+        <div className="dashboard-metrics">
+          <KpiCard label="Total estudiantes" value={totalStudents} icon={Users} index={0} />
+          <KpiCard label="Total profesores" value={kpis?.totalTeachers ?? "—"} icon={GraduationCap} index={1} />
+          <KpiCard label="Total salones" value={kpis?.totalSalones ?? "—"} icon={BookOpen} index={2} />
+          <KpiCard label="Alertas activas" value={kpis?.openAlerts ?? 0} icon={AlertTriangle} index={3} />
+        </div>
+        <div className="dashboard-secondary">
           <KpiCard label="Promedio institucional" value={kpis?.avgGrade ?? globalRiskScore(students)} suffix="/20" icon={BookOpen} />
         </div>
         <BentoDashboard role={role} students={students} courses={courses} matriculaStats={matriculaStats} useApi={useApi} />

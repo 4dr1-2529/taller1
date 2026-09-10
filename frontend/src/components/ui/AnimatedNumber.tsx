@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 type AnimatedNumberProps = {
   value: number;
@@ -10,10 +10,12 @@ type AnimatedNumberProps = {
   suffix?: string;
 };
 
-export function AnimatedNumber({ value, duration = 700, decimals = 0, suffix = "" }: AnimatedNumberProps) {
+export function AnimatedNumber({ value, duration = 300, decimals = 0, suffix = "" }: AnimatedNumberProps) {
+  const reduced = useReducedMotion();
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
+    if (reduced) { setDisplay(value); return; }
     let frame = 0;
     const start = performance.now();
     const from = display;
@@ -30,15 +32,14 @@ export function AnimatedNumber({ value, duration = 700, decimals = 0, suffix = "
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- animate from current display
-  }, [value, duration]);
+  }, [value, duration, reduced]);
 
   const formatted =
     decimals > 0 ? display.toFixed(decimals) : Math.round(display).toLocaleString("es-PE");
 
   return (
     <motion.span
-      key={Math.round(display)}
-      initial={{ opacity: 0.7, y: 2 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.15 }}
     >

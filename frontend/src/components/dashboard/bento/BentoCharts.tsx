@@ -1,4 +1,5 @@
 "use client";
+import { ChartCategoryTick } from "@/components/ui/ChartCategoryTick";
 
 import {
   Area,
@@ -18,7 +19,7 @@ import { TrendingUp, Target } from "lucide-react";
 import type { CourseRiskRow } from "@/lib/aggregates";
 import type { RiskHistoryPoint } from "@/types/academic";
 
-const gridStroke = "rgba(255, 255, 255, 0.05)";
+const gridStroke = "var(--border-subtle)";
 const tickFill = "var(--text-muted)";
 
 type BentoRiskTrendProps = {
@@ -41,23 +42,23 @@ export function BentoRiskTrend({ data, highRisk }: BentoRiskTrendProps) {
         </div>
         <span className="badge badge-danger text-[11px]">{highRisk} alto</span>
       </header>
-      <div className="mt-4 min-h-[240px] flex-1">
+      <div className="mt-4 h-80 min-w-0">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
+          <AreaChart data={data} margin={{ top: 16, right: 16, bottom: 12, left: -15 }}>
             <defs>
               <linearGradient id="bentoRiskFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#818cf8" stopOpacity={0.35} />
-                <stop offset="95%" stopColor="#818cf8" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--chart-primary)" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="var(--chart-primary)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
-            <XAxis dataKey="periodo" tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
-            <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: tickFill }} axisLine={false} tickLine={false} />
+            <XAxis dataKey="periodo" tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
             <Tooltip wrapperClassName="chart-tooltip" />
-            <Area
+            <Area isAnimationActive={false}
               type="monotone"
               dataKey="riesgoGlobal"
-              stroke="#818cf8"
+              stroke="var(--chart-primary)"
               strokeWidth={2}
               fill="url(#bentoRiskFill)"
               name="Riesgo"
@@ -87,9 +88,9 @@ export function BentoDistribution({ data }: BentoDistributionProps) {
       </header>
       <div className="relative mt-2 flex flex-1 items-center justify-center">
         {data.length > 0 ? (
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Pie data={data} dataKey="value" innerRadius={52} outerRadius={78} paddingAngle={3} strokeWidth={0}>
+              <Pie isAnimationActive={false} data={data} dataKey="value" innerRadius={52} outerRadius={78} paddingAngle={3} strokeWidth={0}>
                 {data.map((e) => (
                   <Cell key={e.name} fill={e.fill} />
                 ))}
@@ -120,17 +121,17 @@ export function BentoCourseBars({ rows }: { rows: CourseRiskRow[] }) {
         <h3 className="text-base font-semibold text-[var(--text-primary)]">Riesgo por curso</h3>
         <p className="text-xs text-[var(--text-secondary)]">Promedio por matrícula activa</p>
       </header>
-      <div className="mt-4 min-h-[200px] flex-1">
+      <div className="mt-4 overflow-x-auto table-scroll"><div className="h-80" style={{ minWidth: Math.max(280, rows.length * 96) }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={rows}>
+          <BarChart data={rows} margin={{ top: 16, right: 16, bottom: 45, left: -15 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
-            <XAxis dataKey="nombre" tick={{ fontSize: 10, fill: tickFill }} axisLine={false} tickLine={false} />
-            <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: tickFill }} axisLine={false} tickLine={false} />
+            <XAxis dataKey="nombre" height={64} interval={0} tick={<ChartCategoryTick />} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
             <Tooltip wrapperClassName="chart-tooltip" formatter={(v: number) => [`${v.toFixed(1)}`, "Puntaje"]} />
-            <Bar dataKey="riesgoPromedio" fill="#6366f1" radius={[4, 4, 0, 0]} />
+            <Bar isAnimationActive={false} dataKey="riesgoPromedio" fill="var(--chart-primary)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
-      </div>
+      </div></div>
     </div>
   );
 }

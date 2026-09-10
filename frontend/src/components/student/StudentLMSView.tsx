@@ -23,7 +23,7 @@ import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 
-const PIE_COLORS = ["#10b981", "#f59e0b"];
+const PIE_COLORS = ["var(--risk-low)", "var(--risk-medium)"];
 
 export function StudentLMSView() {
   const { ready, isEstudiante } = useAuthReady();
@@ -75,33 +75,33 @@ export function StudentLMSView() {
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="premium-card rounded-xl p-4">
           <h3 className="mb-3 text-sm font-semibold">Actividad por semana</h3>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartSemanal}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="semana" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} />
+              <XAxis dataKey="semana" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="actividad" fill="#8b5cf6" name="Actividad %" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="actividad" fill="#8b5cf6" name="Actividad %" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <div className="premium-card rounded-xl p-4">
           <h3 className="mb-3 text-sm font-semibold">Tiempo en plataforma por semana</h3>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartSemanal}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="semana" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} />
+              <XAxis dataKey="semana" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} />
               <Tooltip />
-              <Line type="monotone" dataKey="minutos" stroke="#06b6d4" name="Minutos" strokeWidth={2} />
+              <Line isAnimationActive={false} type="monotone" dataKey="minutos" stroke="#06b6d4" name="Minutos" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>
         <div className="premium-card rounded-xl p-4">
           <h3 className="mb-3 text-sm font-semibold">Entregas vs pendientes</h3>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Pie data={chartTareas} dataKey="valor" nameKey="tipo" innerRadius={50} outerRadius={80}>
+              <Pie isAnimationActive={false} data={chartTareas} dataKey="valor" nameKey="tipo" innerRadius={50} outerRadius={80}>
                 {chartTareas.map((_, i) => (
                   <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                 ))}
@@ -113,7 +113,7 @@ export function StudentLMSView() {
         </div>
         <div className="premium-card rounded-xl p-4">
           <h3 className="mb-3 text-sm font-semibold">Evolución de compromiso</h3>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart
               data={semanas.map((s) => ({
                 semana: s.semana,
@@ -121,10 +121,10 @@ export function StudentLMSView() {
               }))}
             >
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="semana" tick={{ fontSize: 10 }} />
+              <XAxis dataKey="semana" tick={{ fontSize: 12 }} />
               <YAxis domain={[0, 3]} ticks={[1, 2, 3]} tickFormatter={(v) => (v === 3 ? "Alto" : v === 2 ? "Medio" : "Bajo")} />
               <Tooltip formatter={(v) => (Number(v) === 3 ? "Alto" : Number(v) === 2 ? "Medio" : "Bajo")} />
-              <Line type="monotone" dataKey="valor" stroke="#f59e0b" strokeWidth={2} dot />
+              <Line isAnimationActive={false} type="monotone" dataKey="valor" stroke="var(--risk-medium)" strokeWidth={2} dot />
             </LineChart>
           </ResponsiveContainer>
         </div>

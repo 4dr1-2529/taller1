@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
@@ -17,11 +17,11 @@ const colClass: Record<number, string> = {
   1: "col-span-12 md:col-span-1",
   2: "col-span-12 md:col-span-2",
   3: "col-span-12 md:col-span-3",
-  4: "col-span-12 sm:col-span-6 md:col-span-4",
+  4: "col-span-12 xl:col-span-4",
   5: "col-span-12 md:col-span-5",
-  6: "col-span-12 md:col-span-6",
+  6: "col-span-12 xl:col-span-6",
   7: "col-span-12 md:col-span-7",
-  8: "col-span-12 lg:col-span-8",
+  8: "col-span-12 xl:col-span-8",
   9: "col-span-12 md:col-span-9",
   10: "col-span-12 md:col-span-10",
   11: "col-span-12 md:col-span-11",
@@ -43,11 +43,12 @@ export function BentoCell({
   delay = 0,
   variant = "default",
 }: BentoCellProps) {
+  const reduced = useReducedMotion();
   return (
     <motion.article
-      initial={{ opacity: 0, y: 16 }}
+      initial={reduced ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: reduced ? 0 : 0.25, delay: reduced ? 0 : delay, ease: [0.22, 1, 0.36, 1] }}
       className={clsx(
         colClass[col],
         rowClass[row],

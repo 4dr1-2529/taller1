@@ -55,7 +55,7 @@ export function AcademicFiltersBar({
   };
 
   return (
-    <div className="glass-card rounded-2xl p-4 md:p-5">
+    <div className="glass-card rounded-2xl p-5 sm:p-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
           <Filter className="h-4 w-4 text-[var(--brand-orange)]" />
@@ -66,9 +66,9 @@ export function AcademicFiltersBar({
           Limpiar
         </button>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {s.grado ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Grado</span>
             <select
               className={`${INPUT_CLASS} w-full`}
@@ -85,7 +85,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.seccion ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Sección / Salón</span>
             <select
               className={`${INPUT_CLASS} w-full`}
@@ -103,7 +103,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.course ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Curso</span>
             <select
               className={`${INPUT_CLASS} w-full`}
@@ -120,7 +120,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.profesor ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Profesor</span>
             <select
               className={`${INPUT_CLASS} w-full`}
@@ -137,7 +137,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.bimestre ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Bimestre</span>
             <select
               className={`${INPUT_CLASS} w-full`}
@@ -154,7 +154,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.estado ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Estado estudiante</span>
             <select
               className={`${INPUT_CLASS} w-full`}
@@ -169,7 +169,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.fecha ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Fecha</span>
             <input
               type="date"
@@ -180,7 +180,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.risk ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Nivel de riesgo</span>
             <select
               className={`${INPUT_CLASS} w-full`}
@@ -195,7 +195,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.alertStatus ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)]">
+          <label className="block text-sm font-medium text-[var(--text-secondary)]">
             <span className="mb-1 block">Estado alerta</span>
             <select
               className={`${INPUT_CLASS} w-full`}
@@ -210,7 +210,7 @@ export function AcademicFiltersBar({
           </label>
         ) : null}
         {s.search ? (
-          <label className="block text-xs font-medium text-[var(--text-secondary)] sm:col-span-2 lg:col-span-2">
+          <label className="block text-sm font-medium text-[var(--text-secondary)] sm:col-span-2 lg:col-span-2">
             <span className="mb-1 block">Buscar estudiante</span>
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />

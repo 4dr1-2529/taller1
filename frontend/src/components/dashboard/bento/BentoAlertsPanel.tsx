@@ -12,10 +12,10 @@ type BentoAlertsPanelProps = {
 
 export function BentoAlertsPanel({ items }: BentoAlertsPanelProps) {
   return (
-    <div className="flex h-full flex-col p-5 md:p-6">
+    <div className="bento-queue flex h-full flex-col p-6 sm:p-7">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
             Alertas inteligentes
           </p>
           <h3 className="mt-1 text-lg font-semibold text-[var(--text-primary)]">Cola de intervención</h3>
@@ -25,7 +25,7 @@ export function BentoAlertsPanel({ items }: BentoAlertsPanelProps) {
         </span>
       </div>
 
-      <ul className="mt-5 flex-1 space-y-2 overflow-y-auto pr-1">
+      <ul className="mt-5 flex-1 space-y-3 overflow-y-auto pr-1">
         {items.length === 0 ? (
           <li className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 py-10 text-center text-sm text-[var(--text-muted)]">
             Sin alertas activas en el cohorte
@@ -37,7 +37,7 @@ export function BentoAlertsPanel({ items }: BentoAlertsPanelProps) {
               initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="group flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.05]"
+              className="group flex items-center gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-3 transition-colors hover:bg-white/[0.05]"
             >
               <div
                 className={clsx(
@@ -51,7 +51,7 @@ export function BentoAlertsPanel({ items }: BentoAlertsPanelProps) {
                 <p className="truncate text-sm font-medium text-[var(--text-primary)]">
                   {s.nombres} {s.apellidos}
                 </p>
-                <p className="text-[11px] text-[var(--text-muted)]">{s.nivel}</p>
+                <p className="text-xs text-[var(--text-muted)]">{s.nivel}</p>
               </div>
               <RiskBadge level={s.prediction.level} />
               <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100" />

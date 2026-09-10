@@ -100,7 +100,7 @@ export function CoursesView({
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } },
   };
 
   return (
@@ -109,13 +109,13 @@ export function CoursesView({
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.25 }}
         className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
       >
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20 ring-1 ring-white/10">
-              <Library className="h-4 w-4 text-amber-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-muted)] ring-1 ring-white/10">
+              <Library className="h-4 w-4 text-[var(--risk-medium)]" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
               Catálogo de cursos

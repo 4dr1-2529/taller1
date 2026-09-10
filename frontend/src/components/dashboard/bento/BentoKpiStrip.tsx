@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 
@@ -13,15 +13,16 @@ export type KpiItem = {
 };
 
 export function BentoKpiStrip({ items }: { items: KpiItem[] }) {
+  const reduced = useReducedMotion();
   return (
-    <div className="grid h-full grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--border-subtle)] md:grid-cols-4">
+    <div className="grid h-full grid-cols-1 sm:grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--border-subtle)] xl:grid-cols-4">
       {items.map((kpi, i) => (
         <motion.div
           key={kpi.label}
-          initial={{ opacity: 0, y: 8 }}
+          initial={reduced ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 + i * 0.04 }}
-          className="flex flex-col justify-between bg-[var(--surface)] p-4 md:p-5"
+          transition={{ duration: 0.2, delay: reduced ? 0 : i * 0.04 }}
+          className="flex flex-col justify-between bg-[var(--surface)] p-5 sm:p-6"
         >
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
@@ -41,7 +42,7 @@ export function BentoKpiStrip({ items }: { items: KpiItem[] }) {
               </>
             )}
           </p>
-          {kpi.hint ? <p className="mt-1 text-[11px] text-[var(--text-secondary)]">{kpi.hint}</p> : null}
+          {kpi.hint ? <p className="mt-1 text-xs text-[var(--text-secondary)]">{kpi.hint}</p> : null}
         </motion.div>
       ))}
     </div>

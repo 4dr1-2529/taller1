@@ -40,7 +40,7 @@ export function ReportsView({ students, courses }: ReportsViewProps) {
       animate={{ opacity: 1, y: 0 }}
       className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--card)] shadow-[var(--card-shadow)]"
     >
-      <div className="border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--brand-orange)]/10 via-transparent to-[var(--brand-navy)]/10 px-5 py-4 md:px-6">
+      <div className="border-b border-[var(--border-subtle)] bg-[var(--surface-muted)] px-5 py-4 md:px-6">
         <div className="flex flex-wrap items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--brand-navy)] text-white shadow-lg">
             <Download className="h-5 w-5" aria-hidden />
@@ -57,7 +57,7 @@ export function ReportsView({ students, courses }: ReportsViewProps) {
         <button
           type="button"
           disabled={busy !== null}
-          className="btn-secondary flex items-center gap-2"
+          className="report-action"
           onClick={() => void run("estudiantes", () => exportStudentsToExcel(withPred))}
         >
           <FileSpreadsheet className="h-4 w-4" />
@@ -66,7 +66,7 @@ export function ReportsView({ students, courses }: ReportsViewProps) {
         <button
           type="button"
           disabled={busy !== null}
-          className="btn-secondary flex items-center gap-2"
+          className="report-action"
           onClick={() =>
             void run("riesgo", () =>
               exportCourseRiskPdf(courseRiskRows, "Riesgo por curso (salón matriculado)"),
@@ -79,7 +79,7 @@ export function ReportsView({ students, courses }: ReportsViewProps) {
         <button
           type="button"
           disabled={busy !== null}
-          className="btn-secondary flex items-center gap-2"
+          className="report-action"
           onClick={() => void run("fails", () => exportFailsByCoursePdf(fails))}
         >
           <FileText className="h-4 w-4" />
@@ -88,7 +88,7 @@ export function ReportsView({ students, courses }: ReportsViewProps) {
         <button
           type="button"
           disabled={busy !== null}
-          className="btn-secondary flex items-center gap-2"
+          className="report-action"
           onClick={() => void run("lms", () => exportLowLmsExcel(lowLms))}
         >
           <FileSpreadsheet className="h-4 w-4" />

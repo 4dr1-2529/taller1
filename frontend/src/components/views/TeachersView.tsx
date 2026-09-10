@@ -157,7 +157,7 @@ export function TeachersView({
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } },
   };
 
   return (
@@ -166,13 +166,13 @@ export function TeachersView({
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.25 }}
         className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
       >
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 ring-1 ring-white/10">
-              <Users className="h-4 w-4 text-cyan-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-muted)] ring-1 ring-white/10">
+              <Users className="h-4 w-4 text-[var(--chart-secondary)]" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
               Gestión de profesores
@@ -360,7 +360,7 @@ export function TeachersView({
                       {teacher.nombres} {teacher.apellidos}
                       <span className="ml-2 text-xs text-[var(--text-muted)]">({teacher.codigo})</span>
                     </p>
-                    <p className="text-sm text-violet-400">{teacher.especialidad}</p>
+                    <p className="text-sm text-[var(--accent)]">{teacher.especialidad}</p>
                     <p className="mt-1 text-xs text-[var(--text-secondary)]">{teacher.correo}</p>
                     <span className={clsx("mt-2 inline-block", hasAccount ? "badge-success" : "badge-warning")}>
                       {hasAccount ? "Con cuenta de acceso" : "Sin cuenta"}

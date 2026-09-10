@@ -155,7 +155,7 @@ export function StudentPredictionView() {
                   </span>
                 </div>
                 {a.recomendacion ? <p className="mt-1 text-[var(--text-secondary)]">{a.recomendacion}</p> : null}
-                <p className="mt-1 text-[10px] text-[var(--text-muted)]">
+                <p className="mt-1 text-xs text-[var(--text-muted)]">
                   {new Date(a.fecha).toLocaleString("es-PE")}
                 </p>
               </li>

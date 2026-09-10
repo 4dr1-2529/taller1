@@ -23,8 +23,8 @@ function levelStyles(level: string) {
   return clsx(
     "text-3xl font-bold capitalize",
     level === "alto" && "text-rose-400",
-    level === "medio" && "text-amber-400",
-    level === "bajo" && "text-emerald-400",
+    level === "medio" && "text-[var(--risk-medium)]",
+    level === "bajo" && "text-[var(--risk-low)]",
   );
 }
 
@@ -128,7 +128,7 @@ export function PredictionView({
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } },
   };
 
   if (!studentsPreFiltered && !filters.seccionId) {
@@ -242,7 +242,7 @@ export function PredictionView({
                   </div>
                   <div className="mt-1 h-2 rounded-full bg-white/5">
                     <div
-                      className="h-2 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
+                      className="h-2 rounded-full bg-[var(--chart-primary)]"
                       style={{ width: `${Math.min(100, f.contribution)}%` }}
                     />
                   </div>
@@ -279,7 +279,7 @@ export function PredictionView({
       {/* Scenario Simulation */}
       <motion.section variants={cardVariants} initial="hidden" animate="visible" className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
         <div className="flex items-center gap-2">
-          <FlaskConical className="h-5 w-5 text-amber-400" aria-hidden />
+          <FlaskConical className="h-5 w-5 text-[var(--risk-medium)]" aria-hidden />
           <h3 className="text-base font-semibold text-[var(--text-primary)]">Simulación de escenarios</h3>
         </div>
         <p className="text-sm text-[var(--text-secondary)]">
@@ -415,7 +415,7 @@ export function PredictionView({
                 {apiResult.prediction.recomendacion ?? apiResult.prediction.recommendation}
               </p>
               {apiResult.alertCreated ? (
-                <p className="mt-2 text-xs text-amber-400">Se generó alerta temprana en el sistema.</p>
+                <p className="mt-2 text-xs text-[var(--risk-medium)]">Se generó alerta temprana en el sistema.</p>
               ) : null}
             </article>
             <article className="lg:col-span-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-deep)]/50 p-4">

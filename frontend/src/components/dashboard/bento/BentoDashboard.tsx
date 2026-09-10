@@ -136,16 +136,16 @@ export function BentoDashboard({
     if (useApi && apiKpis?.byLevel) {
       const { alto, medio, bajo } = apiKpis.byLevel;
       return [
-        { name: "Alto", value: alto, fill: "#f43f5e" },
-        { name: "Medio", value: medio, fill: "#f59e0b" },
-        { name: "Bajo", value: bajo, fill: "#10b981" },
+        { name: "Alto", value: alto, fill: "var(--risk-high)" },
+        { name: "Medio", value: medio, fill: "var(--risk-medium)" },
+        { name: "Bajo", value: bajo, fill: "var(--risk-low)" },
       ].filter((d) => d.value > 0);
     }
     const medio = withPred.filter((s) => s.prediction.level === "medio").length;
     return [
-      { name: "Alto", value: highRisk, fill: "#f43f5e" },
-      { name: "Medio", value: medio, fill: "#f59e0b" },
-      { name: "Bajo", value: lowRisk, fill: "#10b981" },
+      { name: "Alto", value: highRisk, fill: "var(--risk-high)" },
+      { name: "Medio", value: medio, fill: "var(--risk-medium)" },
+      { name: "Bajo", value: lowRisk, fill: "var(--risk-low)" },
     ].filter((d) => d.value > 0);
   }, [withPred, highRisk, lowRisk, useApi, apiKpis]);
 

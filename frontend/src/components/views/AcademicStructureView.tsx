@@ -62,7 +62,7 @@ export function AcademicStructureView() {
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } },
   };
 
   return (
@@ -71,13 +71,13 @@ export function AcademicStructureView() {
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.25 }}
         className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
       >
         <div>
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
-              <School className="h-4 w-4 text-violet-400" />
+              <School className="h-4 w-4 text-[var(--accent)]" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
               Academic Structure
@@ -94,7 +94,7 @@ export function AcademicStructureView() {
         <div className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
-              <Layers className="h-5 w-5 text-violet-400" />
+              <Layers className="h-5 w-5 text-[var(--accent)]" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-[var(--text-primary)]">
@@ -121,8 +121,8 @@ export function AcademicStructureView() {
             className="premium-card rounded-2xl p-5 md:p-6"
           >
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-indigo-500/20 ring-1 ring-white/10">
-                <GraduationCap className="h-4 w-4 text-violet-400" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-muted)] ring-1 ring-white/10">
+                <GraduationCap className="h-4 w-4 text-[var(--accent)]" />
               </div>
               <h4 className="font-semibold capitalize text-[var(--text-primary)]">{nivel.nombre}</h4>
               <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-[var(--text-secondary)] ring-1 ring-white/10">

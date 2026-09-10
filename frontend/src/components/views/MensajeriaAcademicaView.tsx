@@ -187,7 +187,7 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
                     </span>
                   </p>
                   <p className="mt-1 text-sm text-[var(--text-secondary)]">{m.contenido}</p>
-                  <p className="mt-1 text-[10px] text-[var(--text-muted)]">
+                  <p className="mt-1 text-xs text-[var(--text-muted)]">
                     {new Date(m.fecha ?? m.createdAt ?? "").toLocaleString("es-PE")}
                   </p>
                 </article>

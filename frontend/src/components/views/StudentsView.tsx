@@ -87,7 +87,7 @@ export function StudentsView({
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } },
   };
 
   function fillRandomPeruvianNames() {
@@ -198,7 +198,7 @@ export function StudentsView({
                 </select>
               </FormField>
               {secciones.length === 0 ? (
-                <p className="form-grid-full text-xs text-amber-400">
+                <p className="form-grid-full text-xs text-[var(--risk-medium)]">
                   Ejecute `npm run db:seed` para cargar niveles, grados y secciones.
                 </p>
               ) : null}

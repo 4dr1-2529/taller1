@@ -1,5 +1,7 @@
 "use client";
 
+import { DashboardMetricCard as KpiCard } from "@/components/dashboard/DashboardMetricCard";
+
 import { useEffect, useState } from "react";
 import {
   AlertTriangle,
@@ -16,30 +18,6 @@ import { CardSkeleton } from "@/components/ui/Skeleton";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { RiskGauge } from "@/components/ui/RiskGauge";
 
-function KpiCard({
-  label,
-  value,
-  suffix = "",
-  icon: Icon,
-}: {
-  label: string;
-  value: string | number;
-  suffix?: string;
-  icon: typeof BookOpen;
-}) {
-  return (
-    <div className="premium-card rounded-[var(--radius-lg)] p-5">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{label}</p>
-        <Icon className="h-4 w-4 text-[var(--brand-orange)]" />
-      </div>
-      <p className="text-metric mt-3 font-bold text-[var(--text-primary)]">
-        {value}
-        {suffix}
-      </p>
-    </div>
-  );
-}
 
 function riskLevelKey(label: string): "bajo" | "medio" | "alto" {
   const l = label.toLowerCase();
@@ -89,25 +67,27 @@ export function StudentDashboard() {
 
   return (
     <div className="space-y-8">
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-muted)] px-5 py-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-orange)]">Tu resumen</p>
+      <div className="student-welcome rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-6 sm:p-8">
+        <p className="text-page-title font-semibold text-[var(--text-primary)]">Mi progreso académico</p>
         <p className="mt-2 text-[15px] text-[var(--text-secondary)]">
         Bienvenido, {profile.nombres}. Aquí tienes un resumen de tu situación académica.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <KpiCard label="Mi grado" value={kpis.grado} icon={GraduationCap} />
-        <KpiCard label="Mi sección" value={kpis.salon} icon={Layers} />
-        <KpiCard label="Mi promedio" value={kpis.promedioGeneral} suffix="/20" icon={BookOpen} />
-        <KpiCard label="Mi asistencia" value={kpis.asistenciaGeneral} suffix="%" icon={TrendingUp} />
+      <div className="dashboard-metrics">
+        <KpiCard label="Mi grado" value={kpis.grado} icon={GraduationCap} index={0} />
+        <KpiCard label="Mi sección" value={kpis.salon} icon={Layers} index={1} />
+        <KpiCard label="Mi promedio" value={kpis.promedioGeneral} suffix="/20" icon={BookOpen} index={2} />
+        <KpiCard label="Mi asistencia" value={kpis.asistenciaGeneral} suffix="%" icon={TrendingUp} index={3} />
+      </div>
+      <div className="dashboard-secondary grid gap-4 sm:grid-cols-2">
         <KpiCard label="Mi nivel de riesgo" value={kpis.nivelRiesgo} icon={Sparkles} />
         <KpiCard label="Mis alertas activas" value={kpis.alertasActivas} icon={AlertTriangle} />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="premium-card flex flex-col items-center justify-center rounded-[var(--radius-lg)] p-6 lg:col-span-1">
-          <p className="mb-2 text-xs font-semibold uppercase text-[var(--text-muted)]">Mi riesgo actual</p>
+      <div className="grid gap-6 xl:grid-cols-3">
+        <div className="premium-card flex flex-col items-center justify-center rounded-[var(--radius-lg)] p-6 xl:col-span-1">
+          <p className="mb-2 text-xs font-semibold uppercase text-[var(--text-muted)]">Mi nivel de riesgo</p>
           {resumen.ultimaPrediccion ? (
             <>
               <RiskGauge score={riskScore} level={riskLevel} />
@@ -120,8 +100,8 @@ export function StudentDashboard() {
           )}
         </div>
 
-        <div className="premium-card rounded-[var(--radius-lg)] p-6 lg:col-span-2">
-          <h3 className="text-section-title font-semibold text-[var(--text-primary)]">Resumen reciente</h3>
+        <div className="premium-card rounded-[var(--radius-lg)] p-6 xl:col-span-2">
+          <h3 className="text-section-title font-semibold text-[var(--text-primary)]">Mi actividad reciente</h3>
           <dl className="mt-4 grid gap-3 sm:grid-cols-2 text-sm">
             <div>
               <dt className="text-[var(--text-muted)]">Última nota</dt>
@@ -179,7 +159,7 @@ export function StudentDashboard() {
                 {a.recomendacion ? (
                   <p className="mt-1 text-[var(--text-secondary)]">{a.recomendacion}</p>
                 ) : null}
-                <p className="mt-1 text-[10px] text-[var(--text-muted)]">
+                <p className="mt-1 text-xs text-[var(--text-muted)]">
                   {new Date(a.fecha).toLocaleString("es-PE")}
                 </p>
               </li>

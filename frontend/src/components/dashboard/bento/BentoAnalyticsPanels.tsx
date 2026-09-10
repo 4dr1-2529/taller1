@@ -1,4 +1,5 @@
 "use client";
+import { ChartCategoryTick } from "@/components/ui/ChartCategoryTick";
 
 import {
   Bar,
@@ -13,7 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { AcademicTooltip, ChartEmptyState } from "@/components/ui/ChartCard";
+import { AcademicTooltip, ChartEmptyState, ChartCard } from "@/components/ui/ChartCard";
 
 type RiskTrendPoint = { periodo: string; riesgoGlobal: number; count?: number };
 type SectionRow = { label: string; alto: number; medio: number; bajo: number; total: number };
@@ -59,169 +60,161 @@ export function BentoAnalyticsPanels({
     : [];
 
   const sectionChart = riskBySection.slice(0, 6).map((r) => ({
-    name: r.label.length > 18 ? `${r.label.slice(0, 16)}…` : r.label,
+    name: r.label,
     Alto: r.alto,
     Medio: r.medio,
     Bajo: r.bajo,
   }));
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)]">
-        <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Evolución del riesgo (BD)</h3>
+    <div className="grid gap-6 xl:grid-cols-2">
+      <ChartCard title="Evolución del riesgo (BD)">
         <p className="mb-4 text-sm text-[var(--text-secondary)]">Seguimiento temporal disponible.</p>
         {riskTrend.length < 1 ? (
           <ChartEmptyState message="Registre más períodos para visualizar una tendencia." />
         ) : (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={320}>
             <LineChart data={riskTrend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="periodo" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-              <YAxis domain={[0, 100]} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="periodo" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+              <YAxis domain={[0, 100]} tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
               <Tooltip content={<AcademicTooltip />} />
-              <Line type="monotone" dataKey="riesgoGlobal" stroke="#38bdf8" strokeWidth={2} dot />
+              <Line isAnimationActive={false} type="monotone" dataKey="riesgoGlobal" stroke="var(--chart-secondary)" strokeWidth={2} dot />
             </LineChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </ChartCard>
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)]">
-        <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Riesgo por sección</h3>
+      <ChartCard title="Riesgo por sección">
         {sectionChart.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para este período." />
         ) : (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={sectionChart}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 10 }} />
-              <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="name" height={80} tick={<ChartCategoryTick />} />
+              <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
               <Tooltip content={<AcademicTooltip />} />
               <Legend />
-              <Bar dataKey="Alto" stackId="a" fill="#f43f5e" />
-              <Bar dataKey="Medio" stackId="a" fill="#f59e0b" />
-              <Bar dataKey="Bajo" stackId="a" fill="#10b981" />
+              <Bar isAnimationActive={false} dataKey="Alto" stackId="a" fill="var(--risk-high)" />
+              <Bar isAnimationActive={false} dataKey="Medio" stackId="a" fill="var(--risk-medium)" />
+              <Bar isAnimationActive={false} dataKey="Bajo" stackId="a" fill="var(--risk-low)" />
             </BarChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </ChartCard>
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)]">
-        <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Riesgo por grado</h3>
+      <ChartCard title="Riesgo por grado">
         {riskByGrado.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para este período." />
         ) : (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={riskByGrado}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="grado" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-              <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="grado" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+              <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
               <Tooltip content={<AcademicTooltip />} />
               <Legend />
-              <Bar dataKey="alto" name="Alto" stackId="g" fill="#f43f5e" />
-              <Bar dataKey="medio" name="Medio" stackId="g" fill={BRAND_ORANGE} />
-              <Bar dataKey="bajo" name="Bajo" stackId="g" fill="#10b981" />
+              <Bar isAnimationActive={false} dataKey="alto" name="Alto" stackId="g" fill="var(--risk-high)" />
+              <Bar isAnimationActive={false} dataKey="medio" name="Medio" stackId="g" fill={BRAND_ORANGE} />
+              <Bar isAnimationActive={false} dataKey="bajo" name="Bajo" stackId="g" fill="var(--risk-low)" />
             </BarChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </ChartCard>
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)]">
-        <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Asistencia por grado (%)</h3>
+      <ChartCard title="Asistencia por grado (%)">
         {attendanceByGrado.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para este período." />
         ) : (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={attendanceByGrado}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="grado" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-              <YAxis domain={[0, 100]} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="grado" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+              <YAxis domain={[0, 100]} tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
               <Tooltip content={<AcademicTooltip />} />
-              <Bar dataKey="asistencia" fill={BRAND_NAVY} radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="asistencia" fill={BRAND_NAVY} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </ChartCard>
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)]">
-        <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Actividad LMS por grado</h3>
+      <ChartCard title="Actividad LMS por grado">
         {lmsActivityByGrado.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para este período." />
         ) : (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={lmsActivityByGrado}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="grado" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-              <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="grado" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+              <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
               <Tooltip content={<AcademicTooltip />} />
               <Legend />
-              <Bar dataKey="alta" stackId="l" fill="#10b981" />
-              <Bar dataKey="media" stackId="l" fill={BRAND_ORANGE} />
-              <Bar dataKey="baja" stackId="l" fill="#f59e0b" />
-              <Bar dataKey="sin" stackId="l" fill="#64748b" />
+              <Bar isAnimationActive={false} dataKey="alta" stackId="l" fill="var(--risk-low)" />
+              <Bar isAnimationActive={false} dataKey="media" stackId="l" fill={BRAND_ORANGE} />
+              <Bar isAnimationActive={false} dataKey="baja" stackId="l" fill="var(--risk-medium)" />
+              <Bar isAnimationActive={false} dataKey="sin" stackId="l" fill="#64748b" />
             </BarChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </ChartCard>
 
       {alertsBySalonShort.length > 0 && (
-        <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)]">
-          <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Alertas por sección</h3>
-          <ResponsiveContainer width="100%" height={200}>
+        <ChartCard title="Alertas por sección">
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={alertsBySalonShort}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="salon" tick={{ fill: "#94a3b8", fontSize: 10 }} />
-              <YAxis allowDecimals={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="salon" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+              <YAxis allowDecimals={false} tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
               <Tooltip content={<AcademicTooltip />} />
-              <Bar dataKey="count" fill={BRAND_ORANGE} radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="count" fill={BRAND_ORANGE} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
       )}
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)]">
-        <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Comparación de modelos (F1)</h3>
+      <ChartCard title="Comparación de modelos (F1)">
         {modelComparison.length < 1 ? (
           <ChartEmptyState message="No hay información suficiente para comparar modelos." />
         ) : (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={modelComparison}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="modelo" tick={{ fill: "#94a3b8", fontSize: 10 }} />
-              <YAxis domain={[0, 100]} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="modelo" height={80} tick={<ChartCategoryTick />} />
+              <YAxis domain={[0, 100]} tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
               <Tooltip content={<AcademicTooltip />} />
-              <Bar dataKey="f1" fill={BRAND_ORANGE} name="F1 %" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="f1" fill={BRAND_ORANGE} name="F1 %" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </ChartCard>
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)]">
-        <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Importancia de variables</h3>
-        <ResponsiveContainer width="100%" height={200}>
+      <ChartCard title="Importancia de variables">
+        <ResponsiveContainer width="100%" height={320}>
           <BarChart data={featureImportance} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-            <XAxis type="number" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-            <YAxis type="category" dataKey="variable" width={120} tick={{ fill: "#94a3b8", fontSize: 9 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+            <XAxis type="number" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+            <YAxis type="category" dataKey="variable" width={136} tick={<ChartCategoryTick vertical />} />
             <Tooltip content={<AcademicTooltip />} />
-            <Bar dataKey="peso" radius={[0, 4, 4, 0]}>
+            <Bar isAnimationActive={false} dataKey="peso" radius={[0, 4, 4, 0]}>
               {featureImportance.map((_, i) => (
                 <Cell key={i} fill={`hsl(${220 + i * 12}, 70%, 55%)`} />
               ))}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-      </div>
+      </ChartCard>
 
       {alertChart.length > 0 && (
         <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[var(--card-shadow)] md:col-span-2">
           <h3 className="mb-1 text-section-title font-semibold text-[var(--text-primary)]">Alertas tempranas abiertas</h3>
-          <ResponsiveContainer width="100%" height={160}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={alertChart}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-              <YAxis allowDecimals={false} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="name" height={80} tick={<ChartCategoryTick />} />
+              <YAxis allowDecimals={false} tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
               <Tooltip content={<AcademicTooltip />} />
-              <Bar dataKey="value" fill="#fb7185" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="value" fill="var(--risk-high)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

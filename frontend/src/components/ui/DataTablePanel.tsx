@@ -80,14 +80,14 @@ export function DataTablePanel({
       </div>
 
       <div className="relative">
-        <div className="overflow-x-auto px-2 pb-2 md:px-4 md:pb-4">
+        <div className="table-scroll overflow-x-auto pb-2 md:pb-4">
           {isEmpty ? (
             <div className="empty-state-panel py-12 md:py-16">
                 <div className="flex h-14 w-14 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
                 <Database className="h-7 w-7 text-[var(--brand-orange)]/80" />
               </div>
               <p className="mt-4 text-sm font-semibold text-[var(--text-primary)]">Sin registros en esta tabla</p>
-              <p className="mt-1.5 max-w-sm text-center text-xs leading-relaxed text-[var(--text-muted)]">{emptyMessage}</p>
+              <p className="mt-1.5 max-w-sm text-center text-sm leading-relaxed text-[var(--text-muted)]">{emptyMessage}</p>
               {emptyHint}
             </div>
           ) : (

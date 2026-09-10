@@ -20,10 +20,10 @@ export function FormField({ label, hint, error, className, children }: FormField
       </span>
       {children}
       {hint && !error ? (
-        <span className="block text-[11px] font-medium text-[var(--text-muted)]">{hint}</span>
+        <span className="block text-xs font-medium text-[var(--text-muted)]">{hint}</span>
       ) : null}
       {error ? (
-        <span className="block text-[11px] font-medium text-rose-400">{error}</span>
+        <span className="block text-xs font-medium text-[var(--danger)]">{error}</span>
       ) : null}
     </label>
   );

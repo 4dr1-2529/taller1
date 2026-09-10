@@ -1,31 +1,31 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeProvider";
 
 export function ThemeToggle() {
+  const reduced = useReducedMotion();
   const { theme, toggle } = useTheme();
   return (
     <motion.button
       type="button"
       onClick={toggle}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={reduced ? undefined : { scale: 1.02 }}
+      whileTap={reduced ? undefined : { scale: 0.98 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--accent-muted)] backdrop-blur-sm transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/15 hover:shadow-md dark:hover:shadow-violet-500/10"
+      className="header-icon"
       aria-label={theme === "dark" ? "Modo claro" : "Modo oscuro"}
     >
-      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500/10 to-cyan-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <motion.div
         initial={false}
-        animate={{ rotate: theme === "dark" ? 0 : 180 }}
+        animate={{ rotate: reduced ? 0 : theme === "dark" ? 0 : 180 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         {theme === "dark" ? (
-          <Sun className="relative z-10 h-5 w-5 text-amber-300 transition-colors group-hover:text-amber-200" />
+          <Sun className="h-5 w-5 text-[var(--accent)]" />
         ) : (
-          <Moon className="relative z-10 h-5 w-5 text-violet-300 transition-colors group-hover:text-violet-200" />
+          <Moon className="h-5 w-5 text-[var(--accent)]" />
         )}
       </motion.div>
     </motion.button>
