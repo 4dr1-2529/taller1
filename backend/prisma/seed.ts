@@ -73,7 +73,6 @@ const ML_FEATURES = [
   { codigo: "participacion_actividades", nombre: "Participación", tipoDato: "decimal", rangoMin: 0, rangoMax: 100, orden: 7 },
   { codigo: "uso_foros", nombre: "Uso de foros", tipoDato: "decimal", rangoMin: 0, rangoMax: 1, orden: 8 },
   { codigo: "disminucion_actividad", nombre: "Disminución actividad", tipoDato: "decimal", rangoMin: 0, rangoMax: 100, orden: 9 },
-  { codigo: "estado", nombre: "Estado estudiante", tipoDato: "categorical", orden: 10 },
 ];
 
 function seccionesPorGrado(numero: number): string[] {
@@ -91,11 +90,6 @@ async function main() {
     create: {
       codigo: "BLENKIR",
       nombre: "Institución Educativa Privada Blenkir",
-      ruc: "20123456789",
-      direccion: "Av. Huancayo 450, El Tambo",
-      ubigeo: "120101",
-      telefono: "064-123456",
-      email: "info@blenkir.edu.pe",
     },
   });
 
