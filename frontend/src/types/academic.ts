@@ -1,6 +1,6 @@
 export type RiskLevel = "bajo" | "medio" | "alto";
 
-export type StudentStatus = "activo" | "en riesgo" | "retirado";
+export type StudentStatus = "activo" | "retirado";
 
 export type LmsEngagement = "alto" | "medio" | "bajo";
 
@@ -8,8 +8,8 @@ export type StudentLmsProfile = {
   engagement: LmsEngagement;
   actividadSemanalPct: number[];
   minutosPorSemana: number[];
-  tareasEntregadas: number;
-  tareasTotales: number;
+  actividadesRealizadas: number;
+  recursosConsultados: number;
   horasPlataformaSemana: number;
 };
 
@@ -119,7 +119,6 @@ export type ScenarioDeltas = {
   promedioDelta?: number;
   asistenciaDelta?: number;
   lmsActividadDelta?: number;
-  tareasEntregadasExtra?: number;
 };
 
 export type RiskHistoryPoint = {

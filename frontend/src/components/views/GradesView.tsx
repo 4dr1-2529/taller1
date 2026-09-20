@@ -252,7 +252,7 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
         />
       ) : (
         <div className="grid gap-6 xl:grid-cols-3">
-          <PageSection
+          {isDocente && <PageSection
             variant="form"
             icon={ClipboardList}
             title="Registrar nota"
@@ -301,7 +301,7 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
                 Guardar nota
               </button>
             </form>
-          </PageSection>
+          </PageSection>}
 
           <div className="xl:col-span-2">
             <DataTablePanel

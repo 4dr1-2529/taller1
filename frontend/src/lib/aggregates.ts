@@ -1,9 +1,9 @@
 import type { Course, RiskFactor, RiskHistoryPoint, RiskLevel, Student } from "@/types/academic";
-import { computePrediction } from "@/lib/risk-engine";
-import { toRiskEngineStatus } from "@/lib/status";
+
+
 
 export type StudentWithPrediction = Student & {
-  prediction: ReturnType<typeof computePrediction>;
+  prediction: { score: number; level: RiskLevel; probability: number; factors: RiskFactor[]; modelName: string };
 };
 
 function mapStoredFactors(factors?: { key: string; label: string; contribution: number }[]): RiskFactor[] {
@@ -16,20 +16,19 @@ function mapStoredFactors(factors?: { key: string; label: string; contribution: 
 
 function predictionFromStored(s: Student): StudentWithPrediction["prediction"] {
   const sp = s.storedPrediction;
-  if (!sp) return computePrediction(s.metrics, toRiskEngineStatus(s.estado));
+  if (!sp) throw new Error("Predicción no disponible");
   const factors = mapStoredFactors(sp.factors);
-  const fallback = computePrediction(s.metrics, toRiskEngineStatus(s.estado));
   return {
     score: sp.score,
     level: sp.level,
     probability: sp.probability ?? sp.score / 100,
-    factors: factors.length ? factors : fallback.factors,
-    modelName: sp.modelName ?? fallback.modelName,
+    factors,
+    modelName: sp.modelName ?? "Modelo registrado",
   };
 }
 
 export function attachPredictions(students: Student[]): StudentWithPrediction[] {
-  return students.map((s) => ({
+  return students.filter(s => s.storedPrediction).map((s) => ({
     ...s,
     prediction: predictionFromStored(s),
   }));
@@ -39,7 +38,7 @@ export function globalRiskScore(students: Student[]): number {
   if (!students.length) return 0;
   const withPred = attachPredictions(students);
   const sum = withPred.reduce((acc, s) => acc + s.prediction.score, 0);
-  return Math.round((sum / withPred.length) * 10) / 10;
+  return Math.round((sum / (withPred.length || 1)) * 10) / 10;
 }
 
 export function buildRiskHistory(students: Student[]): RiskHistoryPoint[] {

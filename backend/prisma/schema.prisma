@@ -22,7 +22,6 @@ enum RolCodigo {
 
 enum EstudianteEstado {
   activo
-  en_riesgo
   retirado
 }
 
@@ -134,8 +133,8 @@ model PeriodoAcademico {
   calificaciones       Grade[]
   historialesAcademicos AcademicHistory[]
   resumenesAsistencia  ResumenAsistencia[]
-  lmsEntregasTarea     LmsEntregaTarea[]
-  lmsIndicadores       LmsIndicadorEstudiante[]
+  lmsEntregasTarea     LmsEntregaTarea[] @ignore
+  lmsIndicadores       LmsIndicadorEstudiante[] @ignore
   predicciones         Prediction[]
   dashboardSnapshots   DashboardSnapshot[]
 
@@ -339,6 +338,9 @@ model IntentoLogin {
 // ─── Módulo 4: Personas ──────────────────────────────────────────────────────
 
 model Teacher {
+  resources CourseResource[]
+  activities AcademicActivity[]
+  dni String? @unique @db.VarChar(8)
   id           BigInt   @id @default(autoincrement())
   usuarioId    BigInt?  @unique @map("usuario_id")
   codigo       String   @db.VarChar(20)
@@ -362,6 +364,8 @@ model Teacher {
 }
 
 model Student {
+  resourceEvents LmsEvent[]
+  activityProgress ActivityProgress[]
   id                 BigInt            @id @default(autoincrement())
   usuarioId          BigInt?           @unique @map("usuario_id")
   codigo             String            @db.VarChar(20)
@@ -388,9 +392,9 @@ model Student {
   historialesAcademicos AcademicHistory[]
   asistencias          Attendance[]
   resumenesAsistencia  ResumenAsistencia[]
-  lmsActividades       LmsActivity[]
-  lmsEntregasTarea     LmsEntregaTarea[]
-  lmsIndicadores       LmsIndicadorEstudiante[]
+  lmsActividades       LmsActivity[] @ignore
+  lmsEntregasTarea     LmsEntregaTarea[] @ignore
+  lmsIndicadores       LmsIndicadorEstudiante[] @ignore
   predicciones         Prediction[]
   recomendaciones      AiRecommendation[]
   alertas              Alert[]
@@ -477,6 +481,9 @@ model TeacherCourseAssignment {
 }
 
 model Course {
+  resources CourseResource[]
+  activities AcademicActivity[]
+  events LmsEvent[]
   id            BigInt   @id @default(autoincrement())
   cursoId       BigInt   @map("curso_id")
   seccionId     BigInt   @map("seccion_id")
@@ -493,7 +500,7 @@ model Course {
   inscripciones  Enrollment[]
   horarios       HorarioClase[]
   calificaciones Grade[]
-  lmsEntregasTarea LmsEntregaTarea[]
+  lmsEntregasTarea LmsEntregaTarea[] @ignore
   salasMensaje   MensajeSala[]
   asignacionesDocente TeacherCourseAssignment[]
 
@@ -625,6 +632,7 @@ model ResumenAsistencia {
 
 // ─── Módulo 8: LMS ───────────────────────────────────────────────────────────
 
+/// LEGACY: retained only for historical data; not used by the 2026 application.
 model LmsActivity {
   id               BigInt   @id @default(autoincrement())
   studentId        BigInt   @map("estudiante_id")
@@ -639,8 +647,10 @@ model LmsActivity {
 
   @@unique([studentId, anioSemana], map: "uk_lms_act_est_sem")
   @@map("lms_actividad_semanal")
+  @@ignore
 }
 
+/// LEGACY: retained only for historical data; not used by the 2026 application.
 model LmsEntregaTarea {
   id               BigInt  @id @default(autoincrement())
   studentId        BigInt  @map("estudiante_id")
@@ -656,8 +666,10 @@ model LmsEntregaTarea {
 
   @@unique([studentId, cursoOfertaId, periodoId], map: "uk_lms_tarea")
   @@map("lms_entrega_tarea")
+  @@ignore
 }
 
+/// LEGACY: retained only for historical data; not used by the 2026 application.
 model LmsIndicadorEstudiante {
   id                    BigInt   @id @default(autoincrement())
   studentId             BigInt   @map("estudiante_id")
@@ -675,6 +687,7 @@ model LmsIndicadorEstudiante {
 
   @@unique([studentId, periodoId], map: "uk_lms_ind_est_per")
   @@map("lms_indicador_estudiante")
+  @@ignore
 }
 
 // ─── Módulo 9: Machine Learning ──────────────────────────────────────────────
@@ -767,6 +780,10 @@ model MlMetrica {
 // ─── Módulo 10: Predicción ───────────────────────────────────────────────────
 
 model Prediction {
+  modelName String? @map("model_name") @db.VarChar(80)
+  contractVersion String? @map("contract_version") @db.VarChar(20)
+  inputData Json? @map("input_data")
+  recommendation String? @db.Text
   id                   BigInt      @id @default(autoincrement())
   studentId            BigInt      @map("estudiante_id")
   modeloId             BigInt?     @map("modelo_id")
@@ -1021,4 +1038,104 @@ model SystemConfig {
 
   @@unique([clave], map: "uk_config_clave")
   @@map("configuracion_sistema")
+}
+
+model Correlativo {
+  entidad String @id @db.VarChar(30)
+  prefijo String @db.VarChar(20)
+  ultimoNumero Int @default(0) @map("ultimo_numero")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("correlativo")
+}
+
+enum ResourceType {
+  pdf
+  documento
+  presentacion
+  enlace
+  guia
+  repaso
+}
+enum ActivityType {
+  practica
+  lectura
+  repaso
+  material_obligatorio
+  otra
+}
+enum ActivityStatus {
+  pendiente
+  iniciada
+  completada
+}
+enum LmsEventType {
+  login
+  logout
+  sesion
+  recurso
+  actividad
+  curso
+}
+model CourseResource {
+  id BigInt @id @default(autoincrement())
+  titulo String @db.VarChar(150)
+  descripcion String? @db.Text
+  tipo ResourceType
+  url String @db.VarChar(1000)
+  profesorId BigInt @map("profesor_id")
+  courseId BigInt @map("curso_id")
+  activo Boolean @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  profesor Teacher @relation(fields: [profesorId], references: [id], onDelete: Restrict)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  events LmsEvent[]
+  @@index([courseId, activo])
+  @@map("material_educativo")
+}
+model AcademicActivity {
+  id BigInt @id @default(autoincrement())
+  titulo String @db.VarChar(150)
+  descripcion String? @db.Text
+  tipo ActivityType
+  profesorId BigInt @map("profesor_id")
+  courseId BigInt @map("curso_id")
+  activo Boolean @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  profesor Teacher @relation(fields: [profesorId], references: [id], onDelete: Restrict)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  progress ActivityProgress[]
+  events LmsEvent[]
+  @@index([courseId, activo])
+  @@map("actividad_academica")
+}
+model ActivityProgress {
+  studentId BigInt @map("estudiante_id")
+  activityId BigInt @map("actividad_id")
+  estado ActivityStatus @default(pendiente)
+  startedAt DateTime? @map("iniciada_at")
+  completedAt DateTime? @map("completada_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  activity AcademicActivity @relation(fields: [activityId], references: [id], onDelete: Restrict)
+  @@id([studentId, activityId])
+  @@map("actividad_progreso")
+}
+model LmsEvent {
+  id BigInt @id @default(autoincrement())
+  studentId BigInt @map("estudiante_id")
+  tipo LmsEventType
+  courseId BigInt? @map("curso_id")
+  resourceId BigInt? @map("material_id")
+  activityId BigInt? @map("actividad_id")
+  durationSeconds Int @default(0) @map("duracion_segundos")
+  createdAt DateTime @default(now()) @map("created_at")
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  course Course? @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  resource CourseResource? @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  activity AcademicActivity? @relation(fields: [activityId], references: [id], onDelete: Restrict)
+  @@index([studentId, createdAt])
+  @@index([courseId, createdAt])
+  @@map("lms_evento")
 }

@@ -36,7 +36,7 @@ export type Student = {
   nivel: string;
   correo: string;
   telefono: string | null;
-  estado: "activo" | "en_riesgo" | "retirado";
+  estado: "activo" | "retirado";
   promedioGeneral: number;
   asistenciaGeneral: number;
   lmsEngagement: string;
@@ -54,8 +54,8 @@ export type LmsActivity = {
   semana: string;
   actividadPct: number;
   minutos: number;
-  tareasEntregadas: number;
-  tareasTotales: number;
+  actividadesRealizadas: number;
+  recursosConsultados: number;
   horasPlataforma: number;
   createdAt: string;
 };
@@ -336,7 +336,7 @@ class ApiClient {
   }
 
   async createStudent(payload: Record<string, unknown>) {
-    return this.request<{ student: Student }>("/students", { method: "POST", body: JSON.stringify(payload) });
+    return this.request<{ student: Student; credentials: { email: string; temporaryPassword: string } }>("/students", { method: "POST", body: JSON.stringify(payload) });
   }
 
   async updateStudent(id: string, payload: Record<string, unknown>) {

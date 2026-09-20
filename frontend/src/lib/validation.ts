@@ -195,48 +195,32 @@ export function firstError(errors: FieldErrors): string | undefined {
 }
 
 export type StudentFormInput = {
-  codigo: string;
   nombres: string;
   apellidos: string;
   seccionId: string;
   dni: string;
   correo: string;
   telefono: string;
-  promedioGeneral: string;
-  asistenciaGeneral: string;
 };
 
 export function validateStudentForm(form: StudentFormInput): FieldErrors {
   const errors: FieldErrors = {};
-  const codigo = validateCodigo(form.codigo);
-  if (codigo) errors.codigo = codigo;
   const nombres = validatePersonName(form.nombres, "Nombres");
   if (nombres) errors.nombres = nombres;
   const apellidos = validatePersonName(form.apellidos, "Apellidos");
   if (apellidos) errors.apellidos = apellidos;
   if (!form.seccionId.trim()) errors.seccionId = VALIDATION_MSG.required;
-  const dni = validateDni(form.dni, false);
+  const dni = validateDni(form.dni, true);
   if (dni) errors.dni = dni;
   const correo = validateEmail(form.correo, false);
   if (correo) errors.correo = correo;
   const telefono = validatePhone(form.telefono, false);
   if (telefono) errors.telefono = telefono;
-  if (form.promedioGeneral.trim()) {
-    const p = validateGradeString(form.promedioGeneral, false);
-    if (p) errors.promedioGeneral = p;
-  }
-  if (form.asistenciaGeneral.trim()) {
-    const a = validatePercentString(form.asistenciaGeneral, false);
-    if (a) errors.asistenciaGeneral = a;
-  }
-  if (!form.dni.trim() && !form.correo.trim()) {
-    errors.dni = "Indique DNI o correo para crear la cuenta de acceso";
-  }
   return errors;
 }
 
 export type TeacherFormInput = {
-  codigo: string;
+  dni: string;
   nombres: string;
   apellidos: string;
   especialidad: string;
@@ -246,17 +230,13 @@ export type TeacherFormInput = {
   password: string;
 };
 
-export function validateTeacherForm(form: TeacherFormInput & { cursos?: TeacherCourseInput[] }): FieldErrors {
+export function validateTeacherForm(form: TeacherFormInput): FieldErrors {
   const errors: FieldErrors = {};
-  const codigo = validateCodigo(form.codigo);
-  if (codigo) errors.codigo = codigo;
+  const dni = validateDni(form.dni, true);
+  if (dni) errors.dni = dni;
   Object.assign(errors, validateTeacherProfileFields(form));
   if (form.crearCuenta && form.password.length < 8) {
     errors.password = "La contraseña debe tener al menos 8 caracteres";
-  }
-  for (const [i, c] of (form.cursos ?? []).entries()) {
-    if (!c.codigo.trim() && !c.nombre.trim() && !c.seccionId) continue;
-    Object.assign(errors, validateTeacherCourseRow(c, i));
   }
   return errors;
 }
@@ -330,22 +310,5 @@ export function validateMatriculaForm(form: MatriculaFormInput): FieldErrors {
   if (!form.estudianteId) errors.estudianteId = VALIDATION_MSG.required;
   if (!form.seccionId) errors.seccionId = VALIDATION_MSG.required;
   if (!form.anioLectivoId) errors.anioLectivoId = VALIDATION_MSG.required;
-  return errors;
-}
-
-export type TeacherCourseInput = {
-  codigo: string;
-  nombre: string;
-  seccionId: string;
-};
-
-export function validateTeacherCourseRow(row: TeacherCourseInput, index: number): FieldErrors {
-  const errors: FieldErrors = {};
-  const prefix = `curso_${index}`;
-  const codigo = validateCodigo(row.codigo, true);
-  if (codigo) errors[`${prefix}_codigo`] = codigo;
-  const nombre = validatePersonName(row.nombre, "Nombre del curso", true);
-  if (nombre) errors[`${prefix}_nombre`] = nombre;
-  if (!row.seccionId) errors[`${prefix}_seccionId`] = VALIDATION_MSG.required;
   return errors;
 }

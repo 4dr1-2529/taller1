@@ -80,10 +80,12 @@ async function main() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         promedio_general: 12,
+        cursos_desaprobados: 1,
         asistencia_general: 80,
-        actividad_lms_prom: 55,
-        tareas_ratio: 0.75,
-        estado: "activo",
+        frecuencia_acceso_lms: 2,
+        tiempo_interaccion_lms: 1.5,
+        actividades_realizadas: 3,
+        recursos_consultados: 4,
       }),
       signal: AbortSignal.timeout(15000),
     });

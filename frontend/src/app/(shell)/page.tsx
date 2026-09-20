@@ -2,6 +2,11 @@
 
 import { type FormEvent, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { AuditView } from "@/components/views/AuditView";
+import { SettingsView } from "@/components/views/SettingsView";
+import { AcademicStructureView } from "@/components/views/AcademicStructureView";
+import { LearningView } from "@/components/views/LearningView";
+import { ObservedProgressView } from "@/components/views/ObservedProgressView";
 import { api } from "@/services/api";
 import { AppShell } from "@/components/layout/AppShell";
 import { RoleDashboard } from "@/components/dashboard/RoleDashboard";
@@ -14,16 +19,12 @@ import { estudianteService } from "@/services/estudianteService";
 import { StudentDashboard } from "@/components/student/StudentDashboard";
 import { StudentGradesView } from "@/components/student/StudentGradesView";
 import { StudentAttendanceView } from "@/components/student/StudentAttendanceView";
-import { StudentLMSView } from "@/components/student/StudentLMSView";
 import { StudentPredictionView } from "@/components/student/StudentPredictionView";
-import { StudentMensajeriaView } from "@/components/student/StudentMensajeriaView";
 import { ProfessorStudentsView } from "@/components/views/ProfessorStudentsView";
 import { AlertsView } from "@/components/views/AlertsView";
 import { ProfessorAlertsView } from "@/components/views/ProfessorAlertsView";
 import { MensajeriaAcademicaView } from "@/components/views/MensajeriaAcademicaView";
 import { EnrollmentsView, type NewMatriculaForm } from "@/components/views/EnrollmentsView";
-import { LMSView } from "@/components/views/LMSView";
-import { ProfessorLMSView } from "@/components/views/ProfessorLMSView";
 import { PredictionView } from "@/components/views/PredictionView";
 import { ProfessorPredictionView } from "@/components/views/ProfessorPredictionView";
 import { PredictionHistoryView } from "@/components/views/PredictionHistoryView";
@@ -53,6 +54,7 @@ import { useAuth } from "@/contexts/AuthProvider";
 /** Director, Profesor, Estudiante — permisos según tesis ML deserción */
 const ROLE_SECTIONS: Record<string, AppSection[]> = {
   admin: [
+    "Grados y secciones", "Auditoría", "Configuración",
     "Dashboard",
     "Estudiantes",
     "Profesores",
@@ -66,9 +68,13 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Historial predicciones",
     "Alertas",
     "Mensajería Académica",
+    "Avisos",
+    "Materiales",
+    "Actividades",
     "Reportes",
   ],
   docente: [
+    "Reportes", "Configuración",
     "Dashboard",
     "Estudiantes",
     "Cursos",
@@ -79,14 +85,22 @@ const ROLE_SECTIONS: Record<string, AppSection[]> = {
     "Historial predicciones",
     "Alertas",
     "Mensajería Académica",
+    "Avisos",
+    "Materiales",
+    "Actividades",
   ],
   estudiante: [
+    "Configuración",
     "Dashboard",
+    "Cursos",
     "Notas",
     "Asistencia",
     "Actividad LMS",
     "Predicción",
     "Mensajería Académica",
+    "Avisos",
+    "Materiales",
+    "Actividades",
   ],
 };
 
@@ -224,7 +238,7 @@ export default function Home() {
 
   async function handleAddStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!newStudent.codigo || !newStudent.nombres || !newStudent.apellidos || !newStudent.seccionId) return;
+    if (!newStudent.nombres || !newStudent.apellidos || !newStudent.seccionId) return;
     await addStudent(newStudent);
     setNewStudent(defaultStudentForm);
   }
@@ -267,6 +281,9 @@ export default function Home() {
     }
 
     switch (activeSection) {
+      case "Auditoría": return <AuditView />;
+      case "Configuración": return <SettingsView />;
+      case "Grados y secciones": return <AcademicStructureView />;
       case "Dashboard":
         if (isEstudiante) return <StudentDashboard />;
         return useApi || students.length > 0 ? (
@@ -289,6 +306,7 @@ export default function Home() {
           <ProfessorStudentsView courses={courses} secciones={secciones} />
         ) : (
           <StudentsView
+            onRefresh={refresh}
             students={students}
             secciones={secciones}
             newStudent={newStudent}
@@ -316,6 +334,7 @@ export default function Home() {
           <TeacherAssignmentsView teachers={teachers} secciones={secciones} />
         );
       case "Cursos":
+        if (isEstudiante) return <LearningView key="courses" mode="courses" />;
         return (
           <CoursesView
             courses={courses}
@@ -361,12 +380,10 @@ export default function Home() {
           />
         );
       case "Actividad LMS":
-        if (isEstudiante) return <StudentLMSView />;
-        return role === "docente" ? (
-          <ProfessorLMSView courses={courses} secciones={secciones} />
-        ) : (
-          <LMSView students={students} secciones={secciones} />
-        );
+        return <ObservedProgressView />;
+      case "Materiales": return <LearningView key="materials" mode="materials" />;
+      case "Actividades": return <LearningView key="activities" mode="activities" />;
+      case "Avisos": return <MensajeriaAcademicaView key="announcements" mode="announcements" />;
       case "Predicción":
         if (isEstudiante) return <StudentPredictionView />;
         return role === "docente" ? (
@@ -390,7 +407,7 @@ export default function Home() {
           />
         );
       case "Mensajería Académica":
-        return isEstudiante ? <StudentMensajeriaView /> : <MensajeriaAcademicaView />;
+        return <MensajeriaAcademicaView key="messages" mode="messages" />;
       case "Reportes":
         return <ReportsView students={students} courses={courses} />;
       default:

@@ -58,7 +58,8 @@ export async function exportLowLmsExcel(
     Estudiante: `${s.nombres} ${s.apellidos}`,
     Compromiso_LMS: s.metrics.lms.engagement,
     Horas_plataforma_sem: s.metrics.lms.horasPlataformaSemana,
-    Tareas: `${s.metrics.lms.tareasEntregadas}/${s.metrics.lms.tareasTotales}`,
+    Actividades: s.metrics.lms.actividadesRealizadas,
+    Recursos: s.metrics.lms.recursosConsultados,
     Score_riesgo: s.prediction.score,
   }));
   const ws = XLSX.utils.json_to_sheet(data);

@@ -1,91 +1,51 @@
-"""Pruebas básicas del servicio ML — ejecutar: python tests/test_predict.py"""
+﻿"""Contract tests. No generated dataset or model performance claims."""
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import numpy as np
+from fastapi import HTTPException
+from pydantic import ValidationError as PydanticValidationError
+from app.features import FEATURE_NAMES, build_feature_vector
+from app.main import PredictInput, predict
+from utils.validators import ValidationError, validate_predict_payload
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-
-from app.features import FEATURE_NAMES, build_feature_vector, proba_to_score
-from app.main import PredictInput, heuristic_predict, _normalize_input, predict
-from utils.validators import validate_predict_payload
-
+PAYLOAD = dict(promedio_general=14, cursos_desaprobados=1, asistencia_general=90,
+               frecuencia_acceso_lms=3, tiempo_interaccion_lms=2,
+               actividades_realizadas=4, recursos_consultados=5)
 
 class TestPredict(unittest.TestCase):
-    def test_heuristic_low_risk(self):
-        data = _normalize_input(
-            PredictInput(
-                promedio_general=16,
-                asistencia_general=95,
-                actividad_lms_prom=80,
-                tareas_ratio=0.95,
-                estado="activo",
-            )
-        )
-        out = heuristic_predict(data)
-        self.assertEqual(out.level, "bajo")
-        self.assertGreaterEqual(out.score, 0)
-        self.assertLessEqual(out.score, 100)
-        self.assertTrue(out.recommendation)
+    def test_contract_order(self):
+        self.assertEqual(build_feature_vector(PAYLOAD).tolist(), [[14, 1, 90, 3, 2, 4, 5]])
+        self.assertEqual(len(FEATURE_NAMES), 7)
+    def test_missing_data_is_not_imputed(self):
+        for feature in FEATURE_NAMES:
+            data = dict(PAYLOAD)
+            del data[feature]
+            with self.assertRaises(ValidationError):
+                validate_predict_payload(data)
+    def test_obsolete_fields_rejected(self):
+        with self.assertRaises(PydanticValidationError):
+            PredictInput(**PAYLOAD, uso_foros=0.5)
+    def test_invalid_values(self):
+        for feature, value in [('promedio_general', 21), ('asistencia_general', 101),
+                               ('tiempo_interaccion_lms', -1), ('recursos_consultados', 1.5),
+                               ('frecuencia_acceso_lms', float('nan'))]:
+            with self.assertRaises(ValidationError):
+                validate_predict_payload({**PAYLOAD, feature: value})
+    def test_no_model_returns_503(self):
+        with patch('app.main.model', None), self.assertRaises(HTTPException) as caught:
+            predict(PredictInput(**PAYLOAD))
+        self.assertEqual(caught.exception.status_code, 503)
+    def test_class_mapping(self):
+        class Model:
+            def predict(self, features): return np.array([2])
+            def predict_proba(self, features): return np.array([[0.1, 0.2, 0.7]])
+        with patch('app.main.model', Model()):
+            result = predict(PredictInput(**PAYLOAD))
+        self.assertEqual(result.level, 'alto')
+        self.assertEqual(result.probability_abandono, 0.7)
 
-    def test_heuristic_high_risk(self):
-        data = _normalize_input(
-            PredictInput(
-                promedio_general=8,
-                asistencia_general=60,
-                actividad_lms_prom=25,
-                tareas_ratio=0.3,
-                cursos_desaprobados=4,
-                estado="retirado",
-            )
-        )
-        out = heuristic_predict(data)
-        self.assertIn(out.level, ("medio", "alto"))
-
-    def test_feature_vector_shape(self):
-        vec = build_feature_vector({
-            "promedio_general": 12,
-            "asistencia_general": 80,
-            "frecuencia_acceso_lms": 55,
-            "tareas_ratio": 0.7,
-            "estado": "activo",
-        })
-        self.assertEqual(vec.shape, (1, 9))
-        self.assertNotIn("estado", FEATURE_NAMES)
-
-    def test_proba_to_score(self):
-        import numpy as np
-
-        score = proba_to_score(np.array([0.1, 0.2, 0.7]))
-        self.assertGreaterEqual(score, 60)
-
-    def test_validate_with_null_optional_fields(self):
-        """Pydantic model_dump incluye None explícito en campos opcionales."""
-        payload = {
-            "promedio_general": 16,
-            "asistencia_general": 95,
-            "actividad_lms_prom": 85,
-            "frecuencia_acceso_lms": None,
-            "participacion_actividades": None,
-            "tareas_ratio": 0.9,
-            "estado": "activo",
-        }
-        out = validate_predict_payload(payload)
-        self.assertEqual(out["frecuencia_acceso_lms"], 85.0)
-        self.assertEqual(out["participacion_actividades"], 85.0)
-
-    def test_predict_endpoint_payload(self):
-        data = PredictInput(
-            promedio_general=16,
-            asistencia_general=95,
-            actividad_lms_prom=85,
-            tareas_ratio=0.9,
-            estado="activo",
-        )
-        out = predict(data)
-        self.assertIn(out.level, ("bajo", "medio", "alto"))
-        self.assertIsNotNone(out.probabilidad_abandono)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

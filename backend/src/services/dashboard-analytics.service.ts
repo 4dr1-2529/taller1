@@ -78,17 +78,11 @@ export async function buildDashboardAnalytics(scope: Scope) {
         _count: { select: { estudiantes: true } },
       },
     }),
-    prisma.lmsIndicadorEstudiante.findMany({
-      where: { student: scope },
+    prisma.student.findMany({
+      where: scope,
       select: {
-        frecuenciaAcceso: true,
-        student: {
-          select: {
-            seccion: {
-              select: { grado: { select: { numero: true } } },
-            },
-          },
-        },
+        resourceEvents: { where: { createdAt: { gte: new Date(Date.now() - 28 * 86400000) } }, select: { createdAt: true } },
+        seccion: { select: { grado: { select: { numero: true } } } },
       },
     }),
   ]);
@@ -186,10 +180,10 @@ export async function buildDashboardAnalytics(scope: Scope) {
     { grado: string; alta: number; media: number; baja: number; sin: number }
   >();
   for (const row of lmsIndicadores) {
-    const num = row.student.seccion?.grado?.numero ?? 0;
+    const num = row.seccion?.grado?.numero ?? 0;
     if (!num) continue;
     const g = lmsByGradoMap.get(num) ?? { grado: `${num}°`, alta: 0, media: 0, baja: 0, sin: 0 };
-    const f = Number(row.frecuenciaAcceso);
+    const f = new Set(row.resourceEvents.map(e => e.createdAt.toISOString().slice(0, 10))).size * 100 / 28;
     if (f >= 70) g.alta++;
     else if (f >= 40) g.media++;
     else if (f > 0) g.baja++;
@@ -279,20 +273,7 @@ function extractModelComparison(metrics: unknown) {
     }));
 }
 
-function extractFeatureImportance(metrics: unknown) {
-  const features = (metrics as { features?: string[] })?.features;
-  if (!Array.isArray(features)) {
-    return [
-      { variable: "promedio_general", peso: 22 },
-      { variable: "asistencia_general", peso: 18 },
-      { variable: "frecuencia_acceso_lms", peso: 14 },
-      { variable: "tareas_ratio", peso: 12 },
-      { variable: "cursos_desaprobados", peso: 10 },
-    ];
-  }
-  const base = 100 / features.length;
-  return features.map((variable, i) => ({
-    variable,
-    peso: Math.round(base + (features.length - i) * 2),
-  }));
+function extractFeatureImportance(metrics: unknown): { variable: string; peso: number }[] {
+  const values = (metrics as { feature_importance?: Record<string, number> })?.feature_importance;
+  return values ? Object.entries(values).map(([variable, peso]) => ({ variable, peso })) : [];
 }

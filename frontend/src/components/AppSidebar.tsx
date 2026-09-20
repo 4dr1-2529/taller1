@@ -31,6 +31,12 @@ import { BlenkirLogo } from "@/components/branding/BlenkirLogo";
 
 const ICONS: Record<AppSection, React.ComponentType<{ className?: string }>> = {
   Dashboard: LayoutDashboard,
+  "Grados y secciones": GraduationCap,
+  "Auditoría": History,
+  "Configuración": ClipboardList,
+  Materiales: BookOpen,
+  Actividades: ClipboardList,
+  Avisos: MessageCircle,
   Alertas: AlertTriangle,
   Estudiantes: Users,
   Profesores: GraduationCap,

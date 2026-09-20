@@ -3,13 +3,17 @@ import { AppError } from "../middleware/errorHandler.js";
 import { toDbId } from "./ids.js";
 
 export async function getActiveAnioLectivoId(): Promise<bigint> {
-  const anio = await prisma.anioLectivo.findFirst({ where: { activo: true }, orderBy: { anio: "desc" } });
+  const anio = await prisma.anioLectivo.findFirst({ where: { activo: true, anio: 2026 }, orderBy: { anio: "desc" } });
   if (!anio) throw new AppError(400, "No hay año lectivo activo");
   return anio.id;
 }
 
 export async function resolvePeriodoId(periodoId?: string, periodoNumero?: number): Promise<bigint> {
-  if (periodoId) return toDbId(periodoId);
+  if (periodoId) {
+    const period = await prisma.periodoAcademico.findFirst({ where: { id: toDbId(periodoId), anioLectivo: { anio: 2026 } } });
+    if (!period) throw new AppError(400, "Periodo ajeno al año 2026");
+    return period.id;
+  }
   if (periodoNumero != null) {
     const anioId = await getActiveAnioLectivoId();
     const p = await prisma.periodoAcademico.findFirst({
@@ -18,7 +22,7 @@ export async function resolvePeriodoId(periodoId?: string, periodoNumero?: numbe
     if (p) return p.id;
   }
   const active = await prisma.periodoAcademico.findFirst({
-    where: { activo: true },
+    where: { activo: true, anioLectivo: { anio: 2026 } },
     orderBy: { numero: "desc" },
   });
   if (!active) throw new AppError(400, "No hay periodo académico activo");

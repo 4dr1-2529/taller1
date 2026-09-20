@@ -9,7 +9,6 @@ export type LmsActividadInput = {
 export type LmsIndicadorInput = {
   frecuenciaAcceso?: number;
   tiempoPlataforma?: number;
-  tareasRatio?: number;
   participacion?: number;
 } | null;
 
@@ -27,7 +26,6 @@ export function lmsCompositeScore(acts: LmsActividadInput[], ind?: LmsIndicadorI
 
   if (ind) {
     parts.push(Math.min(100, ind.frecuenciaAcceso ?? 0));
-    parts.push(Math.min(100, (ind.tareasRatio ?? 0) * 100));
     parts.push(Math.min(100, ind.participacion ?? 0));
     parts.push(Math.min(100, (ind.tiempoPlataforma ?? 0) * 10));
   }

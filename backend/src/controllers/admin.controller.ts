@@ -35,6 +35,7 @@ export async function listUsers(_req: Request, res: Response, next: NextFunction
 export async function createUser(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password, nombres, apellidos, role } = createUserSchema.parse(req.body);
+    if (role !== "admin") throw new AppError(400, "Utilice el registro de estudiante o profesor para crear su cuenta vinculada");
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) throw new AppError(409, "Email ya registrado");
 
@@ -103,9 +104,9 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
   try {
     const id = paramBigIntId(req);
-    await prisma.user.delete({ where: { id } });
+    await prisma.user.update({ where: { id }, data: { activo: false } });
     await logAudit({ entidad: "User", entidadId: id, accion: "DELETE", usuarioId: req.user!.sub });
-    sendSuccess(res, {}, "Usuario eliminado");
+    sendSuccess(res, {}, "Usuario desactivado");
   } catch (e) {
     next(e);
   }

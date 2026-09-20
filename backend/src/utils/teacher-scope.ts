@@ -17,11 +17,11 @@ export async function getTeacherIdFromUser(userId: string): Promise<bigint | nul
 export async function getTeacherSectionIds(teacherId: bigint): Promise<bigint[]> {
   const [fromAssignments, fromCourses] = await Promise.all([
     prisma.teacherCourseAssignment.findMany({
-      where: { profesorId: teacherId, activo: true },
+      where: { profesorId: teacherId, activo: true, anioLectivo: { anio: 2026 } },
       select: { seccionId: true },
     }),
     prisma.course.findMany({
-      where: { profesorId: teacherId, activo: true },
+      where: { profesorId: teacherId, activo: true, anioLectivo: { anio: 2026 } },
       select: { seccionId: true },
     }),
   ]);
@@ -55,7 +55,7 @@ export async function resolveTeacherCourseWhere(user: ScopeUser): Promise<Prisma
   if (!teacherId) return { id: { in: [] } };
 
   const assignments = await prisma.teacherCourseAssignment.findMany({
-    where: { profesorId: teacherId, activo: true, cursoOfertaId: { not: null } },
+    where: { profesorId: teacherId, activo: true, anioLectivo: { anio: 2026 }, cursoOfertaId: { not: null } },
     select: { cursoOfertaId: true },
   });
   const offeringIds = assignments

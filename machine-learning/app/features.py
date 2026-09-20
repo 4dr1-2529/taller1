@@ -7,35 +7,17 @@ import numpy as np
 
 # Orden fijo: debe coincidir con train.py y features.joblib
 FEATURE_NAMES: list[str] = [
-    "promedio_general",
-    "cursos_desaprobados",
-    "asistencia_general",
-    "frecuencia_acceso_lms",
-    "tiempo_plataforma",
-    "tareas_ratio",
-    "participacion_actividades",
-    "uso_foros",
-    "disminucion_actividad",
+    "promedio_general", "cursos_desaprobados", "asistencia_general",
+    "frecuencia_acceso_lms", "tiempo_interaccion_lms",
+    "actividades_realizadas", "recursos_consultados",
 ]
-
 LEVEL_MAP = {0: "bajo", 1: "medio", 2: "alto"}
 LEVEL_TO_SCORE = {0: 25.0, 1: 52.0, 2: 78.0}
 
-
 def build_feature_vector(data: dict[str, Any]) -> np.ndarray:
-    """Construye matriz (1, n_features) desde dict de entrada API."""
-    row = [
-        float(data.get("promedio_general", 12)),
-        float(data.get("cursos_desaprobados", 0)),
-        float(data.get("asistencia_general", 80)),
-        float(data.get("frecuencia_acceso_lms", data.get("actividad_lms_prom", 55))),
-        float(data.get("tiempo_plataforma", 4)),
-        float(data.get("tareas_ratio", 0.75)),
-        float(data.get("participacion_actividades", data.get("frecuencia_acceso_lms", 55))),
-        float(data.get("uso_foros", 0.5)),
-        float(data.get("disminucion_actividad", 0)),
-    ]
-    return np.array([row], dtype=np.float64)
+    from utils.validators import validate_predict_payload
+    validated = validate_predict_payload(data)
+    return np.array([[validated[name] for name in FEATURE_NAMES]], dtype=np.float64)
 
 
 def proba_to_score(proba: np.ndarray) -> float:
@@ -67,30 +49,12 @@ def build_factors(data: dict[str, Any]) -> list[dict[str, Any]]:
             "label": "Asistencia insuficiente",
             "contribution": round((85 - float(data["asistencia_general"])) * 0.6, 1),
         })
-    if float(data.get("frecuencia_acceso_lms", data.get("actividad_lms_prom", 100))) < 60:
-        v = float(data.get("frecuencia_acceso_lms", data.get("actividad_lms_prom", 0)))
+    if float(data["frecuencia_acceso_lms"]) < 1:
+        v = float(data["frecuencia_acceso_lms"])
         factors.append({
             "key": "baja_actividad_lms",
             "label": "Baja frecuencia de acceso LMS",
-            "contribution": round((60 - v) * 0.4, 1),
-        })
-    if float(data.get("tareas_ratio", 1)) < 0.8:
-        factors.append({
-            "key": "tareas_incompletas",
-            "label": "Tareas pendientes",
-            "contribution": round((0.8 - float(data["tareas_ratio"])) * 50, 1),
-        })
-    if float(data.get("disminucion_actividad", 0)) > 15:
-        factors.append({
-            "key": "caida_actividad",
-            "label": "Disminución de actividad en plataforma",
-            "contribution": round(float(data["disminucion_actividad"]) * 0.5, 1),
-        })
-    if float(data.get("uso_foros", 1)) < 0.35:
-        factors.append({
-            "key": "bajo_foro",
-            "label": "Bajo uso de foros",
-            "contribution": round((0.35 - float(data["uso_foros"])) * 40, 1),
+            "contribution": round((1 - v), 1),
         })
     factors.sort(key=lambda x: x["contribution"], reverse=True)
     return factors[:5]

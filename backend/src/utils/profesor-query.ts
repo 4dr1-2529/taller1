@@ -47,7 +47,7 @@ export async function buildProfesorStudentWhere(
   const sectionIds = await getTeacherCourseSectionIds(teacherId, query);
   if (!sectionIds.length) return { id: { in: [] } };
 
-  const anio = await prisma.anioLectivo.findFirst({ where: { activo: true }, select: { id: true } });
+  const anio = await prisma.anioLectivo.findFirst({ where: { activo: true, anio: 2026 }, select: { id: true } });
   const base = studentWhereForSectionIds(sectionIds);
 
   const where: Prisma.StudentWhereInput = {

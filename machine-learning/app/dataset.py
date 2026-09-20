@@ -10,6 +10,7 @@ from pathlib import Path
 import numpy as np
 
 from app.features import FEATURE_NAMES
+from utils.validators import validate_predict_payload
 
 TARGET = "target"
 
@@ -35,6 +36,7 @@ def load_dataset() -> tuple[np.ndarray, np.ndarray, dict[str, object]]:
     for row in rows:
         try:
             values = tuple(float(row[name]) for name in FEATURE_NAMES)
+            validate_predict_payload(dict(zip(FEATURE_NAMES, values)))
             target = str(row[TARGET]).strip()
             if not target or any(not np.isfinite(value) for value in values):
                 continue
@@ -49,8 +51,8 @@ def load_dataset() -> tuple[np.ndarray, np.ndarray, dict[str, object]]:
 
     if not clean:
         raise ValueError("El dataset real no contiene filas válidas.")
-    labels = sorted({target for _, target in clean})
-    if set(labels) != {"alto", "bajo", "medio"}:
+    labels = ["bajo", "medio", "alto"]
+    if {target for _, target in clean} != set(labels):
         raise ValueError("La columna target debe contener exactamente las clases bajo, medio y alto.")
     label_map = {label: index for index, label in enumerate(labels)}
     X = np.asarray([values for values, _ in clean], dtype=np.float64)

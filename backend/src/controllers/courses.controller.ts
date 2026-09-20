@@ -29,6 +29,8 @@ export async function listCourses(req: Request, res: Response, next: NextFunctio
     const rows = await prisma.course.findMany({
       where: {
         activo: true,
+        anioLectivo: { anio: 2026 },
+        ...(req.user?.role === "estudiante" ? { inscripciones: { some: { estado: "activa" as const, student: { usuarioId: toDbId(req.user.sub), activo: true } } } } : {}),
         ...(seccionId ? { seccionId: toDbId(seccionId) } : {}),
         ...(profesorId ? { profesorId: toDbId(profesorId) } : {}),
       },

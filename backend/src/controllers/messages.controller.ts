@@ -1,3 +1,6 @@
+import { assertLmsCourse } from "../services/lms.service.js";
+import { logAudit } from "../utils/audit.js";
+import { assertDirectConversation } from "../services/message-policy.service.js";
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import type { MensajeAlcance, RolCodigo } from "@prisma/client";
@@ -32,26 +35,14 @@ async function assertRoomAccess(user: { sub: string; role: RolCodigo }, roomId: 
     if (parts.length !== 3 || ![parts[1], parts[2]].includes(user.sub)) {
       throw new AppError(403, "Sin acceso a esta conversación");
     }
+    await assertDirectConversation(user.sub, parts[1] === user.sub ? parts[2] : parts[1]);
     return;
   }
   if (roomId === "canal:profesores" && user.role === "estudiante") {
     throw new AppError(403, "Canal solo para personal docente");
   }
   if (roomId.startsWith("curso:")) {
-    const courseId = roomId.replace("curso:", "");
-    if (user.role === "docente") {
-      const teacher = await prisma.teacher.findFirst({ where: { usuarioId: toDbId(user.sub) } });
-      const course = await prisma.course.findFirst({
-        where: { id: toDbId(courseId), profesorId: teacher?.id },
-      });
-      if (!course) throw new AppError(403, "Curso no asignado");
-    } else if (user.role === "estudiante") {
-      const student = await prisma.student.findFirst({ where: { usuarioId: toDbId(user.sub) } });
-      const en = await prisma.enrollment.findFirst({
-        where: { studentId: student?.id, cursoOfertaId: toDbId(courseId) },
-      });
-      if (!en) throw new AppError(403, "No matriculado en este curso");
-    }
+    await assertLmsCourse(user, toDbId(roomId.slice(6)));
     return;
   }
   if (roomId !== "global:institucional" && user.role !== "admin") {
@@ -150,6 +141,7 @@ export async function listMessageRooms(req: Request, res: Response, next: NextFu
     }
 
     if (user.role === "docente") {
+      rooms.push({ roomId: "global:institucional", label: "Avisos globales", scope: "global" });
       const teacher = await prisma.teacher.findFirst({ where: { usuarioId: toDbId(user.sub) } });
       if (teacher) {
         const courses = await prisma.course.findMany({
@@ -219,7 +211,11 @@ export async function listMessageRooms(req: Request, res: Response, next: NextFu
       }
     }
 
-    sendSuccess(res, { rooms });
+    if (user.role === "admin" || user.role === "docente") {
+      const peers = await prisma.user.findMany({ where: { activo: true, rol: { codigo: user.role === "admin" ? "docente" : "admin" } } });
+      for (const peer of peers) rooms.push({ roomId: directRoom(user.sub, String(peer.id)), label: [peer.nombres, peer.apellidos].join(" "), scope: "directo" });
+    }
+    sendSuccess(res, { rooms: rooms.filter(r => req.path.startsWith("/announcements") ? r.scope === "global" || r.scope === "curso" : r.scope === "directo") });
   } catch (e) {
     next(e);
   }
@@ -286,9 +282,10 @@ export async function markRoomRead(req: Request, res: Response, next: NextFuncti
   }
 }
 
-export async function sendMessage(req: Request, res: Response, next: NextFunction) {
+async function createCommunication(req: Request, res: Response, next: NextFunction, announcement: boolean) {
   try {
     const data = messageSchema.parse(req.body);
+    if (announcement ? !["global", "curso"].includes(data.scope ?? "") || !!data.parentMessageId : data.scope && data.scope !== "directo") throw new AppError(403, "Use Mensajes para conversar y Avisos para publicaciones sin respuesta");
     const user = req.user!;
     const dbUser = await prisma.user.findUnique({
       where: { id: toDbId(user.sub) },
@@ -333,6 +330,22 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
       );
     }
 
+    if (scope === "directo") {
+      const parts = roomId.split(":");
+      if (parts.length !== 3 || parts[0] !== "direct" || !parts.slice(1).includes(user.sub)) throw new AppError(403, "Conversación inválida");
+      const other = parts[1] === user.sub ? parts[2] : parts[1];
+      await assertDirectConversation(user.sub, other);
+      recipientUserId = other;
+    } else {
+      if (data.parentMessageId) throw new AppError(403, "Los avisos no admiten respuestas");
+      if (scope === "curso" && user.role !== "docente") throw new AppError(403, "Solo profesores publican avisos académicos");
+      await assertRoomAccess(user, roomId);
+      recipientUserId = null;
+    }
+    if (data.parentMessageId) {
+      const parent = await prisma.chatMessage.findUnique({ where: { id: toDbId(data.parentMessageId) }, include: { sala: true } });
+      if (!parent || parent.sala.roomId !== roomId || parent.sala.alcance !== "directo") throw new AppError(403, "Respuesta fuera de conversación");
+    }
     if (!roomId) throw new AppError(400, "roomId requerido");
 
     const cursoOfertaId =
@@ -374,8 +387,12 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
       update: { leido: true, leidoAt: new Date() },
     });
 
+    await logAudit({ entidad: announcement ? "Aviso" : "Mensaje", entidadId: msg.id, accion: "CREATE", usuarioId: user.sub, ipAddress: req.ip });
     sendCreated(res, { message: mapMessage(msg, user.sub), });
   } catch (e) {
     next(e);
   }
 }
+
+export async function sendMessage(req: Request, res: Response, next: NextFunction) { return createCommunication(req, res, next, false); }
+export async function publishAnnouncement(req: Request, res: Response, next: NextFunction) { return createCommunication(req, res, next, true); }

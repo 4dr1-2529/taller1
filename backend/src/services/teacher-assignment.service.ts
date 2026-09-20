@@ -226,6 +226,10 @@ export async function syncCourseOffering(
 
 
 
+  if (assignment.activo) {
+    const registrations = await tx.matricula.findMany({ where: { seccionId: assignment.seccionId, anioLectivoId: assignment.anioLectivoId, estado: "activa", estudiante: { activo: true } }, select: { estudianteId: true } });
+    await tx.enrollment.createMany({ data: registrations.map(r => ({ studentId: r.estudianteId, cursoOfertaId: offering.id })), skipDuplicates: true });
+  }
   return offering;
 
 }
@@ -256,6 +260,8 @@ export async function assignTutorToSection(input: CreateTutorInput) {
 
 
 
+  const year = await prisma.anioLectivo.findFirst({ where: { id: anioLectivoId, anio: 2026, activo: true } });
+  if (!year) throw new AppError(400, "Solo asignaciones del año activo 2026");
   return prisma.$transaction(async (tx) => {
 
     await assertTeacherActive(profesorId, tx);
@@ -380,6 +386,8 @@ export async function createCourseAssignment(input: CreateAssignmentInput) {
 
 
 
+  const year = await prisma.anioLectivo.findFirst({ where: { id: anioLectivoId, anio: 2026, activo: true } });
+  if (!year) throw new AppError(400, "Solo asignaciones del año activo 2026");
   return prisma.$transaction(async (tx) => {
 
     await assertTeacherActive(profesorId, tx);

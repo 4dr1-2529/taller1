@@ -1,10 +1,10 @@
+import { studentIndicators } from "./lms.service.js";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
 import { idToString } from "../utils/ids.js";
 import { courseDisplayName, courseListInclude } from "../utils/course-label.js";
 import { notaEstadoLabel } from "../utils/grade-status.js";
 import { getActiveAnioLectivoId } from "../utils/academic-period.js";
-import { deriveLmsEngagement } from "../utils/lms-engagement.js";
 
 const LEVEL_LABEL: Record<string, string> = {
   bajo: "Bajo",
@@ -52,8 +52,8 @@ export async function loadStudentProfile(studentId: bigint) {
     seccion: student.seccion?.nombre ?? null,
     salon: salonLabel(student.seccion),
     periodoAcademico: await activePeriodoLabel(),
-    promedioGeneral: Number(student.promedioGeneral),
-    asistenciaGeneral: Number(student.asistenciaGeneral),
+    promedioGeneral: (await studentIndicators(studentId)).promedio_general ?? 0,
+    asistenciaGeneral: (await studentIndicators(studentId)).asistencia_general ?? 0,
   };
 }
 
@@ -92,9 +92,9 @@ export async function buildEstudianteDashboard(studentId: bigint) {
         orderBy: { createdAt: "desc" },
         take: 5,
       }),
-      prisma.lmsActivity.findMany({
+      prisma.lmsEvent.findMany({
         where: { studentId },
-        orderBy: { anioSemana: "desc" },
+        orderBy: { createdAt: "desc" },
         take: 1,
       }),
       prisma.aiRecommendation.findFirst({
@@ -133,9 +133,9 @@ export async function buildEstudianteDashboard(studentId: bigint) {
         : null,
       ultimaActividadLms: lmsActs[0]
         ? {
-            semana: lmsActs[0].anioSemana,
-            actividadPct: Number(lmsActs[0].actividadPct),
-            minutos: lmsActs[0].minutos,
+            semana: lmsActs[0].createdAt.toISOString(),
+            tipo: lmsActs[0].tipo,
+            minutos: lmsActs[0].durationSeconds / 60,
           }
         : null,
       ultimaPrediccion: pred
@@ -247,7 +247,7 @@ type AsistenciaQuery = {
 
 export async function buildEstudianteAsistencia(studentId: bigint, query: AsistenciaQuery) {
   const profile = await loadStudentProfile(studentId);
-  const where: Prisma.AttendanceWhereInput = { studentId };
+  const where: Prisma.AttendanceWhereInput = { studentId, AND: [{ fecha: { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") } }] };
 
   if (query.desde) where.fecha = { ...(where.fecha as object), gte: new Date(query.desde) };
   if (query.hasta) {
@@ -325,7 +325,7 @@ export async function buildEstudianteAsistencia(studentId: bigint, query: Asiste
   }
   const total = items.length;
   const porcentaje =
-    total > 0 ? Math.round(((asistencias + tardanzas) / total) * 1000) / 10 : profile?.asistenciaGeneral ?? 0;
+    total > 0 ? Math.round(((asistencias + tardanzas) / Math.max(1, total - justificadas)) * 1000) / 10 : profile?.asistenciaGeneral ?? 0;
 
   return {
     profile,
@@ -335,54 +335,7 @@ export async function buildEstudianteAsistencia(studentId: bigint, query: Asiste
 }
 
 export async function buildEstudianteLms(studentId: bigint) {
-  const profile = await loadStudentProfile(studentId);
-  const [acts, ind] = await Promise.all([
-    prisma.lmsActivity.findMany({
-      where: { studentId },
-      orderBy: { anioSemana: "asc" },
-    }),
-    prisma.lmsIndicadorEstudiante.findFirst({
-      where: { studentId },
-      orderBy: { id: "desc" },
-    }),
-  ]);
-
-  const compromiso = deriveLmsEngagement(acts, ind);
-  const tareasRatio = ind ? Number(ind.tareasRatio) : 0;
-  const tareasEntregadasPct = Math.round(tareasRatio * 100);
-  const tareasPendientesPct = Math.max(0, 100 - tareasEntregadasPct);
-
-  const semanas = acts.map((a) => ({
-    semana: a.anioSemana,
-    accesos: a.conexiones,
-    minutos: a.minutos,
-    tareasEntregadas: Math.round(Number(a.actividadPct)),
-    participacion: ind ? Number(ind.participacion) : Number(a.actividadPct),
-    compromiso: deriveLmsEngagement([a], ind),
-  }));
-
-  return {
-    profile,
-    tarjetas: {
-      compromiso,
-      tiempoPlataforma: ind ? Number(ind.tiempoPlataforma) : acts.reduce((s, a) => s + Number(a.horasPlataforma), 0),
-      accesosLms: ind ? Number(ind.frecuenciaAcceso) : acts.reduce((s, a) => s + a.conexiones, 0),
-      tareasEntregadas: tareasEntregadasPct,
-      tareasPendientes: tareasPendientesPct,
-      participacion: ind ? Number(ind.participacion) : 0,
-    },
-    semanas,
-    chartSemanal: acts.map((a) => ({
-      semana: a.anioSemana,
-      actividad: Number(a.actividadPct),
-      minutos: a.minutos,
-      horas: Number(a.horasPlataforma),
-    })),
-    chartTareas: [
-      { tipo: "Entregadas", valor: tareasEntregadasPct },
-      { tipo: "Pendientes", valor: tareasPendientesPct },
-    ],
-  };
+  return { profile: await loadStudentProfile(studentId), indicators: await studentIndicators(studentId) };
 }
 
 export async function buildEstudiantePrediccion(studentId: bigint) {

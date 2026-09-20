@@ -5,15 +5,11 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthProvider";
 import {
   mapCourseFromApi,
-  mapEstadoToApi,
   mapStudentFromApi,
   mapTeacherFromApi,
 } from "@/lib/api-mappers";
-import { buildMetrics } from "@/lib/student-factory";
 import { fetchAllStudents } from "@/lib/fetch-all-students";
 import {
-  parseGrade,
-  parsePercent,
   validateCourseForm,
   validateMatriculaForm,
   validateStudentForm,
@@ -142,26 +138,18 @@ export function useAcademicData() {
       toast.error(validationMsg);
       return;
     }
-    const promedioParsed = form.promedioGeneral.trim() ? parseGrade(form.promedioGeneral) : 0;
-    const asistenciaParsed = form.asistenciaGeneral.trim() ? parsePercent(form.asistenciaGeneral) : 0;
-    const metrics = buildMetrics(promedioParsed ?? 0, asistenciaParsed ?? 0, form.engagement);
     try {
       const res = await api.createStudent({
-        codigo: form.codigo.trim(),
         nombres: form.nombres.trim(),
         apellidos: form.apellidos.trim(),
         seccionId: form.seccionId,
         dni: form.dni.trim() || undefined,
         correo: form.correo.trim() || undefined,
         telefono: form.telefono.trim() || undefined,
-        estado: mapEstadoToApi(form.estado),
-        promedioGeneral: metrics.promedioGeneral,
-        asistenciaGeneral: metrics.asistenciaGeneral,
-        lmsEngagement: form.engagement,
       });
       const created = mapStudentFromApi(res.student as Parameters<typeof mapStudentFromApi>[0]);
       setStudents((prev) => [...prev, created]);
-      toast.success("Estudiante registrado");
+      toast.success(`Estudiante registrado. Cuenta: ${res.credentials.email}. Contraseña temporal: ${res.credentials.temporaryPassword}`, { duration: 30000 });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al guardar");
     }
@@ -172,23 +160,15 @@ export function useAcademicData() {
       toast.error("Inicie sesión para registrar docentes");
       return;
     }
-    const fieldErrors = validateTeacherForm({ ...form, cursos: form.cursos });
+    const fieldErrors = validateTeacherForm(form);
     const validationMsg = firstError(fieldErrors);
     if (validationMsg) {
       toast.error(validationMsg);
       return;
     }
-    const cursos = form.cursos
-      .filter((c) => c.codigo.trim() && c.nombre.trim() && c.seccionId)
-      .map((c) => ({
-        codigo: c.codigo.trim(),
-        nombre: c.nombre.trim(),
-        seccionId: c.seccionId,
-        periodo: "2026",
-      }));
     try {
       await api.createTeacher({
-        codigo: form.codigo.trim(),
+        dni: form.dni,
         nombres: form.nombres.trim(),
         apellidos: form.apellidos.trim(),
         especialidad: form.especialidad.trim(),
@@ -196,12 +176,9 @@ export function useAcademicData() {
         telefono: form.telefono.trim() || undefined,
         crearCuenta: form.crearCuenta,
         password: form.crearCuenta ? form.password : undefined,
-        cursos: cursos.length ? cursos : undefined,
       });
       await loadFromApi();
-      toast.success(
-        cursos.length ? `Docente registrado con ${cursos.length} curso(s)` : "Docente registrado",
-      );
+      toast.success("Docente registrado. Asigne cursos en Asignaciones docentes");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al guardar docente");
     }
@@ -215,7 +192,6 @@ export function useAcademicData() {
       especialidad: string;
       correo: string;
       telefono: string;
-      cursosNuevos: { codigo: string; nombre: string; seccionId: string }[];
     },
   ) {
     if (!api.hasToken) return;
@@ -225,14 +201,6 @@ export function useAcademicData() {
       toast.error(validationMsg);
       return;
     }
-    const cursosNuevos = data.cursosNuevos
-      .filter((c) => c.codigo.trim() && c.nombre.trim() && c.seccionId)
-      .map((c) => ({
-        codigo: c.codigo.trim(),
-        nombre: c.nombre.trim(),
-        seccionId: c.seccionId,
-        periodo: "2026",
-      }));
     try {
       await api.updateTeacher(id, {
         nombres: data.nombres.trim(),
@@ -240,7 +208,6 @@ export function useAcademicData() {
         especialidad: data.especialidad.trim(),
         correo: data.correo.trim(),
         telefono: data.telefono.trim() || null,
-        cursosNuevos: cursosNuevos.length ? cursosNuevos : undefined,
       });
       await loadFromApi();
       toast.success("Docente actualizado");

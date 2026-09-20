@@ -69,11 +69,11 @@ export function EnrollmentsView({
         api.getAniosLectivos(),
       ]);
       setItems(mat.items);
-      setAnios(an.items);
+      setAnios(an.items.filter(a => a.anio === 2026));
       if (!form.anioLectivoId && an.items[0]) {
         setForm((p) => ({
           ...p,
-          anioLectivoId: an.items.find((a) => a.activo)?.id ?? an.items[0].id,
+          anioLectivoId: an.items.find((a) => a.anio === 2026 && a.activo)?.id ?? "",
         }));
       }
     } catch {
@@ -234,7 +234,7 @@ export function EnrollmentsView({
                   <th>Estudiante</th>
                   <th>Salón</th>
                   <th>Año</th>
-                  <th>Estado</th>
+                  <th>Estado</th><th>Administrar</th>
                 </tr>
               </thead>
               <tbody>

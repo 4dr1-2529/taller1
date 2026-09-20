@@ -26,7 +26,7 @@ export async function resolveStudentScope(user: ScopeUser): Promise<Prisma.Stude
     const teacherId = await getTeacherIdFromUser(user.sub);
     if (!teacherId) return NONE;
     const sectionIds = await getTeacherSectionIds(teacherId);
-    return studentWhereForSectionIds(sectionIds, base);
+    return studentWhereForSectionIds(sectionIds, { ...base, matriculas: { some: { estado: "activa", anioLectivo: { anio: 2026 } } }, inscripciones: { some: { estado: "activa", course: { profesorId: teacherId, activo: true, anioLectivo: { anio: 2026 } } } } });
   }
 
   if (user.role === "estudiante") {
@@ -59,7 +59,7 @@ export async function resolveCourseScope(user: ScopeUser): Promise<Prisma.Course
 export async function assertStudentInScope(user: ScopeUser, studentId: string): Promise<void> {
   const scope = await resolveStudentScope(user);
   const found = await prisma.student.findFirst({
-    where: { id: toDbId(studentId), ...scope },
+    where: { AND: [{ id: toDbId(studentId) }, scope] },
     select: { id: true },
   });
   if (!found) {

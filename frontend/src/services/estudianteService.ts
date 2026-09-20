@@ -108,28 +108,8 @@ export const estudianteService = {
         total: number;
       };
     }>(`/estudiante/asistencia${qs(params ?? {})}`),
-  getLms: () =>
-    api.call<{
-      profile: EstudianteProfile | null;
-      tarjetas: {
-        compromiso: string;
-        tiempoPlataforma: number;
-        accesosLms: number;
-        tareasEntregadas: number;
-        tareasPendientes: number;
-        participacion: number;
-      };
-      semanas: {
-        semana: string;
-        accesos: number;
-        minutos: number;
-        tareasEntregadas: number;
-        participacion: number;
-        compromiso: string;
-      }[];
-      chartSemanal: { semana: string; actividad: number; minutos: number; horas: number }[];
-      chartTareas: { tipo: string; valor: number }[];
-    }>("/estudiante/lms"),
+  getLms: () => api.call<{ indicators: Record<string, number | string | null> }>("/estudiante/lms"),
+
   getPrediccion: () =>
     api.call<{
       profile: EstudianteProfile | null;

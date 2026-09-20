@@ -1,6 +1,12 @@
 /** Secciones del sistema — enfoque tesis ML deserción (3 roles). */
 export const APP_SECTIONS = [
   "Dashboard",
+  "Grados y secciones",
+  "Auditoría",
+  "Configuración",
+  "Materiales",
+  "Actividades",
+  "Avisos",
   "Estudiantes",
   "Profesores",
   "Asignaciones",

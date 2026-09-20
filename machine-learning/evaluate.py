@@ -9,9 +9,9 @@ from pathlib import Path
 
 import joblib
 import numpy as np
-from sklearn.model_selection import train_test_split
 
-from train import evaluate_model, generate_synthetic_data
+from train import evaluate_model
+from app.features import FEATURE_NAMES
 
 MODELS_DIR = Path(__file__).parent / "models"
 REPORTS_DIR = Path(__file__).parent / "reports"
@@ -19,8 +19,12 @@ REPORTS_DIR.mkdir(exist_ok=True)
 
 
 def evaluate_saved_models() -> dict:
-    X, y = generate_synthetic_data(1200)
-    _, X_test, _, y_test = train_test_split(X, y, test_size=0.25, random_state=42, stratify=y)
+    if list(joblib.load(MODELS_DIR / "features.joblib")) != FEATURE_NAMES:
+        raise ValueError("Modelo incompatible")
+    holdout = joblib.load(MODELS_DIR / "holdout.joblib")
+    if holdout["features"] != FEATURE_NAMES:
+        raise ValueError("Holdout incompatible")
+    X_test, y_test = holdout["X"], holdout["y"]
 
     results: dict = {}
     for name, path in [

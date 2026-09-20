@@ -1,15 +1,13 @@
+import { studentIndicators } from "../services/lms.service.js";
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
-import bcrypt from "bcryptjs";
+import { registerStudent } from "../services/student-registration.service.js";
 import { prisma } from "../utils/prisma.js";
-import { studentSchema, updateStudentSchema } from "../validators/schemas.js";
+import { updateStudentSchema } from "../validators/schemas.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
-import { deriveLmsEngagement } from "../utils/lms-engagement.js";
-import { buildStudentAccountEmail } from "../utils/person-accounts.js";
-import { getInstitutionDefaultPassword } from "../config/institution-password.js";
 
 export async function listStudents(req: Request, res: Response, next: NextFunction) {
   try {
@@ -20,7 +18,7 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
     const skip = (page - 1) * limit;
 
     const scope = await resolveStudentScope(req.user!);
-    const where: Record<string, unknown> = { ...scope };
+    const where: Record<string, unknown> = { AND: [scope] };
     if (seccionId) where.seccionId = toDbId(seccionId);
     if (q) {
       where.OR = [
@@ -38,8 +36,7 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
         orderBy: { apellidos: "asc" },
         include: {
           seccion: { include: { grado: { include: { nivel: true } } } },
-          lmsActividades: { orderBy: { anioSemana: "asc" } },
-          lmsIndicadores: { take: 1, orderBy: { id: "desc" } },
+
           predicciones: { orderBy: { createdAt: "desc" }, take: 1 },
           alertas: { where: { estado: { in: ["nueva", "en_seguimiento"] } } },
         },
@@ -47,16 +44,14 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
       prisma.student.count({ where }),
     ]);
 
-    const items = rows.map((s) => ({
+    const items = await Promise.all(rows.map(async (s) => ({
       ...s,
       id: idToString(s.id),
       seccionId: s.seccionId ? idToString(s.seccionId) : null,
-      lmsActivities: s.lmsActividades,
-      lmsEngagement: deriveLmsEngagement(s.lmsActividades, s.lmsIndicadores[0] ?? null),
-      lmsIndicador: s.lmsIndicadores[0] ?? null,
+      indicators: await studentIndicators(s.id),
       predictions: s.predicciones,
       alerts: s.alertas,
-    }));
+    })));
 
     sendSuccess(res, { items, total, page, pages: Math.ceil(total / limit) });
   } catch (e) {
@@ -66,71 +61,7 @@ export async function listStudents(req: Request, res: Response, next: NextFuncti
 
 export async function createStudent(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = studentSchema.parse(req.body);
-    const exists = await prisma.student.findUnique({ where: { codigo: data.codigo } });
-    if (exists) throw new AppError(409, "Código de estudiante duplicado");
-
-    if (!data.dni && !data.correo) {
-      throw new AppError(400, "Indique DNI o correo para crear la cuenta de acceso del estudiante");
-    }
-
-    const loginEmail = buildStudentAccountEmail(
-      data.nombres,
-      data.apellidos,
-      data.dni ?? "00000000",
-      data.correo,
-    );
-
-    const emailTaken = await prisma.user.findUnique({ where: { email: loginEmail } });
-    if (emailTaken) throw new AppError(409, "Ya existe una cuenta con ese correo");
-
-    const rolEstudiante = await prisma.role.findUnique({ where: { codigo: "estudiante" } });
-    if (!rolEstudiante) throw new AppError(500, "Rol estudiante no configurado");
-
-    const passwordHash = await bcrypt.hash(getInstitutionDefaultPassword(), 12);
-
-    const student = await prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          email: loginEmail,
-          passwordHash,
-          nombres: data.nombres,
-          apellidos: data.apellidos,
-          dni: data.dni,
-          telefono: data.telefono,
-          rolId: rolEstudiante.id,
-        },
-      });
-
-      return tx.student.create({
-        data: {
-          usuarioId: user.id,
-          codigo: data.codigo,
-          nombres: data.nombres,
-          apellidos: data.apellidos,
-          seccionId: toDbId(data.seccionId),
-          dni: data.dni,
-          email: loginEmail,
-          telefono: data.telefono,
-          estado: data.estado ?? "activo",
-          promedioGeneral: data.promedioGeneral ?? 0,
-          asistenciaGeneral: data.asistenciaGeneral ?? 0,
-          fechaIngreso: new Date(),
-        },
-        include: { seccion: { include: { grado: { include: { nivel: true } } } } },
-      });
-    });
-
-    await logAudit({
-      entidad: "Student",
-      entidadId: student.id,
-      accion: "CREATE",
-      usuarioId: req.user?.sub,
-      studentId: student.id,
-      ipAddress: req.ip,
-    });
-
-    sendCreated(res, { student: { ...student, id: idToString(student.id) } });
+    sendCreated(res, await registerStudent(req.body, req.user!.sub, req.ip));
   } catch (e) {
     next(e);
   }
@@ -146,7 +77,7 @@ export async function getStudent(req: Request, res: Response, next: NextFunction
         seccion: { include: { grado: { include: { nivel: true } } } },
         calificaciones: { include: { cursoOferta: { include: { cursoCatalogo: true } }, periodo: true } },
         predicciones: { orderBy: { createdAt: "desc" }, take: 10, include: { factores: true } },
-        lmsActividades: { orderBy: { anioSemana: "asc" } },
+
         recomendaciones: { orderBy: { createdAt: "desc" }, take: 5 },
         apoderados: { include: { apoderado: true } },
       },
@@ -156,7 +87,7 @@ export async function getStudent(req: Request, res: Response, next: NextFunction
         ...student,
         id: idToString(student.id),
         grades: student.calificaciones,
-        lmsActivities: student.lmsActividades,
+        indicators: await studentIndicators(student.id),
         predictions: student.predicciones,
         recommendations: student.recomendaciones,
       }, });
@@ -170,26 +101,11 @@ export async function updateStudent(req: Request, res: Response, next: NextFunct
     const id = paramBigIntId(req);
     await assertStudentInScope(req.user!, idToString(id));
     const data = updateStudentSchema.parse(req.body);
-    const student = await prisma.student.update({
-      where: { id },
-      data: {
-        nombres: data.nombres,
-        apellidos: data.apellidos,
-        seccionId: data.seccionId != null ? toDbId(data.seccionId) : undefined,
-        email: data.correo,
-        telefono: data.telefono,
-        estado: data.estado,
-        promedioGeneral: data.promedioGeneral,
-        asistenciaGeneral: data.asistenciaGeneral,
-      },
-    });
-    await logAudit({
-      entidad: "Student",
-      entidadId: student.id,
-      accion: "UPDATE",
-      usuarioId: req.user?.sub,
-      studentId: student.id,
-      ipAddress: req.ip,
+    const student = await prisma.$transaction(async tx => {
+      const student = await tx.student.update({ where: { id }, data: { nombres: data.nombres, apellidos: data.apellidos, dni: data.dni, email: data.correo, telefono: data.telefono, estado: data.estado } });
+      if (student.usuarioId) await tx.user.update({ where: { id: student.usuarioId }, data: { nombres: data.nombres, apellidos: data.apellidos, dni: data.dni, email: data.correo, telefono: data.telefono } });
+      await tx.auditLog.create({ data: { entidad: "Student", entidadId: String(id), accion: "UPDATE", usuarioId: BigInt(req.user!.sub), estudianteId: id, ipAddress: req.ip } });
+      return student;
     });
     sendSuccess(res, { student: { ...student, id: idToString(student.id) } });
   } catch (e) {
@@ -201,14 +117,17 @@ export async function deleteStudent(req: Request, res: Response, next: NextFunct
   try {
     const id = paramBigIntId(req);
     await assertStudentInScope(req.user!, idToString(id));
-    await prisma.student.update({
-      where: { id },
-      data: { activo: false },
+    await prisma.$transaction(async tx => {
+      const student = await tx.student.update({ where: { id }, data: { activo: false } });
+      if (student.usuarioId) {
+        await tx.user.update({ where: { id: student.usuarioId }, data: { activo: false } });
+        await tx.session.updateMany({ where: { usuarioId: student.usuarioId }, data: { revocada: true } });
+      }
     });
     await logAudit({
       entidad: "Student",
       entidadId: id,
-      accion: "DELETE",
+      accion: "DEACTIVATE",
       usuarioId: req.user?.sub,
       ipAddress: req.ip,
     });

@@ -1,3 +1,4 @@
+import { studentIndicators } from "../services/lms.service.js";
 import { sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
@@ -10,7 +11,6 @@ import {
   requireTeacherIdFromUser,
 } from "../utils/profesor-query.js";
 import { buildProfesorDashboard } from "../services/profesor-dashboard.service.js";
-import { deriveLmsEngagement } from "../utils/lms-engagement.js";
 import { courseListInclude, mapCourseForApi, courseDisplayName } from "../utils/course-label.js";
 import { listGrades, createGrade } from "./grades.controller.js";
 import { listAttendance, bulkAttendance } from "./attendance.controller.js";
@@ -28,13 +28,11 @@ async function teacherId(req: Request): Promise<bigint> {
 
 const studentListInclude = {
   seccion: { include: { grado: { include: { nivel: true } } } },
-  lmsActividades: { orderBy: { anioSemana: "asc" as const } },
-  lmsIndicadores: { take: 1, orderBy: { id: "desc" as const } },
   predicciones: { orderBy: { createdAt: "desc" as const }, take: 1 },
   alertas: { where: { estado: { in: ["nueva", "en_seguimiento"] as ("nueva" | "en_seguimiento")[] } } },
 };
 
-function mapStudentRow(
+async function mapStudentRow(
   s: Awaited<
     ReturnType<
       typeof prisma.student.findMany<{
@@ -47,9 +45,7 @@ function mapStudentRow(
     ...s,
     id: idToString(s.id),
     seccionId: s.seccionId ? idToString(s.seccionId) : null,
-    lmsActivities: s.lmsActividades,
-    lmsEngagement: deriveLmsEngagement(s.lmsActividades, s.lmsIndicadores?.[0] ?? null),
-    lmsIndicador: s.lmsIndicadores?.[0] ?? null,
+    indicators: await studentIndicators(s.id),
     predictions: s.predicciones,
     alerts: s.alertas,
   };
@@ -203,7 +199,7 @@ export async function profesorEstudiantes(req: Request, res: Response, next: Nex
     ]);
 
     sendSuccess(res, {
-      items: rows.map(mapStudentRow),
+      items: await Promise.all(rows.map(mapStudentRow)),
       total,
       page,
       pages: Math.ceil(total / limit) || 1,
@@ -232,41 +228,10 @@ export async function profesorAsistenciaMasiva(req: Request, res: Response, next
 export async function profesorLms(req: Request, res: Response, next: NextFunction) {
   try {
     const tid = await teacherId(req);
-    const pq = parseProfesorQuery(req);
-    const where = await buildProfesorStudentWhere(tid, pq);
-    const students = await prisma.student.findMany({
-      where,
-      orderBy: { apellidos: "asc" },
-      include: {
-        seccion: { include: { grado: true } },
-        lmsActividades: { orderBy: { anioSemana: "asc" } },
-        lmsIndicadores: { take: 1, orderBy: { id: "desc" } },
-      },
-    });
-
-    sendSuccess(res, {
-      items: students.map((s) => {
-        const ind = s.lmsIndicadores[0];
-        const acts = s.lmsActividades;
-        return {
-          id: idToString(s.id),
-          codigo: s.codigo,
-          nombres: s.nombres,
-          apellidos: s.apellidos,
-          seccion: s.seccion,
-          accesosLms: ind ? Number(ind.frecuenciaAcceso) : 0,
-          tiempoPlataforma: ind ? Number(ind.tiempoPlataforma) : 0,
-          tareasEntregadas: ind ? Math.round(Number(ind.tareasRatio) * 100) : 0,
-          participacion: ind ? Number(ind.participacion) : 0,
-          compromiso: deriveLmsEngagement(acts, ind ?? null),
-          lmsActivities: acts,
-        };
-      }),
-      total: students.length,
-    });
-  } catch (e) {
-    next(e);
-  }
+    const where = await buildProfesorStudentWhere(tid, parseProfesorQuery(req));
+    const students = await prisma.student.findMany({ where, select: { id: true, nombres: true, apellidos: true } });
+    sendSuccess(res, { items: await Promise.all(students.map(async s => ({ ...s, indicators: await studentIndicators(s.id) }))) });
+  } catch (e) { next(e); }
 }
 
 export async function profesorPredicciones(req: Request, res: Response, next: NextFunction) {

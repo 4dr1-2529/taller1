@@ -1,3 +1,4 @@
+import { refreshAcademicSummary, academicAudit } from "../services/academic-records.service.js";
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
@@ -11,11 +12,13 @@ export async function listAttendance(req: Request, res: Response, next: NextFunc
   try {
     const { studentId, from, to, seccionId } = req.query;
     const scope = await resolveStudentScope(req.user!);
-    const studentWhere: Record<string, unknown> = { ...scope };
+    const studentWhere: Record<string, unknown> = { AND: [scope] };
     if (seccionId) studentWhere.seccionId = toDbId(seccionId as string);
-    const where: Record<string, unknown> = { student: studentWhere };
+    const where: Record<string, unknown> = { student: studentWhere, fecha: { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") } };
+    if (studentId) await assertStudentInScope(req.user!, String(studentId));
     if (studentId) where.studentId = toDbId(studentId as string);
     if (from || to) {
+      where.AND = [{ fecha: { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") } }];
       where.fecha = {};
       if (from) (where.fecha as Record<string, unknown>).gte = new Date(from as string);
       if (to) (where.fecha as Record<string, unknown>).lte = new Date(to as string);
@@ -32,120 +35,66 @@ export async function listAttendance(req: Request, res: Response, next: NextFunc
   }
 }
 
+
 export async function createAttendance(req: Request, res: Response, next: NextFunction) {
   try {
     const data = attendanceSchema.parse(req.body);
     await assertStudentInScope(req.user!, data.studentId);
-    const record = await prisma.attendance.create({
-      data: {
-        studentId: toDbId(data.studentId),
-        fecha: new Date(data.fecha),
-        presente: data.presente,
-        justificado: data.justificado,
-        tardanza: data.tardanza,
-        observacion: data.observacion,
-      },
-      include: { student: { select: { nombres: true, apellidos: true, codigo: true } } },
-    });
-    const sid = toDbId(data.studentId);
-    const total = await prisma.attendance.count({ where: { studentId: sid } });
-    const presentes = await prisma.attendance.count({
-      where: { studentId: sid, presente: true },
-    });
-    if (total > 0) {
-      await prisma.student.update({
-        where: { id: sid },
-        data: { asistenciaGeneral: Math.round((presentes / total) * 1000) / 10 },
-      });
-    }
-    await logAudit({
-      entidad: "Attendance",
-      entidadId: record.id,
-      accion: "CREATE",
-      usuarioId: req.user?.sub,
-      studentId: data.studentId,
+    const studentId = toDbId(data.studentId);
+    const record = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM estudiante WHERE id = ${studentId} FOR UPDATE`;
+      const record = await tx.attendance.create({ data: { ...data, studentId, fecha: new Date(data.fecha) } });
+      await refreshAcademicSummary(tx, studentId);
+      await academicAudit(tx, req.user!.sub, "Attendance", record.id, studentId, "CREATE", req.ip);
+      return record;
     });
     sendCreated(res, { record });
-  } catch (e) {
-    next(e);
-  }
+  } catch (e) { next(e); }
 }
-
 export async function bulkAttendance(req: Request, res: Response, next: NextFunction) {
   try {
     const data = bulkAttendanceSchema.parse(req.body);
+    for (const record of data.records) await assertStudentInScope(req.user!, record.studentId);
     const fecha = new Date(data.fecha);
-    let upserted = 0;
-
-    for (const r of data.records) {
-      await assertStudentInScope(req.user!, r.studentId);
-      const studentId = toDbId(r.studentId);
-      await prisma.attendance.upsert({
-        where: { studentId_fecha: { studentId, fecha } },
-        create: {
-          studentId,
-          fecha,
-          presente: r.presente,
-          justificado: r.justificado,
-          tardanza: r.tardanza,
-          observacion: r.observacion,
-        },
-        update: {
-          presente: r.presente,
-          justificado: r.justificado,
-          tardanza: r.tardanza,
-          observacion: r.observacion,
-        },
-      });
-      upserted++;
-
-      const total = await prisma.attendance.count({ where: { studentId } });
-      const presentes = await prisma.attendance.count({
-        where: { studentId, presente: true },
-      });
-      if (total > 0) {
-        await prisma.student.update({
-          where: { id: studentId },
-          data: { asistenciaGeneral: Math.round((presentes / total) * 1000) / 10 },
-        });
+    await prisma.$transaction(async tx => {
+      for (const r of [...data.records].sort((a,b) => Number(a.studentId) - Number(b.studentId))) {
+        const studentId = toDbId(r.studentId);
+        await tx.$queryRaw`SELECT id FROM estudiante WHERE id = ${studentId} FOR UPDATE`;
+        const record = await tx.attendance.upsert({ where: { studentId_fecha: { studentId, fecha } }, create: { ...r, studentId, fecha }, update: { presente: r.presente, justificado: r.justificado, tardanza: r.tardanza, observacion: r.observacion } });
+        await refreshAcademicSummary(tx, studentId);
+        await academicAudit(tx, req.user!.sub, "Attendance", record.id, studentId, "UPSERT", req.ip);
       }
-    }
-
-    await logAudit({
-      entidad: "Attendance",
-      entidadId: BigInt(0),
-      accion: "BULK",
-      usuarioId: req.user?.sub,
-      detalle: `${upserted} registros · ${data.fecha}`,
-    });
-
-    sendCreated(res, { upserted, fecha: data.fecha });
-  } catch (e) {
-    next(e);
-  }
+    }, { timeout: 20000 });
+    sendCreated(res, { upserted: data.records.length, fecha: data.fecha });
+  } catch (e) { next(e); }
 }
-
 export async function updateAttendance(req: Request, res: Response, next: NextFunction) {
   try {
-    const { presente, justificado } = req.body;
-    const record = await prisma.attendance.update({
-      where: { id: paramBigIntId(req) },
-      data: { presente, justificado },
+    const id = paramBigIntId(req);
+    const existing = await prisma.attendance.findUniqueOrThrow({ where: { id } });
+    await assertStudentInScope(req.user!, String(existing.studentId));
+    const data = attendanceSchema.omit({ studentId: true, fecha: true }).parse(req.body);
+    const record = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM estudiante WHERE id = ${existing.studentId} FOR UPDATE`;
+      const record = await tx.attendance.update({ where: { id }, data });
+      await refreshAcademicSummary(tx, existing.studentId);
+      await academicAudit(tx, req.user!.sub, "Attendance", id, existing.studentId, "UPDATE", req.ip);
+      return record;
     });
-    await logAudit({ entidad: "Attendance", entidadId: record.id, accion: "UPDATE", usuarioId: req.user!.sub, studentId: record.studentId });
     sendSuccess(res, { record });
-  } catch (e) {
-    next(e);
-  }
+  } catch (e) { next(e); }
 }
-
 export async function deleteAttendance(req: Request, res: Response, next: NextFunction) {
   try {
     const id = paramBigIntId(req);
-    await prisma.attendance.delete({ where: { id } });
-    await logAudit({ entidad: "Attendance", entidadId: id, accion: "DELETE", usuarioId: req.user!.sub });
+    const existing = await prisma.attendance.findUniqueOrThrow({ where: { id } });
+    await assertStudentInScope(req.user!, String(existing.studentId));
+    await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM estudiante WHERE id = ${existing.studentId} FOR UPDATE`;
+      await tx.attendance.delete({ where: { id } });
+      await refreshAcademicSummary(tx, existing.studentId);
+      await academicAudit(tx, req.user!.sub, "Attendance", id, existing.studentId, "DELETE", req.ip);
+    });
     sendSuccess(res, {}, "Registro eliminado");
-  } catch (e) {
-    next(e);
-  }
+  } catch (e) { next(e); }
 }

@@ -1,3 +1,4 @@
+import { registerTeacher } from "../services/teacher-registration.service.js";
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import type { Prisma } from "@prisma/client";
@@ -32,61 +33,6 @@ const courseSelect = {
 };
 
 const userSelect = { select: { id: true, email: true, activo: true } };
-
-async function createCoursesForTeacher(
-  tx: Prisma.TransactionClient,
-  teacherId: bigint,
-  cursos: { codigo: string; nombre: string; seccionId: string; cursoCatalogoId?: string; periodo?: string }[],
-) {
-  const anioLectivoId = await getActiveAnioLectivoId();
-  for (const c of cursos) {
-    const seccion = await requireActiveSeccion(c.seccionId, tx);
-    const codigoFinal = buildCourseCodigoForSeccion(c.codigo, seccion);
-
-    const dup = await tx.course.findUnique({ where: { codigo: codigoFinal } });
-    if (dup) {
-      throw new AppError(
-        409,
-        `El curso ${codigoFinal} ya existe en ${seccion.grado.nombre} ${seccion.nombre}`,
-      );
-    }
-
-    let cursoId: bigint;
-    if (c.cursoCatalogoId) {
-      cursoId = toDbId(c.cursoCatalogoId);
-    } else {
-      const catalog = await tx.cursoCatalogo.findFirst({ where: { nombre: c.nombre } });
-      if (!catalog) throw new AppError(400, `Catálogo no encontrado: ${c.nombre}`);
-      cursoId = catalog.id;
-    }
-
-    const dupSeccion = await tx.course.findFirst({
-      where: {
-        seccionId: toDbId(c.seccionId),
-        cursoId,
-        profesorId: teacherId,
-        anioLectivoId,
-        activo: true,
-      },
-    });
-    if (dupSeccion) {
-      throw new AppError(
-        409,
-        `Ya existe "${c.nombre}" en ${seccion.grado.nombre} ${seccion.nombre}`,
-      );
-    }
-
-    await tx.course.create({
-      data: {
-        codigo: codigoFinal,
-        cursoId,
-        profesorId: teacherId,
-        seccionId: toDbId(c.seccionId),
-        anioLectivoId,
-      },
-    });
-  }
-}
 
 function mapTeacherCourses(
   courses: { id: bigint; codigo: string; seccionId: bigint; cursoCatalogo: { nombre: string; codigo: string } | null }[],
@@ -126,72 +72,7 @@ export async function listTeachers(req: Request, res: Response, next: NextFuncti
 
 export async function createTeacher(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = teacherSchema.parse(req.body);
-    const { cursos, password, crearCuenta, correo, ...teacherData } = data;
-
-    const existing = await prisma.teacher.findUnique({ where: { codigo: teacherData.codigo } });
-    if (existing) throw new AppError(409, "Código de profesor ya existe");
-
-    const emailTaken = await prisma.user.findUnique({ where: { email: correo } });
-    if ((crearCuenta || password) && emailTaken) {
-      throw new AppError(409, "Ya existe un usuario con ese correo");
-    }
-
-    const teacher = await prisma.$transaction(async (tx) => {
-      let usuarioId: bigint | undefined;
-
-      if (crearCuenta || password) {
-        const hash = await bcrypt.hash(password!, 12);
-        const rolId = await getRolId("docente");
-        const user = await tx.user.create({
-          data: {
-            email: correo,
-            passwordHash: hash,
-            nombres: teacherData.nombres,
-            apellidos: teacherData.apellidos,
-            rolId,
-          },
-        });
-        usuarioId = user.id;
-      }
-
-      const created = await tx.teacher.create({
-        data: {
-          codigo: teacherData.codigo,
-          nombres: teacherData.nombres,
-          apellidos: teacherData.apellidos,
-          especialidad: teacherData.especialidad,
-          email: correo,
-          telefono: teacherData.telefono ?? null,
-          usuarioId: usuarioId ?? null,
-        },
-      });
-
-      if (cursos?.length) await createCoursesForTeacher(tx, created.id, cursos);
-
-      return tx.teacher.findUniqueOrThrow({
-        where: { id: created.id },
-        include: {
-          cursosOferta: courseSelect,
-          usuario: userSelect,
-          _count: { select: { cursosOferta: true } },
-        },
-      });
-    });
-
-    await logAudit({
-      entidad: "Teacher",
-      entidadId: teacher.id,
-      accion: "CREATE",
-      usuarioId: req.user!.sub,
-      teacherId: teacher.id,
-      detalle: [
-        cursos?.length ? `${cursos.length} curso(s)` : null,
-        teacher.usuarioId ? "cuenta docente" : null,
-      ]
-        .filter(Boolean)
-        .join(" · "),
-    });
+    const teacher = await registerTeacher(req.body, req.user!.sub, req.ip);
     sendCreated(res, { teacher: {
         ...teacher,
         id: idToString(teacher.id),
@@ -262,11 +143,11 @@ export async function createTeacherAccount(req: Request, res: Response, next: Ne
 export async function updateTeacher(req: Request, res: Response, next: NextFunction) {
   try {
     const data = updateTeacherSchema.parse(req.body);
-    const { cursosNuevos, correo, ...fields } = data;
+    const { correo, ...fields } = data;
     const id = paramBigIntId(req);
 
     const teacher = await prisma.$transaction(async (tx) => {
-      await tx.teacher.update({
+      const profile = await tx.teacher.update({
         where: { id },
         data: {
           nombres: fields.nombres,
@@ -278,8 +159,9 @@ export async function updateTeacher(req: Request, res: Response, next: NextFunct
         },
       });
 
-      if (cursosNuevos?.length) await createCoursesForTeacher(tx, id, cursosNuevos);
 
+
+      if (profile.usuarioId) await tx.user.update({ where: { id: profile.usuarioId }, data: { email: correo, nombres: fields.nombres, apellidos: fields.apellidos, telefono: fields.telefono, activo: fields.activo } });
       return tx.teacher.findUniqueOrThrow({
         where: { id },
         include: {
@@ -290,12 +172,6 @@ export async function updateTeacher(req: Request, res: Response, next: NextFunct
       });
     });
 
-    if (correo && teacher.usuarioId) {
-      await prisma.user.update({
-        where: { id: teacher.usuarioId },
-        data: { email: correo },
-      });
-    }
 
     await logAudit({
       entidad: "Teacher",
@@ -368,7 +244,7 @@ export async function deleteTeacher(req: Request, res: Response, next: NextFunct
     await logAudit({
       entidad: "Teacher",
       entidadId: id,
-      accion: "DELETE",
+      accion: "DEACTIVATE",
       usuarioId: req.user!.sub,
     });
     sendSuccess(res, {}, "Profesor desactivado");

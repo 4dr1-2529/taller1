@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@tesis/shared": ["../packages/shared/src/index.ts"]
+    }
+  }
+}
