@@ -1,58 +1,21 @@
-"""Validación de entradas para predicción y entrenamiento."""
-from __future__ import annotations
-
-from typing import Any
-
+"""Strict seven-feature contract; no fabricated defaults."""
+import math
 
 class ValidationError(ValueError):
     pass
 
-
-def validate_predict_payload(data: dict[str, Any]) -> dict[str, Any]:
-    """Valida rangos y tipos; devuelve payload normalizado."""
-    errors: list[str] = []
-
-    def num(key: str, default: float, lo: float, hi: float) -> float:
-        raw = data.get(key, default)
-        try:
-            v = float(raw)
-        except (TypeError, ValueError):
-            errors.append(f"{key} debe ser numérico")
-            return default
-        if v < lo or v > hi:
-            errors.append(f"{key} debe estar entre {lo} y {hi}")
-        return max(lo, min(hi, v))
-
-    promedio = num("promedio_general", 12, 0, 20)
-    asistencia = num("asistencia_general", 80, 0, 100)
-    tiempo = num("tiempo_plataforma", 4, 0, 24)
-    tareas = num("tareas_ratio", 0.75, 0, 1)
-    cursos_des = num("cursos_desaprobados", 0, 0, 12)
-    lms = data.get("frecuencia_acceso_lms") or data.get("actividad_lms_prom") or 55
-    try:
-        frecuencia = float(lms)
-        if frecuencia < 0 or frecuencia > 100:
-            errors.append("frecuencia_acceso_lms entre 0 y 100")
-    except (TypeError, ValueError):
-        errors.append("frecuencia_acceso_lms inválida")
-        frecuencia = 55.0
-
-    participacion_raw = data.get("participacion_actividades")
-    participacion = float(participacion_raw if participacion_raw is not None else frecuencia)
-    uso_foros = num("uso_foros", 0.5, 0, 1)
-    disminucion = num("disminucion_actividad", 0, 0, 100)
-
-    if errors:
-        raise ValidationError("; ".join(errors))
-
-    return {
-        "promedio_general": promedio,
-        "asistencia_general": asistencia,
-        "frecuencia_acceso_lms": frecuencia,
-        "tiempo_plataforma": tiempo,
-        "tareas_ratio": tareas,
-        "cursos_desaprobados": cursos_des,
-        "participacion_actividades": participacion,
-        "uso_foros": uso_foros,
-        "disminucion_actividad": disminucion,
-    }
+def validate_predict_payload(data):
+    from app.features import FEATURE_NAMES
+    if set(data) != set(FEATURE_NAMES):
+        raise ValidationError("Se requieren exactamente las siete variables del contrato 2026")
+    result = {}
+    for name in FEATURE_NAMES:
+        value = data[name]
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+            raise ValidationError(f"Valor inválido: {name}")
+        if name == "promedio_general" and value > 20 or name == "asistencia_general" and value > 100:
+            raise ValidationError(f"Fuera de rango: {name}")
+        if name in ("cursos_desaprobados", "actividades_realizadas", "recursos_consultados") and int(value) != value:
+            raise ValidationError(f"Se requiere entero: {name}")
+        result[name] = float(value)
+    return result

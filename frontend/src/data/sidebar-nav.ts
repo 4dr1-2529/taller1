@@ -12,12 +12,12 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     id: "overview",
     label: "Panel",
-    items: ["Dashboard"],
+    items: ["Dashboard", "Grados y secciones", "Auditoría", "Configuración"],
   },
   {
     id: "academic",
     label: "Gestión académica",
-    items: ["Estudiantes", "Profesores", "Asignaciones", "Cursos", "Matrículas", "Notas", "Asistencia", "Actividad LMS"],
+    items: ["Estudiantes", "Profesores", "Asignaciones", "Cursos", "Matrículas", "Notas", "Asistencia", "Actividad LMS", "Materiales", "Actividades"],
   },
   {
     id: "ai",
@@ -27,7 +27,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     id: "comms",
     label: "Comunicación",
-    items: ["Mensajería Académica", "Reportes"],
+    items: ["Mensajería Académica", "Avisos", "Reportes"],
   },
 ];
 
@@ -40,6 +40,12 @@ export function groupsForSections(visible: readonly AppSection[]): SidebarGroup[
 }
 
 export const SECTION_BREADCRUMB: Record<AppSection, string[]> = {
+  Materiales: ["Académico", "Materiales"],
+  Actividades: ["Académico", "Actividades"],
+  Avisos: ["Comunicación", "Avisos"],
+  "Grados y secciones": ["Institución", "Grados y secciones"],
+  "Auditoría": ["Institución", "Auditoría"],
+  "Configuración": ["Cuenta", "Configuración"],
   Dashboard: ["Inicio", "Panel principal"],
   Estudiantes: ["Académico", "Estudiantes"],
   Profesores: ["Académico", "Profesores"],

@@ -1,9 +1,7 @@
 import { toApiStatus, toUiStatus } from "@/lib/status";
-import { deriveLmsEngagementLevel, type LmsIndicadorInput } from "@/lib/lms-engagement";
 import type {
   Course,
   Enrollment,
-  LmsEngagement,
   Student,
   StudentStatus,
   Teacher,
@@ -29,26 +27,11 @@ type ApiSeccion = {
   };
 };
 
-type ApiLmsActivity = {
-  actividadPct: number;
-  minutos: number;
-  conexiones?: number;
-  tareasEntregadas?: number;
-  tareasTotales?: number;
-  horasPlataforma: number;
-  anioSemana?: string;
-};
-
-type ApiLmsIndicador = {
-  frecuenciaAcceso?: number | string;
-  tiempoPlataforma?: number | string;
-  tareasRatio?: number | string;
-  participacion?: number | string;
-};
-
 type ApiStoredPrediction = {
   score: number;
-  level: "bajo" | "medio" | "alto";
+  level?: "bajo" | "medio" | "alto";
+  nivelRiesgo?: "bajo" | "medio" | "alto";
+  probabilidad?: number;
   probability?: number | null;
   modelName?: string;
   factorsJson?: string;
@@ -69,8 +52,7 @@ type ApiStudent = {
   promedioGeneral: number | string;
   asistenciaGeneral: number | string;
   lmsEngagement?: string;
-  lmsActivities?: ApiLmsActivity[];
-  lmsIndicador?: ApiLmsIndicador | null;
+  indicators?: { dias_activos: number; actividades_realizadas: number; recursos_consultados: number; tiempo_interaccion_lms: number; promedio_general: number | null; asistencia_general: number | null };
   predictions?: ApiStoredPrediction[];
 };
 
@@ -131,24 +113,6 @@ function mapEstado(estado: string): StudentStatus {
   return toUiStatus(estado);
 }
 
-function mapEngagement(v: string | undefined, acts: ApiLmsActivity[], ind?: ApiLmsIndicador | null): LmsEngagement {
-  if (v === "alto" || v === "medio" || v === "bajo") return v;
-  const mappedActs = acts.map((a) => ({
-    actividadPct: toNumber(a.actividadPct),
-    minutos: toNumber(a.minutos),
-    conexiones: toNumber(a.conexiones),
-  }));
-  const mappedInd: LmsIndicadorInput = ind
-    ? {
-        frecuenciaAcceso: toNumber(ind.frecuenciaAcceso),
-        tiempoPlataforma: toNumber(ind.tiempoPlataforma),
-        tareasRatio: toNumber(ind.tareasRatio),
-        participacion: toNumber(ind.participacion),
-      }
-    : null;
-  return deriveLmsEngagementLevel(mappedActs, mappedInd);
-}
-
 function parseFactorsJson(raw?: string) {
   if (!raw) return [];
   try {
@@ -160,21 +124,9 @@ function parseFactorsJson(raw?: string) {
 }
 
 export function mapStudentFromApi(row: ApiStudent): Student {
-  const acts = row.lmsActivities ?? [];
-  const ind = row.lmsIndicador ?? null;
-  const last = acts[acts.length - 1];
+  const ind = row.indicators;
   const nivelLabel = formatSeccionLabel(row.seccion, row.nivel);
   const lastPred = row.predictions?.[0];
-  const tareasRatio = ind ? toNumber(ind.tareasRatio) : 0;
-  const tareasTotales = tareasRatio > 0 ? 10 : toNumber(last?.tareasTotales, 10);
-  const tareasEntregadas = ind
-    ? Math.round(tareasRatio * tareasTotales)
-    : toNumber(last?.tareasEntregadas);
-  const horasSemana = ind
-    ? toNumber(ind.tiempoPlataforma)
-    : acts.length
-      ? acts.reduce((s, a) => s + toNumber(a.horasPlataforma), 0) / acts.length
-      : 0;
   return {
     id: row.id,
     codigo: row.codigo,
@@ -189,19 +141,19 @@ export function mapStudentFromApi(row: ApiStudent): Student {
       promedioGeneral: toNumber(row.promedioGeneral),
       asistenciaGeneral: toNumber(row.asistenciaGeneral),
       lms: {
-        engagement: mapEngagement(row.lmsEngagement, acts, ind),
-        actividadSemanalPct: acts.map((a) => toNumber(a.actividadPct)),
-        minutosPorSemana: acts.map((a) => toNumber(a.minutos)),
-        tareasEntregadas,
-        tareasTotales,
-        horasPlataformaSemana: horasSemana,
+        engagement: (ind?.dias_activos ?? 0) >= 18 ? "alto" : (ind?.dias_activos ?? 0) >= 10 ? "medio" : "bajo",
+        actividadSemanalPct: ind ? [ind.dias_activos * 100 / 28] : [],
+        minutosPorSemana: ind ? [ind.tiempo_interaccion_lms * 60 / 4] : [],
+        actividadesRealizadas: ind?.actividades_realizadas ?? 0,
+        recursosConsultados: ind?.recursos_consultados ?? 0,
+        horasPlataformaSemana: (ind?.tiempo_interaccion_lms ?? 0) / 4,
       },
     },
     storedPrediction: lastPred
       ? {
           score: toNumber(lastPred.score),
-          level: lastPred.level,
-          probability: lastPred.probability != null ? toNumber(lastPred.probability) : undefined,
+          level: lastPred.level ?? lastPred.nivelRiesgo ?? "bajo",
+          probability: lastPred.probability != null ? toNumber(lastPred.probability) : lastPred.probabilidad != null ? toNumber(lastPred.probabilidad) : undefined,
           factors: parseFactorsJson(lastPred.factorsJson),
           modelName: lastPred.modelName,
           createdAt: lastPred.createdAt,

@@ -11,9 +11,9 @@ from typing import Any
 
 import joblib
 import numpy as np
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.features import (
     FEATURE_NAMES,
@@ -34,22 +34,18 @@ MODELS_DIR = Path(__file__).parent.parent / "models"
 model = None
 feature_names: list[str] | None = None
 metrics: dict[str, Any] | None = None
-best_model_name = "stacking-ensemble"
+best_model_name = "unavailable"
 
 
 class PredictInput(BaseModel):
-    """Variables alineadas con la tesis (snake_case)."""
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     promedio_general: float = Field(..., ge=0, le=20)
+    cursos_desaprobados: int = Field(..., ge=0)
     asistencia_general: float = Field(..., ge=0, le=100)
-    # Compatibilidad con cliente anterior
-    actividad_lms_prom: float | None = None
-    frecuencia_acceso_lms: float | None = None
-    tiempo_plataforma: float = Field(4, ge=0, le=24)
-    tareas_ratio: float = Field(..., ge=0, le=1)
-    cursos_desaprobados: float = Field(0, ge=0, le=12)
-    participacion_actividades: float | None = None
-    uso_foros: float = Field(0.5, ge=0, le=1)
-    disminucion_actividad: float = Field(0, ge=0, le=100)
+    frecuencia_acceso_lms: float = Field(..., ge=0)
+    tiempo_interaccion_lms: float = Field(..., ge=0)
+    actividades_realizadas: int = Field(..., ge=0)
+    recursos_consultados: int = Field(..., ge=0)
 
 
 class PredictOutput(BaseModel):
@@ -96,13 +92,17 @@ async def lifespan(app: FastAPI):
         load_path = best_path if best_path.exists() else stack_path
         model = joblib.load(load_path)
         feature_names = joblib.load(MODELS_DIR / "features.joblib")
+        if list(feature_names) != FEATURE_NAMES or getattr(model, "n_features_in_", 0) != len(FEATURE_NAMES) or list(getattr(model, "classes_", [])) != [0, 1, 2]:
+            model = None
+            raise ValueError("Artifact incompatible with the 2026 feature contract")
         metrics_path = MODELS_DIR / "metrics.json"
         metrics = await asyncio.to_thread(
             lambda p=metrics_path: json.loads(p.read_text(encoding="utf-8"))
         )
         best_model_name = str(metrics.get("best_model", "stacking"))
         print(f"Modelo cargado: {load_path.name} ({best_model_name})")
-    except FileNotFoundError:
+    except (FileNotFoundError, ValueError):
+        model = None
         print("Modelos no encontrados. Ejecute: python train.py")
     yield
     model = None
@@ -120,77 +120,18 @@ app.add_middleware(
 )
 
 
-def _normalize_input(data: PredictInput) -> dict[str, Any]:
-    lms = data.frecuencia_acceso_lms if data.frecuencia_acceso_lms is not None else data.actividad_lms_prom
-    if lms is None:
-        lms = 55.0
-    participacion = data.participacion_actividades if data.participacion_actividades is not None else lms
-    return {
-        "promedio_general": data.promedio_general,
-        "cursos_desaprobados": data.cursos_desaprobados,
-        "asistencia_general": data.asistencia_general,
-        "frecuencia_acceso_lms": lms,
-        "tiempo_plataforma": data.tiempo_plataforma,
-        "tareas_ratio": data.tareas_ratio,
-        "participacion_actividades": participacion,
-        "uso_foros": data.uso_foros,
-        "disminucion_actividad": data.disminucion_actividad,
-    }
-
-
-def heuristic_predict(data: dict[str, Any]) -> PredictOutput:
-    """Respaldo cuando no hay modelo entrenado."""
-    score = 0.0
-    if data["promedio_general"] < 11:
-        score += 32
-    elif data["promedio_general"] < 13:
-        score += 16
-    if data["cursos_desaprobados"] >= 2:
-        score += 18
-    if data["asistencia_general"] < 75:
-        score += 26
-    elif data["asistencia_general"] < 85:
-        score += 12
-    if data["frecuencia_acceso_lms"] < 45:
-        score += 20
-    if data["tareas_ratio"] < 0.55:
-        score += 22
-    if data["disminucion_actividad"] > 20:
-        score += 14
-    score = min(100, max(0, score))
-    level = "alto" if score >= 65 else "medio" if score >= 41 else "bajo"
-    factors = build_factors(data)
-    now = datetime.now(timezone.utc).isoformat()
-    return _with_thesis_fields(
-        PredictOutput(
-            score=round(score, 1),
-            level=level,
-            probability=round(score / 100, 3),
-            probability_abandono=round(score / 100, 3),
-            factors=factors,
-            recommendation=auto_recommendation(level, factors),
-            model_name="heuristic-fallback",
-            predicted_at=now,
-            input_data=data,
-            prediction_source="heuristic_fallback",
-        )
-    )
-
-
 @app.post("/predict", response_model=PredictOutput)
 def predict(data: PredictInput) -> PredictOutput:
     raw = data.model_dump()
     try:
         validated = validate_predict_payload(raw)
     except ValidationError as e:
-        from fastapi import HTTPException
-
         raise HTTPException(status_code=422, detail=str(e)) from e
     payload = validated
     now = datetime.now(timezone.utc).isoformat()
 
     if model is None:
-        return heuristic_predict(payload)
+        raise HTTPException(status_code=503, detail="Modelo 2026 validado no disponible")
 
     try:
         features = build_feature_vector(payload)
@@ -199,7 +140,7 @@ def predict(data: PredictInput) -> PredictOutput:
         level = LEVEL_MAP.get(pred, "medio")
         probability = float(proba[pred]) if pred < len(proba) else float(max(proba))
         # Probabilidad de abandono ≈ clase alto (índice 2)
-        probability_abandono = float(proba[2]) if len(proba) > 2 else probability
+        probability_abandono = float(proba[2])
         score = proba_to_score(proba)
         factors = build_factors(payload)
 

@@ -1,14 +1,14 @@
 "use client";
 
+import { api } from "@/services/api";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { motion } from "framer-motion";
-import { UserPlus, Shuffle } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { MiniProgressBar } from "@/components/ui/MiniProgressBar";
-import { attachPredictions } from "@/lib/aggregates";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
-import type { LmsEngagement, Student, StudentStatus } from "@/types/academic";
+import type { Student } from "@/types/academic";
 import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, useTableFilter } from "@/components/ui/DataTablePanel";
@@ -16,14 +16,10 @@ import { TableWrap } from "@/components/ui/DataTablePanel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { INPUT_CLASS } from "@/lib/ui";
 import {
-  CodigoInput,
   DniInput,
-  GradeInput,
-  PercentInput,
   PersonNameInput,
   PhoneInput,
 } from "@/components/ui/ValidatedInputs";
-import { randomPeruvianPerson } from "@/lib/peruvian-names";
 import {
   type FieldErrors,
   firstError,
@@ -32,31 +28,21 @@ import {
 } from "@/lib/validation";
 
 export type NewStudentForm = {
-  codigo: string;
   nombres: string;
   apellidos: string;
   seccionId: string;
   dni: string;
   correo: string;
   telefono: string;
-  estado: StudentStatus;
-  promedioGeneral: string;
-  asistenciaGeneral: string;
-  engagement: LmsEngagement;
 };
 
 export const defaultStudentForm: NewStudentForm = {
-  codigo: "",
   nombres: "",
   apellidos: "",
   seccionId: "",
   dni: "",
   correo: "",
   telefono: "",
-  estado: "activo",
-  promedioGeneral: "",
-  asistenciaGeneral: "",
-  engagement: "medio",
 };
 
 type StudentsViewProps = {
@@ -66,6 +52,7 @@ type StudentsViewProps = {
   setNewStudent: (v: NewStudentForm | ((p: NewStudentForm) => NewStudentForm)) => void;
   onAddStudent: (e: FormEvent<HTMLFormElement>) => void;
   canEdit?: boolean;
+  onRefresh?: () => void;
 };
 
 export function StudentsView({
@@ -75,8 +62,9 @@ export function StudentsView({
   setNewStudent,
   onAddStudent,
   canEdit = true,
+  onRefresh,
 }: StudentsViewProps) {
-  const withPred = attachPredictions(students);
+  const withPred = students;
   const [search, setSearch] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
   const filtered = useTableFilter(
@@ -90,16 +78,6 @@ export function StudentsView({
     visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } },
   };
 
-  function fillRandomPeruvianNames() {
-    const { nombres, apellidos } = randomPeruvianPerson();
-    setErrors((p) => {
-      const next = { ...p };
-      delete next.nombres;
-      delete next.apellidos;
-      return next;
-    });
-    setNewStudent((p) => ({ ...p, nombres, apellidos }));
-  }
 
   return (
     <div className="space-y-6">
@@ -109,8 +87,8 @@ export function StudentsView({
           <PageSection
             variant="form"
             icon={UserPlus}
-            title="Registrar estudiante"
-            description="Asigne grado y sección. Los indicadores alimentan el modelo de riesgo de deserción."
+            title="Registrar estudiante 2026"
+            description="Asigne grado y sección. La matrícula y la cuenta se crean al registrar."
           >
             <form
               className="form-grid"
@@ -126,18 +104,8 @@ export function StudentsView({
                 onAddStudent(e);
               }}
             >
-              <FormField label="Código" error={errors.codigo} hint="Letras, números, - y _">
-                <CodigoInput
-                  placeholder="Ej. 2024-001"
-                  value={newStudent.codigo}
-                  onValueChange={(codigo) => {
-                    setErrors((p) => clearFieldError(p, "codigo"));
-                    setNewStudent((p) => ({ ...p, codigo }));
-                  }}
-                  required
-                />
-              </FormField>
-              <FormField label="DNI" error={errors.dni} hint="8 dígitos — necesario para crear cuenta (o use correo)">
+              <FormField label="Código automático"><input className={INPUT_CLASS} value="EST-… (asignado al registrar)" readOnly /></FormField>
+              <FormField label="DNI" error={errors.dni} hint="8 dígitos obligatorios">
                 <DniInput
                   autoComplete="off"
                   placeholder="12345678"
@@ -148,17 +116,6 @@ export function StudentsView({
                   }}
                 />
               </FormField>
-              <div className="form-grid-full flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs text-[var(--text-muted)]">Nombres y apellidos</p>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition hover:border-[var(--brand-orange)] hover:text-[var(--brand-orange)]"
-                  onClick={fillRandomPeruvianNames}
-                >
-                  <Shuffle className="h-3.5 w-3.5" />
-                  Generar nombres peruanos
-                </button>
-              </div>
               <FormField label="Nombres" error={errors.nombres}>
                 <PersonNameInput
                   value={newStudent.nombres}
@@ -199,7 +156,7 @@ export function StudentsView({
               </FormField>
               {secciones.length === 0 ? (
                 <p className="form-grid-full text-xs text-[var(--risk-medium)]">
-                  Ejecute `npm run db:seed` para cargar niveles, grados y secciones.
+                  No hay secciones disponibles. Configure la estructura académica.
                 </p>
               ) : null}
               <FormField label="Correo (opcional)" error={errors.correo}>
@@ -228,52 +185,6 @@ export function StudentsView({
                   }}
                 />
               </FormField>
-              <FormField label="Promedio (0–20)" error={errors.promedioGeneral} hint="Solo números">
-                <GradeInput
-                  placeholder="0–20"
-                  value={newStudent.promedioGeneral}
-                  onValueChange={(promedioGeneral) => {
-                    setErrors((p) => clearFieldError(p, "promedioGeneral"));
-                    setNewStudent((p) => ({ ...p, promedioGeneral }));
-                  }}
-                />
-              </FormField>
-              <FormField label="Asistencia %" error={errors.asistenciaGeneral} hint="0–100, solo números">
-                <PercentInput
-                  placeholder="0–100"
-                  value={newStudent.asistenciaGeneral}
-                  onValueChange={(asistenciaGeneral) => {
-                    setErrors((p) => clearFieldError(p, "asistenciaGeneral"));
-                    setNewStudent((p) => ({ ...p, asistenciaGeneral }));
-                  }}
-                />
-              </FormField>
-              <FormField label="Compromiso en plataforma">
-                <select
-                  className={INPUT_CLASS}
-                  value={newStudent.engagement}
-                  onChange={(e) =>
-                    setNewStudent((p) => ({ ...p, engagement: e.target.value as LmsEngagement }))
-                  }
-                >
-                  <option value="alto">Compromiso alto</option>
-                  <option value="medio">Compromiso medio</option>
-                  <option value="bajo">Compromiso bajo</option>
-                </select>
-              </FormField>
-              <FormField label="Estado">
-                <select
-                  className={INPUT_CLASS}
-                  value={newStudent.estado}
-                  onChange={(e) =>
-                    setNewStudent((p) => ({ ...p, estado: e.target.value as StudentStatus }))
-                  }
-                >
-                  <option value="activo">Activo</option>
-                  <option value="en riesgo">En riesgo</option>
-                  <option value="retirado">Retirado</option>
-                </select>
-              </FormField>
               <button type="submit" className="btn-primary form-grid-full">
                 Agregar estudiante
               </button>
@@ -300,6 +211,7 @@ export function StudentsView({
                   <th>Promedio</th>
                   <th>Asistencia</th>
                   <th>Riesgo (IA)</th>
+                  {canEdit && <th>Acciones</th>}
                 </tr>
               </thead>
               <tbody>
@@ -339,8 +251,12 @@ export function StudentsView({
                       />
                     </td>
                     <td>
-                      <RiskBadge level={student.prediction.level} score={student.prediction.score} />
+                      {student.storedPrediction ? <RiskBadge level={student.storedPrediction.level} score={student.storedPrediction.score} /> : <span>Sin predicción</span>}
                     </td>
+                    {canEdit && <td><button type="button" className="text-rose-500" onClick={async () => {
+                      try { await api.call('/students/' + student.id, { method: 'DELETE' }); toast.success('Estudiante desactivado'); onRefresh?.(); }
+                      catch(e) { toast.error(e instanceof Error ? e.message : 'No se pudo desactivar'); }
+                    }}>Desactivar</button></td>}
                   </tr>
                 ))}
               </tbody>

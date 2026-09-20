@@ -1,3 +1,4 @@
+import { refreshAcademicSummary, academicAudit } from "../services/academic-records.service.js";
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
@@ -13,7 +14,8 @@ export async function listGrades(req: Request, res: Response, next: NextFunction
   try {
     const { studentId, courseId, periodoId, periodoNumero } = req.query;
     const scope = await resolveStudentScope(req.user!);
-    const where: Record<string, unknown> = { student: scope };
+    const where: Record<string, unknown> = { student: scope, periodo: { anioLectivo: { anio: 2026 } } };
+    if (studentId) await assertStudentInScope(req.user!, String(studentId));
     if (studentId) where.studentId = toDbId(studentId as string);
     if (courseId) where.cursoOfertaId = toDbId(courseId as string);
     if (periodoId) {
@@ -69,7 +71,9 @@ export async function createGrade(req: Request, res: Response, next: NextFunctio
     const studentId = toDbId(data.studentId);
     const cursoOfertaId = toDbId(data.courseId);
 
-    const item = await prisma.grade.upsert({
+    const item = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM estudiante WHERE id = ${studentId} FOR UPDATE`;
+      const record = await tx.grade.upsert({
       where: {
         studentId_cursoOfertaId_periodoId: { studentId, cursoOfertaId, periodoId },
       },
@@ -87,25 +91,9 @@ export async function createGrade(req: Request, res: Response, next: NextFunctio
       },
     });
 
-    const agg = await prisma.grade.groupBy({
-      by: ["studentId"],
-      where: { studentId },
-      _avg: { nota: true },
-    });
-    const avg = agg[0]?._avg.nota;
-    if (avg != null) {
-      await prisma.student.update({
-        where: { id: studentId },
-        data: { promedioGeneral: Math.round(Number(avg) * 100) / 100 },
-      });
-    }
-
-    await logAudit({
-      entidad: "Grade",
-      entidadId: item.id,
-      accion: "UPSERT",
-      usuarioId: req.user?.sub,
-      studentId,
+      await refreshAcademicSummary(tx, studentId);
+      await academicAudit(tx, req.user!.sub, "Grade", record.id, studentId, "UPSERT", req.ip);
+      return record;
     });
     sendCreated(res, { item: {
         ...item,
@@ -119,7 +107,16 @@ export async function createGrade(req: Request, res: Response, next: NextFunctio
 
 export async function deleteGrade(req: Request, res: Response, next: NextFunction) {
   try {
-    const item = await prisma.grade.delete({ where: { id: paramBigIntId(req) } });
+    const existing = await prisma.grade.findUniqueOrThrow({ where: { id: paramBigIntId(req) } });
+    await assertStudentInScope(req.user!, String(existing.studentId));
+    await assertTeacherCourseAccess(req.user!, String(existing.cursoOfertaId));
+    const item = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM estudiante WHERE id = ${existing.studentId} FOR UPDATE`;
+      const item = await tx.grade.delete({ where: { id: existing.id } });
+      await refreshAcademicSummary(tx, existing.studentId);
+      await academicAudit(tx, req.user!.sub, "Grade", item.id, item.studentId, "DELETE", req.ip);
+      return item;
+    });
     await logAudit({
       entidad: "Grade",
       entidadId: item.id,

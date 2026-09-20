@@ -15,6 +15,9 @@ function mapPrediction(p: {
   createdAt: Date;
   factores: { factorKey: string; etiqueta: string; contribucion: unknown }[];
   student?: unknown;
+  modelName?: string | null;
+  inputData?: unknown;
+  recommendation?: string | null;
 }) {
   const factors = p.factores.map((f) => ({
     key: f.factorKey,
@@ -30,7 +33,8 @@ function mapPrediction(p: {
     probability: Number(p.probabilidadAbandono),
     probabilityAbandono: Number(p.probabilidadAbandono),
     factors,
-    meta: null,
+    modelName: p.modelName ?? "Modelo histórico",
+    meta: { inputData: p.inputData, recommendation: p.recommendation },
   };
 }
 

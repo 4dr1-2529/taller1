@@ -43,147 +43,6 @@ SCORE_UMBRAL_MEDIO = 41
 SCORE_UMBRAL_ALTO = 65
 
 
-def compute_risk_score(
-    promedio: np.ndarray,
-    cursos_desaprobados: np.ndarray,
-    asistencia: np.ndarray,
-    frecuencia_lms: np.ndarray,
-    tiempo_plataforma: np.ndarray,
-    tareas_ratio: np.ndarray,
-    participacion: np.ndarray,
-    uso_foros: np.ndarray,
-    disminucion: np.ndarray,
-) -> np.ndarray:
-    """Score de riesgo 0–100 — pesos calibrados para tres clases en datos sintéticos."""
-    score = (
-        (14 - promedio) * 3.0 * 0.40
-        + cursos_desaprobados * 9 * 0.22
-        + (85 - asistencia) * 0.45 * 0.30
-        + (65 - frecuencia_lms) * 0.35 * 0.22
-        + (6 - tiempo_plataforma) * 2.5 * 0.14
-        + (0.85 - tareas_ratio) * 42 * 0.18
-        + (70 - participacion) * 0.25 * 0.14
-        + (0.5 - uso_foros) * 18 * 0.10
-        + disminucion * 0.35 * 0.10
-    )
-    return np.clip(score, 0, 100)
-
-
-def score_to_labels(score: np.ndarray) -> np.ndarray:
-    return np.where(
-        score >= SCORE_UMBRAL_ALTO,
-        2,
-        np.where(score >= SCORE_UMBRAL_MEDIO, 1, 0),
-    )
-
-
-def _generate_profile_block(
-    n: int,
-    *,
-    promedio_rng: tuple[float, float],
-    asistencia_rng: tuple[float, float],
-    frecuencia_rng: tuple[float, float],
-    tareas_rng: tuple[float, float],
-    cursos_lambda: float,
-    disminucion_rng: tuple[float, float],
-) -> tuple[np.ndarray, ...]:
-    promedio = np.random.uniform(*promedio_rng, n)
-    cursos_desaprobados = np.random.poisson(cursos_lambda, n).astype(float)
-    asistencia = np.random.uniform(*asistencia_rng, n)
-    frecuencia_lms = np.random.uniform(*frecuencia_rng, n)
-    tiempo_plataforma = np.random.uniform(0.5, 12, n)
-    tareas_ratio = np.random.uniform(*tareas_rng, n)
-    participacion = np.random.uniform(20, 95, n)
-    uso_foros = np.random.uniform(0, 1, n)
-    disminucion = np.random.uniform(*disminucion_rng, n)
-    return (
-        promedio,
-        cursos_desaprobados,
-        asistencia,
-        frecuencia_lms,
-        tiempo_plataforma,
-        tareas_ratio,
-        participacion,
-        uso_foros,
-        disminucion,
-    )
-
-
-def generate_synthetic_data(n_samples: int = 2500) -> tuple[np.ndarray, np.ndarray]:
-    """Dataset sintético estratificado por perfil académico (bajo / medio / alto riesgo)."""
-    np.random.seed(42)
-    n_low = n_samples // 3
-    n_med = n_samples // 3
-    n_high = n_samples - n_low - n_med
-
-    blocks = [
-        _generate_profile_block(
-            n_low,
-            promedio_rng=(14.0, 18.0),
-            asistencia_rng=(88.0, 100.0),
-            frecuencia_rng=(70.0, 98.0),
-            tareas_rng=(0.80, 1.0),
-            cursos_lambda=0.4,
-            disminucion_rng=(0.0, 12.0),
-        ),
-        _generate_profile_block(
-            n_med,
-            promedio_rng=(11.0, 14.0),
-            asistencia_rng=(72.0, 88.0),
-            frecuencia_rng=(45.0, 70.0),
-            tareas_rng=(0.55, 0.82),
-            cursos_lambda=1.2,
-            disminucion_rng=(8.0, 25.0),
-        ),
-        _generate_profile_block(
-            n_high,
-            promedio_rng=(6.0, 11.0),
-            asistencia_rng=(50.0, 75.0),
-            frecuencia_rng=(15.0, 48.0),
-            tareas_rng=(0.15, 0.55),
-            cursos_lambda=2.8,
-            disminucion_rng=(18.0, 40.0),
-        ),
-    ]
-
-    arrays = [np.concatenate(parts) for parts in zip(*blocks)]
-    (
-        promedio,
-        cursos_desaprobados,
-        asistencia,
-        frecuencia_lms,
-        tiempo_plataforma,
-        tareas_ratio,
-        participacion,
-        uso_foros,
-        disminucion,
-    ) = arrays
-
-    perm = np.random.permutation(n_samples)
-    arrays = [arr[perm] for arr in arrays]
-    (
-        promedio,
-        cursos_desaprobados,
-        asistencia,
-        frecuencia_lms,
-        tiempo_plataforma,
-        tareas_ratio,
-        participacion,
-        uso_foros,
-        disminucion,
-    ) = arrays
-
-    labels = np.concatenate([
-        np.zeros(n_low, dtype=int),
-        np.ones(n_med, dtype=int),
-        np.full(n_high, 2, dtype=int),
-    ])[perm]
-
-    X = np.column_stack(arrays)
-    noise = np.random.normal(0, 0.015, X.shape)
-    return X + noise, labels
-
-
 def evaluate_model(
     name: str,
     y_test: np.ndarray,
@@ -231,17 +90,16 @@ def evaluate_model(
 
 def train_models() -> None:
     mode = os.environ.get("ML_DATA_MODE", "real").lower()
-    if mode == "demo":
-        print("ML_DATA_MODE=demo: generando datos sintéticos de demostración técnica...")
-        X, y = generate_synthetic_data(2500)
-        data_meta = {"data_source": "demo", "dataset_size": int(X.shape[0])}
-    else:
-        X, y, data_meta = load_dataset()
-        if len(np.unique(y)) < 2:
-            raise ValueError("El dataset real debe contener al menos dos clases observables.")
-    X_train, X_test, y_train, y_test = train_test_split(
+    if mode != "real":
+        raise RuntimeError("Generación de datos sintéticos pospuesta a Data Seed v2")
+    X, y, data_meta = load_dataset()
+    X_dev, X_holdout, y_dev, y_holdout = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_dev, y_dev, test_size=0.25, random_state=42, stratify=y_dev
+    )
+    # X_test here is the selection/validation split; holdout is never used for selection.
 
     def make_rf():
         return RandomForestClassifier(
@@ -328,6 +186,9 @@ def train_models() -> None:
 
     print(f"\nMejor modelo por F1: {best_key} (F1={best_f1})")
 
+    validation_results = results
+    results = {name: evaluate_model(name, y_holdout, m.predict(X_holdout), m.predict_proba(X_holdout)) for name, m in models_map.items()}
+    joblib.dump({"X": X_holdout, "y": y_holdout, "features": FEATURE_NAMES}, MODELS_DIR / "holdout.joblib")
     joblib.dump(best_model, MODELS_DIR / "best_model.joblib")
     joblib.dump(stacking, MODELS_DIR / "stacking_model.joblib")
     joblib.dump(rf_eval, MODELS_DIR / "random_forest_model.joblib")
@@ -341,7 +202,10 @@ def train_models() -> None:
         "model_used": "XGBoost" if HAS_XGBOOST else "HistGradientBoosting",
         "n_samples": int(X.shape[0]),
         "train_size": int(X_train.shape[0]),
-        "test_size": int(X_test.shape[0]),
+        "validation_size": int(X_test.shape[0]),
+        "test_size": int(X_holdout.shape[0]),
+        "selection": "validation_f1_weighted",
+        "validation_results": validation_results,
         "data_source": data_meta["data_source"],
         "data_mode": mode,
         "n_features": len(FEATURE_NAMES),
@@ -350,7 +214,7 @@ def train_models() -> None:
         "class_distribution": {
             LABEL_NAMES[i]: int(v) for i, v in enumerate(np.bincount(y, minlength=3))
         },
-        "labeling": "estratificado por perfil académico (bajo/medio/alto)",
+        "labeling": "Etiquetas externas del dataset; justificar su procedencia antes de uso científico",
         "score_thresholds": {"medio": SCORE_UMBRAL_MEDIO, "alto": SCORE_UMBRAL_ALTO},
     }
 

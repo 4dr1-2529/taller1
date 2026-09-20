@@ -8,7 +8,7 @@ import { api, type AcademicMessage, type MessageRoom } from "@/services/api";
 import { PageSection } from "@/components/ui/PageSection";
 import { SELECT_CLASS, INPUT_CLASS } from "@/lib/ui";
 
-export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean }) {
+export function MensajeriaAcademicaView({ useApi = true, mode = "messages" }: { useApi?: boolean; mode?: "messages" | "announcements" }) {
   const { user } = useAuth();
   const [rooms, setRooms] = useState<MessageRoom[]>([]);
   const [roomId, setRoomId] = useState("");
@@ -19,26 +19,29 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
 
   const loadRooms = useCallback(async () => {
     try {
-      const res = await api.getMessageRooms();
-      setRooms(res.rooms);
-      if (res.rooms[0] && !roomId) setRoomId(res.rooms[0].roomId);
-    } catch {
+      const res = await api.call<{ rooms: MessageRoom[] }>(mode === "announcements" ? "/announcements/rooms" : "/messages/rooms");
+      const visible = res.rooms.filter(r => mode === "messages" ? r.scope === "directo" : r.scope !== "directo");
+      setRooms(visible);
+      if (visible[0] && !roomId) setRoomId(visible[0].roomId);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudieron cargar las conversaciones");
       setRooms([]);
     }
-  }, [roomId]);
+  }, [roomId, mode]);
 
   const loadMessages = useCallback(async () => {
     if (!roomId) return;
     setLoading(true);
     try {
-      const res = await api.getMessages(roomId);
+      const res = await api.call<{ items: AcademicMessage[] }>(`${mode === "announcements" ? "/announcements" : "/messages"}/${encodeURIComponent(roomId)}`);
       setMessages(res.items);
-    } catch {
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudieron cargar los mensajes");
       setMessages([]);
     } finally {
       setLoading(false);
     }
-  }, [roomId]);
+  }, [roomId, mode]);
 
   useEffect(() => {
     void loadRooms();
@@ -50,8 +53,8 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
 
   useEffect(() => {
     if (!roomId || !useApi) return;
-    void api.markMessagesRead(roomId).catch(() => undefined);
-  }, [roomId, useApi]);
+    void api.call(`${mode === "announcements" ? "/announcements" : "/messages"}/${encodeURIComponent(roomId)}/read`, { method: "PATCH" }).catch(() => undefined);
+  }, [roomId, useApi, mode]);
 
   async function send() {
     if (!text.trim() || !roomId) return;
@@ -61,12 +64,12 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
         ? room.roomId.split(":").slice(1).find((id) => id !== user.id)
         : undefined;
     try {
-      await api.sendMessage({
+      await api.call(mode === "announcements" ? "/announcements" : "/messages", { method: "POST", body: JSON.stringify({
         roomId,
         contenido: text.trim(),
         scope: room?.scope,
         recipientUserId,
-      });
+      }) });
       setText("");
       void loadMessages();
       toast.success("Mensaje enviado");
@@ -78,11 +81,11 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
   async function sendGlobal() {
     if (!globalText.trim() || user?.role !== "admin") return;
     try {
-      await api.sendMessage({
+      await api.call("/announcements", { method: "POST", body: JSON.stringify({
         roomId: "global:institucional",
         contenido: globalText.trim(),
         scope: "global",
-      });
+      }) });
       setGlobalText("");
       toast.success("Comunicado global publicado");
       setRoomId("global:institucional");
@@ -92,30 +95,16 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
     }
   }
 
-  async function sendToTeachers() {
-    if (!globalText.trim() || user?.role !== "admin") return;
-    try {
-      await api.sendMessage({
-        roomId: "canal:profesores",
-        contenido: globalText.trim(),
-        scope: "profesores",
-      });
-      setGlobalText("");
-      toast.success("Mensaje enviado a profesores");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Error");
-    }
-  }
-
-  const canReply = user?.role === "estudiante" || user?.role === "docente" || user?.role === "admin";
+  const selected = rooms.find(r => r.roomId === roomId);
+  const canReply = selected?.scope === "directo" || (mode === "announcements" && selected?.scope === "curso" && user?.role === "docente");
 
   return (
     <PageSection
       icon={Mail}
-      title="Mensajería Académica"
-      description="Comunicados institucionales, avisos de curso y mensajes directos profesor–estudiante."
+      title={mode === "messages" ? "Mensajes" : "Avisos"}
+      description={mode === "messages" ? "Conversaciones con personas vinculadas a su rol." : "Publicaciones de solo lectura. Para conversar utilice Mensajes."}
     >
-      {user?.role === "admin" && (
+      {mode === "announcements" && user?.role === "admin" && (
         <div className="mb-6 grid gap-4 md:grid-cols-2">
           <div className="premium-card rounded-xl p-4">
             <p className="text-sm font-semibold text-[var(--text-primary)]">Comunicado global</p>
@@ -129,18 +118,7 @@ export function MensajeriaAcademicaView({ useApi = true }: { useApi?: boolean })
               Publicar comunicado
             </button>
           </div>
-          <div className="premium-card rounded-xl p-4">
-            <p className="text-sm font-semibold text-[var(--text-primary)]">Mensaje a profesores</p>
-            <textarea
-              className={`${INPUT_CLASS} mt-2 min-h-[80px]`}
-              value={globalText}
-              onChange={(e) => setGlobalText(e.target.value)}
-              placeholder="Instrucciones o coordinación docente…"
-            />
-            <button type="button" className="btn-secondary mt-2 text-sm" onClick={() => void sendToTeachers()}>
-              Enviar a profesores
-            </button>
-          </div>
+
         </div>
       )}
 

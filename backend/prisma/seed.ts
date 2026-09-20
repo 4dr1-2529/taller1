@@ -20,7 +20,7 @@ const PERMISOS = [
 ];
 
 const ROLE_PERMS: Record<RolCodigo, string[]> = {
-  admin: PERMISOS.map((p) => p.codigo),
+  admin: PERMISOS.filter(p => !["notas.write", "asistencia.write"].includes(p.codigo)).map((p) => p.codigo),
   docente: [
     "estudiantes.read",
     "notas.write",
@@ -65,14 +65,13 @@ const CURSOS = [
 
 const ML_FEATURES = [
   { codigo: "promedio_general", nombre: "Promedio general", tipoDato: "decimal", rangoMin: 0, rangoMax: 20, orden: 1 },
-  { codigo: "cursos_desaprobados", nombre: "Cursos desaprobados", tipoDato: "integer", rangoMin: 0, rangoMax: 16, orden: 2 },
+  { codigo: "cursos_desaprobados", nombre: "Cursos desaprobados", tipoDato: "integer", rangoMin: 0, rangoMax: 100, orden: 2 },
   { codigo: "asistencia_general", nombre: "Asistencia general", tipoDato: "decimal", rangoMin: 0, rangoMax: 100, orden: 3 },
-  { codigo: "frecuencia_acceso_lms", nombre: "Frecuencia acceso LMS", tipoDato: "decimal", rangoMin: 0, rangoMax: 100, orden: 4 },
-  { codigo: "tiempo_plataforma", nombre: "Tiempo en plataforma", tipoDato: "decimal", rangoMin: 0, rangoMax: 24, orden: 5 },
-  { codigo: "tareas_ratio", nombre: "Ratio de tareas", tipoDato: "decimal", rangoMin: 0, rangoMax: 1, orden: 6 },
-  { codigo: "participacion_actividades", nombre: "Participación", tipoDato: "decimal", rangoMin: 0, rangoMax: 100, orden: 7 },
-  { codigo: "uso_foros", nombre: "Uso de foros", tipoDato: "decimal", rangoMin: 0, rangoMax: 1, orden: 8 },
-  { codigo: "disminucion_actividad", nombre: "Disminución actividad", tipoDato: "decimal", rangoMin: 0, rangoMax: 100, orden: 9 },
+  { codigo: "frecuencia_acceso_lms", nombre: "Accesos por semana", tipoDato: "decimal", rangoMin: 0, rangoMax: 10000, orden: 4 },
+  { codigo: "tiempo_interaccion_lms", nombre: "Horas observadas en 28 días", tipoDato: "decimal", rangoMin: 0, rangoMax: 672, orden: 5 },
+  { codigo: "actividades_realizadas", nombre: "Actividades completadas", tipoDato: "integer", rangoMin: 0, rangoMax: 10000, orden: 6 },
+  { codigo: "recursos_consultados", nombre: "Materiales distintos", tipoDato: "integer", rangoMin: 0, rangoMax: 10000, orden: 7 },
+
 ];
 
 function seccionesPorGrado(numero: number): string[] {

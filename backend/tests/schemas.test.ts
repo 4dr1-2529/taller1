@@ -31,7 +31,7 @@ describe("AUTH", () => {
 describe("Estudiantes", () => {
   it("crear estudiante con campos obligatorios", () => {
     const r = studentSchema.safeParse({
-      codigo: "EST-001",
+      dni: "12345678",
       nombres: "Juan",
       apellidos: "Pérez",
       seccionId: "1",
@@ -44,9 +44,9 @@ describe("Estudiantes", () => {
 });
 
 describe("Predicción y alertas", () => {
-  it("predict requiere studentId o metrics", () => {
+  it("predict requiere identificador numérico; no métricas manuales", () => {
     assert.equal(predictSchema.safeParse({}).success, false);
-    assert.equal(predictSchema.safeParse({ studentId: "abc" }).success, true);
+    assert.equal(predictSchema.safeParse({ studentId: "123" }).success, true);
   });
   it("estado de alerta válido", () => {
     assert.equal(alertStatusSchema.safeParse({ status: "nueva" }).success, true);
@@ -106,7 +106,7 @@ describe("Cursos y asistencia", () => {
   it("profesor con email válido", () => {
     assert.equal(
       teacherSchema.safeParse({
-        codigo: "DOC-01",
+        dni: "87654321",
         nombres: "María",
         apellidos: "García",
         especialidad: "Matemáticas",

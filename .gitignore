@@ -84,3 +84,5 @@ database/blenkir-v3/03-seed-poblacion.sql
 scripts/evidence/node_modules/
 *.db
 *.sqlite
+
+.tmp/

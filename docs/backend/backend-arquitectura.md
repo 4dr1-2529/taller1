@@ -1,230 +1,41 @@
-# Arquitectura del Backend — Detalle técnico
+# Arquitectura Blenkir 2026-v2
 
-**Stack:** Node.js 20 · Express 4 · TypeScript · Prisma 6 · MySQL 8 · Railway
+Año lectivo único operativo: **2026**. Next.js/TypeScript en Vercel → Express/TypeScript en Railway → Prisma/MySQL y FastAPI/Python.
 
----
+Se conservan JWT, refresh tokens, bcrypt, sesiones, Helmet, CORS, límites de peticiones, sanitización y scopes. Las bajas normales son lógicas. No hay poblaciones demo automáticas durante despliegues.
 
-## 1. Arquitectura por capas
+## Registro y matrícula
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  CAPA DE PRESENTACIÓN (HTTP)                                 │
-│  routes/index.ts · middleware/auth · errorHandler            │
-├─────────────────────────────────────────────────────────────┤
-│  CAPA DE CONTROLADORES                                       │
-│  auth · students · teachers · grades · predict · alerts…     │
-├─────────────────────────────────────────────────────────────┤
-│  CAPA DE SERVICIOS                                           │
-│  teacher-assignment · ml-client · profesor-dashboard         │
-├─────────────────────────────────────────────────────────────┤
-│  CAPA DE VALIDACIÓN                                          │
-│  validators/ (Zod schemas)                                   │
-├─────────────────────────────────────────────────────────────┤
-│  CAPA DE ACCESO A DATOS                                      │
-│  Prisma Client · utils/prisma.ts                             │
-├─────────────────────────────────────────────────────────────┤
-│  CAPA DE PERSISTENCIA                                        │
-│  MySQL 8 (XAMPP local / Railway producción)                  │
-└─────────────────────────────────────────────────────────────┘
-         │ HTTP                              │ HTTP
-         ▼                                   ▼
-   Frontend Vercel                    ML Service :5000
-```
+student-registration.service.ts coordina una transacción única: validaciones y duplicados, correlativo, usuario, estudiante, matrícula 2026, inscripción en ofertas existentes y auditoría. La sección se bloquea antes de comprobar capacidad. Si aún no tiene ofertas, las asignaciones posteriores sincronizan inscripciones. Un fallo revierte toda la operación. La restricción estudiante/año impide duplicados.
 
-| Capa | Responsabilidad | Ejemplo |
-|------|-----------------|---------|
-| Rutas | Enrutamiento HTTP, middleware chain | `router.get("/students", authenticate, …)` |
-| Controladores | Parse request, invoke service, response | `grades.controller.ts` |
-| Servicios | Lógica de negocio reutilizable | `teacher-assignment.service.ts` |
-| Validadores | Contratos de entrada | `createStudentSchema` |
-| Utils | Scope, audit, IDs BigInt | `teacher-scope.ts`, `audit.ts` |
-| Prisma | Queries tipadas | `prisma.student.findMany()` |
+correlativo.service.ts bloquea la fila persistente por entidad y considera el máximo código histórico, incluidos inactivos: EST-XXX, PROF-XXX y MAT-2026-XXX. Nunca usa count()+1. Las credenciales temporales se entregan una sola vez; solo persiste el hash bcrypt.
 
----
+Profesor se registra sin cursos; las asignaciones vinculan profesor, catálogo de curso, grado/sección y 2026. Materiales, actividades y eventos tienen relaciones e índices propios; mensajes y avisos reutilizan las salas existentes.
 
-## 2. Flujo de autenticación JWT
+## Indicadores
 
-```mermaid
-sequenceDiagram
-  participant C as Cliente (Next.js)
-  participant A as POST /auth/login
-  participant B as bcrypt + MySQL
-  participant S as tabla sesion
-  participant M as middleware authenticate
+Promedio: media de promedios de cursos con notas 2026; desaprobados: cursos con promedio menor que 11. Asistencia: 100 × (presentes + tardanzas) / registros no justificados. Sin observaciones académicas suficientes no se genera predicción (409).
 
-  C->>A: email + password
-  A->>B: find usuario + compare hash
-  B-->>A: usuario válido
-  A->>A: sign accessToken (JWT)
-  A->>A: generate refreshToken
-  A->>S: guardar SHA-256(refreshToken)
-  A-->>C: { accessToken, refreshToken, user }
+LMS usa una ventana móvil de 28 días dentro del año lectivo: frecuencia = logins/4 semanas; tiempo = segundos observados entre eventos consecutivos separados por hasta cinco minutos, convertido a horas; actividades = completadas en ventana; recursos = materiales distintos consultados. Se informa días activos y último evento. El tiempo es una estimación de interacción observada, no tiempo total de conexión ni una medición de atención. No se incluye disminución de actividad sin validación longitudinal.
 
-  Note over C,M: Requests subsiguientes
-  C->>M: Authorization: Bearer accessToken
-  M->>M: verify JWT → req.user
-  M-->>C: handler ejecuta con rol
-```
+Vector ML ordenado: promedio_general, cursos_desaprobados, asistencia_general, frecuencia_acceso_lms, tiempo_interaccion_lms, actividades_realizadas, recursos_consultados. Sin valores LMS manuales, foros, ratios de tareas ni novena variable artificial. Los modelos anteriores se archivan y no se cargan. Sin modelo compatible se responde 503, sin fallback de riesgo inventado.
 
-### Pasos detallados
+Predicciones conservan modelo, versión de contrato, entradas, factores, probabilidad, recomendación y fecha. Alertas automáticas desde medio/alto configurable, con historial de cambios. Los factores descriptivos son reglas explicativas de indicadores, no atribuciones SHAP ni evidencia causal.
 
-1. **Login:** `POST /auth/login` → valida Zod → busca `usuario` por email → `bcrypt.compare`.
-2. **Tokens:** Access JWT (payload: sub, role, exp) + refresh token opaco.
-3. **Sesión:** Refresh hasheado SHA-256 en `sesion.token_hash` (max 128 chars).
-4. **Requests:** Header `Authorization: Bearer <accessToken>`.
-5. **Middleware `authenticate`:** Verifica firma, adjunta `req.user`.
-6. **Middleware `authorize(...roles)`:** Compara rol JWT vs roles permitidos.
-7. **Refresh:** `POST /auth/refresh` con refresh token → nuevo access token.
+## Permisos
 
----
+| Operación | Director (admin) | Profesor (docente) | Estudiante |
+|---|---|---|---|
+| Estudiantes, profesores, matrícula y asignaciones | Administra | Consulta alcance | Propio |
+| Notas y asistencia | Consulta | Registra en alcance | Consulta propias |
+| Materiales y actividades | Supervisa | Publica en sus cursos | Consulta/realiza en matrícula |
+| Predicciones | Genera/consulta global | Genera/consulta alcance | Consulta propia |
+| Alertas internas | Consulta/gestiona | Gestiona alcance | No administra |
+| Mensaje Director ↔ Profesor | Permitido | Permitido | No aplica |
+| Mensaje Profesor ↔ Estudiante | No aplica | Solo asociados | Solo asociados |
+| Mensaje Director ↔ Estudiante | Prohibido (403) | No aplica | Prohibido (403) |
+| Avisos globales | Publica | Lee | Lee |
+| Avisos de curso | Consulta | Publica en alcance | Lee |
 
-## 3. Flujo de una petición HTTP
+Los avisos no aceptan respuestas; se registra lectura por usuario y fecha. La autorización se verifica en backend, incluidos los identificadores de conversación suministrados por el cliente.
 
-```mermaid
-sequenceDiagram
-  participant F as Frontend
-  participant E as Express
-  participant Auth as authenticate
-  participant RBAC as authorize
-  participant Ctrl as Controller
-  participant P as Prisma
-  participant DB as MySQL
-
-  F->>E: GET /api/v1/grades?bimestre=1
-  E->>Auth: verificar JWT
-  Auth->>RBAC: rol admin/docente?
-  RBAC->>Ctrl: listGrades()
-  Ctrl->>Ctrl: teacher-scope (si docente)
-  Ctrl->>P: prisma.grade.findMany(filters)
-  P->>DB: SELECT …
-  DB-->>P: rows
-  P-->>Ctrl: grades[]
-  Ctrl-->>F: { success, data: { items } }
-```
-
-**Cadena middleware típica:**
-
-```
-Request → helmet → cors → rateLimit → morgan → json()
-       → authenticate → authorize("admin","docente") → controller → errorHandler
-```
-
----
-
-## 4. Diagrama de rutas (resumen)
-
-```
-/api/v1
-├── /health                          [público]
-├── /auth
-│   ├── POST /login
-│   ├── POST /refresh
-│   ├── GET  /me                     [auth]
-│   └── POST /change-password        [auth]
-├── /academic/*                      [auth]
-├── /students/*                      [auth, admin|docente]
-├── /teachers/*                      [auth, admin CRUD]
-├── /teacher-assignments/*           [auth, admin]
-├── /profesor/*                      [auth, docente]
-├── /estudiante/*                    [auth, estudiante]
-├── /courses · /matriculas           [auth]
-├── /grades · /attendance            [auth, admin|docente]
-├── /predict · /predictions          [auth]
-├── /dashboard/kpis                  [auth, admin|docente]
-├── /alerts                          [auth, admin|docente]
-├── /messages · /notifications       [auth]
-├── /ml/metrics                      [auth, admin|docente]
-├── /reports · /dashboard-snapshot   [auth]
-├── /student-risks                   [auth]
-└── /admin/*                         [auth, admin]
-```
-
-Diagrama completo en código: `backend/src/routes/index.ts`
-
----
-
-## 5. Integración con Prisma
-
-| Aspecto | Detalle |
-|---------|---------|
-| Schema | `backend/prisma/schema.prisma` — 52 modelos Prisma; comprobar con `npm run db:count-models` |
-| Cliente | `import { prisma } from "../utils/prisma.js"` |
-| Migraciones | `prisma/migrations/` — SQL versionado |
-| Seed | `seed.ts` (estructura) + `seed-demo.ts` (9 alumnos demo) |
-| IDs | BigInt convertidos con `toDbId`, `idToString` |
-| Transacciones | `prisma.$transaction([...])` en operaciones compuestas |
-
-**Comandos:**
-
-```bash
-npm run db:generate      # prisma generate
-npm run db:migrate:deploy # producción
-npm run db:seed:demo     # datos demo
-npm run db:studio        # GUI
-```
-
----
-
-## 6. Integración con MySQL
-
-| Entorno | Conexión | Plugin |
-|---------|----------|--------|
-| Local | `mysql://root@localhost:3306/tesis_dashboard` | XAMPP |
-| Railway | `DATABASE_URL` inyectada | MySQL Railway plugin |
-
-**Tablas críticas:**
-
-- `usuario`, `sesion` — auth
-- `student`, `teacher`, `matricula`, `seccion` — académico
-- `grade`, `periodo_academico` — evaluación
-- `prediction`, `alert` — IA
-- `audit_log` — trazabilidad Director
-
-**Validación demo:** `node backend/scripts/validate-demo-data.mjs`
-
----
-
-## 7. Integración con Railway
-
-```mermaid
-flowchart LR
-  GH[GitHub push] --> RW[Railway build]
-  RW --> MS[npm run start:prod]
-  MS --> MD[prisma migrate deploy]
-  MD --> API[node dist/index.js]
-  MY[(MySQL plugin)] --> API
-  API --> HC[/health check]
-```
-
-| Elemento | Configuración |
-|----------|---------------|
-| Start | `npm run start:prod` → `railway-start.mjs` |
-| Health | `GET /health` — timeout 120 s |
-| Variables | `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`, `NODE_ENV` |
-| Ops flags | `RUN_DEMO_SEED=1`, `RUN_REPAIR=1` (temporal) |
-| Recovery | P3009 detiene el arranque; reparación manual |
-
-**URL producción:** https://taller1-production.up.railway.app/api/v1
-
----
-
-## 8. Integración con ML Service
-
-```
-predict.controller.ts
-    → extrae 9 features del estudiante (Prisma)
-    → ml-client.ts POST ML_SERVICE_URL/predict
-    → persiste prediction + evalúa alert
-    → retorna formato tesis (español)
-```
-
-Variable: `ML_SERVICE_URL=http://localhost:5000` (local)
-
----
-
-## 9. Referencias
-
-- [Arquitectura backend (visión)](../arquitectura/arquitectura-backend.md)
-- [Arquitectura general](../arquitectura/arquitectura-general.md)
-- [Modelo IA](../python-ia/modelo-predictivo.md)
-- [DEPLOY](../DEPLOY.md)

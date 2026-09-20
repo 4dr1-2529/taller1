@@ -88,7 +88,7 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
     const status = req.query.status as string | undefined;
     const profesorId = req.query.profesorId as string | undefined;
 
-    const studentWhere: Record<string, unknown> = { ...scope };
+    const studentWhere: Record<string, unknown> = { AND: [scope] };
     if (seccionId) studentWhere.seccionId = toDbId(seccionId);
     if (gradoId) {
       studentWhere.seccion = { gradoId: toDbId(gradoId) };
@@ -106,9 +106,9 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
     }
     if (search) {
       studentWhere.OR = [
-        { nombres: { contains: search, mode: "insensitive" } },
-        { apellidos: { contains: search, mode: "insensitive" } },
-        { codigo: { contains: search, mode: "insensitive" } },
+        { nombres: { contains: search } },
+        { apellidos: { contains: search } },
+        { codigo: { contains: search } },
       ];
     }
 
@@ -175,9 +175,12 @@ export async function patchAlertStatus(req: Request, res: Response, next: NextFu
       where: { id, student: scope },
       include: { student: true, factores: true },
     });
-    if (!existing) throw new AppError(404, "Alerta no encontrada o sin permiso");
+    if (!existing) throw new AppError(403, "Alerta fuera de su alcance");
 
-    const item = await prisma.alert.update({
+    const item = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM alerta WHERE id = ${id} FOR UPDATE`;
+      const previous = await tx.alert.findUniqueOrThrow({ where: { id } });
+      const item = await tx.alert.update({
       where: { id },
       data: { estado: status },
       include: {
@@ -194,6 +197,10 @@ export async function patchAlertStatus(req: Request, res: Response, next: NextFu
       },
     });
 
+      await tx.alertaHistorial.create({ data: { alertaId: id, estadoAnterior: previous.estado, estadoNuevo: status, usuarioId: BigInt(req.user!.sub) } });
+      await tx.auditLog.create({ data: { entidad: "Alert", entidadId: String(id), accion: "UPDATE_STATUS", detalle: status, usuarioId: BigInt(req.user!.sub), estudianteId: item.studentId, ipAddress: req.ip } });
+      return item;
+    });
     await logAudit({
       entidad: "Alert",
       entidadId: item.id,

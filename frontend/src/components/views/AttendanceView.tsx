@@ -221,7 +221,7 @@ export function AttendanceView({
           title="Sin estudiantes en este salón"
           description={isDocente ? FILTER_HINTS.noStudentsProfesor : FILTER_HINTS.noStudents}
         />
-      ) : filters.seccionId ? (
+      ) : filters.seccionId && isDocente ? (
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <PageSection
             variant="form"

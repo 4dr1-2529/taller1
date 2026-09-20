@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { prisma } from "../utils/prisma.js";
 import type { RolCodigo } from "@prisma/client";
 import { env } from "../config/env.js";
 import { AppError } from "./errorHandler.js";
@@ -10,7 +11,7 @@ export type AuthPayload = {
   role: RolCodigo;
 };
 
-export function authenticate(req: Request, _res: Response, next: NextFunction) {
+export async function authenticate(req: Request, _res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {
     return next(new AppError(401, "Token requerido", "UNAUTHORIZED"));
@@ -19,6 +20,8 @@ export function authenticate(req: Request, _res: Response, next: NextFunction) {
     const token = header.slice(7);
     const decoded = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
     if (decoded.sub && decoded.role) {
+      const active = await prisma.user.findFirst({ where: { id: BigInt(decoded.sub), activo: true, rol: { codigo: decoded.role } } });
+      if (!active) return next(new AppError(401, "Cuenta inactiva"));
       req.user = decoded;
       next();
     } else {

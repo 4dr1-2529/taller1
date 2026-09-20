@@ -6,7 +6,6 @@ import clsx from "clsx";
 import {
   KeyRound,
   Pencil,
-  Plus,
   Search,
   UserPlus,
   UserX,
@@ -18,7 +17,7 @@ import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import type { Teacher } from "@/types/academic";
 import { PageSection } from "@/components/ui/PageSection";
 import { INPUT_CLASS } from "@/lib/ui";
-import { CodigoInput, CourseNameInput, PersonNameInput, PhoneInput } from "@/components/ui/ValidatedInputs";
+import { PersonNameInput, PhoneInput } from "@/components/ui/ValidatedInputs";
 import {
   PHONE_MAX_DIGITS,
   type FieldErrors,
@@ -36,7 +35,7 @@ export type NewTeacherCourse = {
 };
 
 export type NewTeacherForm = {
-  codigo: string;
+  dni: string;
   nombres: string;
   apellidos: string;
   especialidad: string;
@@ -48,7 +47,7 @@ export type NewTeacherForm = {
 };
 
 export const defaultTeacherForm: NewTeacherForm = {
-  codigo: "",
+  dni: "",
   nombres: "",
   apellidos: "",
   especialidad: "",
@@ -68,7 +67,6 @@ export type EditTeacherForm = {
   cursosNuevos: NewTeacherCourse[];
 };
 
-const emptyCourse = (): NewTeacherCourse => ({ codigo: "", nombre: "", gradoId: "", seccionId: "" });
 
 type TeachersViewProps = {
   teachers: Teacher[];
@@ -140,20 +138,7 @@ export function TeachersView({
     );
   }, [teachers, query]);
 
-  function updateCourse(index: number, patch: Partial<NewTeacherCourse>) {
-    setForm((p) => ({
-      ...p,
-      cursos: p.cursos.map((c, i) => (i === index ? { ...c, ...patch } : c)),
-    }));
-  }
 
-  function updateEditCourse(index: number, patch: Partial<NewTeacherCourse>) {
-    if (!editForm) return;
-    setEditForm({
-      ...editForm,
-      cursosNuevos: editForm.cursosNuevos.map((c, i) => (i === index ? { ...c, ...patch } : c)),
-    });
-  }
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
@@ -201,7 +186,7 @@ export function TeachersView({
             variant="form"
             icon={UserPlus}
             title="Registrar docente"
-            description="Perfil, cursos por grado y sección, y cuenta de acceso (correo + contraseña)."
+            description="Registre el perfil y la cuenta. Luego utilice Asignaciones docentes."
           >
             <form
               className="space-y-6"
@@ -220,19 +205,11 @@ export function TeachersView({
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Código</span>
-                  <CodigoInput
-                    placeholder="DOC-001"
-                    value={form.codigo}
-                    onValueChange={(codigo) => {
-                      setFormErrors((p) => clearFieldError(p, "codigo"));
-                      setForm((p) => ({ ...p, codigo }));
-                    }}
-                    required
-                  />
-                  {formErrors.codigo ? <span className="mt-1 block text-xs text-rose-400">{formErrors.codigo}</span> : null}
+<input className={INPUT_CLASS} value="PROF-… (automático)" readOnly />
                 </label>
+<label className="block text-sm">DNI<input className={INPUT_CLASS} value={form.dni} onChange={e => setForm(p => ({ ...p, dni: e.target.value.replace(/\D/g, "").slice(0,8) }))} inputMode="numeric" pattern="[0-9]{8}" required /></label>
                 <label className="block text-sm">
-                  <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Nombres</span>
+                  <span>Nombres</span>
                   <PersonNameInput
                     value={form.nombres}
                     onValueChange={(nombres) => {
@@ -312,14 +289,6 @@ export function TeachersView({
                   <input type="password" className={INPUT_CLASS} value={form.password} onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))} minLength={8} required />
                 </label>
               ) : null}
-
-              <CourseBlock
-                cursos={form.cursos}
-                secciones={secciones}
-                onAdd={() => setForm((p) => ({ ...p, cursos: [...p.cursos, emptyCourse()] }))}
-                onRemove={(i) => setForm((p) => ({ ...p, cursos: p.cursos.filter((_, j) => j !== i) }))}
-                onChange={updateCourse}
-              />
 
               <button type="submit" className="btn-primary">
                 Guardar docente
@@ -442,14 +411,6 @@ export function TeachersView({
                     {firstError(editErrors) ? (
                       <p className="mt-2 text-xs text-rose-400">{firstError(editErrors)}</p>
                     ) : null}
-                    <CourseBlock
-                      title="Añadir curso a este docente"
-                      cursos={editForm.cursosNuevos}
-                      secciones={secciones}
-                      onAdd={() => setEditForm({ ...editForm, cursosNuevos: [...editForm.cursosNuevos, emptyCourse()] })}
-                      onRemove={(i) => setEditForm({ ...editForm, cursosNuevos: editForm.cursosNuevos.filter((_, j) => j !== i) })}
-                      onChange={updateEditCourse}
-                    />
                     <button type="submit" className="btn-primary mt-3">Guardar cambios</button>
                   </form>
                 ) : null}
@@ -541,105 +502,6 @@ function TeacherWorkloadPanel({
           ) : null}
         </div>
       </div>
-    </div>
-  );
-}
-
-function CourseBlock({
-  title = "Cursos que dicta (opcional)",
-  cursos,
-  secciones,
-  onAdd,
-  onRemove,
-  onChange,
-}: {
-  title?: string;
-  cursos: NewTeacherCourse[];
-  secciones: SeccionOption[];
-  onAdd: () => void;
-  onRemove: (i: number) => void;
-  onChange: (i: number, patch: Partial<NewTeacherCourse>) => void;
-}) {
-  const grados = useMemo(() => {
-    const seen = new Map<number, string>();
-    for (const s of secciones) {
-      if (!seen.has(s.gradoId)) seen.set(s.gradoId, s.gradoLabel);
-    }
-    return [...seen.entries()].map(([id, label]) => ({ id: String(id), label }));
-  }, [secciones]);
-
-  return (
-    <div className="rounded-xl border border-dashed border-violet-500/30 bg-violet-500/5 p-4">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-violet-300">{title}</p>
-        <button type="button" onClick={onAdd} className="btn-primary text-xs py-1.5">
-          <Plus className="h-3.5 w-3.5" /> Añadir
-        </button>
-      </div>
-      <p className="mt-1 text-xs text-[var(--text-muted)]">
-        Indique grado y sección (A, B o C) por cada curso; no se asigna a todo el grado.
-      </p>
-      {cursos.length === 0 ? (
-        <p className="mt-2 text-xs text-[var(--text-muted)]">Sin cursos agregados.</p>
-      ) : (
-        <ul className="mt-3 space-y-2">
-          {cursos.map((c, i) => {
-            const seccionesGrado = secciones.filter(
-              (s) => !c.gradoId || s.gradoId === Number(c.gradoId),
-            );
-            return (
-              <li key={i} className="grid gap-2 sm:grid-cols-5">
-                <CodigoInput
-                  placeholder="Código"
-                  value={c.codigo}
-                  onValueChange={(codigo) => onChange(i, { codigo })}
-                  required
-                />
-                <CourseNameInput
-                  placeholder="Nombre"
-                  value={c.nombre}
-                  onValueChange={(nombre) => onChange(i, { nombre })}
-                  required
-                />
-                <select
-                  className={INPUT_CLASS}
-                  value={c.gradoId}
-                  onChange={(e) => onChange(i, { gradoId: e.target.value, seccionId: "" })}
-                  required
-                >
-                  <option value="">Grado</option>
-                  {grados.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.label}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className={INPUT_CLASS}
-                  value={c.seccionId}
-                  onChange={(e) => onChange(i, { seccionId: e.target.value })}
-                  required
-                  disabled={!c.gradoId}
-                >
-                  <option value="">{c.gradoId ? "Sección" : "Grado primero"}</option>
-                  {seccionesGrado.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.nombre}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={() => onRemove(i)}
-                  className="text-xs text-rose-400 hover:text-rose-300"
-                >
-                  Quitar
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
     </div>
   );
 }

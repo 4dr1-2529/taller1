@@ -1,41 +1,13 @@
-# Machine Learning Service
+# Machine Learning 2026-v2
 
-Servicio **FastAPI** para predicción de riesgo de deserción (ensemble: Random Forest, HistGradientBoosting/XGBoost, Stacking).
+Vector ordenado de **7 variables**: promedio_general, cursos_desaprobados, asistencia_general, frecuencia_acceso_lms, tiempo_interaccion_lms, actividades_realizadas, recursos_consultados.
 
-## Comandos
+Las mismas validaciones se aplican en carga de datos, contrato FastAPI y cliente backend. Todos los valores son finitos/no negativos; notas 0–20, asistencia 0–100 y recuentos enteros. Las entradas adicionales o ausentes se rechazan. No se inventan valores para registros faltantes.
 
-```bash
-pip install -r requirements.txt
-ML_DATA_MODE=demo python train.py  # solo demostración técnica
-# Entrenamiento científico: ML_DATA_MODE=real DATASET_PATH=... python train.py
-python -m uvicorn app.main:app --reload --port 5000
-python -m unittest tests.test_predict -v
-```
+Se mantienen Random Forest, XGBoost (HistGradientBoosting si no es compatible) y Stacking. No hay ganador declarado. El entrenamiento futuro separa entrenamiento/validación/prueba estratificados; selecciona por F1 ponderado de validación y evalúa en holdout reservado. evaluate.py reutiliza ese holdout, no crea una partición distinta que pueda contener datos usados para entrenar.
 
-Desde la raíz del monorepo:
+DATASET_PATH debe indicar un CSV autorizado con las siete variables y target bajo/medio/alto, codificados 0/1/2. La procedencia, unidad de observación, fechas, etiquetas y posibles fugas requieren revisión científica. El software no certifica por sí solo la validez de las etiquetas. No se ejecutó entrenamiento ni se modificaron conclusiones científicas.
 
-```bash
-npm run ml:train
-npm run dev:ml
-npm run ml:test
-```
+Las métricas y artefactos antiguos están en legacy/ml-v1. No prueban desempeño del nuevo vector. Sin best_model.joblib compatible, features.joblib y metadata coherente, la API no produce predicciones. Los factores actuales describen indicadores por reglas; no son importancia aprendida ni causalidad.
 
-## Endpoints
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/health` | Estado y features cargadas |
-| POST | `/predict` | Score, nivel, probabilidad, factores, recomendación (formato tesis) |
-| GET | `/metrics` | Accuracy, F1, matrices por modelo |
-
-## Artefactos
-
-Tras `train.py` en `models/`:
-
-- `best_model.joblib` — modelo seleccionado por F1
-- `features.joblib` — orden de variables
-- `metrics.json` — comparación RF / boosting / stacking
-
-Sin modelos, `/predict` usa un motor de respaldo explícitamente identificado como `heuristic_fallback`; no es Ensemble Learning. Los resultados demo no son evidencia científica.
-
-Documentación: [docs/machine-learning.md](../docs/machine-learning.md)
+Pruebas: python -m unittest discover -s machine-learning/tests -p test_predict.py desde raíz. Entrenamiento posterior: cd machine-learning; python train.py. No generar datos sintéticos ahora. Los futuros 200 registros serán demostración tecnológica, no evidencia científica.

@@ -38,22 +38,17 @@ export const changePasswordSchema = z.object({
 });
 
 export const studentSchema = z.object({
-  codigo: codigoField,
   nombres: personNameField,
   apellidos: personNameField,
-  seccionId: z.string().min(1, "Seleccione grado y sección"),
-  dni: optionalDniField,
+  seccionId: z.string().regex(/^[1-9]\d*$/, "Seleccione grado y sección"),
+  dni: z.string().regex(/^\d{8}$/, "DNI debe tener 8 dígitos"),
   correo: optionalEmailField,
   telefono: optionalPhoneField,
-  estado: z.enum(["activo", "en_riesgo", "retirado"]).optional(),
-  promedioGeneral: gradeField.optional(),
-  asistenciaGeneral: percentageField.optional(),
-});
+}).strict();
 
-export const updateStudentSchema = studentSchema.partial().refine(
-  (d) => Object.keys(d).length > 0,
-  { message: "Debe enviar al menos un campo para actualizar" },
-);
+export const updateStudentSchema = studentSchema.omit({ seccionId: true }).partial().extend({
+  estado: z.enum(["activo", "retirado"]).optional(),
+}).strict().refine(d => Object.keys(d).length > 0, { message: "Indique campos para actualizar" });
 
 export const enrollmentSchema = z.object({
   studentId: z.string().min(1),
@@ -64,10 +59,8 @@ export const matriculaSchema = z.object({
   estudianteId: z.string().min(1, "Seleccione estudiante"),
   seccionId: z.string().min(1, "Seleccione sección"),
   anioLectivoId: z.string().min(1, "Seleccione año lectivo"),
-  codigo: z.string().max(30).optional(),
-  fechaMatricula: z.string().optional(),
-  estado: z.enum(["activa", "retirada", "trasladada"]).optional(),
-});
+  estado: z.literal("activa").optional(),
+}).strict();
 
 export const gradeSchema = z.object({
   studentId: z.string().min(1),
@@ -80,41 +73,14 @@ export const gradeSchema = z.object({
 
 export const attendanceSchema = z.object({
   studentId: z.string().min(1),
-  fecha: z.string().min(1),
+  fecha: z.string().regex(/^2026-\d{2}-\d{2}$/, "Fecha del año 2026 requerida").refine(v => !Number.isNaN(Date.parse(v)) && new Date(v).toISOString().slice(0,10) === v, "Fecha inválida"),
   presente: z.boolean().default(true),
   justificado: z.boolean().default(false),
   tardanza: z.boolean().default(false),
   observacion: observacionField,
 });
 
-export const lmsMetricsSchema = z.object({
-  engagement: z.enum(["alto", "medio", "bajo"]).optional(),
-  actividadSemanalPct: z.array(percentageField).min(1, "Indique actividad semanal LMS"),
-  minutosPorSemana: z.array(z.number().min(0)).optional(),
-  tareasEntregadas: z.number().min(0, "tareas_entregadas >= 0"),
-  tareasTotales: z.number().min(1, "tareas_totales >= 1"),
-  horasPlataformaSemana: z.number().min(0, "tiempo_plataforma >= 0").optional(),
-  frecuenciaAccesoLms: z.number().min(0).optional(),
-  participacionActividades: z.number().min(0).optional(),
-  usoForos: z.number().min(0).max(1).optional(),
-  disminucionActividad: z.number().min(0).max(100).optional(),
-});
-
-export const predictSchema = z
-  .object({
-    studentId: z.string().min(1).optional(),
-    metrics: z
-      .object({
-        promedioGeneral: gradeField,
-        asistenciaGeneral: percentageField,
-        lms: lmsMetricsSchema,
-      })
-      .optional(),
-    estado: z.enum(["activo", "en_riesgo", "retirado"]).optional(),
-  })
-  .refine((d) => d.studentId || d.metrics, {
-    message: "Indique studentId o métricas académicas/LMS completas",
-  });
+export const predictSchema = z.object({ studentId: z.string().regex(/^[1-9]\d*$/) }).strict();
 
 export const messageSchema = z.object({
   roomId: z.string().min(1).optional(),
@@ -129,39 +95,21 @@ export const alertStatusSchema = z.object({
   status: z.enum(["nueva", "en_seguimiento", "resuelta"]),
 });
 
-const teacherCourseInput = z.object({
-  codigo: codigoField,
-  nombre: courseNameField,
-  seccionId: z.string().min(1, "Seleccione grado y sección"),
-  cursoCatalogoId: z.string().optional(),
-  periodo: z.string().max(16).optional(),
-});
-
-export const teacherSchema = z
-  .object({
-    codigo: codigoField,
-    nombres: personNameField,
-    apellidos: personNameField,
-    especialidad: personNameField,
-    correo: z.string().email("Correo inválido").max(255),
-    telefono: optionalPhoneField,
-    password: z.string().min(8).max(128).optional(),
-    crearCuenta: z.boolean().optional(),
-    cursos: z.array(teacherCourseInput).max(12).optional(),
-  })
-  .refine((d) => !d.crearCuenta || (d.password && d.password.length >= 8), {
-    message: "Indique una contraseña de al menos 8 caracteres para la cuenta",
-    path: ["password"],
-  });
+export const teacherSchema = z.object({
+  dni: z.string().regex(/^\d{8}$/, "DNI debe tener 8 dígitos"),
+  nombres: personNameField, apellidos: personNameField, especialidad: personNameField,
+  correo: z.string().email().max(120).transform(v => v.trim().toLowerCase()),
+  telefono: optionalPhoneField, password: securePasswordField.optional(),
+  crearCuenta: z.boolean().optional(),
+}).strict().refine(d => !d.crearCuenta || !!d.password, { message: "Contraseña requerida", path: ["password"] });
 
 export const updateTeacherSchema = z.object({
   nombres: personNameField.optional(),
   apellidos: personNameField.optional(),
   especialidad: personNameField.optional(),
   correo: z.string().email("Correo inválido").max(255).optional(),
-  telefono: optionalPhoneField.nullable(),
+  telefono: optionalPhoneField.nullable().optional(),
   activo: z.boolean().optional(),
-  cursosNuevos: z.array(teacherCourseInput).max(12).optional(),
 });
 
 export const teacherAccountSchema = z.object({
@@ -184,7 +132,7 @@ export const seccionSchema = z.object({
 });
 
 export const bulkAttendanceSchema = z.object({
-  fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida (YYYY-MM-DD)"),
+  fecha: attendanceSchema.shape.fecha,
   records: z
     .array(
       z.object({

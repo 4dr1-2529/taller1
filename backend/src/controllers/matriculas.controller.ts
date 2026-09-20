@@ -1,3 +1,5 @@
+import { enroll2026 } from "../services/student-registration.service.js";
+import { z } from "zod";
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
@@ -74,6 +76,7 @@ export async function listMatriculas(req: Request, res: Response, next: NextFunc
 
     const where: Record<string, unknown> = {
       estudiante: scope,
+      anioLectivo: { anio: 2026 },
       ...(seccionId ? { seccionId: toDbId(seccionId) } : {}),
       ...(anioLectivoId ? { anioLectivoId: toDbId(anioLectivoId) } : {}),
       ...(estado ? { estado } : {}),
@@ -112,73 +115,9 @@ export async function createMatricula(req: Request, res: Response, next: NextFun
     const data = matriculaSchema.parse(req.body);
     await assertStudentInScope(req.user!, data.estudianteId);
 
-    const [student, seccion, anio] = await Promise.all([
-      prisma.student.findUnique({
-        where: { id: toDbId(data.estudianteId) },
-        select: { id: true, codigo: true, seccionId: true },
-      }),
-      prisma.seccion.findUnique({
-        where: { id: toDbId(data.seccionId) },
-        include: { grado: true },
-      }),
-      prisma.anioLectivo.findUnique({ where: { id: toDbId(data.anioLectivoId) } }),
-    ]);
-
-    if (!student || !seccion || !anio) {
-      throw new AppError(404, "Estudiante, sección o año lectivo no encontrado");
-    }
-
-    const existing = await prisma.matricula.findUnique({
-      where: {
-        estudianteId_anioLectivoId: {
-          estudianteId: student.id,
-          anioLectivoId: anio.id,
-        },
-      },
-    });
-    if (existing) {
-      throw new AppError(
-        409,
-        "El estudiante ya tiene matrícula activa para este año lectivo. Use actualización de sección si cambió de salón.",
-      );
-    }
-
-    const codigo =
-      data.codigo?.trim() ||
-      `MAT-${student.codigo}-${anio.anio}`;
-
-    const dupCodigo = await prisma.matricula.findUnique({ where: { codigo } });
-    if (dupCodigo) throw new AppError(409, "Código de matrícula ya registrado");
-
-    const item = await prisma.matricula.create({
-      data: {
-        estudianteId: student.id,
-        seccionId: seccion.id,
-        anioLectivoId: anio.id,
-        codigo,
-        fechaMatricula: data.fechaMatricula ? new Date(data.fechaMatricula) : new Date(),
-        estado: data.estado ?? "activa",
-      },
-      include: {
-        estudiante: true,
-        seccion: { include: { grado: { include: { nivel: true } } } },
-        anioLectivo: true,
-      },
-    });
-
-    await prisma.student.update({
-      where: { id: student.id },
-      data: { seccionId: seccion.id },
-    });
-
-    await logAudit({
-      entidad: "Matricula",
-      entidadId: item.id,
-      accion: "CREATE",
-      usuarioId: req.user?.sub,
-      studentId: data.estudianteId,
-    });
-
+    const year = await prisma.anioLectivo.findUnique({ where: { id: toDbId(data.anioLectivoId) } });
+    if (year?.anio !== 2026 || data.estado && data.estado !== "activa") throw new AppError(400, "Solo matrícula activa 2026");
+    const item = await prisma.$transaction(tx => enroll2026(tx, toDbId(data.estudianteId), toDbId(data.seccionId), req.user!.sub, req.ip));
     sendCreated(res, { item: mapMatricula(item) });
   } catch (e) {
     next(e);
@@ -189,7 +128,7 @@ export async function matriculaStats(req: Request, res: Response, next: NextFunc
   try {
     const scope = await resolveStudentScope(req.user!);
     const anioActivo = await prisma.anioLectivo.findFirst({
-      where: { activo: true },
+      where: { activo: true, anio: 2026 },
       orderBy: { anio: "desc" },
     });
     const whereAnio = anioActivo
@@ -211,4 +150,20 @@ export async function matriculaStats(req: Request, res: Response, next: NextFunc
   } catch (e) {
     next(e);
   }
+}
+
+export async function updateMatriculaState(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { estado } = z.object({ estado: z.enum(["retirada", "trasladada"]) }).strict().parse(req.body);
+    const id = toDbId(String(req.params.id));
+    await prisma.$transaction(async tx => {
+      const row = await tx.matricula.findFirst({ where: { id, anioLectivo: { anio: 2026 } } });
+      if (!row) throw new AppError(404, "Matrícula 2026 no encontrada");
+      await tx.$queryRaw`SELECT id FROM seccion WHERE id = ${row.seccionId} FOR UPDATE`;
+      await tx.matricula.update({ where: { id }, data: { estado } });
+      await tx.enrollment.updateMany({ where: { studentId: row.estudianteId, course: { anioLectivoId: row.anioLectivoId } }, data: { estado: "retirada" } });
+      await tx.auditLog.create({ data: { entidad: "Matricula", entidadId: String(id), accion: "UPDATE_STATE", detalle: estado, usuarioId: BigInt(req.user!.sub), estudianteId: row.estudianteId, ipAddress: req.ip } });
+    });
+    sendSuccess(res, { estado });
+  } catch (e) { next(e); }
 }

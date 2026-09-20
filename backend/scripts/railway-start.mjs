@@ -13,7 +13,6 @@ import {
   backendRoot,
   prismaExecOrThrow,
 } from "./prisma-exec.mjs";
-import { spawnTsx } from "./spawn-tsx.mjs";
 
 applyEnvAliases(process.env);
 
@@ -39,28 +38,7 @@ if (!result.ok && result.reason === "P3009") {
   console.log("[railway-start] migraciones OK");
 }
 
-if (process.env.RUN_DEMO_SEED === "1") {
-  console.log("[railway-start] RUN_DEMO_SEED=1 — poblando demo en segundo plano…");
-  const seed = spawn(process.execPath, ["scripts/railway-seed-demo.mjs"], {
-    cwd: backendRoot,
-    env: process.env,
-    stdio: "inherit",
-    detached: true,
-  });
-  seed.unref();
-}
-
-if (process.env.RUN_REPAIR === "1") {
-  console.log("[railway-start] RUN_REPAIR=1 — reparando cuentas y notas I–II…");
-  const repair = spawnTsx(["scripts/repair-institutional-data.ts"], {
-    cwd: backendRoot,
-    env: process.env,
-    stdio: "inherit",
-    detached: true,
-  });
-  repair.unref();
-}
-
+// No population or repair scripts run during deployment.
 console.log("[railway-start] iniciando API");
 const api = spawn(process.execPath, ["dist/index.js"], {
   stdio: "inherit",

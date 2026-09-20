@@ -173,10 +173,6 @@ export function lmsActivityTier(student: Student): import("@/lib/lms-engagement"
       minutos: student.metrics.lms.minutosPorSemana[i],
     })),
     {
-      tareasRatio:
-        student.metrics.lms.tareasTotales > 0
-          ? student.metrics.lms.tareasEntregadas / student.metrics.lms.tareasTotales
-          : 0,
       tiempoPlataforma: student.metrics.lms.horasPlataformaSemana,
     },
   );

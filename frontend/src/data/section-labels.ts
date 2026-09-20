@@ -1,19 +1,25 @@
 import type { AppSection } from "@/data/navigation";
 
 export const SECTION_LABELS: Record<AppSection, string> = {
+  "Grados y secciones": "Grados y secciones",
+  "Auditoría": "Auditoría",
+  "Configuración": "Configuración",
   Dashboard: "Dashboard",
+  Materiales: "Materiales",
+  Actividades: "Actividades",
+  Avisos: "Avisos",
   Estudiantes: "Estudiantes",
   Profesores: "Profesores",
   Asignaciones: "Asignaciones docentes",
   Cursos: "Cursos",
-  Matrículas: "Matrículas",
+  Matrículas: "Matrícula 2026",
   Notas: "Notas",
   Asistencia: "Asistencia",
   "Actividad LMS": "Actividad LMS",
   Predicción: "Predicción de riesgo",
   "Historial predicciones": "Historial de predicciones",
   Alertas: "Alertas tempranas",
-  "Mensajería Académica": "Mensajería Académica",
+  "Mensajería Académica": "Mensajes",
   Reportes: "Reportes",
 };
 

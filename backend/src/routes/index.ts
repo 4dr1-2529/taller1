@@ -1,3 +1,6 @@
+import { updateMatriculaState } from "../controllers/matriculas.controller.js";
+import { getSettings, updateSettings } from "../controllers/settings.controller.js";
+import { listLearning, publishMaterial, publishActivity, accessMaterial, progressActivity, courseAccess, getIndicators } from "../controllers/lms.controller.js";
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth.js";
@@ -27,6 +30,7 @@ import {
   listMessages,
   markRoomRead,
   sendMessage,
+  publishAnnouncement,
 } from "../controllers/messages.controller.js";
 import { resolveStudentScope } from "../utils/student-scope.js";
 import {
@@ -72,7 +76,7 @@ import {
   estudianteAlertas,
   estudianteMensajes,
 } from "../controllers/estudiante.controller.js";
-import { listReports, createReport, deleteReport, saveDashboardSnapshot, getDashboardSnapshot, listStudentRisks, createStudentRisk, applyRecommendation } from "../controllers/reports.controller.js";
+import { listReports, createReport, deleteReport, saveDashboardSnapshot, getDashboardSnapshot, listStudentRisks, applyRecommendation } from "../controllers/reports.controller.js";
 import { prisma } from "../utils/prisma.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
@@ -97,9 +101,9 @@ router.get("/academic/anios-lectivos", authenticate, listAniosLectivos);
 router.post("/academic/secciones", authenticate, authorize("admin"), createSeccion);
 router.get("/academic/cursos-catalogo", authenticate, listCursosCatalogo);
 
-router.get("/students", authenticate, authorize("admin", "docente"), listStudents);
+router.get("/students", authenticate, listStudents);
 router.post("/students", authenticate, authorize("admin"), createStudent);
-router.get("/students/:id", authenticate, authorize("admin", "docente"), getStudent);
+router.get("/students/:id", authenticate, getStudent);
 router.put("/students/:id", authenticate, authorize("admin"), updateStudent);
 router.delete("/students/:id", authenticate, authorize("admin"), deleteStudent);
 
@@ -146,15 +150,16 @@ router.get("/estudiante/alertas", authenticate, authorize("estudiante"), estudia
 router.get("/estudiante/mensajes", authenticate, authorize("estudiante"), estudianteMensajes);
 
 router.get("/courses", authenticate, listCourses);
-router.post("/courses", authenticate, authorize("admin", "docente"), createCourse);
-router.put("/courses/:id", authenticate, authorize("admin", "docente"), updateCourse);
+router.post("/courses", authenticate, authorize("admin"), createCourse);
+router.put("/courses/:id", authenticate, authorize("admin"), updateCourse);
 router.delete("/courses/:id", authenticate, authorize("admin"), deleteCourse);
 
 router.get("/matriculas", authenticate, listMatriculas);
 router.get("/matriculas/stats", authenticate, matriculaStats);
+router.patch("/matriculas/:id", authenticate, authorize("admin"), updateMatriculaState);
 router.post("/matriculas", authenticate, authorize("admin"), createMatricula);
 
-router.post("/predict", authenticate, predict);
+router.post("/predict", authenticate, authorize("admin", "docente"), predict);
 router.get("/predictions", authenticate, authorize("admin", "docente"), listPredictions);
 router.get("/predictions/:id", authenticate, authorize("admin", "docente"), getPrediction);
 router.get("/dashboard/kpis", authenticate, authorize("admin", "docente"), dashboardStats);
@@ -197,14 +202,14 @@ router.get("/ml/metrics", authenticate, authorize("admin", "docente"), async (_r
 });
 
 router.get("/grades", authenticate, authorize("admin", "docente"), listGrades);
-router.post("/grades", authenticate, authorize("admin", "docente"), createGrade);
-router.delete("/grades/:id", authenticate, authorize("admin", "docente"), deleteGrade);
+router.post("/grades", authenticate, authorize("docente"), createGrade);
+router.delete("/grades/:id", authenticate, authorize("docente"), deleteGrade);
 
 router.get("/attendance", authenticate, authorize("admin", "docente"), listAttendance);
-router.post("/attendance", authenticate, authorize("admin", "docente"), createAttendance);
-router.post("/attendance/bulk", authenticate, authorize("admin", "docente"), bulkAttendance);
-router.put("/attendance/:id", authenticate, authorize("admin", "docente"), updateAttendance);
-router.delete("/attendance/:id", authenticate, authorize("admin"), deleteAttendance);
+router.post("/attendance", authenticate, authorize("docente"), createAttendance);
+router.post("/attendance/bulk", authenticate, authorize("docente"), bulkAttendance);
+router.put("/attendance/:id", authenticate, authorize("docente"), updateAttendance);
+router.delete("/attendance/:id", authenticate, authorize("docente"), deleteAttendance);
 
 router.get("/reports", authenticate, listReports);
 router.post("/reports", authenticate, authorize("admin", "docente"), createReport);
@@ -214,7 +219,6 @@ router.get("/dashboard-snapshot/:periodo", authenticate, getDashboardSnapshot);
 router.post("/dashboard-snapshot", authenticate, authorize("admin", "docente"), saveDashboardSnapshot);
 
 router.get("/student-risks", authenticate, listStudentRisks);
-router.post("/student-risks", authenticate, authorize("admin", "docente"), createStudentRisk);
 
 router.patch("/recommendations/:id/apply", authenticate, applyRecommendation);
 
@@ -226,4 +230,19 @@ router.get("/admin/audit-logs", authenticate, authorize("admin"), getAuditLogs);
 router.get("/admin/system-stats", authenticate, authorize("admin"), getSystemStats);
 router.get("/admin/cuentas-acceso", authenticate, authorize("admin"), exportAccessAccounts);
 
+
+router.get("/learning", authenticate, listLearning);
+router.post("/materials", authenticate, authorize("docente"), publishMaterial);
+router.get("/materials/:id", authenticate, accessMaterial);
+router.post("/activities", authenticate, authorize("docente"), publishActivity);
+router.patch("/activities/:id/progress", authenticate, authorize("estudiante"), progressActivity);
+router.post("/lms/course-access", authenticate, authorize("estudiante"), courseAccess);
+router.get("/lms/students/:id", authenticate, getIndicators);
+
+router.get("/announcements/rooms", authenticate, listMessageRooms);
+router.get("/announcements/:roomId", authenticate, listMessages);
+router.patch("/announcements/:roomId/read", authenticate, markRoomRead);
+router.post("/announcements", authenticate, authorize("admin", "docente"), publishAnnouncement);
+router.get("/admin/settings", authenticate, authorize("admin"), getSettings);
+router.put("/admin/settings", authenticate, authorize("admin"), updateSettings);
 export default router;

@@ -31,7 +31,8 @@ export async function assertStudentInCourseSection(studentId: string, courseId: 
       select: { seccionId: true },
     }),
   ]);
-  if (!course?.seccionId || !student?.seccionId || course.seccionId !== student.seccionId) {
+  const enrolled = await prisma.enrollment.findFirst({ where: { studentId: toDbId(studentId), cursoOfertaId: toDbId(courseId), estado: "activa", course: { anioLectivo: { anio: 2026 } }, student: { matriculas: { some: { estado: "activa", anioLectivo: { anio: 2026 } } } } } });
+  if (!enrolled || !course?.seccionId || !student?.seccionId || course.seccionId !== student.seccionId) {
     throw new AppError(403, "No tiene permiso para acceder a este estudiante.", "FORBIDDEN");
   }
 }

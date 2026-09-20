@@ -195,48 +195,32 @@ export function firstError(errors: FieldErrors): string | undefined {
 }
 
 export type StudentFormInput = {
-  codigo: string;
   nombres: string;
   apellidos: string;
   seccionId: string;
   dni: string;
   correo: string;
   telefono: string;
-  promedioGeneral: string;
-  asistenciaGeneral: string;
 };
 
 export function validateStudentForm(form: StudentFormInput): FieldErrors {
   const errors: FieldErrors = {};
-  const codigo = validateCodigo(form.codigo);
-  if (codigo) errors.codigo = codigo;
   const nombres = validatePersonName(form.nombres, "Nombres");
   if (nombres) errors.nombres = nombres;
   const apellidos = validatePersonName(form.apellidos, "Apellidos");
   if (apellidos) errors.apellidos = apellidos;
   if (!form.seccionId.trim()) errors.seccionId = VALIDATION_MSG.required;
-  const dni = validateDni(form.dni, false);
+  const dni = validateDni(form.dni, true);
   if (dni) errors.dni = dni;
   const correo = validateEmail(form.correo, false);
   if (correo) errors.correo = correo;
   const telefono = validatePhone(form.telefono, false);
   if (telefono) errors.telefono = telefono;
-  if (form.promedioGeneral.trim()) {
-    const p = validateGradeString(form.promedioGeneral, false);
-    if (p) errors.promedioGeneral = p;
-  }
-  if (form.asistenciaGeneral.trim()) {
-    const a = validatePercentString(form.asistenciaGeneral, false);
-    if (a) errors.asistenciaGeneral = a;
-  }
-  if (!form.dni.trim() && !form.correo.trim()) {
-    errors.dni = "Indique DNI o correo para crear la cuenta de acceso";
-  }
   return errors;
 }
 
 export type TeacherFormInput = {
-  codigo: string;
+  dni: string;
   nombres: string;
   apellidos: string;
   especialidad: string;
@@ -248,8 +232,8 @@ export type TeacherFormInput = {
 
 export function validateTeacherForm(form: TeacherFormInput & { cursos?: TeacherCourseInput[] }): FieldErrors {
   const errors: FieldErrors = {};
-  const codigo = validateCodigo(form.codigo);
-  if (codigo) errors.codigo = codigo;
+  const dni = validateDni(form.dni, true);
+  if (dni) errors.dni = dni;
   Object.assign(errors, validateTeacherProfileFields(form));
   if (form.crearCuenta && form.password.length < 8) {
     errors.password = "La contraseña debe tener al menos 8 caracteres";

@@ -1,3 +1,4 @@
+import { recordLmsEvent } from "../services/lms.service.js";
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
@@ -81,6 +82,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       ipAddress: ip,
     });
 
+    await recordLmsEvent({ sub: String(user.id), role }, "login");
     sendSuccess(res, { token,
       refreshToken,
       user: {
@@ -109,6 +111,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
         usuarioId: toDbId(decoded.sub),
         tokenHash: hashToken(refreshToken),
         expiresAt: { gt: new Date() },
+        revocada: false,
       },
     });
     if (!session) throw new AppError(401, "Sesión inválida o expirada");
@@ -144,6 +147,7 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
       data: { revocada: true },
     });
     await logAudit({ entidad: "User", entidadId: toDbId(req.user!.sub), accion: "LOGOUT", usuarioId: toDbId(req.user!.sub) });
+    await recordLmsEvent(req.user!, "logout");
     sendSuccess(res, { loggedOut: true });
   } catch (e) {
     next(e);

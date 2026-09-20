@@ -5,12 +5,12 @@ import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
-import { resolveStudentScope } from "../utils/student-scope.js";
+import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 import { getActiveAnioLectivoId, resolvePeriodoByParam } from "../utils/academic-period.js";
 
 export async function listReports(req: Request, res: Response, next: NextFunction) {
   try {
-    const rows = await prisma.report.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
+    const rows = await prisma.report.findMany({ where: req.user!.role === "admin" ? {} : { generadoPor: BigInt(req.user!.sub) }, orderBy: { createdAt: "desc" }, take: 50 });
     const items = rows.map((r) => ({ ...r, id: idToString(r.id) }));
     sendSuccess(res, { items });
   } catch (e) {
@@ -100,7 +100,7 @@ export async function getDashboardSnapshot(req: Request, res: Response, next: Ne
   }
 }
 
-/** Reemplaza StudentRisk: última predicción o estado en_riesgo por estudiante. */
+/** Reemplaza StudentRisk: última predicción por estudiante. */
 export async function listStudentRisks(req: Request, res: Response, next: NextFunction) {
   try {
     const studentId = req.query.studentId as string | undefined;
@@ -111,7 +111,6 @@ export async function listStudentRisks(req: Request, res: Response, next: NextFu
         ...scope,
         ...(studentId ? { id: toDbId(studentId) } : {}),
         OR: [
-          { estado: "en_riesgo" },
           { predicciones: { some: { nivelRiesgo: { in: ["medio", "alto"] } } } },
         ],
       },
@@ -128,7 +127,7 @@ export async function listStudentRisks(req: Request, res: Response, next: NextFu
         id: pred ? idToString(pred.id) : idToString(s.id),
         studentId: idToString(s.id),
         score: pred ? Number(pred.score) : null,
-        level: pred?.nivelRiesgo ?? (s.estado === "en_riesgo" ? "medio" : "bajo"),
+        level: pred?.nivelRiesgo ?? "bajo",
         periodo: null,
         createdAt: pred?.createdAt ?? s.updatedAt,
         student: { nombres: s.nombres, apellidos: s.apellidos, codigo: s.codigo },
@@ -146,48 +145,12 @@ export async function listStudentRisks(req: Request, res: Response, next: NextFu
   }
 }
 
-export async function createStudentRisk(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { studentId, score, level, periodoId } = req.body;
-    const nivelRiesgo = (level ?? "medio") as NivelRiesgo;
-    const sid = toDbId(studentId);
-    const prob = Number(score) / 100;
-
-    const record = await prisma.prediction.create({
-      data: {
-        studentId: sid,
-        score: Number(score),
-        nivelRiesgo,
-        probabilidad: prob,
-        probabilidadAbandono: prob,
-        periodoId: periodoId ? toDbId(periodoId) : undefined,
-      },
-    });
-
-    if (nivelRiesgo !== "bajo") {
-      await prisma.student.update({
-        where: { id: sid },
-        data: { estado: "en_riesgo" },
-      });
-    }
-
-    sendCreated(res, { record: {
-        id: idToString(record.id),
-        studentId: idToString(record.studentId),
-        score: Number(record.score),
-        level: record.nivelRiesgo,
-        periodo: periodoId ?? null,
-      }, });
-  } catch (e) {
-    next(e);
-  }
-}
-
 export async function applyRecommendation(req: Request, res: Response, next: NextFunction) {
   try {
     const id = paramBigIntId(req);
     const rec = await prisma.aiRecommendation.findUnique({ where: { id } });
     if (!rec) throw new AppError(404, "Recomendación no encontrada");
+    await assertStudentInScope(req.user!, String(rec.studentId));
     const updated = await prisma.aiRecommendation.update({
       where: { id },
       data: { aplicada: true },

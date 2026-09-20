@@ -26,6 +26,9 @@ export function errorHandler(
     const errors = err.code ? [{ field: "_form", message: err.code }] : [];
     return res.status(err.statusCode).json(errorPayload(err.message, errors));
   }
+  if (err && typeof err === "object" && "code" in err && err.code === "P2002") {
+    return res.status(409).json(errorPayload("DNI, correo, código o registro duplicado"));
+  }
   if (env.NODE_ENV !== "production") {
     console.error(err);
   } else {
