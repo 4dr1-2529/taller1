@@ -2,7 +2,7 @@ import { sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../middleware/errorHandler.js";
 import { requireStudentIdFromUser, rejectClientStudentId } from "../utils/estudiante-scope.js";
-import { idToString, toDbId } from "../utils/ids.js";
+import { toDbId } from "../utils/ids.js";
 import {
   loadStudentProfile,
   buildEstudianteDashboard,
@@ -13,7 +13,6 @@ import {
   buildEstudianteAlertas,
   buildEstudianteMensajes,
 } from "../services/estudiante.service.js";
-import { predict } from "./predict.controller.js";
 
 async function scopedStudentId(req: Request): Promise<bigint> {
   const studentId = await requireStudentIdFromUser(req.user!.sub);
@@ -85,16 +84,6 @@ export async function estudiantePrediccion(req: Request, res: Response, next: Ne
     const studentId = await scopedStudentId(req);
     const data = await buildEstudiantePrediccion(studentId);
     sendSuccess(res, data);
-  } catch (e) {
-    next(e);
-  }
-}
-
-export async function estudiantePrediccionPost(req: Request, res: Response, next: NextFunction) {
-  try {
-    const studentId = await scopedStudentId(req);
-    req.body = { ...(req.body ?? {}), studentId: idToString(studentId) };
-    await predict(req, res, next);
   } catch (e) {
     next(e);
   }

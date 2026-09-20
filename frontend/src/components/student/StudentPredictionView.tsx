@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { RefreshCw } from "lucide-react";
-import { toast } from "sonner";
 import { estudianteService } from "@/services/estudianteService";
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
@@ -22,7 +20,6 @@ export function StudentPredictionView() {
   const [data, setData] = useState<Awaited<ReturnType<typeof estudianteService.getPrediccion>> | null>(null);
   const [alertas, setAlertas] = useState<Awaited<ReturnType<typeof estudianteService.getAlertas>> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     if (!ready || !isEstudiante) return;
@@ -39,19 +36,6 @@ export function StudentPredictionView() {
     void load().finally(() => setLoading(false));
   }, [ready, isEstudiante, load]);
 
-  async function handleRefresh() {
-    setRefreshing(true);
-    try {
-      await estudianteService.refreshPrediccion();
-      await load();
-      toast.success("Predicción actualizada");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "No se pudo actualizar la predicción");
-    } finally {
-      setRefreshing(false);
-    }
-  }
-
   if (loading) {
     return (
       <div className="grid gap-4 md:grid-cols-2">
@@ -65,17 +49,8 @@ export function StudentPredictionView() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <p className="text-sm text-[var(--text-secondary)]">{ESTUDIANTE_MSG.riesgo}</p>
-        <button
-          type="button"
-          className="btn-secondary inline-flex items-center gap-2 px-3 py-2 text-sm"
-          disabled={refreshing}
-          onClick={() => void handleRefresh()}
-        >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-          Actualizar mi predicción
-        </button>
       </div>
 
       {!pred ? (

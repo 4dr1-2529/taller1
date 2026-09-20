@@ -7,6 +7,7 @@ import { logAudit } from "../utils/audit.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 import { assertTeacherCourseAccess, assertStudentInCourseSection } from "../utils/course-authorization.js";
+import { getTeacherIdForUser } from "../utils/teacher.js";
 import { resolvePeriodoId } from "../utils/academic-period.js";
 import { courseListInclude, courseDisplayName } from "../utils/course-label.js";
 
@@ -17,6 +18,16 @@ export async function listGrades(req: Request, res: Response, next: NextFunction
     const where: Record<string, unknown> = { student: scope, periodo: { anioLectivo: { anio: 2026 } } };
     if (studentId) await assertStudentInScope(req.user!, String(studentId));
     if (studentId) where.studentId = toDbId(studentId as string);
+    if (req.user!.role === "docente") {
+      const teacherId = await getTeacherIdForUser(req.user!.sub);
+      if (!teacherId) return sendSuccess(res, { items: [] });
+      if (courseId) {
+        await assertTeacherCourseAccess(req.user!, String(courseId));
+      } else {
+        const own = await prisma.course.findMany({ where: { profesorId: toDbId(teacherId), activo: true }, select: { id: true } });
+        where.cursoOfertaId = { in: own.map((c) => c.id) };
+      }
+    }
     if (courseId) where.cursoOfertaId = toDbId(courseId as string);
     if (periodoId) {
       where.periodoId = toDbId(periodoId as string);

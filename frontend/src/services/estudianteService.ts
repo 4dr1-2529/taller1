@@ -127,7 +127,6 @@ export const estudianteService = {
         recomendacion: string;
       } | null;
     }>("/estudiante/prediccion"),
-  refreshPrediccion: () => api.call<{ prediction: unknown }>("/estudiante/prediccion", { method: "POST" }),
   getAlertas: () =>
     api.call<{
       items: {

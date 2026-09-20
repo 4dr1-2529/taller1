@@ -105,6 +105,7 @@ export async function listStudentRisks(req: Request, res: Response, next: NextFu
   try {
     const studentId = req.query.studentId as string | undefined;
     const scope = await resolveStudentScope(req.user!);
+    if (studentId) await assertStudentInScope(req.user!, studentId);
 
     const students = await prisma.student.findMany({
       where: {

@@ -1,7 +1,7 @@
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
-import { resolveStudentScope } from "../utils/student-scope.js";
+import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 
@@ -44,6 +44,7 @@ export async function listPredictions(req: Request, res: Response, next: NextFun
     const user = req.user!;
     const scope = await resolveStudentScope(user);
     const studentId = req.query.studentId as string | undefined;
+    if (studentId) await assertStudentInScope(user, studentId);
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(100, Number(req.query.limit) || 30);
     const skip = (page - 1) * limit;

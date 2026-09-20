@@ -41,12 +41,17 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
   const catalog = await prisma.cursoCatalogo.create({ data: { areaId: area.id, codigo: "TEST", nombre: "Matematica" } });
   const course = await prisma.course.create({ data: { cursoId: catalog.id, seccionId: section.id, profesorId: teacher.id, anioLectivoId: year.id, codigo: "TEST-2026-A" } });
   await prisma.teacherCourseAssignment.create({ data: { profesorId: teacher.id, cursoId: catalog.id, seccionId: section.id, gradoId: grade.id, anioLectivoId: year.id, cursoOfertaId: course.id } });
+  const teacherBUser = await prisma.user.create({ data: { rolId: roles[1].id, email: "test-teacher-b@example.test", passwordHash: "unused", nombres: "Profesora", apellidos: "Prueba B" } });
+  const teacherB = await prisma.teacher.create({ data: { usuarioId: teacherBUser.id, codigo: "PROF-002", nombres: "Profesora", apellidos: "Prueba B", especialidad: "Comunicacion", email: teacherBUser.email } });
+  const catalogB = await prisma.cursoCatalogo.create({ data: { areaId: area.id, codigo: "TEST-COM", nombre: "Comunicacion" } });
+  const courseB = await prisma.course.create({ data: { cursoId: catalogB.id, seccionId: section.id, profesorId: teacherB.id, anioLectivoId: year.id, codigo: "TEST-2026-B" } });
+  await prisma.teacherCourseAssignment.create({ data: { profesorId: teacherB.id, cursoId: catalogB.id, seccionId: section.id, gradoId: grade.id, anioLectivoId: year.id, cursoOfertaId: courseB.id } });
   const old = await prisma.student.create({ data: { codigo: "EST-050", nombres: "Antiguo", apellidos: "Prueba", fechaIngreso: new Date(), seccionId: section.id } });
   await prisma.student.create({ data: { codigo: "EST-200", nombres: "Limite", apellidos: "Prueba", fechaIngreso: new Date(), seccionId: section.id } });
   const input = (dni: string, seccionId = section.id) => ({ dni, nombres: "Alumno", apellidos: "Prueba", seccionId: String(seccionId) });
   const first = await registerStudent(input("90000201"), String(admin.id));
   const token = (id: bigint, role: string) => jwt.sign({ sub: String(id), role, email: "test@example.test" }, process.env.JWT_SECRET!, { expiresIn: "5m" });
-  const tokens = { admin: token(admin.id, "admin"), teacher: token(teacherUser.id, "docente"), student: token(first.student.usuarioId!, "estudiante") };
+  const tokens = { admin: token(admin.id, "admin"), teacher: token(teacherUser.id, "docente"), teacherB: token(teacherBUser.id, "docente"), student: token(first.student.usuarioId!, "estudiante") };
   async function call(path: string, who: keyof typeof tokens, body?: unknown, method = body ? "POST" : "GET") {
     return fetch(base + path, { method, headers: { "Content-Type": "application/json", Authorization: `Bearer ${tokens[who]}` }, body: body ? JSON.stringify(body) : undefined });
   }
@@ -130,5 +135,63 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.equal(await prisma.prediction.count({ where: { studentId: first.student.id } }), 2);
     assert.equal(await prisma.alert.count({ where: { studentId: first.student.id } }), 1);
     assert.equal((await call("/predict", "student", { studentId: String(first.student.id) })).status, 403);
+  });
+  await t.test("teacher roster is restricted to directors", async () => {
+    assert.equal((await call("/teachers", "admin")).status, 200);
+    assert.equal((await call("/teachers", "teacher")).status, 403);
+    assert.equal((await call("/teachers", "student")).status, 403);
+  });
+  await t.test("teachers cannot read grades from another teacher's course", async () => {
+    const shared = await registerStudent(input("90000207"), String(admin.id));
+    for (const [who, body, expected] of [
+      ["teacher", { studentId: String(shared.student.id), courseId: String(course.id), periodoId: String(period.id), nota: 12 }, 201],
+      ["teacherB", { studentId: String(shared.student.id), courseId: String(courseB.id), periodoId: String(period.id), nota: 16 }, 201],
+    ] as const) {
+      const r = await call("/grades", who, body);
+      assert.equal(r.status, expected, await r.text());
+    }
+    const ownA = await call(`/grades?studentId=${shared.student.id}&courseId=${course.id}&periodoId=${period.id}`, "teacher");
+    assert.equal(ownA.status, 200);
+    assert.equal(((await ownA.json()).data.items as unknown[]).length, 1);
+    assert.equal((await call(`/grades?studentId=${shared.student.id}&courseId=${courseB.id}&periodoId=${period.id}`, "teacher")).status, 403);
+    const allA = await call("/grades", "teacher");
+    assert.equal(allA.status, 200);
+    for (const g of ((await allA.json()).data.items as { courseId: string }[])) assert.equal(g.courseId, String(course.id));
+    assert.equal((await call(`/grades?courseId=${course.id}`, "teacherB")).status, 403);
+    const allB = await call("/grades", "teacherB");
+    assert.equal(allB.status, 200);
+    for (const g of ((await allB.json()).data.items as { courseId: string }[])) assert.equal(g.courseId, String(courseB.id));
+    assert.equal((await call(`/grades?courseId=${courseB.id}`, "admin")).status, 200);
+  });
+  await t.test("teachers are confined to their own courses", async () => {
+    assert.equal((await call("/students", "teacher", { dni: "90000999", nombres: "X", apellidos: "Y", seccionId: String(section.id) })).status, 403);
+    assert.equal((await call("/teachers", "teacher", { dni: "90000998", nombres: "X", apellidos: "Y", especialidad: "Z", correo: "x@y.test" })).status, 403);
+    assert.equal((await call("/matriculas", "teacher", { estudianteId: String(first.student.id), seccionId: String(section.id), anioLectivoId: String(year.id) })).status, 403);
+    assert.equal((await call("/materials", "teacher", { courseId: String(courseB.id), titulo: "Ajena", tipo: "enlace", url: "https://example.org/x" })).status, 403);
+    assert.equal((await call("/activities", "teacher", { courseId: String(courseB.id), titulo: "Ajena", tipo: "practica" })).status, 403);
+    assert.equal((await call("/announcements", "teacher", { scope: "curso", courseId: String(courseB.id), contenido: "Aviso ajeno" })).status, 403);
+    assert.equal((await call("/predict", "teacher", { studentId: String(other.student.id) })).status, 403);
+  });
+  await t.test("students are read-only for predictions and institutional data", async () => {
+    assert.equal((await call("/estudiante/prediccion", "student")).status, 200);
+    assert.equal((await call("/estudiante/prediccion", "student", { studentId: String(first.student.id) })).status, 404);
+    assert.equal((await call("/reports", "student")).status, 403);
+    assert.equal((await call("/dashboard-snapshot/1", "student")).status, 403);
+    assert.equal((await call("/recommendations/1/apply", "student", {}, "PATCH")).status, 403);
+    assert.equal((await call("/grades", "student", { studentId: String(first.student.id), courseId: String(course.id), nota: 18 })).status, 403);
+    assert.equal((await call("/attendance", "student", { studentId: String(first.student.id), fecha: "2026-09-20", presente: true })).status, 403);
+    assert.equal((await call("/alerts/1", "student", { status: "resuelta" }, "PATCH")).status, 403);
+    assert.equal((await call("/announcements", "student", { scope: "global", contenido: "x" })).status, 403);
+  });
+  await t.test("recommendations and risks respect staff scope", async () => {
+    const rec = await prisma.aiRecommendation.findFirst({ where: { studentId: first.student.id } });
+    assert.ok(rec);
+    assert.equal((await call(`/recommendations/${rec.id}/apply`, "teacher", {}, "PATCH")).status, 200);
+    const { persistPrediction } = await import("../src/services/prediction-persistence.service.js");
+    await persistPrediction(other.student.id, { score: 80, level: "alto" as const, probabilityAbandono: 0.8, modelName: "test-stub", recommendation: "x", inputData: {}, factors: [] }, String(admin.id));
+    const otherRec = await prisma.aiRecommendation.findFirst({ where: { studentId: other.student.id } });
+    assert.ok(otherRec);
+    assert.equal((await call(`/recommendations/${otherRec.id}/apply`, "teacher", {}, "PATCH")).status, 403);
+    assert.equal((await call(`/student-risks?studentId=${other.student.id}`, "teacher")).status, 403);
   });
 });

@@ -72,7 +72,6 @@ import {
   estudianteAsistencia,
   estudianteLms,
   estudiantePrediccion,
-  estudiantePrediccionPost,
   estudianteAlertas,
   estudianteMensajes,
 } from "../controllers/estudiante.controller.js";
@@ -107,7 +106,7 @@ router.get("/students/:id", authenticate, getStudent);
 router.put("/students/:id", authenticate, authorize("admin"), updateStudent);
 router.delete("/students/:id", authenticate, authorize("admin"), deleteStudent);
 
-router.get("/teachers", authenticate, listTeachers);
+router.get("/teachers", authenticate, authorize("admin"), listTeachers);
 router.get("/teachers/:id/detail", authenticate, authorize("admin"), getTeacherDetail);
 router.post("/teachers", authenticate, authorize("admin"), createTeacher);
 router.post("/teachers/:id/account", authenticate, authorize("admin"), createTeacherAccount);
@@ -145,7 +144,6 @@ router.get("/estudiante/notas", authenticate, authorize("estudiante"), estudiant
 router.get("/estudiante/asistencia", authenticate, authorize("estudiante"), estudianteAsistencia);
 router.get("/estudiante/lms", authenticate, authorize("estudiante"), estudianteLms);
 router.get("/estudiante/prediccion", authenticate, authorize("estudiante"), estudiantePrediccion);
-router.post("/estudiante/prediccion", authenticate, authorize("estudiante"), estudiantePrediccionPost);
 router.get("/estudiante/alertas", authenticate, authorize("estudiante"), estudianteAlertas);
 router.get("/estudiante/mensajes", authenticate, authorize("estudiante"), estudianteMensajes);
 
@@ -211,16 +209,16 @@ router.post("/attendance/bulk", authenticate, authorize("docente"), bulkAttendan
 router.put("/attendance/:id", authenticate, authorize("docente"), updateAttendance);
 router.delete("/attendance/:id", authenticate, authorize("docente"), deleteAttendance);
 
-router.get("/reports", authenticate, listReports);
+router.get("/reports", authenticate, authorize("admin", "docente"), listReports);
 router.post("/reports", authenticate, authorize("admin", "docente"), createReport);
 router.delete("/reports/:id", authenticate, authorize("admin"), deleteReport);
 
-router.get("/dashboard-snapshot/:periodo", authenticate, getDashboardSnapshot);
+router.get("/dashboard-snapshot/:periodo", authenticate, authorize("admin", "docente"), getDashboardSnapshot);
 router.post("/dashboard-snapshot", authenticate, authorize("admin", "docente"), saveDashboardSnapshot);
 
 router.get("/student-risks", authenticate, listStudentRisks);
 
-router.patch("/recommendations/:id/apply", authenticate, applyRecommendation);
+router.patch("/recommendations/:id/apply", authenticate, authorize("admin", "docente"), applyRecommendation);
 
 router.get("/admin/users", authenticate, authorize("admin"), listUsers);
 router.post("/admin/users", authenticate, authorize("admin"), createUser);
