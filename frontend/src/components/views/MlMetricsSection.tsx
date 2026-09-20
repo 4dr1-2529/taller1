@@ -50,7 +50,7 @@ function extractModels(raw: Record<string, unknown>): Record<string, ModelMetric
 export function MlMetricsSection() {
   const [raw, setRaw] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [unreachable, setUnreachable] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -58,9 +58,8 @@ export function MlMetricsSection() {
         const res = await api.getMlMetrics();
         const metrics = res.metrics as Record<string, unknown> | null;
         if (metrics && typeof metrics === "object") setRaw(metrics);
-        else setError("Entrene el modelo: npm run ml:train");
       } catch {
-        setError("Servicio ML no disponible (puerto 5000).");
+        setUnreachable(true);
       } finally {
         setLoading(false);
       }
@@ -80,11 +79,22 @@ export function MlMetricsSection() {
     );
   }
 
-  if (error || !data || !Object.keys(data).length) {
+  if (!data || !Object.keys(data).length) {
     return (
-      <p className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 px-4 py-3 text-sm text-[var(--text-secondary)]">
-        {error ?? "Sin métricas"} — Ejecute <code className="text-[var(--accent)]">npm run ml:train</code>
-      </p>
+      <div className="space-y-1 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/30 px-4 py-3 text-sm text-[var(--text-secondary)]">
+        <p className="font-semibold text-[var(--text-primary)]">Métricas del modelo aún no disponibles</p>
+        {unreachable ? (
+          <>
+            <p>No se pudo consultar el estado del modelo predictivo.</p>
+            <p>Intente nuevamente más tarde.</p>
+          </>
+        ) : (
+          <>
+            <p>El modelo predictivo está pendiente de entrenamiento y validación con un conjunto de datos autorizado.</p>
+            <p>Las funciones académicas del sistema continúan disponibles normalmente.</p>
+          </>
+        )}
+      </div>
     );
   }
 
