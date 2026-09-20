@@ -160,20 +160,12 @@ export function useAcademicData() {
       toast.error("Inicie sesión para registrar docentes");
       return;
     }
-    const fieldErrors = validateTeacherForm({ ...form, cursos: form.cursos });
+    const fieldErrors = validateTeacherForm(form);
     const validationMsg = firstError(fieldErrors);
     if (validationMsg) {
       toast.error(validationMsg);
       return;
     }
-    const cursos = form.cursos
-      .filter((c) => c.codigo.trim() && c.nombre.trim() && c.seccionId)
-      .map((c) => ({
-        codigo: c.codigo.trim(),
-        nombre: c.nombre.trim(),
-        seccionId: c.seccionId,
-        periodo: "2026",
-      }));
     try {
       await api.createTeacher({
         dni: form.dni,
@@ -186,9 +178,7 @@ export function useAcademicData() {
         password: form.crearCuenta ? form.password : undefined,
       });
       await loadFromApi();
-      toast.success(
-        cursos.length ? `Docente registrado con ${cursos.length} curso(s)` : "Docente registrado",
-      );
+      toast.success("Docente registrado. Asigne cursos en Asignaciones docentes");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al guardar docente");
     }
@@ -202,7 +192,6 @@ export function useAcademicData() {
       especialidad: string;
       correo: string;
       telefono: string;
-      cursosNuevos: { codigo: string; nombre: string; seccionId: string }[];
     },
   ) {
     if (!api.hasToken) return;

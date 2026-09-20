@@ -27,13 +27,6 @@ import {
   clearFieldError,
 } from "@/lib/validation";
 
-export type NewTeacherCourse = {
-  codigo: string;
-  nombre: string;
-  gradoId: string;
-  seccionId: string;
-};
-
 export type NewTeacherForm = {
   dni: string;
   nombres: string;
@@ -43,7 +36,6 @@ export type NewTeacherForm = {
   telefono: string;
   crearCuenta: boolean;
   password: string;
-  cursos: NewTeacherCourse[];
 };
 
 export const defaultTeacherForm: NewTeacherForm = {
@@ -55,7 +47,6 @@ export const defaultTeacherForm: NewTeacherForm = {
   telefono: "",
   crearCuenta: true,
   password: "",
-  cursos: [],
 };
 
 export type EditTeacherForm = {
@@ -64,7 +55,6 @@ export type EditTeacherForm = {
   especialidad: string;
   correo: string;
   telefono: string;
-  cursosNuevos: NewTeacherCourse[];
 };
 
 
@@ -92,7 +82,6 @@ function startEdit(teacher: Teacher): EditTeacherForm {
     especialidad: teacher.especialidad,
     correo: teacher.correo,
     telefono: teacher.telefono,
-    cursosNuevos: [],
   };
 }
 
@@ -192,7 +181,7 @@ export function TeachersView({
               className="space-y-6"
               onSubmit={(e) => {
                 e.preventDefault();
-                const nextErrors = validateTeacherForm({ ...form, cursos: form.cursos });
+                const nextErrors = validateTeacherForm(form);
                 setFormErrors(nextErrors);
                 const msg = firstError(nextErrors);
                 if (msg) {
