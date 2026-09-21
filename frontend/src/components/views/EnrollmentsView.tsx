@@ -1,7 +1,7 @@
 "use client";
 
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { FormEvent } from "react";
 import {
@@ -22,6 +22,8 @@ import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { INPUT_CLASS } from "@/lib/ui";
+import { getEligibleStudents } from "@/lib/enrollment-eligibility";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { api, type MatriculaRow } from "@/services/api";
 import { BLENKIR_COLORS } from "@/constants/blenkir";
 
@@ -38,6 +40,7 @@ type MatriculasViewProps = {
   form: NewMatriculaForm;
   setForm: (v: NewMatriculaForm | ((p: NewMatriculaForm) => NewMatriculaForm)) => void;
   onAdd: (e: FormEvent<HTMLFormElement>) => void | Promise<void>;
+  onRefresh: () => void | Promise<unknown>;
 };
 
 export function EnrollmentsView({
@@ -47,6 +50,7 @@ export function EnrollmentsView({
   form,
   setForm,
   onAdd,
+  onRefresh,
 }: MatriculasViewProps) {
   const [items, setItems] = useState<MatriculaRow[]>([]);
   const [anios, setAnios] = useState<{ id: string; anio: number; nombre: string; activo: boolean }[]>([]);
@@ -57,6 +61,7 @@ export function EnrollmentsView({
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [pendingState, setPendingState] = useState<{ m: MatriculaRow; next: "retirada" | "trasladada" } | null>(null);
   const PAGE_SIZE = 20;
 
   const { filters, updateFilter, resetFilters, grados, seccionOptions, filteredStudents } =
@@ -98,16 +103,15 @@ export function EnrollmentsView({
 
   useEffect(() => {
     void load();
-  }, [load]);
+  }, [load, matriculaStats?.matriculasAnioLectivo]);
 
   async function changeState(m: MatriculaRow, next: "retirada" | "trasladada") {
-    const label = next === "retirada" ? "Retirar matrícula" : "Registrar traslado";
-    if (!window.confirm(`${label} ${m.codigo} (${m.estudiante.nombres} ${m.estudiante.apellidos})? Esta acción conserva el historial.`)) return;
     setBusyId(m.id);
     try {
       await api.updateMatriculaState(m.id, next);
       toast.success(next === "retirada" ? "Matrícula retirada" : "Traslado registrado");
-      void load();
+      setPendingState(null);
+      await Promise.all([load(), onRefresh()]);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "No se pudo actualizar la matrícula");
     } finally {
@@ -116,7 +120,24 @@ export function EnrollmentsView({
   }
 
   const studentsForForm = filters.seccionId || filters.gradoId ? filteredStudents : students;
-  const matriculadosIds = new Set(matriculaStats?.matriculadosIds ?? []);
+  const matriculadosIds = useMemo(
+    () => new Set(matriculaStats?.matriculadosIds ?? []),
+    [matriculaStats?.matriculadosIds],
+  );
+  const eligibleStudents = useMemo(
+    () => getEligibleStudents(studentsForForm, matriculadosIds),
+    [studentsForForm, matriculadosIds],
+  );
+  const eligibleStudentIds = useMemo(
+    () => new Set(eligibleStudents.map((student) => student.id)),
+    [eligibleStudents],
+  );
+
+  useEffect(() => {
+    if (form.estudianteId && !eligibleStudentIds.has(form.estudianteId)) {
+      setForm((p) => ({ ...p, estudianteId: "" }));
+    }
+  }, [eligibleStudentIds, form.estudianteId, setForm]);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
@@ -218,15 +239,12 @@ export function EnrollmentsView({
                   }}
                   required
                 >
-                  <option value="">Seleccione estudiante</option>
-                  {studentsForForm.map((s) => {
-                    const yaMatriculado = matriculadosIds.has(s.id);
-                    return (
-                      <option key={s.id} value={s.id} disabled={yaMatriculado}>
-                      {s.codigo} — {s.nombres} {s.apellidos}{yaMatriculado ? " · Ya matriculado en 2026" : ""}
-                      </option>
-                    );
-                  })}
+                  <option value="">{eligibleStudents.length === 0 ? "No hay estudiantes pendientes de matrícula" : "Seleccione estudiante"}</option>
+                  {eligibleStudents.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.codigo} — {s.nombres} {s.apellidos}
+                    </option>
+                  ))}
                 </select>
               </FormField>
               <FormField label="Grado y sección (salón)" className="form-grid-full" error={errors.seccionId}>
@@ -247,7 +265,7 @@ export function EnrollmentsView({
                   ))}
                 </select>
               </FormField>
-              <button type="submit" className="btn-primary form-grid-full" disabled={busyId === "create"}>
+              <button type="submit" className="btn-primary form-grid-full" disabled={busyId === "create" || eligibleStudents.length === 0}>
                 {busyId === "create" ? "Guardando…" : "Registrar matrícula"}
               </button>
             </form>
@@ -294,22 +312,22 @@ export function EnrollmentsView({
               <tbody>
                 {items.map((m) => (
                   <tr key={m.id}>
-                    <td className="font-mono text-xs">{m.codigo}</td>
+                    <td className="whitespace-nowrap font-mono text-xs">{m.codigo}</td>
                     <td>
                       {m.estudiante.nombres} {m.estudiante.apellidos}
                     </td>
                     <td>{m.seccion.label}</td>
-                    <td>{m.anioLectivo.nombre}</td>
-                    <td>
+                    <td className="whitespace-nowrap">{m.anioLectivo.nombre}</td>
+                    <td className="whitespace-nowrap">
                       <span className="badge-info capitalize">{m.estado}</span>
                     </td>
-                    <td>
+                    <td className="whitespace-nowrap">
                       {m.estado === "activa" ? (
                         <span className="flex flex-wrap gap-1">
-                          <button type="button" className="btn-ghost text-xs" disabled={busyId === m.id} onClick={() => void changeState(m, "retirada")}>
+                          <button type="button" className="btn-ghost text-xs" disabled={busyId === m.id} onClick={() => setPendingState({ m, next: "retirada" })}>
                             Retirar
                           </button>
-                          <button type="button" className="btn-ghost text-xs" disabled={busyId === m.id} onClick={() => void changeState(m, "trasladada")}>
+                          <button type="button" className="btn-ghost text-xs" disabled={busyId === m.id} onClick={() => setPendingState({ m, next: "trasladada" })}>
                             Trasladar
                           </button>
                         </span>
@@ -324,6 +342,22 @@ export function EnrollmentsView({
           </DataTablePanel>
         </motion.div>
       </div>
+      <ConfirmDialog
+        open={pendingState !== null}
+        title={pendingState?.next === "trasladada" ? "Registrar traslado externo" : "Retirar matrícula"}
+        description={
+          pendingState?.next === "trasladada"
+            ? "Se registrará un traslado externo. El historial académico se conservará y no se creará una segunda matrícula 2026."
+            : "La matrícula pasará a retirada. El historial académico se conservará y el estudiante no podrá registrar una segunda matrícula 2026."
+        }
+        confirmLabel={pendingState?.next === "trasladada" ? "Registrar traslado" : "Retirar matrícula"}
+        busy={busyId !== null}
+        onClose={() => setPendingState(null)}
+        onConfirm={() => {
+          const p = pendingState;
+          if (p) void changeState(p.m, p.next);
+        }}
+      />
     </div>
   );
 }

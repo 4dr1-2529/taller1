@@ -144,7 +144,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                 <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
               </div>
               <span className="text-[12px] font-semibold text-rose-100">
-                {alertCount} alertas activas
+                {alertCount} {alertCount === 1 ? "alerta activa" : "alertas activas"}
               </span>
             </motion.div>
           )}

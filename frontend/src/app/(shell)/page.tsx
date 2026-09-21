@@ -358,6 +358,7 @@ export default function Home() {
             form={matriculaForm}
             setForm={setMatriculaForm}
             onAdd={handleAddMatricula}
+            onRefresh={refresh}
           />
         );
       case "Notas":

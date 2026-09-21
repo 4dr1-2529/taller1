@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 type ConfirmDialogProps = {
@@ -28,14 +28,24 @@ export function ConfirmDialog({
   onClose,
 }: ConfirmDialogProps) {
   const reduced = useReducedMotion();
+  const descriptionId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const busyRef = useRef(busy);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    busyRef.current = busy;
+    onCloseRef.current = onClose;
+  }, [busy, onClose]);
 
   useEffect(() => {
     if (!open) return;
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     confirmRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { e.preventDefault(); onClose(); }
+      if (e.key === "Escape" && !busyRef.current) { e.preventDefault(); onCloseRef.current(); }
       if (e.key !== "Tab") return;
       const root = dialogRef.current;
       if (!root) return;
@@ -48,8 +58,11 @@ export function ConfirmDialog({
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
     };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      previousFocusRef.current?.focus();
+    };
+  }, [open]);
 
   return (
     <AnimatePresence>
@@ -61,7 +74,7 @@ export function ConfirmDialog({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduced ? 0 : 0.2 }}
-            onClick={onClose}
+            onClick={() => { if (!busy) onClose(); }}
             aria-hidden
           />
           <motion.div
@@ -69,6 +82,7 @@ export function ConfirmDialog({
             role="dialog"
             aria-modal="true"
             aria-label={title}
+            aria-describedby={descriptionId}
             className="relative w-full max-w-md rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-elevated)] p-5 shadow-xl sm:p-6"
             initial={reduced ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -76,7 +90,7 @@ export function ConfirmDialog({
             transition={{ duration: reduced ? 0 : 0.2 }}
           >
             <h3 className="text-base font-bold text-[var(--text-primary)]">{title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">{description}</p>
+            <p id={descriptionId} className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">{description}</p>
             {children ? <div className="mt-4">{children}</div> : null}
             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button type="button" className="btn-ghost" onClick={onClose} disabled={busy}>
