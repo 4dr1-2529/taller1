@@ -40,7 +40,7 @@ type CoursesViewProps = {
   secciones: SeccionOption[];
   form: NewCourseForm;
   setForm: (v: NewCourseForm | ((p: NewCourseForm) => NewCourseForm)) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void | Promise<void>;
   onReassignProfesor?: (courseId: string, profesorId: string) => void;
   onDeactivate?: (courseId: string, nombre: string) => void;
   canEdit?: boolean;
@@ -63,6 +63,7 @@ export function CoursesView({
 }: CoursesViewProps) {
   const [query, setQuery] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const grados = useMemo(() => {
     const seen = new Map<number, string>();
@@ -90,6 +91,7 @@ export function CoursesView({
 
   function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (submitting) return;
     const nextErrors = validateCourseForm(form);
     setErrors(nextErrors);
     const msg = firstError(nextErrors);
@@ -97,7 +99,8 @@ export function CoursesView({
       toast.error(msg);
       return;
     }
-    onSubmit(e);
+    setSubmitting(true);
+    void Promise.resolve(onSubmit(e)).catch(() => undefined).finally(() => setSubmitting(false));
   }
 
   const cardVariants = {
@@ -218,9 +221,9 @@ export function CoursesView({
               <p className="form-grid-full text-xs text-[var(--text-muted)]">
                 El código se genera a partir del grado y la sección configurados, sin repetirse entre salones.
               </p>
-              <button type="submit" className="btn-primary form-grid-full">
+              <button type="submit" className="btn-primary form-grid-full" disabled={submitting}>
                 <BookOpen className="h-4 w-4" />
-                Crear curso
+                {submitting ? "Guardando…" : "Crear curso"}
               </button>
             </form>
           </PageSection>

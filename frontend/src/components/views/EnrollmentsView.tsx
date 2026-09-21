@@ -36,7 +36,7 @@ type MatriculasViewProps = {
   matriculaStats: MatriculaStats | null;
   form: NewMatriculaForm;
   setForm: (v: NewMatriculaForm | ((p: NewMatriculaForm) => NewMatriculaForm)) => void;
-  onAdd: (e: FormEvent<HTMLFormElement>) => void;
+  onAdd: (e: FormEvent<HTMLFormElement>) => void | Promise<void>;
 };
 
 export function EnrollmentsView({
@@ -176,6 +176,7 @@ export function EnrollmentsView({
               className="form-grid"
               onSubmit={(e) => {
                 e.preventDefault();
+                if (busyId !== null) return;
                 const nextErrors = validateMatriculaForm(form);
                 setErrors(nextErrors);
                 const msg = firstError(nextErrors);
@@ -183,7 +184,8 @@ export function EnrollmentsView({
                   toast.error(msg);
                   return;
                 }
-                onAdd(e);
+                setBusyId("create");
+                void Promise.resolve(onAdd(e)).catch(() => undefined).finally(() => setBusyId(null));
               }}
             >
               <FormField label="Año lectivo" className="form-grid-full" error={errors.anioLectivoId}>
@@ -240,8 +242,8 @@ export function EnrollmentsView({
                   ))}
                 </select>
               </FormField>
-              <button type="submit" className="btn-primary form-grid-full">
-                Registrar matrícula
+              <button type="submit" className="btn-primary form-grid-full" disabled={busyId === "create"}>
+                {busyId === "create" ? "Guardando…" : "Registrar matrícula"}
               </button>
             </form>
           </PageSection>

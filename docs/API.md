@@ -5,7 +5,10 @@ Base: /api/v1. JWT Bearer, respuestas {success,message,data} y errores con estad
 | Método/ruta | Uso y alcance |
 |---|---|
 | POST /auth/login, /auth/refresh, /auth/logout, /auth/change-password | Autenticación, sesión, cambio de contraseña |
-| GET /students, /students/:id | Datos dentro del scope; estudiante solo propio |
+| GET /students | Solo Director (listado general con búsqueda y paginación) |
+| GET /students/:id | Dentro del scope; estudiante solo propio |
+| GET /profesor/estudiantes, /profesor/mis-estudiantes | Profesor: solo alumnos de su ámbito |
+| GET /estudiante/perfil (+ /estudiante/*) | Alumno: solo información propia |
 | POST /students | Director; dni,nombres,apellidos,seccionId,correo?,telefono?; alta transaccional |
 | PATCH /students/:id | Director; datos personales validados |
 | DELETE /students/:id | Director; desactivación lógica |

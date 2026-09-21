@@ -75,7 +75,11 @@ async function recipientUserIdsForMessage(
   if (scope === "curso" && roomId.startsWith("curso:")) {
     const courseId = toDbId(roomId.replace("curso:", ""));
     const enrollments = await prisma.enrollment.findMany({
-      where: { cursoOfertaId: courseId, estado: "activa", student: { activo: true } },
+      where: {
+        cursoOfertaId: courseId,
+        estado: "activa",
+        student: { activo: true, matriculas: { some: { estado: "activa", anioLectivo: { anio: 2026 } } } },
+      },
       include: { student: { select: { usuarioId: true } } },
     });
     const ids = enrollments
@@ -145,7 +149,7 @@ export async function listMessageRooms(req: Request, res: Response, next: NextFu
       const teacher = await prisma.teacher.findFirst({ where: { usuarioId: toDbId(user.sub) } });
       if (teacher) {
         const courses = await prisma.course.findMany({
-          where: { profesorId: teacher.id, activo: true },
+          where: { profesorId: teacher.id, activo: true, anioLectivo: { anio: 2026 } },
           include: { cursoCatalogo: { select: { nombre: true } } },
         });
         for (const c of courses) {
@@ -179,7 +183,11 @@ export async function listMessageRooms(req: Request, res: Response, next: NextFu
 
     if (user.role === "estudiante") {
       const student = await prisma.student.findFirst({
-        where: { usuarioId: toDbId(user.sub) },
+        where: {
+          usuarioId: toDbId(user.sub),
+          activo: true,
+          matriculas: { some: { estado: "activa", anioLectivo: { anio: 2026 } } },
+        },
         include: {
           inscripciones: {
             where: { estado: "activa", course: { activo: true, anioLectivo: { anio: 2026 } } },

@@ -55,7 +55,7 @@ type StudentsViewProps = {
   secciones: SeccionOption[];
   newStudent: NewStudentForm;
   setNewStudent: (v: NewStudentForm | ((p: NewStudentForm) => NewStudentForm)) => void;
-  onAddStudent: (e: FormEvent<HTMLFormElement>) => void;
+  onAddStudent: (e: FormEvent<HTMLFormElement>) => void | Promise<void>;
   canEdit?: boolean;
   onRefresh?: () => void;
 };
@@ -204,6 +204,7 @@ export function StudentsView({
               className="form-grid"
               onSubmit={(e) => {
                 e.preventDefault();
+                if (busy !== null) return;
                 const nextErrors = validateStudentForm(newStudent);
                 setErrors(nextErrors);
                 const msg = firstError(nextErrors);
@@ -211,7 +212,8 @@ export function StudentsView({
                   toast.error(msg);
                   return;
                 }
-                onAddStudent(e);
+                setBusy("create");
+                void Promise.resolve(onAddStudent(e)).catch(() => undefined).finally(() => setBusy(null));
               }}
             >
               <FormField label="Código automático"><input className={INPUT_CLASS} value="EST-… (asignado al registrar)" readOnly /></FormField>
@@ -295,8 +297,8 @@ export function StudentsView({
                   }}
                 />
               </FormField>
-              <button type="submit" className="btn-primary form-grid-full">
-                Agregar estudiante
+              <button type="submit" className="btn-primary form-grid-full" disabled={busy !== null}>
+                {busy === "create" ? "Registrando…" : "Agregar estudiante"}
               </button>
             </form>
           </PageSection>
