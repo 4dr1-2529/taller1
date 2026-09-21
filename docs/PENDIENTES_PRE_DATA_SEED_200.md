@@ -30,6 +30,8 @@ más rama `audit/full-functional-review` (solo documentación hasta ahora).
 4. `docs/tesis/PLAN-NUEVO-DATA-SEED-200.md` debe actualizarse con el manifiesto v2 al generarlo.
 
 ## Condición para generar el Data Seed v2
-Base funcional ampliamente estabilizada; Data Seed V2 permanece pospuesto hasta concluir auditoría funcional, profesionalización UI/UX, QA y alineamiento documental. El seed debe crearse en
+QA funcional y visual final completado. El sistema queda habilitado para preparar Data Seed V2.
+Base funcional ampliamente estabilizada; profesionalización UI/UX, QA y alineamiento documental
+concluidos. El seed debe crearse en
 rama dedicada, solo contra BD aislada, con datos 100% sintéticos rotulados, sin predicciones
 ficticias y sin tocar producción.
