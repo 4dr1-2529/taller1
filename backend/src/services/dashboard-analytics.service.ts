@@ -14,11 +14,10 @@ export async function buildDashboardAnalytics(scope: Scope) {
     recentPredictions,
     avgRisk,
     studentsWithSection,
-    avgGrade,
     seccionesActivas,
     lmsIndicadores,
-    gradeCount,
-    attendanceCount,
+    gradeCourseMeans,
+    attendanceRows,
   ] = await Promise.all([
     prisma.student.count({ where: scope }),
     prisma.teacher.count({ where: { activo: true } }),
@@ -59,18 +58,15 @@ export async function buildDashboardAnalytics(scope: Scope) {
       select: {
         id: true,
         seccionId: true,
-        promedioGeneral: true,
-        asistenciaGeneral: true,
         seccion: {
           select: {
             nombre: true,
-            grado: { select: { nombre: true, nivel: { select: { nombre: true } } } },
+            grado: { select: { numero: true, nombre: true, nivel: { select: { nombre: true } } } },
           },
         },
         predicciones: { orderBy: { createdAt: "desc" }, take: 1, select: { nivelRiesgo: true, score: true } },
       },
     }),
-    prisma.student.aggregate({ where: scope, _avg: { promedioGeneral: true, asistenciaGeneral: true } }),
     prisma.seccion.findMany({
       where: { activo: true },
       select: {
@@ -87,9 +83,52 @@ export async function buildDashboardAnalytics(scope: Scope) {
         seccion: { select: { grado: { select: { numero: true } } } },
       },
     }),
-    prisma.grade.count({ where: { student: scope, periodo: { anioLectivo: { anio: 2026 } } } }),
-    prisma.attendance.count({ where: { student: scope, fecha: { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") } } }),
+    prisma.grade.groupBy({
+      by: ["studentId", "cursoOfertaId"],
+      where: { student: scope, periodo: { anioLectivo: { anio: 2026 } } },
+      _avg: { nota: true },
+    }),
+    prisma.attendance.findMany({
+      where: { student: scope, fecha: { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") } },
+      select: { studentId: true, presente: true, tardanza: true, justificado: true },
+    }),
   ]);
+
+  // Promedio institucional honesto: media de medias por curso, solo con calificaciones
+  // reales 2026 (un 0 real cuenta; sin registros no promedia). Misma fórmula que
+  // refreshAcademicSummary a nivel alumno.
+  const gradeSumByStudent = new Map<string, { sum: number; n: number }>();
+  for (const g of gradeCourseMeans) {
+    const k = String(g.studentId);
+    const e = gradeSumByStudent.get(k) ?? { sum: 0, n: 0 };
+    e.sum += Number(g._avg.nota);
+    e.n++;
+    gradeSumByStudent.set(k, e);
+  }
+  const studentGradeAvgs = [...gradeSumByStudent.values()].map((e) => e.sum / e.n);
+  const avgGradeValue = studentGradeAvgs.length
+    ? Math.round((studentGradeAvgs.reduce((a, b) => a + b, 0) / studentGradeAvgs.length) * 10) / 10
+    : null;
+
+  // Asistencia institucional honesta: solo registros computables 2026
+  // (justificado=true excluido, igual que studentIndicators). Solo-justificados = sin datos.
+  const attByStudent = new Map<string, { ok: number; computable: number }>();
+  for (const a of attendanceRows) {
+    if (a.justificado) continue;
+    const k = String(a.studentId);
+    const e = attByStudent.get(k) ?? { ok: 0, computable: 0 };
+    e.computable++;
+    if (a.presente || a.tardanza) e.ok++;
+    attByStudent.set(k, e);
+  }
+  const studentAttPct = new Map<string, number>();
+  for (const [k, e] of attByStudent) {
+    if (e.computable > 0) studentAttPct.set(k, (100 * e.ok) / e.computable);
+  }
+  const attValues = [...studentAttPct.values()];
+  const avgAttendanceValue = attValues.length
+    ? Math.round((attValues.reduce((a, b) => a + b, 0) / attValues.length) * 10) / 10
+    : null;
 
   const byLevel = { bajo: 0, medio: 0, alto: 0 };
   for (const st of studentsWithSection) {
@@ -143,8 +182,8 @@ export async function buildDashboardAnalytics(scope: Scope) {
 
   const riskByGradoMap = new Map<number, { grado: string; alto: number; medio: number; bajo: number }>();
   for (const st of studentsWithSection) {
-    const num = st.seccion?.grado?.nombre?.match(/(\d+)/)?.[1];
-    const gradoNum = num ? Number(num) : 0;
+    const gradoNum = st.seccion?.grado?.numero
+      ?? Number(st.seccion?.grado?.nombre?.match(/(\d+)/)?.[1] || 0);
     if (!gradoNum) continue;
     const row = riskByGradoMap.get(gradoNum) ?? {
       grado: `${gradoNum}°`,
@@ -162,13 +201,20 @@ export async function buildDashboardAnalytics(scope: Scope) {
     .sort(([a], [b]) => a - b)
     .map(([, v]) => v);
 
-  const attendanceByGradoMap = new Map<number, { grado: string; promedio: number; count: number }>();
+  // Asistencia por grado honesta: solo alumnos con asistencia computable 2026.
+  // Los grados sin evidencia se omiten del dataset (el frontend muestra empty state).
+  const studentGradoNum = new Map<string, number>();
   for (const st of studentsWithSection) {
-    const num = st.seccion?.grado?.nombre?.match(/(\d+)/)?.[1];
-    const gradoNum = num ? Number(num) : 0;
+    const gradoNum = st.seccion?.grado?.numero
+      ?? Number(st.seccion?.grado?.nombre?.match(/(\d+)/)?.[1] || 0);
+    if (gradoNum) studentGradoNum.set(String(st.id), gradoNum);
+  }
+  const attendanceByGradoMap = new Map<number, { grado: string; promedio: number; count: number }>();
+  for (const [studentKey, pct] of studentAttPct) {
+    const gradoNum = studentGradoNum.get(studentKey);
     if (!gradoNum) continue;
     const row = attendanceByGradoMap.get(gradoNum) ?? { grado: `${gradoNum}°`, promedio: 0, count: 0 };
-    row.promedio += Number(st.asistenciaGeneral);
+    row.promedio += pct;
     row.count++;
     attendanceByGradoMap.set(gradoNum, row);
   }
@@ -176,7 +222,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
     .sort(([a], [b]) => a - b)
     .map(([, v]) => ({
       grado: v.grado,
-      asistencia: v.count ? Math.round((v.promedio / v.count) * 10) / 10 : 0,
+      asistencia: Math.round((v.promedio / v.count) * 10) / 10,
     }));
 
   const lmsByGradoMap = new Map<
@@ -222,8 +268,8 @@ export async function buildDashboardAnalytics(scope: Scope) {
       totalSalones,
       openAlerts,
       avgRisk: avgRisk._avg.score == null ? null : Math.round(Number(avgRisk._avg.score) * 10) / 10,
-      avgGrade: gradeCount === 0 || avgGrade._avg.promedioGeneral == null ? null : Math.round(Number(avgGrade._avg.promedioGeneral) * 10) / 10,
-      avgAttendance: attendanceCount === 0 || avgGrade._avg.asistenciaGeneral == null ? null : Math.round(Number(avgGrade._avg.asistenciaGeneral) * 10) / 10,
+      avgGrade: avgGradeValue,
+      avgAttendance: avgAttendanceValue,
       byLevel,
       alertsByLevel: Object.fromEntries(alertsByLevel.map((a) => [a.nivelRiesgo, a._count])),
       institutionName: instConfig?.valor ?? "I.E.P. Blenkir",

@@ -63,6 +63,13 @@ Director 1440: Dashboard/Grados/Configuración/Matrícula/Cursos OK. Director 39
 (drawer, banner de error honesto si el API cae). Docente 1440/390: Reportes OK (sección persistida).
 Estudiante 1440: Configuración OK (tras fix de inputs). Login 1440: OK.
 
+## Agregados honestos del dashboard (Fase 11.1)
+`avgGrade` = media de medias por curso solo con calificaciones reales 2026 (un 0 real cuenta;
+sin registros no promedia; misma fórmula que `refreshAcademicSummary` por alumno).
+`avgAttendance` = media de porcentajes computables (justificados excluidos; solo-justificados =
+sin datos). `attendanceByGrado` omite grados sin evidencia (el gráfico muestra empty state).
+Regla: 0 real ≠ ausencia de datos; nunca se promedian defaults 0 de estudiantes sin evidencia.
 ## Pendientes (P3 / Fase 11+)
 Barrido completo de las ~50 pantallas secundarias; pulido de gráficas con datos del seed;
 light-mode fino por componente.
+

@@ -12,6 +12,7 @@ const { registerStudent } = await import("../src/services/student-registration.s
 const { default: router } = await import("../src/routes/index.js");
 const { errorHandler } = await import("../src/middleware/errorHandler.js");
 const { recordLmsEvent, studentIndicators } = await import("../src/services/lms.service.js");
+const { buildDashboardAnalytics } = await import("../src/services/dashboard-analytics.service.js");
 
 const app = express();
 app.set("json replacer", (_key: string, value: unknown) => typeof value === "bigint" ? String(value) : value);
@@ -345,6 +346,44 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.ok(await prisma.grade.count({ where: { studentId: first.student.id } }) >= 1);
     assert.ok(await prisma.attendance.count({ where: { studentId: first.student.id } }) >= 1);
     assert.ok(await prisma.auditLog.count({ where: { estudianteId: first.student.id } }) >= 1);
+  });
+  await t.test("dashboard promedia solo evidencia real 2026", async () => {
+    const g4 = await prisma.grado.create({ data: { nivelId: level.id, numero: 4, nombre: "CuartoH" } });
+    const secE = await prisma.seccion.create({ data: { gradoId: g4.id, nombre: "E", capacidad: 10 } });
+    const catH = await prisma.cursoCatalogo.create({ data: { areaId: area.id, codigo: "TEST-HON", nombre: "Honestidad" } });
+    const p3 = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 3, nombre: "III-H", activo: true, fechaInicio: new Date("2026-08-01"), fechaFin: new Date("2026-10-31") } });
+    const p4 = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 4, nombre: "IV-H", activo: true, fechaInicio: new Date("2026-11-01"), fechaFin: new Date("2026-12-15") } });
+    const mk = async (dni: string) => (await registerStudent(input(dni, secE.id), String(admin.id))).student;
+    const m1 = await mk("90000221");
+    const m2 = await mk("90000222");
+    const m3 = await mk("90000223");
+    const m4 = await mk("90000224");
+    const m5 = await mk("90000225");
+    const offeringH = await prisma.course.create({ data: { cursoId: catH.id, seccionId: secE.id, profesorId: teacher.id, anioLectivoId: year.id, codigo: "TEST-2026-H" } });
+    await prisma.grade.create({ data: { studentId: m1.id, cursoOfertaId: offeringH.id, periodoId: period.id, nota: 18 } });
+    await prisma.grade.create({ data: { studentId: m4.id, cursoOfertaId: offeringH.id, periodoId: p3.id, nota: 0 } });
+    const att = [
+      { studentId: m1.id, fecha: new Date("2026-04-06"), presente: true, justificado: false },
+      { studentId: m1.id, fecha: new Date("2026-04-07"), presente: true, justificado: false },
+      { studentId: m2.id, fecha: new Date("2026-04-06"), presente: true, justificado: false },
+      { studentId: m2.id, fecha: new Date("2026-04-07"), presente: false, justificado: false },
+      { studentId: m4.id, fecha: new Date("2026-04-06"), presente: false, justificado: false },
+      { studentId: m4.id, fecha: new Date("2026-04-07"), presente: false, justificado: false },
+      { studentId: m5.id, fecha: new Date("2026-04-06"), presente: false, justificado: true },
+    ];
+    await prisma.attendance.createMany({ data: att });
+    const ids = (...rows: { id: bigint }[]) => ({ id: { in: rows.map((r) => r.id) } });
+    const kpis = async (...rows: { id: bigint }[]) => (await buildDashboardAnalytics(ids(...rows))).kpis;
+    assert.equal((await kpis(m1, m2, m3)).avgGrade, 18);
+    assert.equal((await kpis(m4, m5)).avgGrade, 0);
+    assert.equal((await kpis(m2, m3)).avgGrade, null);
+    assert.equal((await kpis(m1, m2, m3)).avgAttendance, 75);
+    assert.equal((await kpis(m4, m5)).avgAttendance, 0);
+    assert.equal((await kpis(m5)).avgAttendance, null);
+    const byGrado = (await buildDashboardAnalytics(ids(m1, m2, m3, m4, m5))).attendanceByGrado;
+    assert.equal(byGrado.length, 1);
+    assert.equal(byGrado[0].grado, "4°");
+    assert.equal(byGrado[0].asistencia, 50);
   });
   await t.test("auth: login, refresh, logout y cambio de clave", async () => {
     const { default: bcrypt } = await import("bcryptjs");
