@@ -1,4 +1,51 @@
-# Main Release Readiness 2026 — promoción auditada + fix P1 de smoke
+# Main Release Readiness 2026 — cierre profesional pre-Data Seed
+
+## Cierre de matrícula elegible — 2026-09-21
+- Commit funcional validado y promovido a `main`: `a23f547f6de01b6ceec4c0934ffcee80b4a4528a`.
+- El selector de Nueva matrícula ofrece únicamente estudiantes sin ninguna matrícula 2026;
+  también excluye matrículas retiradas y trasladadas.
+- Tras una matrícula exitosa se actualizan estadísticas y tabla, se limpia el estudiante y,
+  si era el último candidato, aparece `No hay estudiantes pendientes de matrícula` sin F5.
+- El botón de registro queda deshabilitado sin candidatos y mantiene protección contra doble envío.
+- Retiro y traslado usan `ConfirmDialog`; conserva Escape, trampa/restauración de foco y bloqueo
+  de cierre mientras procesa. La tabla mantiene sus acciones y columnas breves legibles.
+- El backend no fue modificado: conserva la autoridad y responde HTTP 409 ante una segunda
+  matrícula 2026 activa, retirada o trasladada.
+- Pulido adicional recuperado: pluralización correcta de `alerta activa` en el sidebar.
+
+## Validación del cierre
+- Prisma validate: válido; 57 modelos; sin cambios de schema ni migraciones.
+- Type-check compartido + frontend + backend: correcto.
+- Lint frontend: correcto.
+- Backend: 27 + 32/32.
+- Integración aislada: 32/32, incluida la garantía HTTP 409.
+- Frontend: 13/13, incluidos tres casos de elegibilidad y estado vacío.
+- ML: 7/7.
+- Build backend y frontend: correctos.
+- Búsqueda de datos falsos revisada; sin métricas inventadas nuevas. Se preservaron los fixes de
+  promedios honestos y `ultimaActividadLms = { fecha, tipo, minutos }`.
+
+## QA visual del cierre
+- Base local aislada `127.0.0.1:33316/blenkir_refactor_test`, eliminada al terminar; producción
+  no fue modificada.
+- Escenario: 9 estudiantes matriculados y 1 pendiente. Los cuatro viewports mostraron solo
+  `EST-010 — Alumno PendienteJ`: 1440x900, 1366x768, 768x1024 y 390x844.
+- Después del alta, sin F5: estado vacío, botón deshabilitado y tabla con 10 matrículas.
+- Light/dark sin overflow horizontal; consola, `pageerror` y respuestas HTTP 500 inesperadas: 0.
+- `ConfirmDialog` móvil: texto, foco inicial, Escape y restauración de foco verificados.
+
+## CI y despliegues del cierre
+- GitHub Actions run `35644440146`: `completed / success` para `a23f547`.
+- Vercel: estado GitHub `success`, deployment completado. `/login` responde 200 y renderiza el
+  acceso sin overlay ni errores de consola.
+- Railway: estado GitHub `success` con `No deployment needed - watched paths not modified`, ya que
+  el commit solo cambia frontend. Sin embargo, el dominio configurado
+  `taller1-production.up.railway.app` responde 404 `Application not found` en `/health` y
+  `/api/v1/health`; no fue posible validar login autenticado ni dashboards productivos.
+- Data Seed V2, Excel V2, entrenamiento ML y predicciones sintéticas: NO ejecutados.
+
+## Veredicto actual
+`MAIN NO LISTO PARA DATA SEED V2 — pendientes: restaurar el dominio/servicio Railway y repetir el smoke productivo autenticado por roles.`
 
 ## Cadena de promoción
 - SHA main anterior: `bc04e468a9842f96591f5e42b5dd26f2f48ea809`
