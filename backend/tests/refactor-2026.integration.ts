@@ -346,4 +346,27 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.ok(await prisma.attendance.count({ where: { studentId: first.student.id } }) >= 1);
     assert.ok(await prisma.auditLog.count({ where: { estudianteId: first.student.id } }) >= 1);
   });
+  await t.test("auth: login, refresh, logout y cambio de clave", async () => {
+    const { default: bcrypt } = await import("bcryptjs");
+    const email = "test-auth@example.test";
+    const authUser = await prisma.user.create({ data: { rolId: roles[0].id, email, passwordHash: await bcrypt.hash("Segura123", 4), nombres: "Auth", apellidos: "Test" } });
+    const login = (password: string) => fetch(base + "/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+    assert.equal((await login("ClaveMala1")).status, 401);
+    const okRes = await login("Segura123");
+    assert.equal(okRes.status, 200);
+    const okBody = (await okRes.json()).data;
+    assert.ok(okBody.token && okBody.refreshToken && okBody.user);
+    assert.equal((await fetch(base + "/auth/me", { headers: { Authorization: `Bearer ${okBody.token}` } })).status, 200);
+    assert.equal((await fetch(base + "/auth/me")).status, 401);
+    const refRes = await fetch(base + "/auth/refresh", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refreshToken: okBody.refreshToken }) });
+    assert.equal(refRes.status, 200);
+    assert.ok((await refRes.json()).data.token);
+    assert.equal((await fetch(base + "/auth/change-password", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${okBody.token}` }, body: JSON.stringify({ currentPassword: "Segura123", newPassword: "debil" }) })).status, 400);
+    assert.equal((await fetch(base + "/auth/change-password", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${okBody.token}` }, body: JSON.stringify({ currentPassword: "Segura123", newPassword: "Nueva456" }) })).status, 200);
+    assert.equal((await login("Nueva456")).status, 200);
+    assert.equal((await fetch(base + "/auth/logout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${okBody.token}` }, body: JSON.stringify({ refreshToken: okBody.refreshToken }) })).status, 200);
+    assert.equal((await fetch(base + "/auth/refresh", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refreshToken: okBody.refreshToken }) })).status, 401);
+    await prisma.user.update({ where: { id: authUser.id }, data: { activo: false } });
+    assert.equal((await login("Nueva456")).status, 401);
+  });
 });

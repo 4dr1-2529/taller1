@@ -12,7 +12,7 @@ export type MlPredictResult = {
   recommendation?: string;
   predicted_at?: string;
   input_data?: Record<string, unknown>;
-  prediction_source?: "ml_model" | "rule_fallback" | "heuristic_fallback";
+  prediction_source?: "ml_model";
 };
 
 export function buildMlPayload(metrics: Awaited<ReturnType<typeof studentIndicators>>) {

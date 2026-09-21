@@ -2,7 +2,7 @@
 
 Rama auditada: `audit/full-functional-review` sobre `main = bc04e46`. Fecha: 2026-09-21.
 Método: lectura directa de código (sin asumir por nombres), respaldada por suites verdes
-(integración 20/20, backend 27+32, frontend 10/10, ML 7/7, typecheck, lint, builds).
+(integración 30/30, backend 27+32, frontend 10/10, ML 7/7, typecheck, lint, builds).
 
 ## 1. Arquitectura verificada
 

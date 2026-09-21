@@ -12,7 +12,9 @@ más rama `audit/full-functional-review` (solo documentación hasta ahora).
 - [x] Mensajería y avisos con matriz 403
 - [x] Formularios, validaciones, anti-doble-submit, paginación, búsquedas reales
 - [x] Textos legacy eliminados de UI activa; agregados sin ficción
-- [x] Suites verdes: backend 27+32, frontend 10/10, ML 7/7, integración 20/20, builds
+- [x] Suites verdes: backend 27+32, frontend 10/10, ML 7/7, integración 30/30, builds
+- [x] Fases 5–10 flujos end-to-end: auth/sesión/cuentas, director, profesor, estudiante,
+  transversales y escenarios A–F verificados (ver `docs/AUDITORIA_FLUJOS_END_TO_END_2026.md`)
 - [x] FASE 4 reglas de negocio: bypass PUT docente cerrado, reasignación única coherente,
   traslado documentado como externo, fórmulas promedio/asistencia/LMS y dedup de alertas
   (estudiante+nivel+abierta) verificadas contra código + tests
