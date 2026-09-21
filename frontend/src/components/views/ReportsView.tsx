@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { FileSpreadsheet, FileText, Download } from "lucide-react";
@@ -46,7 +47,7 @@ export function ReportsView({ students, courses }: ReportsViewProps) {
             <Download className="h-5 w-5" aria-hidden />
           </span>
           <div>
-            <h2 className="text-lg font-semibold text-[var(--text-primary)]">Reportes académicos</h2>
+            <SectionHeading title="Reportes académicos" />
             <p className="text-sm text-[var(--text-secondary)]">
               Exportación basada en matrícula por salón y cursos inscritos por oferta.
             </p>

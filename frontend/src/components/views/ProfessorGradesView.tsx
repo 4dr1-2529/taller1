@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useCallback, useMemo, useState } from "react";
 import { GraduationCap } from "lucide-react";
 import { toast } from "sonner";
@@ -119,7 +120,7 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
       <div className="flex items-center gap-3">
         <GraduationCap className="h-6 w-6 text-[var(--brand-orange)]" />
         <div>
-          <h2 className="text-xl font-bold">Registro de notas</h2>
+          <SectionHeading title="Registro de notas" />
           <p className="text-sm text-[var(--text-secondary)]">Grado → sección → curso → bimestre → Buscar</p>
         </div>
       </div>

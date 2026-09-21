@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { History, RefreshCw } from "lucide-react";
@@ -88,7 +89,7 @@ export function PredictionHistoryView({
         <div className="flex items-center gap-2">
           <History className="h-5 w-5 text-indigo-400" />
           <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">Historial de predicciones</h2>
+            <SectionHeading title="Historial de predicciones" />
             <p className="text-sm text-[var(--text-secondary)]">
               Registros persistidos: score, nivel, factores, modelo y recomendación
             </p>

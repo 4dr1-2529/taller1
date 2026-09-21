@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, GraduationCap, Layers, School } from "lucide-react";
@@ -79,9 +80,7 @@ export function AcademicStructureView() {
             <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
               <School className="h-4 w-4 text-[var(--accent)]" />
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Estructura académica
-            </h2>
+            <SectionHeading title="Estructura académica" />
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
             Niveles, grados y secciones configurados para el periodo académico
@@ -98,7 +97,7 @@ export function AcademicStructureView() {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-[var(--text-primary)]">
-                Estructura institucional — I.E.P. Huancayo
+                Estructura institucional
               </h3>
               <p className="text-sm text-[var(--text-secondary)]">
                 Niveles, grados, secciones y cursos según la configuración vigente del periodo académico.

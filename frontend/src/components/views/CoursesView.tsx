@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { type FormEvent, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -9,7 +10,8 @@ import type { Course, Teacher } from "@/types/academic";
 import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
-import { INPUT_CLASS } from "@/lib/ui";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { INPUT_CLASS, SELECT_CLASS } from "@/lib/ui";
 import {
   type FieldErrors,
   firstError,
@@ -64,6 +66,8 @@ export function CoursesView({
   const [query, setQuery] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [reassignTarget, setReassignTarget] = useState<Course | null>(null);
+  const [reassignTeacherId, setReassignTeacherId] = useState("");
 
   const grados = useMemo(() => {
     const seen = new Map<number, string>();
@@ -122,9 +126,7 @@ export function CoursesView({
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-muted)] ring-1 ring-white/10">
               <Library className="h-4 w-4 text-[var(--risk-medium)]" />
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Catálogo de cursos
-            </h2>
+            <SectionHeading title="Catálogo de cursos" />
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
             {canEdit
@@ -133,7 +135,7 @@ export function CoursesView({
           </p>
         </div>
         <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {filtered.length} cursos
+          {filtered.length} {filtered.length === 1 ? "curso" : "cursos"}
         </span>
       </motion.div>
 
@@ -261,17 +263,25 @@ export function CoursesView({
                     <td className="text-[var(--text-secondary)]">{course.nivel}</td>
                     <td>
                       {canReassign && onReassignProfesor ? (
-                        <select
-                          className={INPUT_CLASS}
-                          value={course.profesorId}
-                          onChange={(e) => onReassignProfesor(course.id, e.target.value)}
-                        >
-                          {teachers.map((t) => (
-                            <option key={t.id} value={t.id}>
-                              {t.nombres} {t.apellidos}
-                            </option>
-                          ))}
-                        </select>
+                        <span>
+                          {teacher ? (
+                            <span>
+                              {teacher.nombres} {teacher.apellidos}
+                              <span className="block text-xs text-[var(--text-muted)]">
+                                {teacher.especialidad}
+                              </span>
+                            </span>
+                          ) : (
+                            <span className="badge-warning">Sin asignar</span>
+                          )}
+                          <button
+                            type="button"
+                            className="btn-ghost mt-1.5"
+                            onClick={() => { setReassignTarget(course); setReassignTeacherId(course.profesorId); }}
+                          >
+                            Reasignar
+                          </button>
+                        </span>
                       ) : teacher ? (
                         <span>
                           {teacher.nombres} {teacher.apellidos}
@@ -301,6 +311,33 @@ export function CoursesView({
           </TableWrap>
         </DataTablePanel>
       </motion.div>
+      <ConfirmDialog
+        open={reassignTarget !== null}
+        title="Reasignar docente"
+        description={reassignTarget ? `El curso ${reassignTarget.codigo} pasará a otro docente. Se conservan estudiantes inscritos y notas registradas.` : ""}
+        confirmLabel="Confirmar reasignación"
+        onClose={() => setReassignTarget(null)}
+        onConfirm={() => {
+          if (reassignTarget && reassignTeacherId && onReassignProfesor) {
+            onReassignProfesor(reassignTarget.id, reassignTeacherId);
+          }
+          setReassignTarget(null);
+        }}
+      >
+        <FormField label="Docente destino">
+          <select
+            className={SELECT_CLASS}
+            value={reassignTeacherId}
+            onChange={(e) => setReassignTeacherId(e.target.value)}
+          >
+            {teachers.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nombres} {t.apellidos}
+              </option>
+            ))}
+          </select>
+        </FormField>
+      </ConfirmDialog>
     </div>
   );
 }

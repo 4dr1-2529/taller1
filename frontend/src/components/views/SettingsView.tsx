@@ -1,8 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
+import { KeyRound, Settings2, BellRing } from "lucide-react";
 import { api } from "@/services/api";
 import { validatePassword } from "@/lib/validation";
 import { useAuth } from "@/contexts/AuthProvider";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { FormField } from "@/components/ui/FormField";
+import { INPUT_CLASS, SELECT_CLASS } from "@/lib/ui";
 
 export function SettingsView() {
   const { user } = useAuth();
@@ -27,18 +31,31 @@ export function SettingsView() {
     finally { setBusy(false); }
   }
   return <div className="space-y-6">
-    <p role="status">{message}</p>
-    {user?.role === "admin" && <form className="premium-card space-y-4 p-6" onSubmit={e => { e.preventDefault(); void save("/admin/settings", { nivelMinimoAlerta: threshold }, "PUT"); }}>
-      <h2 className="text-lg font-semibold">Configuración institucional · 2026</h2>
-      <label className="block">Generar alertas desde el nivel <select value={threshold} onChange={e => setThreshold(e.target.value)} className="premium-input"><option value="medio">Medio</option><option value="alto">Alto</option></select></label>
-      <button disabled={busy} className="premium-button" type="submit">Guardar configuración</button>
+    <SectionHeading
+      title="Configuración"
+      description="Alertas institucionales y seguridad de su cuenta."
+      icon={<Settings2 className="h-4 w-4" aria-hidden />}
+    />
+    {message ? <p role="status" className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2.5 text-sm text-[var(--text-secondary)]">{message}</p> : null}
+    {user?.role === "admin" && <form className="premium-card space-y-4 rounded-[var(--radius-lg)] p-5 md:p-6" onSubmit={e => { e.preventDefault(); void save("/admin/settings", { nivelMinimoAlerta: threshold }, "PUT"); }}>
+      <h3 className="flex items-center gap-2 text-base font-bold text-[var(--text-primary)]"><BellRing className="h-4 w-4 text-[var(--accent)]" aria-hidden /> Alertas institucionales · 2026</h3>
+      <FormField label="Generar alertas desde el nivel">
+        <select id="alert-threshold" value={threshold} onChange={e => setThreshold(e.target.value)} className={SELECT_CLASS}>
+          <option value="medio">Medio (medio y alto)</option>
+          <option value="alto">Alto (solo alto)</option>
+        </select>
+      </FormField>
+      <button disabled={busy} className="btn-primary" type="submit">{busy ? "Guardando…" : "Guardar configuración"}</button>
     </form>}
-    <form className="premium-card space-y-4 p-6" onSubmit={e => { e.preventDefault(); void save("/auth/change-password", { currentPassword, newPassword }, "POST"); }}>
-      <h2 className="text-lg font-semibold">Cambiar contraseña</h2>
-      <label className="block">Contraseña actual<input className="premium-input" type="password" autoComplete="current-password" required value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} /></label>
-      <label className="block">Nueva contraseña<input className="premium-input" type="password" autoComplete="new-password" required minLength={8} value={newPassword} onChange={e => setNewPassword(e.target.value)} /></label>
-      <p className="text-sm">Use al menos 8 caracteres, incluyendo mayúscula, minúscula y número.</p>
-      <button disabled={busy} className="premium-button" type="submit">Cambiar contraseña</button>
+    <form className="premium-card space-y-4 rounded-[var(--radius-lg)] p-5 md:p-6" onSubmit={e => { e.preventDefault(); void save("/auth/change-password", { currentPassword, newPassword }, "POST"); }}>
+      <h3 className="flex items-center gap-2 text-base font-bold text-[var(--text-primary)]"><KeyRound className="h-4 w-4 text-[var(--accent)]" aria-hidden /> Cambiar contraseña</h3>
+      <FormField label="Contraseña actual">
+        <input id="current-password" className={INPUT_CLASS} type="password" autoComplete="current-password" required value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
+      </FormField>
+      <FormField label="Nueva contraseña" hint="Use al menos 8 caracteres, incluyendo mayúscula, minúscula y número.">
+        <input id="new-password" className={INPUT_CLASS} type="password" autoComplete="new-password" required minLength={8} value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+      </FormField>
+      <button disabled={busy} className="btn-primary" type="submit">{busy ? "Guardando…" : "Cambiar contraseña"}</button>
     </form>
   </div>;
 }

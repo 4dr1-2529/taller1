@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { FormEvent } from "react";
@@ -133,7 +134,7 @@ export function EnrollmentsView({
             <FileUser className="h-4 w-4" style={{ color: BLENKIR_COLORS.orange }} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">Matrículas institucionales</h2>
+            <SectionHeading title="Matrículas institucionales" />
             <p className="text-sm text-[var(--text-secondary)]">
               Estudiante + año lectivo + grado + sección · una matrícula por estudiante durante el año lectivo 2026.
             </p>

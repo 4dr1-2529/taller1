@@ -17,6 +17,8 @@ export async function buildDashboardAnalytics(scope: Scope) {
     avgGrade,
     seccionesActivas,
     lmsIndicadores,
+    gradeCount,
+    attendanceCount,
   ] = await Promise.all([
     prisma.student.count({ where: scope }),
     prisma.teacher.count({ where: { activo: true } }),
@@ -85,6 +87,8 @@ export async function buildDashboardAnalytics(scope: Scope) {
         seccion: { select: { grado: { select: { numero: true } } } },
       },
     }),
+    prisma.grade.count({ where: { student: scope, periodo: { anioLectivo: { anio: 2026 } } } }),
+    prisma.attendance.count({ where: { student: scope, fecha: { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") } } }),
   ]);
 
   const byLevel = { bajo: 0, medio: 0, alto: 0 };
@@ -218,8 +222,8 @@ export async function buildDashboardAnalytics(scope: Scope) {
       totalSalones,
       openAlerts,
       avgRisk: avgRisk._avg.score == null ? null : Math.round(Number(avgRisk._avg.score) * 10) / 10,
-      avgGrade: avgGrade._avg.promedioGeneral == null ? null : Math.round(Number(avgGrade._avg.promedioGeneral) * 10) / 10,
-      avgAttendance: avgGrade._avg.asistenciaGeneral == null ? null : Math.round(Number(avgGrade._avg.asistenciaGeneral) * 10) / 10,
+      avgGrade: gradeCount === 0 || avgGrade._avg.promedioGeneral == null ? null : Math.round(Number(avgGrade._avg.promedioGeneral) * 10) / 10,
+      avgAttendance: attendanceCount === 0 || avgGrade._avg.asistenciaGeneral == null ? null : Math.round(Number(avgGrade._avg.asistenciaGeneral) * 10) / 10,
       byLevel,
       alertsByLevel: Object.fromEntries(alertsByLevel.map((a) => [a.nivelRiesgo, a._count])),
       institutionName: instConfig?.valor ?? "I.E.P. Blenkir",

@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ClipboardList, Plus, UserCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -121,7 +122,7 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
       <div className="flex items-center gap-3">
         <ClipboardList className="h-6 w-6 text-[var(--brand-orange)]" />
         <div>
-          <h2 className="text-xl font-bold">Asignaciones docentes</h2>
+          <SectionHeading title="Asignaciones docentes" />
           <p className="text-sm text-[var(--text-secondary)]">
             Asignación docente por curso, grado, sección y año lectivo, según la estructura vigente.
           </p>

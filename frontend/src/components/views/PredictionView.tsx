@@ -1,4 +1,5 @@
 ﻿"use client";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useState } from "react";
 import type { Student } from "@/types/academic";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
@@ -17,7 +18,7 @@ export function PredictionView({ students }: { students: Student[]; secciones?: 
     catch (e) { setError(e instanceof Error ? e.message : "No se pudo predecir"); }
     finally { setLoading(false); }
   }
-  return <section className="space-y-5"><h2 className="text-xl font-semibold">Predicción de riesgo</h2><p>El modelo utiliza notas, asistencia y eventos LMS registrados. Se requiere un modelo validado con el contrato 2026.</p>
+  return <section className="space-y-5"><SectionHeading title="Predicción de riesgo" /><p>El modelo utiliza notas, asistencia y eventos LMS registrados. Se requiere un modelo validado con el contrato 2026.</p>
     <label>Estudiante<select className={INPUT_CLASS} value={id} onChange={e => { setId(e.target.value); setPrediction(null); setError(""); }}><option value="">Seleccione</option>{students.map(s => <option key={s.id} value={s.id}>{s.codigo} · {s.nombres} {s.apellidos}</option>)}</select></label>
     <button className="btn-primary" disabled={!id || loading} onClick={() => void run()}>{loading ? "Calculando…" : "Generar predicción"}</button>
     {error && <p role="alert">{error}</p>}

@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
@@ -150,9 +151,7 @@ export function TeachersView({
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-muted)] ring-1 ring-white/10">
               <Users className="h-4 w-4 text-[var(--chart-secondary)]" />
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Gestión de profesores
-            </h2>
+            <SectionHeading title="Gestión de profesores" />
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
             Perfiles docentes, cursos asignados y acceso al sistema

@@ -141,7 +141,7 @@ function sectionSubtitle(section: AppSection, role: string): string {
     case "Cursos":
       return "Oferta académica por sección.";
     case "Matrículas":
-      return "Matrícula institucional: estudiante + año + grado + sección (una por periodo).";
+      return "Matrícula institucional: estudiante + año + grado + sección (una por estudiante durante 2026).";
     case "Notas":
       return "Calificaciones 0–20 y promedio.";
     case "Asistencia":

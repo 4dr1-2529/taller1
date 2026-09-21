@@ -226,7 +226,7 @@ export function AcademicFiltersBar({
       </div>
       {!filters.gradoId && !filters.seccionId ? (
         <p className="mt-3 text-xs text-[var(--text-muted)]">
-          Seleccione un grado y sección para ver datos por salón (22 secciones · ~660 estudiantes).
+          Seleccione un grado y sección para ver datos por salón.
         </p>
       ) : null}
     </div>

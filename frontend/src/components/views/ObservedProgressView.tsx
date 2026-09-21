@@ -1,4 +1,5 @@
 "use client";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useEffect, useState } from "react";
 import { api } from "@/services/api";
 import { profesorService } from "@/services/profesorService";
@@ -57,7 +58,7 @@ export function ObservedProgressView() {
     api.call<{ indicators: Record<string, unknown> }>(`/lms/students/${id}`).then(r => { if (active) setValues(r.indicators); }).catch(e => { if (active) setError(e instanceof Error ? e.message : "No se pudo cargar"); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [id, isEstudiante]);
-  return <section className="space-y-4"><h2 className="text-xl font-semibold">Seguimiento académico y LMS</h2>
+  return <section className="space-y-4"><SectionHeading title="Seguimiento académico y LMS" />
     {!isEstudiante && <label>Estudiante<select className={INPUT_CLASS} value={id} onChange={e => setId(e.target.value)}>{students.map(s => <option key={s.id} value={s.id}>{s.nombres} {s.apellidos}</option>)}</select></label>}
     {error ? <p role="alert">{error}</p> : loading ? <p role="status">Cargando…</p> : (!isEstudiante && !students.length) ? <p>No hay estudiantes disponibles.</p> : <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{Object.entries(values).map(([key,value]) => <div key={key} className="premium-card p-4"><dt>{labels[key] ?? key}</dt><dd className="text-xl mt-2">{value === null ? "Sin registros" : typeof value === "number" ? value.toLocaleString("es-PE", { maximumFractionDigits: 2 }) : String(value)}</dd></div>)}</dl>}
   </section>;
