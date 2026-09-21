@@ -10,26 +10,43 @@ import { resolveStudentScope, assertStudentInScope } from "../utils/student-scop
 
 export async function listAttendance(req: Request, res: Response, next: NextFunction) {
   try {
-    const { studentId, from, to, seccionId } = req.query;
+    const { studentId, from, to, seccionId, gradoId, q } = req.query;
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(500, Math.max(1, Number(req.query.limit) || 100));
+    const skip = (page - 1) * limit;
     const scope = await resolveStudentScope(req.user!);
     const studentWhere: Record<string, unknown> = { AND: [scope] };
     if (seccionId) studentWhere.seccionId = toDbId(seccionId as string);
-    const where: Record<string, unknown> = { student: studentWhere, fecha: { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") } };
-    if (studentId) await assertStudentInScope(req.user!, String(studentId));
-    if (studentId) where.studentId = toDbId(studentId as string);
-    if (from || to) {
-      where.AND = [{ fecha: { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") } }];
-      where.fecha = {};
-      if (from) (where.fecha as Record<string, unknown>).gte = new Date(from as string);
-      if (to) (where.fecha as Record<string, unknown>).lte = new Date(to as string);
+    if (gradoId) studentWhere.seccion = { gradoId: toDbId(gradoId as string) };
+    const query = String(q ?? "").trim();
+    if (query) {
+      studentWhere.OR = [
+        { nombres: { contains: query } },
+        { apellidos: { contains: query } },
+        { codigo: { contains: query } },
+      ];
     }
-    const items = await prisma.attendance.findMany({
-      where,
-      include: { student: { select: { nombres: true, apellidos: true, codigo: true } } },
-      orderBy: { fecha: "desc" },
-      take: 200,
-    });
-    sendSuccess(res, { items });
+    if (studentId) await assertStudentInScope(req.user!, String(studentId));
+    const where: Record<string, unknown> = { student: studentWhere };
+    if (studentId) where.studentId = toDbId(studentId as string);
+    const fecha: Record<string, unknown> = { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") };
+    if (from) {
+      const gte = new Date(from as string);
+      if (gte > (fecha.gte as Date)) fecha.gte = gte;
+    }
+    if (to) fecha.lte = new Date(to as string);
+    where.fecha = fecha;
+    const [items, total] = await Promise.all([
+      prisma.attendance.findMany({
+        where,
+        include: { student: { select: { nombres: true, apellidos: true, codigo: true } } },
+        orderBy: { fecha: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.attendance.count({ where }),
+    ]);
+    sendSuccess(res, { items, total, page, pages: Math.ceil(total / limit) || 1 });
   } catch (e) {
     next(e);
   }

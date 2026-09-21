@@ -24,6 +24,7 @@ import {
   firstError,
   validateTeacherForm,
   validateTeacherProfileFields,
+  validatePassword,
   clearFieldError,
 } from "@/lib/validation";
 
@@ -63,7 +64,7 @@ type TeachersViewProps = {
   secciones: SeccionOption[];
   form: NewTeacherForm;
   setForm: (v: NewTeacherForm | ((p: NewTeacherForm) => NewTeacherForm)) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void | Promise<void>;
   onUpdate: (id: string, data: EditTeacherForm) => Promise<void>;
   onDeactivate: (id: string) => Promise<void>;
   onCreateAccount: (id: string, password: string) => Promise<void>;
@@ -101,6 +102,7 @@ export function TeachersView({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<EditTeacherForm | null>(null);
   const [accountPassword, setAccountPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<FieldErrors>({});
   const [editErrors, setEditErrors] = useState<FieldErrors>({});
   const [workloadById, setWorkloadById] = useState<
@@ -181,6 +183,7 @@ export function TeachersView({
               className="space-y-6"
               onSubmit={(e) => {
                 e.preventDefault();
+                if (submitting) return;
                 const nextErrors = validateTeacherForm(form);
                 setFormErrors(nextErrors);
                 const msg = firstError(nextErrors);
@@ -188,7 +191,8 @@ export function TeachersView({
                   toast.error(msg);
                   return;
                 }
-                onSubmit(e);
+                setSubmitting(true);
+                void Promise.resolve(onSubmit(e)).catch(() => undefined).finally(() => setSubmitting(false));
               }}
             >
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -276,11 +280,13 @@ export function TeachersView({
                 <label className="block max-w-md text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Contraseña inicial</span>
                   <input type="password" className={INPUT_CLASS} value={form.password} onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))} minLength={8} required />
+                  <span className="mt-1 block text-xs text-[var(--text-muted)]">Mínimo 8 caracteres, con mayúscula, minúscula y número.</span>
+                  {formErrors.password ? <span className="mt-1 block text-xs text-rose-400">{formErrors.password}</span> : null}
                 </label>
               ) : null}
 
-              <button type="submit" className="btn-primary">
-                Guardar docente
+              <button type="submit" className="btn-primary" disabled={submitting}>
+                {submitting ? "Guardando…" : "Guardar docente"}
               </button>
             </form>
           </PageSection>
@@ -410,9 +416,13 @@ export function TeachersView({
                       <span className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">
                         Contraseña inicial para {teacher.correo}
                       </span>
-                      <input type="password" className={INPUT_CLASS} placeholder="Mínimo 8 caracteres" value={accountPassword} onChange={(e) => setAccountPassword(e.target.value)} minLength={8} />
+                      <input type="password" className={INPUT_CLASS} placeholder="Mínimo 8 caracteres, con mayúscula, minúscula y número" value={accountPassword} onChange={(e) => setAccountPassword(e.target.value)} minLength={8} />
                     </label>
-                    <button type="button" className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500" onClick={() => void onCreateAccount(teacher.id, accountPassword).then(() => setAccountPassword(""))}>
+                    <button type="button" className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500" onClick={() => {
+                      const err = validatePassword(accountPassword);
+                      if (err) { toast.error(err); return; }
+                      void onCreateAccount(teacher.id, accountPassword).then(() => setAccountPassword(""));
+                    }}>
                       <KeyRound className="h-3.5 w-3.5" /> Crear acceso con este correo
                     </button>
                   </div>) : null}

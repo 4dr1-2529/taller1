@@ -7,9 +7,9 @@ import type { StudentWithPrediction } from "@/lib/aggregates";
 
 type BentoHeroProps = {
   greeting: string;
-  globalRisk: number;
+  globalRisk: number | null;
   alerts: number;
-  healthScore: number;
+  healthScore: number | null;
   trend: { direction: "up" | "down" | "flat"; label: string };
   topStudent?: StudentWithPrediction;
 };
@@ -30,13 +30,13 @@ export function BentoHero({
       <header><p className="intelligence-eyebrow">Panorama de riesgo</p><h3>{greeting}</h3>
         <p>Riesgo del cohorte y señales para orientar el acompañamiento.</p></header>
       <div className="command-hero__focus">
-        <RiskGauge score={globalRisk} level="" neutral valueLabel={<AnimatedNumber value={globalRisk} />} />
+        <RiskGauge score={globalRisk ?? 0} level="" neutral valueLabel={globalRisk == null ? "Sin datos" : <AnimatedNumber value={globalRisk} />} />
         <div className="command-hero__context">
           <p className="text-sm font-semibold">Índice de riesgo global</p>
           <span className={`trend-pill ${trend.direction === "up" ? "text-[var(--risk-high)]" : trend.direction === "down" ? "text-[var(--risk-low)]" : "text-[var(--text-secondary)]"}`}>
             <TrendIcon size={15} aria-hidden />{trend.label}
           </span>
-          <p className="text-sm text-[var(--text-muted)]">{healthScore}% cohorte saludable</p>
+          <p className="text-sm text-[var(--text-muted)]">{healthScore == null ? "Sin datos de cohorte" : `${healthScore}% cohorte saludable`}</p>
           <div className="command-alert-count"><AlertTriangle size={16} aria-hidden /><strong>{alerts}</strong><span>Alertas tempranas<br /><small>Requieren seguimiento</small></span></div>
         </div>
       </div>

@@ -96,6 +96,7 @@ export function BentoDashboard({
   }, [useApi, students.length]);
 
   const withPred = useMemo(() => attachPredictions(students), [students]);
+  const hasPredictions = withPred.length > 0;
   const globalRisk = useMemo(
     () => (apiKpis?.avgRisk != null && useApi ? apiKpis.avgRisk : globalRiskScore(students)),
     [students, apiKpis, useApi],
@@ -112,8 +113,8 @@ export function BentoDashboard({
         riesgoGlobal: p.riesgoGlobal,
       }));
     }
-    return buildRiskHistorySeries(students);
-  }, [students, useApi, apiAnalytics]);
+    return buildRiskHistorySeries();
+  }, [useApi, apiAnalytics]);
   const trend = useMemo(() => riskTrendLabel(riskHistory), [riskHistory]);
   const courseRows = useMemo(() => riskByCourse(students, courses), [students, courses]);
   const topAtRisk = useMemo(() => rankingAtRisk(students, 5), [students]);
@@ -130,7 +131,7 @@ export function BentoDashboard({
     useApi && apiKpis?.byLevel ? apiKpis.byLevel.alto : withPred.filter((s) => s.prediction.level === "alto").length;
   const lowRisk =
     useApi && apiKpis?.byLevel ? apiKpis.byLevel.bajo : withPred.filter((s) => s.prediction.level === "bajo").length;
-  const healthScore = students.length > 0 ? Math.round((lowRisk / students.length) * 100) : 0;
+  const healthScore = students.length > 0 && hasPredictions ? Math.round((lowRisk / students.length) * 100) : null;
 
   const riskDistribution = useMemo(() => {
     if (useApi && apiKpis?.byLevel) {
@@ -141,13 +142,14 @@ export function BentoDashboard({
         { name: "Bajo", value: bajo, fill: "var(--risk-low)" },
       ].filter((d) => d.value > 0);
     }
+    if (!hasPredictions) return [];
     const medio = withPred.filter((s) => s.prediction.level === "medio").length;
     return [
       { name: "Alto", value: highRisk, fill: "var(--risk-high)" },
       { name: "Medio", value: medio, fill: "var(--risk-medium)" },
       { name: "Bajo", value: lowRisk, fill: "var(--risk-low)" },
     ].filter((d) => d.value > 0);
-  }, [withPred, highRisk, lowRisk, useApi, apiKpis]);
+  }, [withPred, hasPredictions, highRisk, lowRisk, useApi, apiKpis]);
 
   const kpis: KpiItem[] = [
     { label: "Estudiantes", value: students.length, icon: Users },
@@ -157,7 +159,7 @@ export function BentoDashboard({
       value: matriculaStats?.matriculasActivas ?? students.length,
       icon: GraduationCap,
     },
-    { label: "Asistencia prom.", value: avgAtt, suffix: "%", icon: Activity },
+    { label: "Asistencia prom.", value: avgAtt ?? "—", suffix: avgAtt == null ? undefined : "%", icon: Activity },
   ];
 
   return (

@@ -113,7 +113,7 @@ export const updateTeacherSchema = z.object({
 });
 
 export const teacherAccountSchema = z.object({
-  password: z.string().min(8).max(128),
+  password: securePasswordField,
 });
 
 export const courseSchema = z.object({

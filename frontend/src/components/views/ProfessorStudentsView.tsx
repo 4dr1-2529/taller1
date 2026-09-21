@@ -49,7 +49,7 @@ export function ProfessorStudentsView({ courses, secciones }: ProfessorStudentsV
     setRows([]);
   };
 
-  const withPred = attachPredictions(rows);
+  const withPred = new Map(attachPredictions(rows).map((s) => [s.id, s] as const));
   const courseName = (id: string) => courses.find((c) => c.id === id)?.nombre ?? "—";
 
   return (
@@ -72,10 +72,10 @@ export function ProfessorStudentsView({ courses, secciones }: ProfessorStudentsV
           loading
             ? "Buscando…"
             : pf.searched
-              ? `${withPred.length} resultado(s)`
+              ? `${rows.length} resultado(s)`
               : PROFESOR_HINTS.pressSearch
         }
-        isEmpty={pf.searched && !loading && withPred.length === 0}
+        isEmpty={pf.searched && !loading && rows.length === 0}
         emptyMessage={PROFESOR_HINTS.noStudents}
       >
         <TableWrap>
@@ -92,9 +92,10 @@ export function ProfessorStudentsView({ courses, secciones }: ProfessorStudentsV
             </tr>
           </thead>
           <tbody>
-            {withPred.map((s) => {
+            {rows.map((s) => {
               const grado = parseGradoNumero(s.nivel);
               const sec = parseSeccionLetra(s.nivel);
+              const pred = withPred.get(s.id);
               return (
                 <tr key={s.id}>
                   <td className="font-mono text-xs">{s.codigo}</td>
@@ -108,7 +109,7 @@ export function ProfessorStudentsView({ courses, secciones }: ProfessorStudentsV
                     <MiniProgressBar value={s.metrics.asistenciaGeneral} />
                   </td>
                   <td>
-                    <RiskBadge level={s.prediction.level} score={s.prediction.score} />
+                    {pred ? <RiskBadge level={pred.prediction.level} score={pred.prediction.score} /> : <span>Sin predicción</span>}
                   </td>
                   <td>{s.estado}</td>
                 </tr>

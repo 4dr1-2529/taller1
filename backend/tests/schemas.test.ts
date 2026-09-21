@@ -12,6 +12,7 @@ import {
   alertStatusSchema,
   courseSchema,
   teacherSchema,
+  teacherAccountSchema,
   createUserSchema,
   changePasswordSchema,
 } from "../src/validators/schemas.js";
@@ -82,6 +83,12 @@ describe("Roles y contraseña", () => {
       changePasswordSchema.safeParse({ currentPassword: "old", newPassword: "weak" }).success,
       false,
     );
+  });
+  it("teacherAccount exige la misma regla segura (8 + mayúscula + minúscula + número)", () => {
+    assert.equal(teacherAccountSchema.safeParse({ password: "Password1x" }).success, true);
+    assert.equal(teacherAccountSchema.safeParse({ password: "password1x" }).success, false);
+    assert.equal(teacherAccountSchema.safeParse({ password: "Passwordxx" }).success, false);
+    assert.equal(teacherAccountSchema.safeParse({ password: "Pass1x" }).success, false);
   });
 });
 

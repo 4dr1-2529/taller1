@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { FileSpreadsheet, FileText, Download } from "lucide-react";
-import { attachPredictions, failCountByCourse, lowLmsStudents, riskByCourse } from "@/lib/aggregates";
+import { failCountByCourse, lowLmsStudents, riskByCourse } from "@/lib/aggregates";
 import {
   exportCourseRiskPdf,
   exportFailsByCoursePdf,
@@ -20,7 +20,7 @@ type ReportsViewProps = {
 export function ReportsView({ students, courses }: ReportsViewProps) {
   const [busy, setBusy] = useState<string | null>(null);
 
-  const withPred = useMemo(() => attachPredictions(students), [students]);
+  const withPred = useMemo(() => students, [students]);
   const fails = useMemo(() => failCountByCourse(students, courses, 11), [students, courses]);
   const lowLms = useMemo(() => lowLmsStudents(students, 45), [students]);
   const courseRiskRows = useMemo(() => riskByCourse(students, courses), [students, courses]);
@@ -48,7 +48,7 @@ export function ReportsView({ students, courses }: ReportsViewProps) {
           <div>
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">Reportes académicos</h2>
             <p className="text-sm text-[var(--text-secondary)]">
-              Exportación basada en matrícula por salón y oferta de cursos (sin inscripción curso×alumno).
+              Exportación basada en matrícula por salón y cursos inscritos por oferta.
             </p>
           </div>
         </div>

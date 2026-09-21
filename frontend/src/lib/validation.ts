@@ -235,10 +235,20 @@ export function validateTeacherForm(form: TeacherFormInput): FieldErrors {
   const dni = validateDni(form.dni, true);
   if (dni) errors.dni = dni;
   Object.assign(errors, validateTeacherProfileFields(form));
-  if (form.crearCuenta && form.password.length < 8) {
-    errors.password = "La contraseña debe tener al menos 8 caracteres";
+  if (form.crearCuenta) {
+    const pwd = validatePassword(form.password);
+    if (pwd) errors.password = pwd;
   }
   return errors;
+}
+
+/** Idéntica a la regla backend (validators/fields.ts): 8 + mayúscula + minúscula + número. */
+export function validatePassword(value: string): string | undefined {
+  if (!value || value.length < 8) return "La contraseña debe tener al menos 8 caracteres";
+  if (!/[A-Z]/.test(value)) return "Debe incluir al menos una mayúscula";
+  if (!/[a-z]/.test(value)) return "Debe incluir al menos una minúscula";
+  if (!/\d/.test(value)) return "Debe incluir al menos un número";
+  return undefined;
 }
 
 export type TeacherProfileInput = Pick<

@@ -92,14 +92,18 @@ export function AlertsView({
 
   const displayedAlerts = useMemo(() => {
     if (!useApi) return [];
-    if (viewSalon === "all") return apiAlerts;
-    return apiAlerts.filter((a) => {
+    const q = filters.search.trim().toLowerCase();
+    const byRoom = viewSalon === "all" ? apiAlerts : apiAlerts.filter((a) => {
       const st = students.find((s) => s.id === a.student.id);
       if (!st?.seccionId) return false;
       const sec = secciones.find((x) => x.id === st.seccionId);
       return sec ? salonShortFromSeccion(sec) === viewSalon : false;
     });
-  }, [useApi, apiAlerts, viewSalon, students, secciones]);
+    if (!q) return byRoom;
+    return byRoom.filter((a) =>
+      `${a.student.nombres} ${a.student.apellidos} ${a.student.codigo ?? ""}`.toLowerCase().includes(q),
+    );
+  }, [useApi, apiAlerts, viewSalon, students, secciones, filters.search]);
 
   async function updateStatus(id: string, status: "en_seguimiento" | "resuelta") {
     try {
@@ -126,6 +130,7 @@ export function AlertsView({
           profesor: !isDocente,
           alertStatus: true,
           risk: true,
+          search: true,
         }}
       />
 

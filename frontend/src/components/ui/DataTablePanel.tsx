@@ -27,6 +27,7 @@ type DataTablePanelProps = {
   pageSize?: number;
   totalItems?: number;
   onPageChange?: (page: number) => void;
+  searchable?: boolean;
 };
 
 export function DataTablePanel({
@@ -48,9 +49,11 @@ export function DataTablePanel({
   pageSize = 10,
   totalItems,
   onPageChange,
+  searchable,
 }: DataTablePanelProps) {
   const [internalSearch, setInternalSearch] = useState("");
   const search = controlledSearch ?? internalSearch;
+  const showSearch = searchable ?? (onSearch !== undefined || controlledSearch !== undefined);
 
   const handleSearch = (q: string) => {
     setInternalSearch(q);
@@ -62,12 +65,16 @@ export function DataTablePanel({
       <div className="relative">
         {!(hideToolbarWhenEmpty && isEmpty) ? (
         <div className="flex flex-col gap-4 border-b border-[var(--border-subtle)] bg-[var(--surface-muted)]/45 px-5 py-4 sm:flex-row sm:items-center sm:justify-between md:px-6">
-          <SearchField
-            className="min-w-0 flex-1 sm:max-w-sm"
-            value={search}
-            onChange={handleSearch}
-            placeholder={searchPlaceholder}
-          />
+          {showSearch ? (
+            <SearchField
+              className="min-w-0 flex-1 sm:max-w-sm"
+              value={search}
+              onChange={handleSearch}
+              placeholder={searchPlaceholder}
+            />
+          ) : (
+            <span className="min-w-0 flex-1" />
+          )}
 
           <div className="flex flex-wrap items-center gap-2">
             {toolbar ? (

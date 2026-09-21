@@ -53,7 +53,10 @@ export function AttendanceView({
   const [items, setItems] = useState<AttendanceRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const [bulkEstados, setBulkEstados] = useState<Record<string, AttendanceEstado>>({});
+  const PAGE_SIZE = 50;
 
   const {
     filters,
@@ -73,14 +76,28 @@ export function AttendanceView({
     try {
       const res = isDocente
         ? await api.getProfesorAttendance(undefined, filters.seccionId || undefined)
-        : await api.getAttendance();
-      setItems(res.items as AttendanceRow[]);
+        : await api.getAttendance({
+            seccionId: filters.seccionId || undefined,
+            gradoId: filters.gradoId || undefined,
+            q: filters.search.trim() || undefined,
+            from: filters.fecha || undefined,
+            to: filters.fecha || undefined,
+            page,
+            limit: PAGE_SIZE,
+          });
+      const rows = (res.items as AttendanceRow[]).map((a) => ({
+        ...a,
+        fecha: typeof a.fecha === "string" ? a.fecha : new Date(a.fecha).toISOString(),
+      }));
+      setItems(rows);
+      setTotal((res as { total?: number }).total ?? rows.length);
     } catch {
       setItems([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
-  }, [filters.seccionId, isDocente]);
+  }, [filters.seccionId, filters.gradoId, filters.search, filters.fecha, isDocente, page]);
 
   useEffect(() => {
     if (isAuthenticated) void load();
@@ -98,19 +115,6 @@ export function AttendanceView({
     setBulkEstados(next);
   }, [filteredStudents, filters.fecha, items]);
 
-  const scopeIds = new Set(filteredStudents.map((s) => s.id));
-  const filtered = items.filter((a) => {
-    if (!scopeIds.has(a.studentId)) return false;
-    if (filters.fecha && a.fecha.slice(0, 10) !== filters.fecha) return false;
-    if (filters.search) {
-      const st = studentMap.get(a.studentId);
-      const name = st
-        ? `${st.nombres} ${st.apellidos} ${st.codigo}`.toLowerCase()
-        : "";
-      if (!name.includes(filters.search.toLowerCase())) return false;
-    }
-    return true;
-  });
 
   const summary = useMemo(() => {
     let presente = 0;
@@ -191,8 +195,8 @@ export function AttendanceView({
     <div className="space-y-6">
       <AcademicFiltersBar
         filters={filters}
-        onChange={updateFilter}
-        onReset={resetFilters}
+        onChange={(k, v) => { updateFilter(k, v); setPage(1); }}
+        onReset={() => { resetFilters(); setPage(1); }}
         grados={grados}
         secciones={seccionOptions}
         courses={filteredCourses.map((c) => ({ id: c.id, nombre: c.nombre }))}
@@ -273,9 +277,13 @@ export function AttendanceView({
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
         <DataTablePanel
           title="Historial de asistencia"
-          description={loading ? "Cargando registros…" : `${filtered.length} registro(s)`}
-          isEmpty={!loading && filtered.length === 0}
-          emptyMessage="Sin registros para el filtro actual."
+          description={loading ? "Cargando registros…" : `${total} registro(s)`}
+          isEmpty={!loading && items.length === 0}
+          emptyMessage={filters.search || filters.seccionId || filters.fecha ? "No existen registros para los filtros seleccionados." : "Sin registros de asistencia."}
+          page={page}
+          pageSize={PAGE_SIZE}
+          totalItems={total}
+          onPageChange={setPage}
         >
           <TableWrap>
             <thead>
@@ -289,7 +297,7 @@ export function AttendanceView({
               </tr>
             </thead>
             <tbody>
-              {filtered.map((a) => {
+              {items.map((a) => {
                 const estado = flagsToEstado(a);
                 const st = studentMap.get(a.studentId);
                 const grado = st ? parseGradoNumero(st.nivel) : null;

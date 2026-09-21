@@ -17,7 +17,10 @@ export function BentoAtRiskList({ students }: { students: StudentWithPrediction[
         </div>
       </header>
       <ul className="mt-4 flex-1 space-y-5">
-        {students.map((s, i) => {
+        {students.length === 0 ? (
+          <li className="py-6 text-center text-sm text-[var(--text-muted)]">Sin datos de riesgo disponibles</li>
+        ) : (
+        students.map((s, i) => {
           const pct = Math.min(100, s.prediction.score);
           return (
             <motion.li key={s.id} initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}>
@@ -43,7 +46,7 @@ export function BentoAtRiskList({ students }: { students: StudentWithPrediction[
               </div>
             </motion.li>
           );
-        })}
+        }))}
       </ul>
     </div>
   );

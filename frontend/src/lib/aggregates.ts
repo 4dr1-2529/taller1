@@ -34,18 +34,28 @@ export function attachPredictions(students: Student[]): StudentWithPrediction[] 
   }));
 }
 
-export function globalRiskScore(students: Student[]): number {
-  if (!students.length) return 0;
+/** Riesgo global promedio o null cuando no hay predicciones persistidas. */
+export function globalRiskScore(students: Student[]): number | null {
+  if (!students.length) return null;
   const withPred = attachPredictions(students);
+  if (!withPred.length) return null;
   const sum = withPred.reduce((acc, s) => acc + s.prediction.score, 0);
-  return Math.round((sum / (withPred.length || 1)) * 10) / 10;
+  return Math.round((sum / withPred.length) * 10) / 10;
+}
+
+/** Promedio académico real (0–20) o null sin datos. Nunca usa risk score. */
+export function averageGrade(students: Student[]): number | null {
+  if (!students.length) return null;
+  const v = students.reduce((a, s) => a + s.metrics.promedioGeneral, 0) / students.length;
+  return Math.round(v * 10) / 10;
 }
 
 export function buildRiskHistory(students: Student[]): RiskHistoryPoint[] {
-  if (!students.length) return [];
+  const score = globalRiskScore(students);
+  if (score == null) return [];
   const now = new Date();
   const periodo = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  return [{ periodo, riesgoGlobal: globalRiskScore(students) }];
+  return [{ periodo, riesgoGlobal: score }];
 }
 
 export function earlyAlertCount(students: Student[]): number {
@@ -70,8 +80,8 @@ export function riskTrendLabel(history: RiskHistoryPoint[]): {
   return { direction: "flat", label: "Riesgo estable", delta };
 }
 
-export function averageAttendance(students: Student[]): number {
-  if (!students.length) return 0;
+export function averageAttendance(students: Student[]): number | null {
+  if (!students.length) return null;
   const v = students.reduce((a, s) => a + s.metrics.asistenciaGeneral, 0) / students.length;
   return Math.round(v * 10) / 10;
 }
@@ -95,7 +105,7 @@ export function studentsInCourseSalon(students: Student[], course: Course): Stud
 export type CourseRiskRow = {
   courseId: string;
   nombre: string;
-  riesgoPromedio: number;
+  riesgoPromedio: number | null;
   estudiantes: number;
 };
 
@@ -103,11 +113,11 @@ export function riskByCourse(students: Student[], courses: Course[]): CourseRisk
   return courses.map((c) => {
     const inSalon = studentsInCourseSalon(students, c);
     const scores = attachPredictions(inSalon).map((s) => s.prediction.score);
-    const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+    const avg = scores.length ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10 : null;
     return {
       courseId: c.id,
       nombre: c.nombre,
-      riesgoPromedio: Math.round(avg * 10) / 10,
+      riesgoPromedio: avg,
       estudiantes: inSalon.length,
     };
   });
@@ -132,8 +142,9 @@ export function rankingAtRisk(students: Student[], limit = 8): StudentWithPredic
     .slice(0, limit);
 }
 
-export function lowLmsStudents(students: Student[], maxParticipation = 45): StudentWithPrediction[] {
-  return attachPredictions(students).filter((s) => {
+/** Baja actividad LMS basada en indicadores reales; no requiere predicción. */
+export function lowLmsStudents(students: Student[], maxParticipation = 45): Student[] {
+  return students.filter((s) => {
     const arr = s.metrics.lms.actividadSemanalPct;
     const avg = arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
     return avg <= maxParticipation;

@@ -12,7 +12,7 @@ export const directorService = {
   getSecciones: (gradoId?: number) => api.getSecciones(gradoId),
   getAlerts: (params?: Parameters<typeof api.getAlerts>[0]) => api.getAlerts(params),
   getGrades: (studentId?: string, courseId?: string) => api.getGrades(studentId, courseId),
-  getAttendance: (studentId?: string) => api.getAttendance(studentId),
+  getAttendance: (params?: { studentId?: string; seccionId?: string; gradoId?: string; q?: string; from?: string; to?: string; page?: number; limit?: number }) => api.getAttendance(params),
   getPredictions: (params?: Parameters<typeof api.getPredictions>[0]) => api.getPredictions(params),
   predict: (studentId: string, metrics?: Record<string, unknown>) => api.predict(studentId, metrics),
 };

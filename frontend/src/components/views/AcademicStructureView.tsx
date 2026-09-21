@@ -37,7 +37,7 @@ export function AcademicStructureView() {
     return (
       <EmptyState
         title="Estructura académica"
-        description="Inicie sesión para ver niveles, grados y secciones del colegio (Primaria y Secundaria — Huancayo)."
+        description="Inicie sesión para ver niveles, grados y secciones configurados para el periodo académico."
         showLogin
       />
     );
@@ -80,11 +80,11 @@ export function AcademicStructureView() {
               <School className="h-4 w-4 text-[var(--accent)]" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              Academic Structure
+              Estructura académica
             </h2>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Peruvian educational model — levels, grades, and sections
+            Niveles, grados y secciones configurados para el periodo académico
           </p>
         </div>
       </motion.div>
@@ -98,11 +98,10 @@ export function AcademicStructureView() {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-[var(--text-primary)]">
-                Modelo educativo peruano — I.E.P. Huancayo
+                Estructura institucional — I.E.P. Huancayo
               </h3>
               <p className="text-sm text-[var(--text-secondary)]">
-                Primaria (1°–6°) y Secundaria (1°–5°) con secciones A, B y C. Los cursos varían por grado según el
-                catálogo curricular nacional.
+                Niveles, grados, secciones y cursos según la configuración vigente del periodo académico.
               </p>
             </div>
           </div>

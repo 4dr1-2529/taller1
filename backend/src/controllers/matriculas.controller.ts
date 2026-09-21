@@ -70,12 +70,17 @@ export async function listMatriculas(req: Request, res: Response, next: NextFunc
     const seccionId = req.query.seccionId as string | undefined;
     const anioLectivoId = req.query.anioLectivoId as string | undefined;
     const estado = (req.query.estado as string | undefined) ?? "activa";
+    const q = String(req.query.q ?? "").trim();
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(800, Math.max(1, Number(req.query.limit) || 100));
     const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = {
-      estudiante: scope,
+      estudiante: { AND: [scope, ...(q ? [{ OR: [
+        { nombres: { contains: q } },
+        { apellidos: { contains: q } },
+        { codigo: { contains: q } },
+      ] }] : [])] },
       anioLectivo: { anio: 2026 },
       ...(seccionId ? { seccionId: toDbId(seccionId) } : {}),
       ...(anioLectivoId ? { anioLectivoId: toDbId(anioLectivoId) } : {}),

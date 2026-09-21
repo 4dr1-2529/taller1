@@ -137,7 +137,7 @@ function sectionSubtitle(section: AppSection, role: string): string {
     case "Profesores":
       return "Docentes y cursos asignados.";
     case "Asignaciones":
-      return "Asignación docente: 8 tutores exclusivos (1°-2°, un salón cada uno) · polidocencia 3°-6° (2 cursos, máx. 6–8 salones).";
+      return "Asignación docente por curso, grado, sección y año lectivo, según la estructura vigente.";
     case "Cursos":
       return "Oferta académica por sección.";
     case "Matrículas":
@@ -184,6 +184,7 @@ export default function Home() {
     createTeacherAccount,
     addCourse,
     updateCourse,
+    deactivateCourse,
     addMatricula,
   } = useAcademicData();
   const { secciones: directorSecciones } = useAcademicStructure();
@@ -344,6 +345,7 @@ export default function Home() {
             setForm={setNewCourse}
             onSubmit={handleAddCourse}
             onReassignProfesor={(courseId, profesorId) => updateCourse(courseId, { profesorId })}
+            onDeactivate={isDirector ? deactivateCourse : undefined}
             canEdit={isDirector}
             canReassign={isDirector}
             lockProfesorId={role === "docente" ? user?.teacherId ?? undefined : undefined}

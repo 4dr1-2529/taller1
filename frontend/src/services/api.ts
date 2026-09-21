@@ -512,11 +512,13 @@ class ApiClient {
     page?: number;
     limit?: number;
     estado?: string;
+    q?: string;
   }) {
     const q = new URLSearchParams({ estado: params?.estado ?? "activa" });
     if (params?.seccionId) q.set("seccionId", params.seccionId);
     if (params?.page) q.set("page", String(params.page));
     if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.q) q.set("q", params.q);
     const query = q.toString() ? `?${q}` : "";
     return this.request<{
       items: MatriculaRow[];
@@ -525,6 +527,13 @@ class ApiClient {
       pages: number;
       activas: number;
     }>(`/matriculas${query}`);
+  }
+
+  async updateMatriculaState(id: string, estado: "retirada" | "trasladada") {
+    return this.request<{ estado: string }>(`/matriculas/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ estado }),
+    });
   }
 
   async getMatriculaStats() {
@@ -568,9 +577,29 @@ class ApiClient {
     return this.request<{ item: unknown }>("/grades", { method: "POST", body: JSON.stringify(payload) });
   }
 
-  async getAttendance(studentId?: string) {
-    const q = studentId ? `?studentId=${encodeURIComponent(studentId)}` : "";
-    return this.request<{ items: unknown[] }>(`/attendance${q}`);
+  async getAttendance(params?: {
+    studentId?: string;
+    seccionId?: string;
+    gradoId?: string;
+    q?: string;
+    from?: string;
+    to?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const q = new URLSearchParams();
+    if (params?.studentId) q.set("studentId", params.studentId);
+    if (params?.seccionId) q.set("seccionId", params.seccionId);
+    if (params?.gradoId) q.set("gradoId", params.gradoId);
+    if (params?.q) q.set("q", params.q);
+    if (params?.from) q.set("from", params.from);
+    if (params?.to) q.set("to", params.to);
+    if (params?.page) q.set("page", String(params.page));
+    if (params?.limit) q.set("limit", String(params.limit));
+    const query = q.toString() ? `?${q}` : "";
+    return this.request<{ items: unknown[]; total: number; page: number; pages: number }>(
+      `/attendance${query}`,
+    );
   }
 
   async createAttendance(payload: Record<string, unknown>) {

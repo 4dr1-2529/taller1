@@ -1,7 +1,8 @@
 "use client";
 
 import { api } from "@/services/api";
-import { useState } from "react";
+import { mapStudentFromApi } from "@/lib/api-mappers";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { motion } from "framer-motion";
 import { UserPlus } from "lucide-react";
@@ -23,6 +24,10 @@ import {
 import {
   type FieldErrors,
   firstError,
+  validateDni,
+  validateEmail,
+  validatePersonName,
+  validatePhone,
   validateStudentForm,
   clearFieldError,
 } from "@/lib/validation";
@@ -67,11 +72,116 @@ export function StudentsView({
   const withPred = students;
   const [search, setSearch] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(students.length);
+  const [serverRows, setServerRows] = useState<Student[] | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [editing, setEditing] = useState<Student | null>(null);
+  const [editForm, setEditForm] = useState({ nombres: "", apellidos: "", dni: "", correo: "", telefono: "" });
+  const [editErrors, setEditErrors] = useState<FieldErrors>({});
+  const [busy, setBusy] = useState<string | null>(null);
+  const PAGE_SIZE = 20;
+
+  useEffect(() => {
+    setTotal((t) => (serverRows ? t : students.length));
+  }, [students.length, serverRows]);
+
+  useEffect(() => {
+    if (!api.hasToken) {
+      setServerRows(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      void (async () => {
+        try {
+          const res = await api.getStudents(page, PAGE_SIZE, search.trim());
+          setServerRows(
+            res.items.map((r) => mapStudentFromApi(r as Parameters<typeof mapStudentFromApi>[0])),
+          );
+          setTotal(res.total);
+        } catch {
+          setServerRows(null);
+        }
+      })();
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [page, search, reloadKey]);
+
   const filtered = useTableFilter(
     withPred,
-    search,
+    serverRows ? "" : search,
     (s) => `${s.codigo} ${s.nombres} ${s.apellidos} ${s.nivel}`,
   );
+  const rows = serverRows ?? filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalItems = serverRows ? total : filtered.length;
+
+  function startEdit(s: Student) {
+    setEditing(s);
+    setEditForm({
+      nombres: s.nombres,
+      apellidos: s.apellidos,
+      dni: (s as { dni?: string }).dni ?? "",
+      correo: s.correo ?? "",
+      telefono: s.telefono ?? "",
+    });
+    setEditErrors({});
+  }
+
+  async function submitEdit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!editing || busy) return;
+    const nextErrors: FieldErrors = {};
+    const vN = validatePersonName(editForm.nombres, "Nombres");
+    if (vN) nextErrors.nombres = vN;
+    const vA = validatePersonName(editForm.apellidos, "Apellidos");
+    if (vA) nextErrors.apellidos = vA;
+    const vD = validateDni(editForm.dni, true);
+    if (vD) nextErrors.dni = vD;
+    const vC = validateEmail(editForm.correo, false);
+    if (vC) nextErrors.correo = vC;
+    const vT = validatePhone(editForm.telefono, false);
+    if (vT) nextErrors.telefono = vT;
+    setEditErrors(nextErrors);
+    const msg = firstError(nextErrors);
+    if (msg) {
+      toast.error(msg);
+      return;
+    }
+    setBusy("edit");
+    try {
+      await api.updateStudent(editing.id, {
+        nombres: editForm.nombres.trim(),
+        apellidos: editForm.apellidos.trim(),
+        dni: editForm.dni.trim(),
+        correo: editForm.correo.trim() || undefined,
+        telefono: editForm.telefono.trim() || null,
+      });
+      toast.success("Estudiante actualizado");
+      setEditing(null);
+      onRefresh?.();
+      setReloadKey((k) => k + 1);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo actualizar");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function deactivate(s: Student) {
+    if (busy) return;
+    if (!window.confirm(`Desactivar a ${s.nombres} ${s.apellidos} (${s.codigo})? Se conserva su historial.`)) return;
+    setBusy(s.id);
+    try {
+      await api.call('/students/' + s.id, { method: 'DELETE' });
+      toast.success('Estudiante desactivado');
+      onRefresh?.();
+      setReloadKey((k) => k + 1);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'No se pudo desactivar');
+    } finally {
+      setBusy(null);
+    }
+  }
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
@@ -195,13 +305,17 @@ export function StudentsView({
 
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <DataTablePanel
-            title="Estudiantes y riesgo"
+            title={`Estudiantes (${total})`}
             description="Puntaje de deserción calculado por el modelo conjunto."
             searchPlaceholder="Buscar por nombre o código…"
             searchValue={search}
-            onSearch={setSearch}
-            isEmpty={filtered.length === 0}
-            emptyMessage="No hay estudiantes registrados."
+            onSearch={(v) => { setSearch(v); setPage(1); }}
+            page={page}
+            pageSize={PAGE_SIZE}
+            totalItems={totalItems}
+            onPageChange={setPage}
+            isEmpty={rows.length === 0}
+            emptyMessage={search ? "No existen registros para los filtros seleccionados." : "No hay estudiantes registrados."}
           >
             <TableWrap>
               <thead>
@@ -215,7 +329,7 @@ export function StudentsView({
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((student) => (
+                {rows.map((student) => (
                   <tr key={student.id}>
                     <td>
                       <div className="flex items-center gap-3">
@@ -253,10 +367,10 @@ export function StudentsView({
                     <td>
                       {student.storedPrediction ? <RiskBadge level={student.storedPrediction.level} score={student.storedPrediction.score} /> : <span>Sin predicción</span>}
                     </td>
-                    {canEdit && <td><button type="button" className="text-rose-500" onClick={async () => {
-                      try { await api.call('/students/' + student.id, { method: 'DELETE' }); toast.success('Estudiante desactivado'); onRefresh?.(); }
-                      catch(e) { toast.error(e instanceof Error ? e.message : 'No se pudo desactivar'); }
-                    }}>Desactivar</button></td>}
+                    {canEdit && <td><span className="flex flex-wrap gap-1">
+                      <button type="button" className="btn-ghost text-xs" disabled={busy !== null} onClick={() => startEdit(student)}>Editar</button>
+                      <button type="button" className="text-rose-500 disabled:opacity-40" disabled={busy !== null} onClick={() => void deactivate(student)}>Desactivar</button>
+                    </span></td>}
                   </tr>
                 ))}
               </tbody>
@@ -264,6 +378,35 @@ export function StudentsView({
           </DataTablePanel>
         </motion.div>
       </div>
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-label="Editar estudiante">
+          <form
+            className="form-grid w-full max-w-lg rounded-2xl bg-[var(--surface-elevated)] p-6"
+            onSubmit={(e) => void submitEdit(e)}
+          >
+            <h3 className="form-grid-full text-lg font-semibold">Editar estudiante {editing.codigo}</h3>
+            <FormField label="Nombres" error={editErrors.nombres}>
+              <PersonNameInput value={editForm.nombres} onValueChange={(nombres) => { setEditErrors((p) => clearFieldError(p, "nombres")); setEditForm((p) => ({ ...p, nombres })); }} required />
+            </FormField>
+            <FormField label="Apellidos" error={editErrors.apellidos}>
+              <PersonNameInput value={editForm.apellidos} onValueChange={(apellidos) => { setEditErrors((p) => clearFieldError(p, "apellidos")); setEditForm((p) => ({ ...p, apellidos })); }} required />
+            </FormField>
+            <FormField label="DNI" error={editErrors.dni}>
+              <DniInput value={editForm.dni} onValueChange={(dni) => { setEditErrors((p) => clearFieldError(p, "dni")); setEditForm((p) => ({ ...p, dni })); }} required />
+            </FormField>
+            <FormField label="Correo (opcional)" error={editErrors.correo}>
+              <input type="email" className={INPUT_CLASS} value={editForm.correo} onChange={(e) => { setEditErrors((p) => clearFieldError(p, "correo")); setEditForm((p) => ({ ...p, correo: e.target.value })); }} />
+            </FormField>
+            <FormField label="Teléfono" error={editErrors.telefono}>
+              <PhoneInput value={editForm.telefono} onValueChange={(telefono) => { setEditErrors((p) => clearFieldError(p, "telefono")); setEditForm((p) => ({ ...p, telefono })); }} />
+            </FormField>
+            <div className="form-grid-full flex justify-end gap-2">
+              <button type="button" className="btn-ghost" disabled={busy !== null} onClick={() => setEditing(null)}>Cancelar</button>
+              <button type="submit" className="btn-primary" disabled={busy !== null}>{busy === "edit" ? "Guardando…" : "Guardar cambios"}</button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

@@ -33,6 +33,7 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
   const [students, setStudents] = useState<Student[]>([]);
   const [grades, setGrades] = useState<GradeRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [savingId, setSavingId] = useState<string | null>(null);
   const [draftNotas, setDraftNotas] = useState<Record<string, string>>({});
 
   const search = useCallback(async () => {
@@ -88,12 +89,14 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
   const courseName = courses.find((c) => c.id === pf.applied.courseId)?.nombre ?? "—";
 
   async function saveNota(studentId: string) {
+    if (savingId) return;
     const raw = draftNotas[studentId];
     const nota = parseGrade(raw ?? "");
     if (nota === null) {
       toast.error("Nota entre 0 y 20");
       return;
     }
+    setSavingId(studentId);
     try {
       await profesorService.createNota({
         studentId,
@@ -106,6 +109,8 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
       void search();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "No se pudo guardar");
+    } finally {
+      setSavingId(null);
     }
   }
 
@@ -191,8 +196,8 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
                         />
                       </td>
                       <td>
-                        <button type="button" className="btn-primary text-xs" onClick={() => void saveNota(s.id)}>
-                          Guardar
+                        <button type="button" className="btn-primary text-xs disabled:opacity-40" disabled={savingId !== null} onClick={() => void saveNota(s.id)}>
+                          {savingId === s.id ? "Guardando…" : "Guardar"}
                         </button>
                       </td>
                     </tr>

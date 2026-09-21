@@ -42,6 +42,7 @@ type CoursesViewProps = {
   setForm: (v: NewCourseForm | ((p: NewCourseForm) => NewCourseForm)) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onReassignProfesor?: (courseId: string, profesorId: string) => void;
+  onDeactivate?: (courseId: string, nombre: string) => void;
   canEdit?: boolean;
   canReassign?: boolean;
   lockProfesorId?: string;
@@ -55,6 +56,7 @@ export function CoursesView({
   setForm,
   onSubmit,
   onReassignProfesor,
+  onDeactivate,
   canEdit = true,
   canReassign = false,
   lockProfesorId,
@@ -243,6 +245,7 @@ export function CoursesView({
                 <th>Curso</th>
                 <th>Grado · sección</th>
                 <th>Docente</th>
+                {canReassign && onDeactivate ? <th>Acciones</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -277,6 +280,17 @@ export function CoursesView({
                         <span className="badge-warning">Sin asignar</span>
                       )}
                     </td>
+                    {canReassign && onDeactivate ? (
+                      <td>
+                        <button
+                          type="button"
+                          className="btn-ghost text-xs text-rose-400"
+                          onClick={() => onDeactivate(course.id, course.nombre)}
+                        >
+                          Desactivar
+                        </button>
+                      </td>
+                    ) : null}
                   </tr>
                 );
               })}

@@ -106,7 +106,7 @@ export function ProfessorAttendanceView({ courses, secciones }: ProfessorAttenda
         secciones={pf.seccionOptions}
         courses={pf.courseOptions.map((c) => ({ id: c.id, nombre: c.nombre }))}
         loading={loading}
-        show={{ grado: true, seccion: true, course: true, fecha: true, search: true }}
+        show={{ grado: true, seccion: true, fecha: true, search: true }}
       />
 
       {pf.searched && students.length > 0 ? (

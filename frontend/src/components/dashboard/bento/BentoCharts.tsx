@@ -130,7 +130,7 @@ export function BentoCourseBars({ rows }: { rows: CourseRiskRow[] }) {
             <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
             <XAxis dataKey="nombre" height={64} interval={0} tick={<ChartCategoryTick />} axisLine={false} tickLine={false} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: tickFill }} axisLine={false} tickLine={false} />
-            <Tooltip wrapperClassName="chart-tooltip" formatter={(v: number) => [`${v.toFixed(1)}`, "Puntaje"]} />
+            <Tooltip wrapperClassName="chart-tooltip" formatter={(v: number) => [`${typeof v === "number" ? v.toFixed(1) : "Sin datos"}`, "Puntaje"]} />
             <Bar isAnimationActive={false} dataKey="riesgoPromedio" fill="var(--chart-primary)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

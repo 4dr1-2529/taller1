@@ -1,9 +1,9 @@
 "use client";
 
-import type { StudentWithPrediction } from "@/lib/aggregates";
+import type { Student } from "@/types/academic";
 
 export async function exportStudentsToExcel(
-  rows: StudentWithPrediction[],
+  rows: Student[],
   filename = "reporte_estudiantes_riesgo.xlsx",
 ): Promise<void> {
   const XLSX = await import("xlsx");
@@ -12,8 +12,8 @@ export async function exportStudentsToExcel(
     Estudiante: `${s.nombres} ${s.apellidos}`,
     Nivel: s.nivel,
     Estado: s.estado,
-    Riesgo: s.prediction.level,
-    Score: s.prediction.score,
+    Riesgo: s.storedPrediction?.level ?? "Sin predicción",
+    Score: s.storedPrediction?.score ?? "—",
     Promedio: s.metrics.promedioGeneral,
     Asistencia: s.metrics.asistenciaGeneral,
     LMS_promedio_semanal:
@@ -27,7 +27,7 @@ export async function exportStudentsToExcel(
 }
 
 export async function exportCourseRiskPdf(
-  rows: { nombre: string; riesgoPromedio: number; estudiantes: number }[],
+  rows: { nombre: string; riesgoPromedio: number | null; estudiantes: number }[],
   title: string,
   filename = "reporte_cursos_riesgo.pdf",
 ): Promise<void> {
@@ -41,7 +41,7 @@ export async function exportCourseRiskPdf(
     head: [["Curso", "Riesgo promedio", "Matriculados"]],
     body: rows.map((r) => [
       r.nombre,
-      String(r.riesgoPromedio),
+      r.riesgoPromedio == null ? "Sin predicción" : String(r.riesgoPromedio),
       String(r.estudiantes),
     ]),
   });
@@ -49,7 +49,7 @@ export async function exportCourseRiskPdf(
 }
 
 export async function exportLowLmsExcel(
-  students: StudentWithPrediction[],
+  students: Student[],
   filename = "reporte_baja_actividad_lms.xlsx",
 ): Promise<void> {
   const XLSX = await import("xlsx");
@@ -60,7 +60,7 @@ export async function exportLowLmsExcel(
     Horas_plataforma_sem: s.metrics.lms.horasPlataformaSemana,
     Actividades: s.metrics.lms.actividadesRealizadas,
     Recursos: s.metrics.lms.recursosConsultados,
-    Score_riesgo: s.prediction.score,
+    Riesgo: s.storedPrediction?.level ?? "Sin predicción",
   }));
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();

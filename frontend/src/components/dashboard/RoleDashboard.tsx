@@ -7,7 +7,7 @@ import { AlertTriangle, BookOpen, GraduationCap, Users } from "lucide-react";
 import { BentoDashboard } from "@/components/dashboard/bento/BentoDashboard";
 import { ProfessorDashboard } from "@/components/dashboard/ProfessorDashboard";
 import { InstitutionOverview } from "@/components/dashboard/InstitutionOverview";
-import { globalRiskScore } from "@/lib/aggregates";
+import { averageGrade } from "@/lib/aggregates";
 import { api } from "@/services/api";
 import { useAuth } from "@/contexts/AuthProvider";
 import type { MatriculaStats } from "@/hooks/useAcademicData";
@@ -59,7 +59,7 @@ export function RoleDashboard({ role, students, courses, matriculaStats = null, 
           <KpiCard label="Total profesores" value={kpis?.totalTeachers ?? "—"} icon={GraduationCap} index={1} />
           <KpiCard label="Total salones" value={kpis?.totalSalones ?? "—"} icon={BookOpen} index={2} />
           <KpiCard label="Alertas activas" value={kpis?.openAlerts ?? 0} icon={AlertTriangle} index={3} />
-          <KpiCard label="Promedio institucional" value={kpis?.avgGrade ?? globalRiskScore(students)} suffix="/20" icon={BookOpen} />
+          <KpiCard label="Promedio institucional" value={kpis?.avgGrade ?? averageGrade(students) ?? "—"} suffix="/20" icon={BookOpen} />
         </div></section>
         <BentoDashboard role={role} students={students} courses={courses} matriculaStats={matriculaStats} useApi={useApi} />
       </div>

@@ -51,6 +51,12 @@ export function EnrollmentsView({
   const [anios, setAnios] = useState<{ id: string; anio: number; nombre: string; activo: boolean }[]>([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [query, setQuery] = useState("");
+  const [estado, setEstado] = useState("activa");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const PAGE_SIZE = 20;
 
   const { filters, updateFilter, resetFilters, grados, seccionOptions, filteredStudents } =
     useAcademicFilters(students, [], secciones);
@@ -64,11 +70,15 @@ export function EnrollmentsView({
       const [mat, an] = await Promise.all([
         api.getMatriculas({
           seccionId: filters.seccionId || undefined,
-          limit: 700,
+          q: query.trim() || undefined,
+          estado: estado || undefined,
+          page,
+          limit: PAGE_SIZE,
         }),
         api.getAniosLectivos(),
       ]);
       setItems(mat.items);
+      setTotal(mat.total);
       setAnios(an.items.filter(a => a.anio === 2026));
       if (!form.anioLectivoId && an.items[0]) {
         setForm((p) => ({
@@ -78,14 +88,30 @@ export function EnrollmentsView({
       }
     } catch {
       setItems([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
-  }, [filters.seccionId, form.anioLectivoId, setForm]);
+  }, [filters.seccionId, form.anioLectivoId, setForm, query, estado, page]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  async function changeState(m: MatriculaRow, next: "retirada" | "trasladada") {
+    const label = next === "retirada" ? "Retirar matrícula" : "Registrar traslado";
+    if (!window.confirm(`${label} ${m.codigo} (${m.estudiante.nombres} ${m.estudiante.apellidos})? Esta acción conserva el historial.`)) return;
+    setBusyId(m.id);
+    try {
+      await api.updateMatriculaState(m.id, next);
+      toast.success(next === "retirada" ? "Matrícula retirada" : "Traslado registrado");
+      void load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudo actualizar la matrícula");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   const studentsForForm = filters.seccionId ? filteredStudents : students;
 
@@ -222,10 +248,30 @@ export function EnrollmentsView({
 
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <DataTablePanel
-            title={`Matrículas activas (${activas})`}
+            title={`Matrículas 2026 (${total})`}
             description="Listado institucional por salón"
+            searchPlaceholder="Buscar por código, nombre o apellido…"
+            searchValue={query}
+            onSearch={(v) => { setQuery(v); setPage(1); }}
             isEmpty={!loading && items.length === 0}
             emptyMessage="Sin matrículas para el filtro seleccionado."
+            page={page}
+            pageSize={PAGE_SIZE}
+            totalItems={total}
+            onPageChange={setPage}
+            toolbar={(
+              <select
+                className={INPUT_CLASS}
+                aria-label="Filtrar por estado"
+                value={estado}
+                onChange={(e) => { setEstado(e.target.value); setPage(1); }}
+              >
+                <option value="activa">Activas</option>
+                <option value="retirada">Retiradas</option>
+                <option value="trasladada">Trasladadas</option>
+                <option value="">Todas</option>
+              </select>
+            )}
           >
             <TableWrap>
               <thead>
@@ -248,6 +294,20 @@ export function EnrollmentsView({
                     <td>{m.anioLectivo.nombre}</td>
                     <td>
                       <span className="badge-info capitalize">{m.estado}</span>
+                    </td>
+                    <td>
+                      {m.estado === "activa" ? (
+                        <span className="flex flex-wrap gap-1">
+                          <button type="button" className="btn-ghost text-xs" disabled={busyId === m.id} onClick={() => void changeState(m, "retirada")}>
+                            Retirar
+                          </button>
+                          <button type="button" className="btn-ghost text-xs" disabled={busyId === m.id} onClick={() => void changeState(m, "trasladada")}>
+                            Trasladar
+                          </button>
+                        </span>
+                      ) : (
+                        <span className="text-xs text-[var(--text-muted)]">—</span>
+                      )}
                     </td>
                   </tr>
                 ))}

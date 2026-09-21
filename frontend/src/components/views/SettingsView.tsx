@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api } from "@/services/api";
+import { validatePassword } from "@/lib/validation";
 import { useAuth } from "@/contexts/AuthProvider";
 
 export function SettingsView() {
@@ -15,6 +16,11 @@ export function SettingsView() {
       .then(r => setThreshold(r.nivelMinimoAlerta)).catch(e => setMessage(e.message));
   }, [user?.role]);
   async function save(path: string, body: object, method: string) {
+    if (path === "/auth/change-password") {
+      const pwdError = validatePassword(newPassword);
+      if (!currentPassword) { setMessage("Ingrese su contraseña actual"); return; }
+      if (pwdError) { setMessage(pwdError); return; }
+    }
     setBusy(true); setMessage("");
     try { await api.call(path, { method, body: JSON.stringify(body) }); setMessage("Cambios guardados"); setCurrentPassword(""); setNewPassword(""); }
     catch (e) { setMessage(e instanceof Error ? e.message : "No se pudo guardar"); }
@@ -31,7 +37,7 @@ export function SettingsView() {
       <h2 className="text-lg font-semibold">Cambiar contraseña</h2>
       <label className="block">Contraseña actual<input className="premium-input" type="password" autoComplete="current-password" required value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} /></label>
       <label className="block">Nueva contraseña<input className="premium-input" type="password" autoComplete="new-password" required minLength={8} value={newPassword} onChange={e => setNewPassword(e.target.value)} /></label>
-      <p className="text-sm">Use mayúsculas, minúsculas, números y un símbolo.</p>
+      <p className="text-sm">Use al menos 8 caracteres, incluyendo mayúscula, minúscula y número.</p>
       <button disabled={busy} className="premium-button" type="submit">Cambiar contraseña</button>
     </form>
   </div>;

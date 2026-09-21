@@ -194,4 +194,30 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.equal((await call(`/recommendations/${otherRec.id}/apply`, "teacher", {}, "PATCH")).status, 403);
     assert.equal((await call(`/student-risks?studentId=${other.student.id}`, "teacher")).status, 403);
   });
+  await t.test("listados con búsqueda y paginación real", async () => {
+    const paged = await call("/students?page=1&limit=2", "admin");
+    assert.equal(paged.status, 200);
+    const body = (await paged.json()).data;
+    assert.ok(body.items.length <= 2);
+    assert.ok(typeof body.total === "number" && typeof body.pages === "number");
+    const searched = await call("/students?q=EST-201", "admin");
+    assert.equal(searched.status, 200);
+    for (const s of ((await searched.json()).data.items as { codigo: string }[])) {
+      assert.ok(s.codigo.includes("EST-201"));
+    }
+    const mat = await call(`/matriculas?q=${first.student.codigo}&page=1&limit=5`, "admin");
+    assert.equal(mat.status, 200);
+    const matBody = (await mat.json()).data;
+    assert.ok(matBody.items.length >= 1 && matBody.total >= 1);
+    const att = await call(`/attendance?gradoId=${grade.id}&page=1&limit=5`, "admin");
+    assert.equal(att.status, 200);
+    assert.ok(typeof ((await att.json()).data.total) === "number");
+    const attQ = await call("/attendance?q=Alumno", "admin");
+    assert.equal(attQ.status, 200);
+  });
+  await t.test("cuenta docente exige contraseña segura", async () => {
+    const t = await prisma.teacher.create({ data: { codigo: "PROF-099", nombres: "Sin", apellidos: "Cuenta", especialidad: "Arte", email: "sin-cuenta@example.test" } });
+    assert.equal((await call(`/teachers/${t.id}/account`, "admin", { password: "weak" })).status, 400);
+    assert.equal((await call(`/teachers/${t.id}/account`, "admin", { password: "Fuerte123" })).status, 201);
+  });
 });

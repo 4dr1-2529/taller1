@@ -12,6 +12,7 @@ import { fetchAllStudents } from "@/lib/fetch-all-students";
 import {
   validateCourseForm,
   validateMatriculaForm,
+  validatePassword,
   validateStudentForm,
   validateTeacherForm,
   validateTeacherProfileFields,
@@ -228,8 +229,9 @@ export function useAcademicData() {
   }
 
   async function createTeacherAccount(id: string, password: string) {
-    if (!api.hasToken || password.length < 8) {
-      toast.error("La contraseña debe tener al menos 8 caracteres");
+    const pwdError = validatePassword(password);
+    if (!api.hasToken || pwdError) {
+      toast.error(pwdError ?? "Inicie sesión para crear cuentas");
       return;
     }
     try {
@@ -252,6 +254,18 @@ export function useAcademicData() {
       toast.success("Curso actualizado");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al actualizar curso");
+    }
+  }
+
+  async function deactivateCourse(id: string, nombre: string) {
+    if (!api.hasToken) return;
+    if (!window.confirm(`Desactivar el curso "${nombre}"? Se conserva su historial académico.`)) return;
+    try {
+      await api.deleteCourse(id);
+      await loadFromApi();
+      toast.success("Curso desactivado");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudo desactivar el curso");
     }
   }
 
@@ -329,6 +343,7 @@ export function useAcademicData() {
     createTeacherAccount,
     addCourse,
     updateCourse,
+    deactivateCourse,
     addMatricula,
   };
 }
