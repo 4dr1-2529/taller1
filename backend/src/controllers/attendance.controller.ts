@@ -32,10 +32,11 @@ export async function listAttendance(req: Request, res: Response, next: NextFunc
     const fecha: Record<string, unknown> = { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") };
     const dia = String(fechaQuery ?? "").trim();
     if (/^2026-\d{2}-\d{2}$/.test(dia)) {
-      const base = new Date(`${dia}T00:00:00`);
+      // Día exacto normalizado a UTC: idéntica semántica que create/bulk (fecha YYYY-MM-DD).
+      const base = new Date(`${dia}T00:00:00.000Z`);
       if (!Number.isNaN(base.getTime())) {
         fecha.gte = base;
-        fecha.lt = new Date(base.getTime() + 86400000);
+        fecha.lt = new Date(base.getTime() + 86_400_000);
       }
     } else {
       if (from) {

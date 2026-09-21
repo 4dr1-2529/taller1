@@ -194,8 +194,18 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.equal((await call(`/recommendations/${otherRec.id}/apply`, "teacher", {}, "PATCH")).status, 403);
     assert.equal((await call(`/student-risks?studentId=${other.student.id}`, "teacher")).status, 403);
   });
-  await t.test("listados con búsqueda y paginación real", async () => {
-    const paged = await call("/students?page=1&limit=2", "admin");
+  await t.test("asistencia por fecha exacta ignora timezone", async () => {
+    for (const fecha of ["2026-09-19", "2026-09-20", "2026-09-21"]) {
+      const r = await call("/attendance", "teacher", { studentId: String(first.student.id), fecha, presente: true });
+      assert.equal(r.status, 201, await r.text());
+    }
+    const day = await call("/attendance?fecha=2026-09-20", "admin");
+    assert.equal(day.status, 200);
+    const fechas = ((await day.json()).data.items as { fecha: string }[]).map((a) => String(a.fecha).slice(0, 10));
+    assert.ok(fechas.length > 0);
+    for (const f of fechas) assert.equal(f, "2026-09-20");
+  });
+  await t.test("listados con búsqueda y paginación real", async () => {    const paged = await call("/students?page=1&limit=2", "admin");
     assert.equal(paged.status, 200);
     const body = (await paged.json()).data;
     assert.ok(body.items.length <= 2);
@@ -219,5 +229,14 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     const t = await prisma.teacher.create({ data: { codigo: "PROF-099", nombres: "Sin", apellidos: "Cuenta", especialidad: "Arte", email: "sin-cuenta@example.test" } });
     assert.equal((await call(`/teachers/${t.id}/account`, "admin", { password: "weak" })).status, 400);
     assert.equal((await call(`/teachers/${t.id}/account`, "admin", { password: "Fuerte123" })).status, 201);
+  });
+  await t.test("salonSummary es global aunque la página sea parcial", async () => {
+    const r = await call("/alerts?limit=1&page=1", "admin");
+    assert.equal(r.status, 200);
+    const body = (await r.json()).data;
+    assert.equal(body.items.length, 1);
+    assert.ok(body.total >= 2);
+    const sum = (body.salonSummary as { count: number }[]).reduce((a, s) => a + s.count, 0);
+    assert.ok(sum >= 2);
   });
 });

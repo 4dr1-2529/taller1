@@ -125,7 +125,7 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
         ? { nivelRiesgo: level as NivelRiesgo }
         : {}),
     };
-    const [items, total] = await Promise.all([
+    const [items, total, salonRows] = await Promise.all([
       prisma.alert.findMany({
         where: alertWhere,
       include: {
@@ -151,11 +151,17 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
       take: limit,
     }),
       prisma.alert.count({ where: alertWhere }),
+      prisma.alert.findMany({
+        where: alertWhere,
+        select: {
+          student: { select: { seccion: { select: { nombre: true, grado: { select: { numero: true } } } } } },
+        },
+      }),
     ]);
 
     const enriched = items.map((a) => enrichAlert(a));
     const summaryBySalon = new Map<string, number>();
-    for (const a of items) {
+    for (const a of salonRows) {
       const g = a.student.seccion?.grado?.numero;
       const sec = a.student.seccion?.nombre;
       if (g && sec) {

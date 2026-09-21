@@ -154,7 +154,7 @@ export function AlertsView({
       {useApi && salonSummary.length > 0 ? (
         <SummaryStatsRow
           stats={[
-            { label: "Alertas (filtro)", value: apiAlerts.length, tone: "brand" },
+            { label: "Alertas (filtro)", value: total, tone: "brand" },
             ...salonSummary.slice(0, 5).map((s) => ({
               label: s.salon,
               value: s.count,
@@ -171,7 +171,7 @@ export function AlertsView({
             className={viewSalon === "all" ? "btn-primary text-xs" : "btn-secondary text-xs"}
             onClick={() => setViewSalon("all")}
           >
-            Ver todas ({apiAlerts.length})
+            Ver todas ({total})
           </button>
           {salonSummary.map((s) => (
             <button
