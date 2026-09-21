@@ -79,3 +79,32 @@ Sin cambios de schema ni migraciones en toda la promoción. BD de QA limpia (0/0
 
 ## Data Seed
 Todavía NO ejecutado. Main queda como base oficial para iniciarlo.
+
+## Auditoría de infraestructura productiva - 2026-09-21
+- Git inspeccionado en `main`, limpio y sincronizado con `origin/main` en
+  `f8c9d0f08e25643a67d9071fc87119914ecc951b` antes de esta actualización documental.
+- Railway CLI confirma el proyecto `TALLER1`, entorno `production`, servicio `backend` en línea,
+  repositorio `4dr1-2529/taller1` y branch `main`. MySQL y su volumen existentes siguen en línea;
+  no se creó otra base ni se ejecutó seed, reset, `db push`, `DROP` o `TRUNCATE`.
+- Causa del incidente: el dominio Railway cambió. El dominio anterior
+  `taller1-production.up.railway.app` quedó huérfano y responde 404 `Application not found`;
+  el servicio no fue eliminado ni pausado.
+- URL Railway vigente: `https://backend-production-fcb1.up.railway.app`.
+- `GET /health`: HTTP 200, `{"ok":true,"service":"tesis-dashboard-api"}`.
+- `GET /api/v1/health`: HTTP 200, servicio `tesis-api`, versión `2.0.0`.
+- Health verificado el 2026-09-21 a las 19:54 UTC. CORS devuelve exactamente
+  `Access-Control-Allow-Origin: https://taller1-frontend.vercel.app`.
+- Deployment Railway vigente: `success`; una réplica activa, puerto inyectado `8080`, build y
+  `start:prod` según `railway.toml`. Las variables requeridas existen; sus valores no se expusieron.
+- Vercel: `/login` responde HTTP 200. El bundle productivo usa
+  `https://backend-production-fcb1.up.railway.app/api/v1`; no conserva llamadas al dominio viejo,
+  por lo que no se modificaron variables ni se forzó un redeploy.
+- Smoke público: frontend 200 y ambos health 200, sin CORS roto.
+- Smoke autenticado por roles: pendiente. `DEMO_PASSWORD` existe en Railway, pero no autentica las
+  cuentas director históricas contempladas por el proyecto. No se cambiaron contraseñas ni datos
+  para sortear este control. Director, profesor y estudiante requieren credenciales productivas
+  vigentes antes de validar sus vistas, consola y red de extremo a extremo.
+- ML no fue entrenado y no se generaron predicciones ficticias.
+
+## Veredicto de infraestructura - 2026-09-21
+`MAIN NO LISTO PARA DATA SEED V2 - pendiente: proporcionar o sincronizar de forma autorizada una cuenta productiva válida por rol y completar el smoke autenticado de Director, Profesor y Estudiante.`
