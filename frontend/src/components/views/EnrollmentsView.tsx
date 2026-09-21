@@ -70,6 +70,7 @@ export function EnrollmentsView({
       const [mat, an] = await Promise.all([
         api.getMatriculas({
           seccionId: filters.seccionId || undefined,
+          gradoId: filters.gradoId || undefined,
           q: query.trim() || undefined,
           estado: estado || undefined,
           page,
@@ -92,7 +93,7 @@ export function EnrollmentsView({
     } finally {
       setLoading(false);
     }
-  }, [filters.seccionId, form.anioLectivoId, setForm, query, estado, page]);
+  }, [filters.seccionId, filters.gradoId, form.anioLectivoId, setForm, query, estado, page]);
 
   useEffect(() => {
     void load();
@@ -113,7 +114,7 @@ export function EnrollmentsView({
     }
   }
 
-  const studentsForForm = filters.seccionId ? filteredStudents : students;
+  const studentsForForm = filters.seccionId || filters.gradoId ? filteredStudents : students;
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
@@ -156,11 +157,11 @@ export function EnrollmentsView({
 
       <AcademicFiltersBar
         filters={filters}
-        onChange={updateFilter}
-        onReset={resetFilters}
+        onChange={(k, v) => { updateFilter(k, v); setPage(1); }}
+        onReset={() => { resetFilters(); setPage(1); }}
         grados={grados}
         secciones={seccionOptions}
-        show={{ grado: true, seccion: true, search: true }}
+        show={{ grado: true, seccion: true }}
       />
 
       <div className="grid gap-6 xl:grid-cols-2">

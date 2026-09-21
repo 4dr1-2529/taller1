@@ -68,6 +68,7 @@ export async function listMatriculas(req: Request, res: Response, next: NextFunc
   try {
     const scope = await resolveStudentScope(req.user!);
     const seccionId = req.query.seccionId as string | undefined;
+    const gradoId = req.query.gradoId as string | undefined;
     const anioLectivoId = req.query.anioLectivoId as string | undefined;
     const estado = (req.query.estado as string | undefined) ?? "activa";
     const q = String(req.query.q ?? "").trim();
@@ -83,6 +84,7 @@ export async function listMatriculas(req: Request, res: Response, next: NextFunc
       ] }] : [])] },
       anioLectivo: { anio: 2026 },
       ...(seccionId ? { seccionId: toDbId(seccionId) } : {}),
+      ...(gradoId ? { seccion: { gradoId: toDbId(gradoId) } } : {}),
       ...(anioLectivoId ? { anioLectivoId: toDbId(anioLectivoId) } : {}),
       ...(estado ? { estado } : {}),
     };

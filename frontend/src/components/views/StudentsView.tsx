@@ -120,7 +120,7 @@ export function StudentsView({
     setEditForm({
       nombres: s.nombres,
       apellidos: s.apellidos,
-      dni: (s as { dni?: string }).dni ?? "",
+      dni: s.dni ?? "",
       correo: s.correo ?? "",
       telefono: s.telefono ?? "",
     });

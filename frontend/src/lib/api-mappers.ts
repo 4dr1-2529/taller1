@@ -41,6 +41,7 @@ type ApiStoredPrediction = {
 type ApiStudent = {
   id: string;
   codigo: string;
+  dni?: string | null;
   nombres: string;
   apellidos: string;
   nivel?: string;
@@ -130,6 +131,7 @@ export function mapStudentFromApi(row: ApiStudent): Student {
   return {
     id: row.id,
     codigo: row.codigo,
+    dni: row.dni ?? "",
     nombres: row.nombres,
     apellidos: row.apellidos,
     nivel: nivelLabel,

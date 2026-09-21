@@ -22,6 +22,7 @@ export type StudentAcademicMetrics = {
 export type Student = {
   id: string;
   codigo: string;
+  dni: string;
   nombres: string;
   apellidos: string;
   /** Etiqueta legible: Primaria · 3° A */

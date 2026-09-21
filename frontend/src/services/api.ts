@@ -509,6 +509,7 @@ class ApiClient {
 
   async getMatriculas(params?: {
     seccionId?: string;
+    gradoId?: string;
     page?: number;
     limit?: number;
     estado?: string;
@@ -516,6 +517,7 @@ class ApiClient {
   }) {
     const q = new URLSearchParams({ estado: params?.estado ?? "activa" });
     if (params?.seccionId) q.set("seccionId", params.seccionId);
+    if (params?.gradoId) q.set("gradoId", params.gradoId);
     if (params?.page) q.set("page", String(params.page));
     if (params?.limit) q.set("limit", String(params.limit));
     if (params?.q) q.set("q", params.q);
@@ -685,6 +687,9 @@ class ApiClient {
     status?: string;
     riskLevel?: string;
     all?: boolean;
+    search?: string;
+    page?: number;
+    limit?: number;
   }) {
     const q = new URLSearchParams();
     if (params?.seccionId) q.set("seccionId", params.seccionId);
@@ -693,10 +698,15 @@ class ApiClient {
     if (params?.status) q.set("status", params.status);
     if (params?.riskLevel) q.set("riskLevel", params.riskLevel);
     if (params?.all) q.set("all", "true");
+    if (params?.search) q.set("search", params.search);
+    if (params?.page) q.set("page", String(params.page));
+    if (params?.limit) q.set("limit", String(params.limit));
     const query = q.toString() ? `?${q}` : "";
     return this.request<{
       items: Alert[];
       total?: number;
+      page?: number;
+      pages?: number;
       salonSummary?: { salon: string; count: number }[];
     }>(`/alerts${query}`);
   }

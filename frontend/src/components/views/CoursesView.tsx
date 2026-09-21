@@ -140,7 +140,7 @@ export function CoursesView({
             variant="form"
             icon={Plus}
             title="Nuevo curso"
-            description="Cada curso pertenece a un grado y una sección (A, B o C). No se comparte entre salones del mismo grado."
+            description="Cada curso pertenece a un grado y a una sección configurada para el periodo académico."
           >
             <form className="form-grid" onSubmit={handleFormSubmit}>
               <FormField label="Código" hint="Letras, números, - y _" error={errors.codigo}>
@@ -216,7 +216,7 @@ export function CoursesView({
                 </select>
               </FormField>
               <p className="form-grid-full text-xs text-[var(--text-muted)]">
-                El código se guardará con sufijo del salón (ej. MAT-4A) para no repetirlo en 4° B o 4° C.
+                El código se genera a partir del grado y la sección configurados, sin repetirse entre salones.
               </p>
               <button type="submit" className="btn-primary form-grid-full">
                 <BookOpen className="h-4 w-4" />

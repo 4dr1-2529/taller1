@@ -123,7 +123,7 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
         <div>
           <h2 className="text-xl font-bold">Asignaciones docentes</h2>
           <p className="text-sm text-[var(--text-secondary)]">
-            1°-2°: un tutor exclusivo por salón (todos los cursos del aula) · 3°-6°: polidocencia (2 cursos, máx. 6–8 salones)
+            Asignación docente por curso, grado, sección y año lectivo, según la estructura vigente.
           </p>
         </div>
       </div>

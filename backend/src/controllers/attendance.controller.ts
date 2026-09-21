@@ -10,7 +10,7 @@ import { resolveStudentScope, assertStudentInScope } from "../utils/student-scop
 
 export async function listAttendance(req: Request, res: Response, next: NextFunction) {
   try {
-    const { studentId, from, to, seccionId, gradoId, q } = req.query;
+    const { studentId, from, to, fecha: fechaQuery, seccionId, gradoId, q } = req.query;
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(500, Math.max(1, Number(req.query.limit) || 100));
     const skip = (page - 1) * limit;
@@ -30,11 +30,20 @@ export async function listAttendance(req: Request, res: Response, next: NextFunc
     const where: Record<string, unknown> = { student: studentWhere };
     if (studentId) where.studentId = toDbId(studentId as string);
     const fecha: Record<string, unknown> = { gte: new Date("2026-01-01"), lt: new Date("2027-01-01") };
-    if (from) {
-      const gte = new Date(from as string);
-      if (gte > (fecha.gte as Date)) fecha.gte = gte;
+    const dia = String(fechaQuery ?? "").trim();
+    if (/^2026-\d{2}-\d{2}$/.test(dia)) {
+      const base = new Date(`${dia}T00:00:00`);
+      if (!Number.isNaN(base.getTime())) {
+        fecha.gte = base;
+        fecha.lt = new Date(base.getTime() + 86400000);
+      }
+    } else {
+      if (from) {
+        const gte = new Date(from as string);
+        if (gte > (fecha.gte as Date)) fecha.gte = gte;
+      }
+      if (to) fecha.lte = new Date(to as string);
     }
-    if (to) fecha.lte = new Date(to as string);
     where.fecha = fecha;
     const [items, total] = await Promise.all([
       prisma.attendance.findMany({

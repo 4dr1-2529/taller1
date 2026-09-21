@@ -1,6 +1,6 @@
 import { sendCreated, sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
-import type { NivelRiesgo } from "@prisma/client";
+import type { NivelRiesgo, Prisma } from "@prisma/client";
 import { prisma } from "../utils/prisma.js";
 import { alertStatusSchema } from "../validators/schemas.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
@@ -112,17 +112,22 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
       ];
     }
 
-    const items = await prisma.alert.findMany({
-      where: {
-        student: studentWhere,
-        ...(all ? {} : { estado: { in: ["nueva", "en_seguimiento"] } }),
-        ...(status && ["nueva", "en_seguimiento", "resuelta"].includes(status)
-          ? { estado: status as "nueva" | "en_seguimiento" | "resuelta" }
-          : {}),
-        ...(level && ["bajo", "medio", "alto"].includes(level)
-          ? { nivelRiesgo: level as NivelRiesgo }
-          : {}),
-      },
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 100));
+    const skip = (page - 1) * limit;
+    const alertWhere: Prisma.AlertWhereInput = {
+      student: studentWhere,
+      ...(all ? {} : { estado: { in: ["nueva", "en_seguimiento"] } }),
+      ...(status && ["nueva", "en_seguimiento", "resuelta"].includes(status)
+        ? { estado: status as "nueva" | "en_seguimiento" | "resuelta" }
+        : {}),
+      ...(level && ["bajo", "medio", "alto"].includes(level)
+        ? { nivelRiesgo: level as NivelRiesgo }
+        : {}),
+    };
+    const [items, total] = await Promise.all([
+      prisma.alert.findMany({
+        where: alertWhere,
       include: {
         factores: true,
         student: {
@@ -142,8 +147,11 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
         },
       },
       orderBy: [{ nivelRiesgo: "desc" }, { createdAt: "desc" }],
-      take: 100,
-    });
+      skip,
+      take: limit,
+    }),
+      prisma.alert.count({ where: alertWhere }),
+    ]);
 
     const enriched = items.map((a) => enrichAlert(a));
     const summaryBySalon = new Map<string, number>();
@@ -159,7 +167,7 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
       .map(([salon, count]) => ({ salon, count }))
       .sort((a, b) => a.salon.localeCompare(b.salon, "es"));
 
-    sendSuccess(res, { items: enriched, total: enriched.length, salonSummary });
+    sendSuccess(res, { items: enriched, total, page, pages: Math.ceil(total / limit) || 1, salonSummary });
   } catch (e) {
     next(e);
   }

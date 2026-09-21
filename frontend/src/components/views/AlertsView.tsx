@@ -39,6 +39,9 @@ export function AlertsView({
   const [salonSummary, setSalonSummary] = useState<{ salon: string; count: number }[]>([]);
   const [viewSalon, setViewSalon] = useState<string | "all">("all");
   const [includeResolved, setIncludeResolved] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const ALERTS_PAGE_SIZE = 20;
 
   const { filters, updateFilter, resetFilters, grados, seccionOptions } = useAcademicFilters(
     students,
@@ -56,6 +59,9 @@ export function AlertsView({
         status: filters.alertStatus || undefined,
         riskLevel: filters.riskLevel || undefined,
         all: includeResolved,
+        search: filters.search.trim() || undefined,
+        page,
+        limit: ALERTS_PAGE_SIZE,
       };
       const res = isDocente
         ? await api.getProfesorAlertas(alertParams)
@@ -65,9 +71,11 @@ export function AlertsView({
           });
       setApiAlerts(res.items);
       setSalonSummary(res.salonSummary ?? []);
+      setTotal(res.total ?? res.items.length);
     } catch {
       setApiAlerts([]);
       setSalonSummary([]);
+      setTotal(0);
     }
   }, [
     useApi,
@@ -77,7 +85,9 @@ export function AlertsView({
     isDocente,
     filters.alertStatus,
     filters.riskLevel,
+    filters.search,
     includeResolved,
+    page,
   ]);
 
   useEffect(() => {
@@ -92,18 +102,14 @@ export function AlertsView({
 
   const displayedAlerts = useMemo(() => {
     if (!useApi) return [];
-    const q = filters.search.trim().toLowerCase();
-    const byRoom = viewSalon === "all" ? apiAlerts : apiAlerts.filter((a) => {
+    if (viewSalon === "all") return apiAlerts;
+    return apiAlerts.filter((a) => {
       const st = students.find((s) => s.id === a.student.id);
       if (!st?.seccionId) return false;
       const sec = secciones.find((x) => x.id === st.seccionId);
       return sec ? salonShortFromSeccion(sec) === viewSalon : false;
     });
-    if (!q) return byRoom;
-    return byRoom.filter((a) =>
-      `${a.student.nombres} ${a.student.apellidos} ${a.student.codigo ?? ""}`.toLowerCase().includes(q),
-    );
-  }, [useApi, apiAlerts, viewSalon, students, secciones, filters.search]);
+  }, [useApi, apiAlerts, viewSalon, students, secciones]);
 
   async function updateStatus(id: string, status: "en_seguimiento" | "resuelta") {
     try {
@@ -119,8 +125,8 @@ export function AlertsView({
     <div className="space-y-6">
       <AcademicFiltersBar
         filters={filters}
-        onChange={updateFilter}
-        onReset={resetFilters}
+        onChange={(k, v) => { updateFilter(k, v); setPage(1); }}
+        onReset={() => { resetFilters(); setPage(1); setViewSalon("all"); }}
         grados={grados}
         secciones={seccionOptions}
         teachers={teachersForSelect(teachers)}
@@ -309,6 +315,19 @@ export function AlertsView({
             })
           )}
         </ul>
+        {useApi && total > ALERTS_PAGE_SIZE ? (
+          <div className="flex items-center justify-between gap-2 px-1 pt-4 text-xs text-[var(--text-muted)]">
+            <span>{total} alerta(s)</span>
+            <span className="flex gap-2">
+              <button type="button" className="btn-ghost py-1.5 disabled:opacity-40" disabled={page <= 1} onClick={() => setPage((v) => Math.max(1, v - 1))}>
+                Anterior
+              </button>
+              <button type="button" className="btn-ghost py-1.5 disabled:opacity-40" disabled={page >= Math.ceil(total / ALERTS_PAGE_SIZE)} onClick={() => setPage((v) => v + 1)}>
+                Siguiente
+              </button>
+            </span>
+          </div>
+        ) : null}
       </PageSection>
     </div>
   );
