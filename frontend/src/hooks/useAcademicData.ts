@@ -254,7 +254,11 @@ export function useAcademicData() {
   ) {
     if (!api.hasToken) return;
     try {
-      await api.updateCourse(id, payload);
+      if (payload.profesorId && !payload.seccionId) {
+        await api.reassignCourse(id, payload.profesorId);
+      } else {
+        await api.updateCourse(id, payload);
+      }
       await loadFromApi();
       toast.success("Curso actualizado");
     } catch (e) {

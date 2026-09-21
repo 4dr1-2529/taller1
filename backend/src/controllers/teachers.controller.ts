@@ -147,6 +147,20 @@ export async function updateTeacher(req: Request, res: Response, next: NextFunct
     const id = paramBigIntId(req);
 
     const teacher = await prisma.$transaction(async (tx) => {
+      if (fields.activo === false) {
+        const current = await tx.teacher.findUniqueOrThrow({ where: { id } });
+        if (current.activo) {
+          const activeAssignments = await tx.teacherCourseAssignment.count({
+            where: { profesorId: id, activo: true },
+          });
+          if (activeAssignments > 0) {
+            throw new AppError(
+              409,
+              "No se puede desactivar: el profesor tiene asignaciones activas. Desactive las asignaciones primero.",
+            );
+          }
+        }
+      }
       const profile = await tx.teacher.update({
         where: { id },
         data: {

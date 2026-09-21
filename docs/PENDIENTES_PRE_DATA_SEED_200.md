@@ -13,6 +13,9 @@ más rama `audit/full-functional-review` (solo documentación hasta ahora).
 - [x] Formularios, validaciones, anti-doble-submit, paginación, búsquedas reales
 - [x] Textos legacy eliminados de UI activa; agregados sin ficción
 - [x] Suites verdes: backend 27+32, frontend 10/10, ML 7/7, integración 20/20, builds
+- [x] FASE 4 reglas de negocio: bypass PUT docente cerrado, reasignación única coherente,
+  traslado documentado como externo, fórmulas promedio/asistencia/LMS y dedup de alertas
+  (estudiante+nivel+abierta) verificadas contra código + tests
 
 ## Abierto (no bloqueante para el seed salvo 1)
 1. Barrido visual interactivo por rol × viewport — requiere navegador con sesión (este entorno

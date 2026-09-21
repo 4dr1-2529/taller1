@@ -941,3 +941,177 @@ export async function countActiveAssignmentsForTeacher(profesorId: bigint): Prom
 }
 
 
+
+/** Reasignación docente — único flujo autorizado para cambiar el profesor de una oferta.
+
+ * Actualiza la fila única de asignación del mismo curso/sección/año
+
+ * (`uk_asig_cur_sec_anio`: una fila por triple, sin duplicados históricos), luego sincroniza
+
+ * `Course.profesorId` vía `syncCourseOffering`. Preserva Enrollment, notas históricas y auditoría
+
+ * (REASSIGN con docente anterior y nuevo en el detalle). Respeta tutoría 1°–2° y
+
+ * límites de polidocencia 3°–6°.
+
+ */
+
+export async function reassignCourseOffering(offeringId: bigint, newProfesorId: bigint) {
+
+  return prisma.$transaction(async (tx) => {
+
+    const offering = await tx.course.findUniqueOrThrow({
+
+      where: { id: offeringId },
+
+      include: { seccion: { include: { grado: true } } },
+
+    });
+
+    if (!offering.activo) throw new AppError(404, "Curso no encontrado o inactivo");
+
+    const year = await tx.anioLectivo.findUniqueOrThrow({ where: { id: offering.anioLectivoId } });
+
+    if (year.anio !== 2026 || !year.activo) throw new AppError(400, "Solo reasignación en año activo 2026");
+
+    await assertTeacherActive(newProfesorId, tx);
+
+    const seccion = await tx.seccion.findUniqueOrThrow({
+
+      where: { id: offering.seccionId },
+
+      include: { grado: { include: { nivel: true } } },
+
+    });
+
+    const tutorGrade = isTutorGrade(seccion.grado.numero);
+
+    await assertPolidocenciaTeacherLimits(
+
+      newProfesorId,
+
+      offering.cursoId,
+
+      offering.seccionId,
+
+      offering.anioLectivoId,
+
+      seccion.grado.numero,
+
+      tx,
+
+    );
+
+    const previous = await tx.teacherCourseAssignment.findMany({
+
+      where: {
+
+        cursoId: offering.cursoId,
+
+        seccionId: offering.seccionId,
+
+        anioLectivoId: offering.anioLectivoId,
+
+      },
+
+    });
+
+    const previousTeacherIds = [...new Set(previous.map((r) => r.profesorId).filter((id) => id !== newProfesorId))];
+
+    for (const row of previous) {
+
+      if (row.profesorId !== newProfesorId || !row.activo) {
+
+        await tx.teacherCourseAssignment.update({
+
+          where: { id: row.id },
+
+          data: {
+
+            profesorId: newProfesorId,
+
+            gradoId: seccion.gradoId,
+
+            esTutor: tutorGrade,
+
+            activo: true,
+
+          },
+
+        });
+
+      }
+
+    }
+
+    if (tutorGrade) {
+
+      await tx.tutorSeccion.upsert({
+
+        where: { seccionId_anioLectivoId: { seccionId: offering.seccionId, anioLectivoId: offering.anioLectivoId } },
+
+        create: { seccionId: offering.seccionId, profesorId: newProfesorId, anioLectivoId: offering.anioLectivoId, activo: true },
+
+        update: { profesorId: newProfesorId, activo: true },
+
+      });
+
+    }
+
+    let row = await tx.teacherCourseAssignment.findUnique({
+
+      where: {
+
+        profesorId_cursoId_seccionId_anioLectivoId: {
+
+          profesorId: newProfesorId,
+
+          cursoId: offering.cursoId,
+
+          seccionId: offering.seccionId,
+
+          anioLectivoId: offering.anioLectivoId,
+
+        },
+
+      },
+
+    });
+
+    if (!row) {
+
+      row = await upsertTeacherCourseAssignment(tx, {
+
+        profesorId: newProfesorId,
+
+        cursoId: offering.cursoId,
+
+        gradoId: seccion.gradoId,
+
+        seccionId: offering.seccionId,
+
+        anioLectivoId: offering.anioLectivoId,
+
+        esTutor: tutorGrade,
+
+      });
+
+    }
+
+    await syncCourseOffering(row, seccion, tx);
+
+    const full = await tx.teacherCourseAssignment.findUniqueOrThrow({
+
+      where: { id: row.id },
+
+      include: assignmentInclude,
+
+    });
+
+    return { item: mapAssignmentRow(full), previousTeacherIds: [...new Set(previous.map((r) => r.profesorId))] };
+
+  });
+
+}
+
+

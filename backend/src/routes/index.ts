@@ -21,7 +21,7 @@ import {
   postTutorAssignment,
   patchDeactivateAssignment,
 } from "../controllers/teacher-assignments.controller.js";
-import { listCourses, createCourse, updateCourse, deleteCourse } from "../controllers/courses.controller.js";
+import { listCourses, createCourse, updateCourse, deleteCourse, reassignCourse } from "../controllers/courses.controller.js";
 import { dashboardStats, predict } from "../controllers/predict.controller.js";
 import { listPredictions, getPrediction } from "../controllers/predictions.controller.js";
 import { listAlerts, patchAlertStatus } from "../controllers/alerts.controller.js";
@@ -150,6 +150,7 @@ router.get("/estudiante/mensajes", authenticate, authorize("estudiante"), estudi
 router.get("/courses", authenticate, listCourses);
 router.post("/courses", authenticate, authorize("admin"), createCourse);
 router.put("/courses/:id", authenticate, authorize("admin"), updateCourse);
+router.post("/courses/:id/reassign", authenticate, authorize("admin"), reassignCourse);
 router.delete("/courses/:id", authenticate, authorize("admin"), deleteCourse);
 
 router.get("/matriculas", authenticate, listMatriculas);

@@ -507,6 +507,10 @@ class ApiClient {
     return this.request<{ ok: boolean }>(`/courses/${id}`, { method: "DELETE" });
   }
 
+  async reassignCourse(id: string, profesorId: string) {
+    return this.request<{ item: unknown }>(`/courses/${id}/reassign`, { method: "POST", body: JSON.stringify({ profesorId }) });
+  }
+
   async getMatriculas(params?: {
     seccionId?: string;
     gradoId?: string;

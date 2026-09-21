@@ -121,12 +121,28 @@ export async function createCourse(req: Request, res: Response, next: NextFuncti
 export async function updateCourse(req: Request, res: Response, next: NextFunction) {
   try {
     const { profesorId, seccionId, activo } = req.body;
-    if (seccionId) await requireActiveSeccion(seccionId);
+    if (profesorId != null) {
+      throw new AppError(
+        400,
+        "Reasignación de profesor no permitida por PUT. Use POST /courses/:id/reassign.",
+      );
+    }
+    if (seccionId != null) {
+      throw new AppError(400, "Cambio de sección no permitido: crea inconsistencias con Enrollment y asignaciones.");
+    }
+    if (activo === false) {
+      const id = paramBigIntId(req);
+      const gradeCount = await prisma.grade.count({ where: { cursoOfertaId: id } });
+      if (gradeCount > 0) {
+        throw new AppError(
+          409,
+          "No se puede desactivar: el curso tiene notas registradas. Desactive la asignación docente.",
+        );
+      }
+    }
     const course = await prisma.course.update({
       where: { id: paramBigIntId(req) },
       data: {
-        profesorId: profesorId != null ? toDbId(profesorId) : undefined,
-        seccionId: seccionId != null ? toDbId(seccionId) : undefined,
         activo,
       },
       include: courseListInclude,
@@ -164,6 +180,26 @@ export async function deleteCourse(req: Request, res: Response, next: NextFuncti
       usuarioId: req.user?.sub,
     });
     sendSuccess(res, {}, "Curso desactivado");
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function reassignCourse(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { profesorId } = req.body as { profesorId?: string };
+    if (!profesorId) throw new AppError(400, "profesorId requerido");
+    const { reassignCourseOffering } = await import("../services/teacher-assignment.service.js");
+    const { item, previousTeacherIds } = await reassignCourseOffering(paramBigIntId(req), toDbId(profesorId));
+    await logAudit({
+      entidad: "Course",
+      entidadId: paramBigIntId(req),
+      accion: "REASSIGN",
+      usuarioId: req.user?.sub,
+      teacherId: toDbId(profesorId),
+      detalle: `Reasignado de ${previousTeacherIds.map(String).join(",") || "?"} a profesor ${profesorId}`,
+    });
+    sendSuccess(res, { item });
   } catch (e) {
     next(e);
   }
