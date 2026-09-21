@@ -108,3 +108,34 @@ Todavía NO ejecutado. Main queda como base oficial para iniciarlo.
 
 ## Veredicto de infraestructura - 2026-09-21
 `MAIN NO LISTO PARA DATA SEED V2 - pendiente: proporcionar o sincronizar de forma autorizada una cuenta productiva válida por rol y completar el smoke autenticado de Director, Profesor y Estudiante.`
+
+## Certificación final del smoke productivo - 2026-09-21
+- Base certificada antes de esta actualización documental: `df87b213db4600d06eddb4e16ca0f0b5f2fef9f6`;
+  CI `35649060086` en `completed / success`.
+- Se inspeccionó únicamente metadata no sensible. La población productiva actual está rotulada de
+  forma inequívoca como demo: correos `.demo`, códigos académicos `DEMO-*` y creación en bloque.
+- Se seleccionaron exactamente tres cuentas QA activas: usuario `1` (Director), usuario `2`
+  (Profesor con curso, sección y estudiantes dentro de scope) y usuario `5` (Estudiante con
+  matrícula e inscripción). No se modificaron emails, roles ni relaciones académicas.
+- Se creó `SMOKE_PASSWORD` segura en Railway y se sincronizaron exclusivamente esos tres IDs con
+  bcrypt de 12 rondas. La contraseña, hashes, tokens y secretos no se imprimieron ni documentaron.
+- Railway deployment `3b847ac4-a673-463a-8f6f-583dff55d4a0`: `SUCCESS`.
+- Backend vigente: `https://backend-production-fcb1.up.railway.app`; health HTTP 200.
+- Vercel vigente: `https://taller1-frontend.vercel.app`; `/login` y los tres paneles renderizan sin
+  overlay de error y consumen únicamente el dominio Railway vigente.
+- Director: login, dashboard, estudiantes, profesores, matrícula 2026, cursos, grados/secciones,
+  alertas, mensajes y configuración verificados.
+- Profesor: login, dashboard, cursos y secciones asignadas, estudiantes de scope, notas,
+  asistencia, materiales, actividades, LMS, alertas y mensajes verificados. El acceso global y a
+  un estudiante fuera de scope fue rechazado con HTTP 403.
+- Estudiante: login, dashboard propio, notas, asistencia, materiales, actividades, actividad LMS,
+  mensajes y avisos verificados. El acceso a otro estudiante fue rechazado con HTTP 403.
+- Consola/red para los tres roles: 0 `pageerror`, 0 errores JS, 0 HTTP 500, 0 errores CORS,
+  0 llamadas al dominio Railway anterior, localhost o endpoints legacy, 0 `undefined`, 0 `NaN`.
+- Los scripts temporales fueron eliminados. No quedaron contraseñas, hashes, tokens, dumps ni
+  capturas sensibles en el repositorio.
+- No se ejecutó Data Seed, no se entrenó ML y no hubo cambios de schema, migraciones, reset,
+  `DROP`, `TRUNCATE` ni creación de datos académicos.
+
+## Veredicto final pre-Data-Seed - 2026-09-21
+`MAIN COMPLETO, VALIDADO Y LISTO PARA DATA SEED V2`
