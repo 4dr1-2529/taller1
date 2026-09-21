@@ -134,6 +134,8 @@ export function mapStudentFromApi(row: ApiStudent): Student {
     dni: row.dni ?? "",
     nombres: row.nombres,
     apellidos: row.apellidos,
+    hasGrades: ind ? ind.promedio_general != null : true,
+    hasAttendance: ind ? ind.asistencia_general != null : true,
     nivel: nivelLabel,
     seccionId: row.seccionId ?? row.seccion?.id,
     correo: row.correo ?? "",

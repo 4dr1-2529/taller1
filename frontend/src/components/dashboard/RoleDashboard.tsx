@@ -59,7 +59,7 @@ export function RoleDashboard({ role, students, courses, matriculaStats = null, 
           <KpiCard label="Total profesores" value={kpis?.totalTeachers ?? "—"} icon={GraduationCap} index={1} />
           <KpiCard label="Total salones" value={kpis?.totalSalones ?? "—"} icon={BookOpen} index={2} />
           <KpiCard label="Alertas activas" value={kpis?.openAlerts ?? 0} icon={AlertTriangle} index={3} />
-          <KpiCard label="Promedio institucional" value={kpis?.avgGrade ?? averageGrade(students) ?? "—"} suffix="/20" icon={BookOpen} />
+          <KpiCard label="Promedio institucional" value={kpis?.avgGrade ?? averageGrade(students) ?? "—"} suffix={(kpis?.avgGrade ?? averageGrade(students)) != null ? "/20" : undefined} icon={BookOpen} />
         </div></section>
         <BentoDashboard role={role} students={students} courses={courses} matriculaStats={matriculaStats} useApi={useApi} />
       </div>

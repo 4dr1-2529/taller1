@@ -128,16 +128,16 @@ export function useAcademicData() {
     }
   }, [isAuthenticated, authLoading, role, loadFromApi]);
 
-  async function addStudent(form: NewStudentForm): Promise<void> {
+  async function addStudent(form: NewStudentForm): Promise<boolean> {
     if (!api.hasToken) {
       toast.error("Inicie sesión para registrar estudiantes");
-      return;
+      return false;
     }
     const fieldErrors = validateStudentForm(form);
     const validationMsg = firstError(fieldErrors);
     if (validationMsg) {
       toast.error(validationMsg);
-      return;
+      return false;
     }
     try {
       const res = await api.createStudent({
@@ -151,21 +151,23 @@ export function useAcademicData() {
       const created = mapStudentFromApi(res.student as Parameters<typeof mapStudentFromApi>[0]);
       setStudents((prev) => [...prev, created]);
       toast.success(`Estudiante registrado. Cuenta: ${res.credentials.email}. Contraseña temporal: ${res.credentials.temporaryPassword}`, { duration: 30000 });
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al guardar");
+      return false;
     }
   }
 
-  async function addTeacher(form: NewTeacherForm): Promise<void> {
+  async function addTeacher(form: NewTeacherForm): Promise<boolean> {
     if (!api.hasToken) {
       toast.error("Inicie sesión para registrar docentes");
-      return;
+      return false;
     }
     const fieldErrors = validateTeacherForm(form);
     const validationMsg = firstError(fieldErrors);
     if (validationMsg) {
       toast.error(validationMsg);
-      return;
+      return false;
     }
     try {
       await api.createTeacher({
@@ -180,8 +182,10 @@ export function useAcademicData() {
       });
       await loadFromApi();
       toast.success("Docente registrado. Asigne cursos en Asignaciones docentes");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al guardar docente");
+      return false;
     }
   }
 
@@ -275,10 +279,10 @@ export function useAcademicData() {
     profesorId: string;
     seccionId: string;
     gradoId?: string;
-  }): Promise<void> {
+  }): Promise<boolean> {
     if (!api.hasToken) {
       toast.error("Inicie sesión para crear cursos");
-      return;
+      return false;
     }
     const fieldErrors = validateCourseForm({
       codigo: payload.codigo,
@@ -290,28 +294,30 @@ export function useAcademicData() {
     const validationMsg = firstError(fieldErrors);
     if (validationMsg) {
       toast.error(validationMsg);
-      return;
+      return false;
     }
     try {
       const res = await api.createCourse({ ...payload, periodo: "2026" });
       const row = mapCourseFromApi(res.course as Parameters<typeof mapCourseFromApi>[0]);
       setCourses((prev) => [...prev, row]);
       toast.success("Curso creado");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al crear curso");
+      return false;
     }
   }
 
-  async function addMatricula(form: NewMatriculaForm): Promise<void> {
+  async function addMatricula(form: NewMatriculaForm): Promise<boolean> {
     const fieldErrors = validateMatriculaForm(form);
     const validationMsg = firstError(fieldErrors);
     if (validationMsg) {
       toast.error(validationMsg);
-      return;
+      return false;
     }
     if (!api.hasToken) {
       toast.error("Inicie sesión para matricular");
-      return;
+      return false;
     }
     try {
       await api.createMatricula({
@@ -323,8 +329,10 @@ export function useAcademicData() {
       setMatriculaStats(stats);
       await loadFromApi();
       toast.success("Matrícula institucional registrada");
+      return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Error al matricular");
+      return false;
     }
   }
 

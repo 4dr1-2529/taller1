@@ -158,9 +158,11 @@ def predict(data: PredictInput) -> PredictOutput:
                 prediction_source="ml_model",
             )
         )
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Prediction error: {e}")
-        return heuristic_predict(payload)
+        raise HTTPException(status_code=503, detail="Error interno de predicción. No se genera riesgo ficticio.")
 
 
 @app.get("/metrics")

@@ -38,6 +38,15 @@ class TestPredict(unittest.TestCase):
         with patch('app.main.model', None), self.assertRaises(HTTPException) as caught:
             predict(PredictInput(**PAYLOAD))
         self.assertEqual(caught.exception.status_code, 503)
+    def test_inference_error_returns_503_without_heuristic(self):
+        class BrokenModel:
+            def predict(self, features): raise RuntimeError("fallo interno")
+            def predict_proba(self, features): raise RuntimeError("fallo interno")
+        with patch('app.main.model', BrokenModel()):
+            with self.assertRaises(HTTPException) as caught:
+                predict(PredictInput(**PAYLOAD))
+        self.assertEqual(caught.exception.status_code, 503)
+        self.assertNotIn("heuristic", str(caught.exception.detail).lower())
     def test_class_mapping(self):
         class Model:
             def predict(self, features): return np.array([2])

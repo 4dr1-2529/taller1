@@ -104,9 +104,9 @@ export function ProfessorStudentsView({ courses, secciones }: ProfessorStudentsV
                   </td>
                   <td>{salónLabel(grado, sec)}</td>
                   <td>{pf.applied.courseId ? courseName(pf.applied.courseId) : "Todos"}</td>
-                  <td>{s.metrics.promedioGeneral.toFixed(1)}</td>
+                  <td>{s.hasGrades ? s.metrics.promedioGeneral.toFixed(1) : "—"}</td>
                   <td>
-                    <MiniProgressBar value={s.metrics.asistenciaGeneral} />
+                    {s.hasAttendance ? <MiniProgressBar value={s.metrics.asistenciaGeneral} /> : <span>—</span>}
                   </td>
                   <td>
                     {pred ? <RiskBadge level={pred.prediction.level} score={pred.prediction.score} /> : <span>Sin predicción</span>}

@@ -31,6 +31,9 @@ export type Student = {
   correo: string;
   telefono: string;
   estado: StudentStatus;
+  /** false = sin registros académicos (mostrar "—", no 0) */
+  hasGrades: boolean;
+  hasAttendance: boolean;
   metrics: StudentAcademicMetrics;
   prediction?: { score: number; level: RiskLevel; probability?: number };
   /** Última predicción persistida en BD (prioridad sobre cálculo local) */

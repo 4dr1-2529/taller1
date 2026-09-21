@@ -240,34 +240,32 @@ export default function Home() {
   async function handleAddStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!newStudent.nombres || !newStudent.apellidos || !newStudent.seccionId) return;
-    await addStudent(newStudent);
-    setNewStudent(defaultStudentForm);
+    if (await addStudent(newStudent)) setNewStudent(defaultStudentForm);
   }
 
   async function handleAddMatricula(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    await addMatricula(matriculaForm);
-    setMatriculaForm({ ...matriculaForm, estudianteId: "" });
+    if (await addMatricula(matriculaForm)) setMatriculaForm({ ...matriculaForm, estudianteId: "" });
   }
 
   async function handleAddTeacher(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    await addTeacher(newTeacher);
-    setNewTeacher(defaultTeacherForm);
+    if (await addTeacher(newTeacher)) setNewTeacher(defaultTeacherForm);
   }
 
   async function handleAddCourse(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const profesorId = user?.teacherId ?? newCourse.profesorId;
     if (!profesorId || !newCourse.seccionId) return;
-    await addCourse({
+    if (await addCourse({
       codigo: newCourse.codigo,
       nombre: newCourse.nombre,
       profesorId,
       seccionId: newCourse.seccionId,
       gradoId: newCourse.gradoId,
-    });
-    setNewCourse({ ...defaultCourseForm, profesorId: user?.teacherId ?? "" });
+    })) {
+      setNewCourse({ ...defaultCourseForm, profesorId: user?.teacherId ?? "" });
+    }
   }
 
   function renderSection() {

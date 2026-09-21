@@ -12,8 +12,8 @@ export type EstudianteProfile = {
   seccion: string | null;
   salon: string | null;
   periodoAcademico: string | null;
-  promedioGeneral: number;
-  asistenciaGeneral: number;
+  promedioGeneral: number | null;
+  asistenciaGeneral: number | null;
 };
 
 export type EstudianteDashboardData = {
@@ -21,8 +21,8 @@ export type EstudianteDashboardData = {
   kpis: {
     grado: string;
     salon: string;
-    promedioGeneral: number;
-    asistenciaGeneral: number;
+    promedioGeneral: number | null;
+    asistenciaGeneral: number | null;
     nivelRiesgo: string;
     alertasActivas: number;
   };
@@ -57,7 +57,7 @@ export type EstudianteNotasData = {
     estado: string;
   }[];
   resumen: {
-    promedioGeneral: number;
+    promedioGeneral: number | null;
     cursosAprobados: number;
     cursosEnRiesgo: number;
     cursosDesaprobados: number;
@@ -104,7 +104,7 @@ export const estudianteService = {
         tardanzas: number;
         faltas: number;
         justificadas: number;
-        porcentaje: number;
+        porcentaje: number | null;
         total: number;
       };
     }>(`/estudiante/asistencia${qs(params ?? {})}`),

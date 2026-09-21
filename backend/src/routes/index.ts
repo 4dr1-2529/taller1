@@ -100,7 +100,7 @@ router.get("/academic/anios-lectivos", authenticate, listAniosLectivos);
 router.post("/academic/secciones", authenticate, authorize("admin"), createSeccion);
 router.get("/academic/cursos-catalogo", authenticate, listCursosCatalogo);
 
-router.get("/students", authenticate, listStudents);
+router.get("/students", authenticate, authorize("admin"), listStudents);
 router.post("/students", authenticate, authorize("admin"), createStudent);
 router.get("/students/:id", authenticate, getStudent);
 router.put("/students/:id", authenticate, authorize("admin"), updateStudent);
@@ -214,7 +214,7 @@ router.post("/reports", authenticate, authorize("admin", "docente"), createRepor
 router.delete("/reports/:id", authenticate, authorize("admin"), deleteReport);
 
 router.get("/dashboard-snapshot/:periodo", authenticate, authorize("admin", "docente"), getDashboardSnapshot);
-router.post("/dashboard-snapshot", authenticate, authorize("admin", "docente"), saveDashboardSnapshot);
+router.post("/dashboard-snapshot", authenticate, authorize("admin"), saveDashboardSnapshot);
 
 router.get("/student-risks", authenticate, listStudentRisks);
 

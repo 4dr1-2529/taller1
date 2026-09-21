@@ -78,7 +78,7 @@ export function StudentGradesView() {
       {resumen ? (
         <SummaryStatsRow
           stats={[
-            { label: "Promedio general", value: resumen.promedioGeneral, tone: "brand" },
+            { label: "Promedio general", value: resumen.promedioGeneral ?? "—", tone: "brand" },
             { label: "Cursos aprobados", value: resumen.cursosAprobados, tone: "success" },
             { label: "Cursos en riesgo", value: resumen.cursosEnRiesgo, tone: "warning" },
             { label: "Cursos desaprobados", value: resumen.cursosDesaprobados, tone: "danger" },

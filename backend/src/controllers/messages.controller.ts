@@ -75,7 +75,7 @@ async function recipientUserIdsForMessage(
   if (scope === "curso" && roomId.startsWith("curso:")) {
     const courseId = toDbId(roomId.replace("curso:", ""));
     const enrollments = await prisma.enrollment.findMany({
-      where: { cursoOfertaId: courseId },
+      where: { cursoOfertaId: courseId, estado: "activa", student: { activo: true } },
       include: { student: { select: { usuarioId: true } } },
     });
     const ids = enrollments
@@ -156,7 +156,11 @@ export async function listMessageRooms(req: Request, res: Response, next: NextFu
           });
         }
         const enrollments = await prisma.enrollment.findMany({
-          where: { course: { profesorId: teacher.id } },
+          where: {
+            estado: "activa",
+            course: { profesorId: teacher.id, activo: true, anioLectivo: { anio: 2026 } },
+            student: { activo: true, matriculas: { some: { estado: "activa", anioLectivo: { anio: 2026 } } } },
+          },
           include: { student: { select: { usuarioId: true, nombres: true, apellidos: true } } },
         });
         const seen = new Set<string>();
@@ -178,6 +182,7 @@ export async function listMessageRooms(req: Request, res: Response, next: NextFu
         where: { usuarioId: toDbId(user.sub) },
         include: {
           inscripciones: {
+            where: { estado: "activa", course: { activo: true, anioLectivo: { anio: 2026 } } },
             include: {
               course: {
                 include: {
@@ -313,7 +318,7 @@ async function createCommunication(req: Request, res: Response, next: NextFuncti
       if (user.role === "docente") {
         const teacher = await prisma.teacher.findFirst({ where: { usuarioId: toDbId(user.sub) } });
         const course = await prisma.course.findFirst({
-          where: { id: toDbId(courseId), profesorId: teacher?.id },
+          where: { id: toDbId(courseId), profesorId: teacher?.id, activo: true, anioLectivo: { anio: 2026 } },
         });
         if (!course) throw new AppError(403, "Curso no asignado");
       }

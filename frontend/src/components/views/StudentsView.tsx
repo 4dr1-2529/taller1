@@ -347,22 +347,32 @@ export function StudentsView({
                     </td>
                     <td className="text-sm text-[var(--text-secondary)]">{student.nivel}</td>
                     <td>
-                      <span className="font-semibold tabular-nums">
-                        {student.metrics.promedioGeneral.toFixed(1)}
-                      </span>
-                      <span className="text-xs text-[var(--text-muted)]"> / 20</span>
+                      {student.hasGrades ? (
+                        <>
+                          <span className="font-semibold tabular-nums">
+                            {student.metrics.promedioGeneral.toFixed(1)}
+                          </span>
+                          <span className="text-xs text-[var(--text-muted)]"> / 20</span>
+                        </>
+                      ) : (
+                        <span className="text-[var(--text-muted)]">—</span>
+                      )}
                     </td>
                     <td>
-                      <MiniProgressBar
-                        value={student.metrics.asistenciaGeneral}
-                        variant={
-                          student.metrics.asistenciaGeneral >= 85
-                            ? "emerald"
-                            : student.metrics.asistenciaGeneral >= 70
-                              ? "amber"
-                              : "rose"
-                        }
-                      />
+                      {student.hasAttendance ? (
+                        <MiniProgressBar
+                          value={student.metrics.asistenciaGeneral}
+                          variant={
+                            student.metrics.asistenciaGeneral >= 85
+                              ? "emerald"
+                              : student.metrics.asistenciaGeneral >= 70
+                                ? "amber"
+                                : "rose"
+                          }
+                        />
+                      ) : (
+                        <span className="text-[var(--text-muted)]">—</span>
+                      )}
                     </td>
                     <td>
                       {student.storedPrediction ? <RiskBadge level={student.storedPrediction.level} score={student.storedPrediction.score} /> : <span>Sin predicción</span>}

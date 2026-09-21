@@ -21,7 +21,14 @@ type AsistenciaItem = {
 export function StudentAttendanceView() {
   const { ready, isEstudiante } = useAuthReady();
   const [items, setItems] = useState<AsistenciaItem[]>([]);
-  const [resumen, setResumen] = useState({
+  const [resumen, setResumen] = useState<{
+    asistencias: number;
+    tardanzas: number;
+    faltas: number;
+    justificadas: number;
+    porcentaje: number | null;
+    total: number;
+  }>({
     asistencias: 0,
     tardanzas: 0,
     faltas: 0,
@@ -126,7 +133,7 @@ export function StudentAttendanceView() {
               { label: "Tardanzas", value: resumen.tardanzas, tone: "warning" },
               { label: "Faltas", value: resumen.faltas, tone: "danger" },
               { label: "Justificadas", value: resumen.justificadas },
-              { label: "% Asistencia", value: `${resumen.porcentaje}%`, tone: "brand" },
+              { label: "% Asistencia", value: resumen.porcentaje == null ? "—" : `${resumen.porcentaje}%`, tone: "brand" },
             ]}
           />
 

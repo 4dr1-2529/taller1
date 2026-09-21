@@ -52,8 +52,8 @@ export async function loadStudentProfile(studentId: bigint) {
     seccion: student.seccion?.nombre ?? null,
     salon: salonLabel(student.seccion),
     periodoAcademico: await activePeriodoLabel(),
-    promedioGeneral: (await studentIndicators(studentId)).promedio_general ?? 0,
-    asistenciaGeneral: (await studentIndicators(studentId)).asistencia_general ?? 0,
+    promedioGeneral: (await studentIndicators(studentId)).promedio_general,
+    asistenciaGeneral: (await studentIndicators(studentId)).asistencia_general,
   };
 }
 
@@ -111,8 +111,8 @@ export async function buildEstudianteDashboard(studentId: bigint) {
     kpis: {
       grado: profile?.gradoLabel ?? "—",
       salon: profile?.salon ?? "—",
-      promedioGeneral: profile?.promedioGeneral ?? 0,
-      asistenciaGeneral: profile?.asistenciaGeneral ?? 0,
+      promedioGeneral: profile?.promedioGeneral ?? null,
+      asistenciaGeneral: profile?.asistenciaGeneral ?? null,
       nivelRiesgo: pred ? LEVEL_LABEL[pred.nivelRiesgo] ?? pred.nivelRiesgo : "Sin datos",
       alertasActivas: openAlerts,
     },
@@ -228,7 +228,7 @@ export async function buildEstudianteNotas(studentId: bigint) {
     profile,
     filas,
     resumen: {
-      promedioGeneral: profile?.promedioGeneral ?? 0,
+      promedioGeneral: profile?.promedioGeneral ?? null,
       cursosAprobados: aprobados,
       cursosEnRiesgo: riesgo,
       cursosDesaprobados: desaprobados,
@@ -325,7 +325,7 @@ export async function buildEstudianteAsistencia(studentId: bigint, query: Asiste
   }
   const total = items.length;
   const porcentaje =
-    total > 0 ? Math.round(((asistencias + tardanzas) / Math.max(1, total - justificadas)) * 1000) / 10 : profile?.asistenciaGeneral ?? 0;
+    total > 0 ? Math.round(((asistencias + tardanzas) / Math.max(1, total - justificadas)) * 1000) / 10 : profile?.asistenciaGeneral ?? null;
 
   return {
     profile,

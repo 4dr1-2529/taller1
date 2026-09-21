@@ -88,29 +88,32 @@ export async function listAlerts(req: Request, res: Response, next: NextFunction
     const status = req.query.status as string | undefined;
     const profesorId = req.query.profesorId as string | undefined;
 
-    const studentWhere: Record<string, unknown> = { AND: [scope] };
-    if (seccionId) studentWhere.seccionId = toDbId(seccionId);
-    if (gradoId) {
-      studentWhere.seccion = { gradoId: toDbId(gradoId) };
-    }
+    const clauses: Record<string, unknown>[] = [scope];
+    if (seccionId) clauses.push({ seccionId: toDbId(seccionId) });
+    if (gradoId) clauses.push({ seccion: { gradoId: toDbId(gradoId) } });
     if (cursoId) {
-      studentWhere.seccion = {
-        ...(studentWhere.seccion as object),
-        cursosOferta: { some: { id: toDbId(cursoId) } },
-      };
+      clauses.push({ inscripciones: { some: { estado: "activa", cursoOfertaId: toDbId(cursoId) } } });
     }
     if (profesorId) {
-      studentWhere.seccion = {
-        tutoresSeccion: { some: { profesorId: toDbId(profesorId) } },
-      };
+      clauses.push({
+        inscripciones: {
+          some: {
+            estado: "activa",
+            course: { activo: true, profesorId: toDbId(profesorId), anioLectivo: { anio: 2026 } },
+          },
+        },
+      });
     }
     if (search) {
-      studentWhere.OR = [
-        { nombres: { contains: search } },
-        { apellidos: { contains: search } },
-        { codigo: { contains: search } },
-      ];
+      clauses.push({
+        OR: [
+          { nombres: { contains: search } },
+          { apellidos: { contains: search } },
+          { codigo: { contains: search } },
+        ],
+      });
     }
+    const studentWhere: Record<string, unknown> = { AND: clauses };
 
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 100));

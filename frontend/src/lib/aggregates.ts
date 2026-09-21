@@ -45,8 +45,9 @@ export function globalRiskScore(students: Student[]): number | null {
 
 /** Promedio académico real (0–20) o null sin datos. Nunca usa risk score. */
 export function averageGrade(students: Student[]): number | null {
-  if (!students.length) return null;
-  const v = students.reduce((a, s) => a + s.metrics.promedioGeneral, 0) / students.length;
+  const graded = students.filter((s) => s.hasGrades);
+  if (!graded.length) return null;
+  const v = graded.reduce((a, s) => a + s.metrics.promedioGeneral, 0) / graded.length;
   return Math.round(v * 10) / 10;
 }
 
@@ -81,8 +82,9 @@ export function riskTrendLabel(history: RiskHistoryPoint[]): {
 }
 
 export function averageAttendance(students: Student[]): number | null {
-  if (!students.length) return null;
-  const v = students.reduce((a, s) => a + s.metrics.asistenciaGeneral, 0) / students.length;
+  const withData = students.filter((s) => s.hasAttendance);
+  if (!withData.length) return null;
+  const v = withData.reduce((a, s) => a + s.metrics.asistenciaGeneral, 0) / withData.length;
   return Math.round(v * 10) / 10;
 }
 

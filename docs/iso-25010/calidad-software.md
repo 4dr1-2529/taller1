@@ -39,7 +39,7 @@ Este documento relaciona cada **característica de calidad** ISO/IEC 25010 con *
 | ISO/IEC 25010 | Usabilidad — operabilidad | Navegación por rol | `frontend/src/app/(shell)/page.tsx` | `ROLE_SECTIONS` 14/10/6 secciones | `backend/tests/permissions.test.mjs`; capturas por módulo | ✅ Verificado |
 | ISO/IEC 25010 | Usabilidad — reconocibilidad | Sidebar | `frontend/src/components/AppSidebar.tsx` | Iconos Lucide, grupos `sidebar-nav.ts` | Capturas dashboard, notas, predicción | ✅ Verificado |
 | ISO/IEC 25010 | Fiabilidad — disponibilidad | Health | `backend/src/routes/index.ts` | `GET /health` | `verificacion-stack.json` → Backend health PASS | ✅ Verificado |
-| ISO/IEC 25010 | Fiabilidad — tolerancia a fallos | ML fallback | `machine-learning/app/main.py` | `heuristic_predict()` si sin modelo | `test_predict.py` TC heurístico | ✅ Verificado |
+| ISO/IEC 25010 | Fiabilidad — tolerancia a fallos | ML fallback | `machine-learning/app/main.py` | 503 controlado si sin modelo (sin fallback heuristico) | `test_predict.py` TC heurístico | ✅ Verificado |
 | ISO/IEC 25010 | Fiabilidad — recuperabilidad | BD | `backend/scripts/railway-start.mjs` | `prisma migrate deploy`, repair P3009 | `docs/DEPLOY.md`; seed `db:seed:demo` | ✅ Verificado |
 | ISO/IEC 25010 | Eficiencia — tiempo de respuesta | Rate limit | `backend/src/index.ts` | `express-rate-limit` global | `plan-pruebas/pruebas-seguridad/jwt.md` | ✅ Verificado |
 | ISO/IEC 25010 | Eficiencia — utilización | Alcance docente | `backend/src/utils/teacher-scope.ts` | Filtro Prisma por secciones asignadas | `teacher-scope.test.ts` | ✅ Verificado |
@@ -84,7 +84,7 @@ Este documento relaciona cada **característica de calidad** ISO/IEC 25010 con *
 | Madurez | Error handler centralizado Express |
 | Disponibilidad | Railway healthcheck 120 s timeout |
 | Recuperabilidad | `db:repair:all`, `RUN_REPAIR=1` |
-| Tolerancia a fallos | ML fallback heurístico |
+| Tolerancia a fallos | ML 503 controlado |
 
 ### 3.4 Eficiencia de desempeño
 

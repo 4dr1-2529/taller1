@@ -74,8 +74,8 @@ export function StudentDashboard() {
       <div className="metric-band student-metrics">
         <KpiCard label="Mi grado" value={kpis.grado} icon={GraduationCap} index={0} />
         <KpiCard label="Mi sección" value={kpis.salon} icon={Layers} index={1} />
-        <KpiCard label="Mi promedio" value={kpis.promedioGeneral} suffix="/20" icon={BookOpen} index={2} />
-        <KpiCard label="Mi asistencia" value={kpis.asistenciaGeneral} suffix="%" icon={TrendingUp} index={3} />
+        <KpiCard label="Mi promedio" value={kpis.promedioGeneral ?? "—"} suffix={kpis.promedioGeneral == null ? undefined : "/20"} icon={BookOpen} index={2} />
+        <KpiCard label="Mi asistencia" value={kpis.asistenciaGeneral ?? "—"} suffix={kpis.asistenciaGeneral == null ? undefined : "%"} icon={TrendingUp} index={3} />
       </div>
       <div className="student-status-line metric-band">
         <KpiCard label="Mi nivel de riesgo" value={kpis.nivelRiesgo} icon={Sparkles} />
