@@ -242,24 +242,7 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.equal((await call("/dashboard-snapshot", "teacher", payload)).status, 403);
     assert.equal((await call("/dashboard-snapshot", "student", payload)).status, 403);
   });
-  await t.test("mensajería refleja solo relaciones activas 2026", async () => {
-    const otherToken = token(other.student.usuarioId!, "estudiante");
-    const roomsFor = async (tok: string) => {
-      const r = await fetch(base + "/messages/rooms", { headers: { Authorization: `Bearer ${tok}` } });
-      assert.equal(r.status, 200);
-      return (await r.json()).data.rooms as { roomId: string; label: string }[];
-    };
-    const before = await roomsFor(tokens.teacher);
-    assert.ok(before.some((r) => r.roomId.includes(String(first.student.usuarioId))), "sala activa debe aparecer");
-    const otherRooms = await roomsFor(tokens.teacherB);
-    assert.ok(!otherRooms.some((r) => r.roomId.includes(String(first.student.usuarioId))), "profesor ajeno no aparece");
-    const mat = await prisma.matricula.findFirstOrThrow({ where: { estudianteId: first.student.id, anioLectivoId: year.id } });
-    assert.equal((await call(`/matriculas/${mat.id}`, "admin", { estado: "retirada" }, "PATCH")).status, 200);
-    const after = await roomsFor(tokens.teacher);
-    assert.ok(!after.some((r) => r.roomId.includes(String(first.student.usuarioId))), "retirado no aparece");
-    const cursoRoom = `curso:${course.id}`;
-    assert.equal((await fetch(base + `/messages/${cursoRoom}`, { headers: { Authorization: `Bearer ${otherToken}` } })).status, 403);
-  });
+
   await t.test("alertas combinan grado+seccion+profesor+busqueda", async () => {
     const r = await call(`/alerts?gradoId=${grade.id}&seccionId=${section.id}&profesorId=${teacher.id}&search=Alumno`, "admin");
     assert.equal(r.status, 200);
@@ -270,6 +253,17 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
       assert.ok(`${a.student.nombres} ${a.student.apellidos}`.includes("Alumno"));
     }
   });
+  await t.test("profesor no accede al listado general de estudiantes", async () => {
+    assert.equal((await call("/students?page=1&limit=5", "admin")).status, 200);
+    assert.equal((await call("/students?page=1&limit=5", "teacher")).status, 403);
+  });
+  await t.test("estudiante retirado pierde scopes dependientes de matrícula", async () => {
+    const mat = await prisma.matricula.findFirstOrThrow({ where: { estudianteId: first.student.id, anioLectivoId: year.id } });
+    assert.equal((await call(`/matriculas/${mat.id}`, "admin", { estado: "retirada" }, "PATCH")).status, 200);
+    assert.equal((await call(`/students/${first.student.id}`, "teacher")).status, 403);
+    assert.equal((await call("/estudiante/dashboard", "student")).status, 200);
+    assert.equal((await call("/estudiante/notas", "student")).status, 200);
+  });
   await t.test("salonSummary es global aunque la página sea parcial", async () => {
     const r = await call("/alerts?limit=1&page=1", "admin");
     assert.equal(r.status, 200);
@@ -278,5 +272,25 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.ok(body.total >= 2);
     const sum = (body.salonSummary as { count: number }[]).reduce((a, s) => a + s.count, 0);
     assert.ok(sum >= 2);
+  });
+  await t.test("mensajería refleja solo relaciones activas 2026", async () => {
+    const rel = await registerStudent(input("90000208"), String(admin.id));
+    const relUserId = String(rel.student.usuarioId!);
+    const otherToken = token(other.student.usuarioId!, "estudiante");
+    const roomsFor = async (tok: string) => {
+      const r = await fetch(base + "/messages/rooms", { headers: { Authorization: `Bearer ${tok}` } });
+      assert.equal(r.status, 200);
+      return (await r.json()).data.rooms as { roomId: string; label: string }[];
+    };
+    const before = await roomsFor(tokens.teacher);
+    assert.ok(before.some((r) => r.roomId.includes(relUserId)), "sala activa debe aparecer");
+    const otherRooms = await roomsFor(tokens.teacherB);
+    assert.ok(!otherRooms.some((r) => r.roomId.includes(String(other.student.usuarioId))), "profesor ajeno no aparece");
+    const mat = await prisma.matricula.findFirstOrThrow({ where: { estudianteId: rel.student.id, anioLectivoId: year.id } });
+    assert.equal((await call(`/matriculas/${mat.id}`, "admin", { estado: "retirada" }, "PATCH")).status, 200);
+    const after = await roomsFor(tokens.teacher);
+    assert.ok(!after.some((r) => r.roomId.includes(relUserId)), "retirado no aparece");
+    const cursoRoom = `curso:${course.id}`;
+    assert.equal((await fetch(base + `/messages/${cursoRoom}`, { headers: { Authorization: `Bearer ${otherToken}` } })).status, 403);
   });
 });

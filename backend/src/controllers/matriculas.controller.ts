@@ -142,10 +142,17 @@ export async function matriculaStats(req: Request, res: Response, next: NextFunc
       ? { estudiante: scope, anioLectivoId: anioActivo.id }
       : { estudiante: scope };
 
-    const [activas, totalAnio, estudiantesActivos] = await Promise.all([
+    const [activas, totalAnio, estudiantesActivos, conMatricula] = await Promise.all([
       prisma.matricula.count({ where: { ...whereAnio, estado: "activa" } }),
       prisma.matricula.count({ where: whereAnio }),
       prisma.student.count({ where: { ...scope, activo: true } }),
+      anioActivo
+        ? prisma.matricula.findMany({
+            where: whereAnio,
+            select: { estudianteId: true },
+            distinct: ["estudianteId"],
+          })
+        : [],
     ]);
 
     sendSuccess(res, {
@@ -153,6 +160,7 @@ export async function matriculaStats(req: Request, res: Response, next: NextFunc
       matriculasAnioLectivo: totalAnio,
       estudiantesActivos,
       anioLectivo: anioActivo?.nombre ?? null,
+      matriculadosIds: conMatricula.map((m) => idToString(m.estudianteId)),
     });
   } catch (e) {
     next(e);

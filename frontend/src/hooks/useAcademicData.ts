@@ -32,6 +32,7 @@ export type MatriculaStats = {
   matriculasAnioLectivo: number;
   estudiantesActivos: number;
   anioLectivo: string | null;
+  matriculadosIds?: string[];
 };
 
 export function useAcademicData() {

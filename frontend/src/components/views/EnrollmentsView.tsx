@@ -115,6 +115,7 @@ export function EnrollmentsView({
   }
 
   const studentsForForm = filters.seccionId || filters.gradoId ? filteredStudents : students;
+  const matriculadosIds = new Set(matriculaStats?.matriculadosIds ?? []);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
@@ -134,7 +135,7 @@ export function EnrollmentsView({
           <div>
             <h2 className="text-xl font-bold text-[var(--text-primary)]">Matrículas institucionales</h2>
             <p className="text-sm text-[var(--text-secondary)]">
-              Estudiante + año lectivo + grado + sección · una matrícula activa por alumno y año
+              Estudiante + año lectivo + grado + sección · una matrícula por estudiante durante el año lectivo 2026.
             </p>
           </div>
         </div>
@@ -217,11 +218,14 @@ export function EnrollmentsView({
                   required
                 >
                   <option value="">Seleccione estudiante</option>
-                  {studentsForForm.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.codigo} — {s.nombres} {s.apellidos}
-                    </option>
-                  ))}
+                  {studentsForForm.map((s) => {
+                    const yaMatriculado = matriculadosIds.has(s.id);
+                    return (
+                      <option key={s.id} value={s.id} disabled={yaMatriculado}>
+                      {s.codigo} — {s.nombres} {s.apellidos}{yaMatriculado ? " · Ya matriculado en 2026" : ""}
+                      </option>
+                    );
+                  })}
                 </select>
               </FormField>
               <FormField label="Grado y sección (salón)" className="form-grid-full" error={errors.seccionId}>

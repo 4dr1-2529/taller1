@@ -544,6 +544,7 @@ class ApiClient {
       matriculasAnioLectivo: number;
       estudiantesActivos: number;
       anioLectivo: string | null;
+      matriculadosIds?: string[];
     }>("/matriculas/stats");
   }
 
