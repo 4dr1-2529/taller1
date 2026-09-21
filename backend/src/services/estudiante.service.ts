@@ -133,9 +133,9 @@ export async function buildEstudianteDashboard(studentId: bigint) {
         : null,
       ultimaActividadLms: lmsActs[0]
         ? {
-            semana: lmsActs[0].createdAt.toISOString(),
+            fecha: lmsActs[0].createdAt,
             tipo: lmsActs[0].tipo,
-            minutos: lmsActs[0].durationSeconds / 60,
+            minutos: Math.round((lmsActs[0].durationSeconds / 60) * 10) / 10,
           }
         : null,
       ultimaPrediccion: pred

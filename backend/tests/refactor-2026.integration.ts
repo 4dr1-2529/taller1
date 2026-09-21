@@ -347,6 +347,17 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.ok(await prisma.attendance.count({ where: { studentId: first.student.id } }) >= 1);
     assert.ok(await prisma.auditLog.count({ where: { estudianteId: first.student.id } }) >= 1);
   });
+  await t.test("dashboard estudiante expone actividad LMS honesta", async () => {
+    const r = await call("/estudiante/dashboard", "student");
+    assert.equal(r.status, 200);
+    const resumen = (await r.json()).data.resumen;
+    assert.ok(resumen.ultimaActividadLms);
+    assert.equal(typeof resumen.ultimaActividadLms.fecha, "string");
+    assert.equal(typeof resumen.ultimaActividadLms.tipo, "string");
+    assert.equal(typeof resumen.ultimaActividadLms.minutos, "number");
+    assert.ok(!("actividadPct" in resumen.ultimaActividadLms));
+    assert.ok(!("semana" in resumen.ultimaActividadLms));
+  });
   await t.test("dashboard promedia solo evidencia real 2026", async () => {
     const g4 = await prisma.grado.create({ data: { nivelId: level.id, numero: 4, nombre: "CuartoH" } });
     const secE = await prisma.seccion.create({ data: { gradoId: g4.id, nombre: "E", capacidad: 10 } });

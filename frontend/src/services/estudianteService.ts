@@ -29,7 +29,7 @@ export type EstudianteDashboardData = {
   resumen: {
     ultimaNota: { curso: string; nota: number; bimestre: number; fecha: string } | null;
     ultimaAsistencia: { fecha: string; estado: string } | null;
-    ultimaActividadLms: { semana: string; actividadPct: number; minutos: number } | null;
+    ultimaActividadLms: { fecha: string; tipo: string; minutos: number } | null;
     ultimaPrediccion: { score: number; nivel: string; fecha: string } | null;
     recomendacion: string | null;
   };

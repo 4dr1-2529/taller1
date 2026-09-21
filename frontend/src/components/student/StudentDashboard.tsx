@@ -16,8 +16,20 @@ import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { DashboardSkeleton } from "@/components/ui/Skeleton";
 import { RiskBadge } from "@/components/ui/RiskBadge";
-import { MiniProgressBar } from "@/components/ui/MiniProgressBar";
 import { RiskGauge } from "@/components/ui/RiskGauge";
+
+const TIPO_ACTIVIDAD_LABEL: Record<string, string> = {
+  login: "Ingreso",
+  logout: "Salida",
+  sesion: "Sesión",
+  curso: "Curso",
+  recurso: "Recurso",
+  actividad: "Actividad",
+};
+
+function tipoActividadLabel(tipo: string): string {
+  return TIPO_ACTIVIDAD_LABEL[tipo] ?? tipo;
+}
 
 
 function riskLevelKey(label: string): "bajo" | "medio" | "alto" {
@@ -120,7 +132,7 @@ export function StudentDashboard() {
               <dt className="text-[var(--text-muted)]">Última actividad LMS</dt>
               <dd className="font-medium text-[var(--text-primary)]">
                 {resumen.ultimaActividadLms
-                  ? `Sem. ${resumen.ultimaActividadLms.semana} — ${resumen.ultimaActividadLms.actividadPct}%`
+                  ? `${tipoActividadLabel(resumen.ultimaActividadLms.tipo)} · ${new Date(resumen.ultimaActividadLms.fecha).toLocaleString("es-PE")} · ${resumen.ultimaActividadLms.minutos} min`
                   : "—"}
               </dd>
             </div>
@@ -133,7 +145,7 @@ export function StudentDashboard() {
               </dd>
             </div>
           </dl>
-          {resumen.ultimaActividadLms ? <div className="learning-progress"><span>Actividad LMS · Semana {resumen.ultimaActividadLms.semana}</span><MiniProgressBar value={resumen.ultimaActividadLms.actividadPct} variant="cyan" /></div> : null}
+          {resumen.ultimaActividadLms ? <div className="learning-progress"><span>Actividad LMS · {tipoActividadLabel(resumen.ultimaActividadLms.tipo)} · {resumen.ultimaActividadLms.minutos} min</span></div> : null}
           {resumen.recomendacion ? (
             <div className="surface-subtle mt-5 rounded-[var(--radius-md)] p-4 text-sm text-[var(--text-secondary)]">
               <strong className="text-[var(--text-primary)]">Recomendación:</strong> {resumen.recomendacion}
