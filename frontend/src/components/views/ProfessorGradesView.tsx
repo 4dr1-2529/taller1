@@ -57,7 +57,7 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
           gradoId: pf.draft.gradoId,
           seccionId: pf.draft.seccionId,
           cursoId: pf.draft.courseId,
-          bimestre: pf.draft.bimestre,
+          periodoNumero: Number(pf.draft.bimestre),
         }),
       ]);
       setStudents(stRes.items.map((r) => mapStudentFromApi(r as Parameters<typeof mapStudentFromApi>[0])));
@@ -102,8 +102,7 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
       await profesorService.createNota({
         studentId,
         courseId: pf.applied.courseId,
-        periodo: "2026-I",
-        bimestre: Number(pf.applied.bimestre),
+        periodoNumero: Number(pf.applied.bimestre),
         nota,
       });
       toast.success("Nota guardada");

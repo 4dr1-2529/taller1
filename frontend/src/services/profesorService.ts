@@ -13,6 +13,7 @@ export type ProfesorQueryParams = {
   cursoId?: string;
   search?: string;
   bimestre?: string;
+  periodoNumero?: number;
   fecha?: string;
   riskLevel?: string;
   status?: string;
@@ -28,6 +29,7 @@ function qs(params: ProfesorQueryParams): string {
   if (params.cursoId) q.set("cursoId", params.cursoId);
   if (params.search) q.set("search", params.search);
   if (params.bimestre) q.set("bimestre", params.bimestre);
+  if (params.periodoNumero != null) q.set("periodoNumero", String(params.periodoNumero));
   if (params.fecha) q.set("fecha", params.fecha);
   if (params.riskLevel) q.set("riskLevel", params.riskLevel);
   if (params.status) q.set("status", params.status);
@@ -82,7 +84,7 @@ export const profesorService = {
 
   getCursos: (params?: ProfesorQueryParams) =>
     api.call<{
-      items: (Course & { totalEstudiantes?: number; promedioCurso?: number; alertasActivas?: number })[];
+      items: (Course & { totalEstudiantes?: number; promedioCurso?: number | null; alertasActivas?: number })[];
     }>(`/profesor/cursos${qs(params ?? {})}`),
 
   getEstudiantes: (params?: ProfesorQueryParams) =>

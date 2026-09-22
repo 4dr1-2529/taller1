@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { validateStudentForm, validateTeacherForm, validatePassword } from "../src/lib/validation";
 import { attachPredictions, averageAttendance, averageGrade, globalRiskScore, lowLmsStudents, studentsInCourseSalon } from "../src/lib/aggregates";
@@ -69,4 +70,12 @@ test("teacher report rows follow active course enrollment instead of section alo
   const outside = { ...blankStudent("2"), seccionId: "section-a", enrolledCourseIds: ["course-b"] };
   const course = { id: "course-a", codigo: "MAT-1A", nombre: "Matematica", nivel: "1A", profesorId: "teacher-1", seccionId: "section-a" };
   assert.deepEqual(studentsInCourseSalon([enrolled, outside], course).map((student) => student.id), ["1"]);
+});
+test("grade writes use periodoNumero and never the legacy periodo/bimestre payload", () => {
+  for (const file of ["GradesView.tsx", "ProfessorGradesView.tsx"]) {
+    const source = readFileSync(new URL(`../src/components/views/${file}`, import.meta.url), "utf8");
+    assert.match(source, /periodoNumero:\s*Number\(/);
+    assert.doesNotMatch(source, /periodo:\s*["']2026-I["']/);
+    assert.doesNotMatch(source, /bimestre:\s*Number\([^)]*applied\.bimestre/);
+  }
 });

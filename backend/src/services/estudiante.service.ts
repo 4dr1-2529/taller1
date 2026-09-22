@@ -71,7 +71,7 @@ export async function buildEstudianteDashboard(studentId: bigint) {
     await Promise.all([
       loadStudentProfile(studentId),
       prisma.grade.findFirst({
-        where: { studentId },
+        where: { studentId, periodo: { anioLectivo: { anio: 2026 } } },
         orderBy: { createdAt: "desc" },
         include: {
           cursoOferta: { include: courseListInclude },
@@ -79,7 +79,10 @@ export async function buildEstudianteDashboard(studentId: bigint) {
         },
       }),
       prisma.attendance.findFirst({
-        where: { studentId },
+        where: {
+          studentId,
+          fecha: { gte: new Date("2026-01-01T00:00:00.000Z"), lt: new Date("2027-01-01T00:00:00.000Z") },
+        },
         orderBy: { fecha: "desc" },
       }),
       prisma.prediction.findFirst({
@@ -178,7 +181,7 @@ export async function buildEstudianteNotas(studentId: bigint) {
         })
       : Promise.resolve([]),
     prisma.grade.findMany({
-      where: { studentId },
+      where: { studentId, periodo: { anioLectivo: { anio: 2026 } } },
       include: {
         cursoOferta: { include: courseListInclude },
         periodo: { select: { numero: true, nombre: true } },

@@ -171,8 +171,6 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
     const payload = {
       studentId: form.studentId,
       courseId: filters.courseId,
-      periodo: "2026-I",
-      bimestre: filters.bimestre,
       nota: form.nota,
       observacion: form.observacion,
     };
@@ -192,8 +190,7 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
       await api.createGrade({
         studentId: form.studentId,
         courseId: filters.courseId,
-        periodo: payload.periodo,
-        bimestre: Number(filters.bimestre),
+        periodoNumero: Number(filters.bimestre),
         nota,
         observacion: form.observacion || undefined,
       });

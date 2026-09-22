@@ -58,7 +58,7 @@ export async function saveDashboardSnapshot(req: Request, res: Response, next: N
     const anioLectivoId = await getActiveAnioLectivoId();
     const pid =
       periodoId != null
-        ? toDbId(String(periodoId))
+        ? await resolvePeriodoByParam(String(periodoId))
         : periodo
           ? await resolvePeriodoByParam(String(periodo))
           : null;

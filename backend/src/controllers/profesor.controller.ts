@@ -4,7 +4,7 @@ import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { idToString, toDbId } from "../utils/ids.js";
-import { getTeacherSectionIds } from "../utils/teacher-scope.js";
+import { getTeacherSectionIds, resolveTeacherCourseWhere } from "../utils/teacher-scope.js";
 import {
   buildProfesorStudentWhere,
   parseProfesorQuery,
@@ -133,17 +133,21 @@ export async function profesorCursos(req: Request, res: Response, next: NextFunc
   try {
     const tid = await teacherId(req);
     const pq = parseProfesorQuery(req);
+    const assignedCourseWhere = await resolveTeacherCourseWhere(req.user!);
     const rows = await prisma.course.findMany({
       where: {
-        profesorId: tid,
-        activo: true,
+        ...assignedCourseWhere,
+        anioLectivo: { anio: 2026 },
         ...(pq.cursoId ? { id: toDbId(pq.cursoId) } : {}),
         ...(pq.seccionId ? { seccionId: toDbId(pq.seccionId) } : {}),
         ...(pq.gradoId ? { seccion: { gradoId: toDbId(pq.gradoId) } } : {}),
       },
       include: {
         ...courseListInclude,
-        calificaciones: { select: { nota: true } },
+        calificaciones: {
+          where: { periodo: { anioLectivo: { anio: 2026 } } },
+          select: { nota: true },
+        },
         _count: { select: { inscripciones: true } },
       },
       orderBy: [{ seccion: { grado: { numero: "asc" } } }, { seccion: { nombre: "asc" } }],
@@ -158,7 +162,7 @@ export async function profesorCursos(req: Request, res: Response, next: NextFunc
             })
           : 0;
         const notas = c.calificaciones.map((g) => Number(g.nota));
-        const promedio = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
+        const promedio = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : null;
         const alertas = secId
           ? await prisma.alert.count({
               where: {
@@ -172,7 +176,7 @@ export async function profesorCursos(req: Request, res: Response, next: NextFunc
           id: idToString(c.id),
           nombre: courseDisplayName(c),
           totalEstudiantes: studentCount,
-          promedioCurso: Math.round(promedio * 10) / 10,
+          promedioCurso: promedio == null ? null : Math.round(promedio * 10) / 10,
           alertasActivas: alertas,
         };
       }),

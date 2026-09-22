@@ -30,8 +30,12 @@ export async function resolvePeriodoId(periodoId?: string, periodoNumero?: numbe
 }
 
 export async function resolvePeriodoByParam(periodo: string): Promise<bigint> {
-  if (/^\d+$/.test(periodo.trim())) return toDbId(periodo);
-  const p = await prisma.periodoAcademico.findFirst({ where: { nombre: periodo } });
+  const value = periodo.trim();
+  const p = await prisma.periodoAcademico.findFirst({
+    where: /^\d+$/.test(value)
+      ? { id: toDbId(value), anioLectivo: { anio: 2026 } }
+      : { nombre: value, anioLectivo: { anio: 2026 } },
+  });
   if (!p) throw new AppError(404, "Periodo no encontrado");
   return p.id;
 }

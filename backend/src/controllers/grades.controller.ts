@@ -10,6 +10,7 @@ import { assertTeacherCourseAccess, assertStudentInCourseSection } from "../util
 import { getTeacherIdForUser } from "../utils/teacher.js";
 import { resolvePeriodoId } from "../utils/academic-period.js";
 import { courseListInclude, courseDisplayName } from "../utils/course-label.js";
+import { resolveTeacherCourseWhere } from "../utils/teacher-scope.js";
 
 export async function listGrades(req: Request, res: Response, next: NextFunction) {
   try {
@@ -24,7 +25,10 @@ export async function listGrades(req: Request, res: Response, next: NextFunction
       if (courseId) {
         await assertTeacherCourseAccess(req.user!, String(courseId));
       } else {
-        const own = await prisma.course.findMany({ where: { profesorId: toDbId(teacherId), activo: true }, select: { id: true } });
+        const own = await prisma.course.findMany({
+          where: await resolveTeacherCourseWhere(req.user!),
+          select: { id: true },
+        });
         where.cursoOfertaId = { in: own.map((c) => c.id) };
       }
     }
