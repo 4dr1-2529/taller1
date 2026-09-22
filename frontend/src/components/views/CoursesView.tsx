@@ -1,87 +1,33 @@
 "use client";
 
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { type FormEvent, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Plus, Library } from "lucide-react";
-import type { SeccionOption } from "@/hooks/useAcademicStructure";
+import { Library } from "lucide-react";
 import type { Course, Teacher } from "@/types/academic";
-import { PageSection } from "@/components/ui/PageSection";
 import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { INPUT_CLASS, SELECT_CLASS } from "@/lib/ui";
-import {
-  type FieldErrors,
-  firstError,
-  validateCourseForm,
-  clearFieldError,
-} from "@/lib/validation";
-import { CodigoInput, CourseNameInput } from "@/components/ui/ValidatedInputs";
-
-export type NewCourseForm = {
-  codigo: string;
-  nombre: string;
-  profesorId: string;
-  gradoId: string;
-  seccionId: string;
-};
-
-export const defaultCourseForm: NewCourseForm = {
-  codigo: "",
-  nombre: "",
-  profesorId: "",
-  gradoId: "",
-  seccionId: "",
-};
+import { SELECT_CLASS } from "@/lib/ui";
 
 type CoursesViewProps = {
   courses: Course[];
   teachers: Teacher[];
-  secciones: SeccionOption[];
-  form: NewCourseForm;
-  setForm: (v: NewCourseForm | ((p: NewCourseForm) => NewCourseForm)) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void | Promise<void>;
   onReassignProfesor?: (courseId: string, profesorId: string) => void;
   onDeactivate?: (courseId: string, nombre: string) => void;
-  canEdit?: boolean;
   canReassign?: boolean;
-  lockProfesorId?: string;
 };
 
 export function CoursesView({
   courses,
   teachers,
-  secciones,
-  form,
-  setForm,
-  onSubmit,
   onReassignProfesor,
   onDeactivate,
-  canEdit = true,
   canReassign = false,
-  lockProfesorId,
 }: CoursesViewProps) {
   const [query, setQuery] = useState("");
-  const [errors, setErrors] = useState<FieldErrors>({});
-  const [submitting, setSubmitting] = useState(false);
   const [reassignTarget, setReassignTarget] = useState<Course | null>(null);
   const [reassignTeacherId, setReassignTeacherId] = useState("");
-
-  const grados = useMemo(() => {
-    const seen = new Map<number, string>();
-    for (const s of secciones) {
-      if (!seen.has(s.gradoId)) seen.set(s.gradoId, s.gradoLabel);
-    }
-    return [...seen.entries()].map(([id, label]) => ({ id: String(id), label }));
-  }, [secciones]);
-
-  const seccionesDelGrado = useMemo(() => {
-    const gid = Number(form.gradoId);
-    if (!gid) return [];
-    return secciones.filter((s) => s.gradoId === gid);
-  }, [secciones, form.gradoId]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -92,20 +38,6 @@ export function CoursesView({
       return `${c.nombre} ${c.codigo} ${c.nivel} ${teacherName}`.toLowerCase().includes(q);
     });
   }, [courses, teachers, query]);
-
-  function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (submitting) return;
-    const nextErrors = validateCourseForm(form);
-    setErrors(nextErrors);
-    const msg = firstError(nextErrors);
-    if (msg) {
-      toast.error(msg);
-      return;
-    }
-    setSubmitting(true);
-    void Promise.resolve(onSubmit(e)).catch(() => undefined).finally(() => setSubmitting(false));
-  }
 
   const cardVariants = {
     hidden: { opacity: 0, y: 16 },
@@ -129,8 +61,8 @@ export function CoursesView({
             <SectionHeading title="Catálogo de cursos" />
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            {canEdit
-              ? "Administre cursos académicos y asignación de docentes"
+            {canReassign
+              ? "Consulte, reasigne o desactive la oferta creada desde Asignaciones docentes"
               : "Cursos asignados a usted por grado y sección"}
           </p>
         </div>
@@ -138,99 +70,6 @@ export function CoursesView({
           {filtered.length} {filtered.length === 1 ? "curso" : "cursos"}
         </span>
       </motion.div>
-
-      {canEdit ? (
-        <motion.div variants={cardVariants} initial="hidden" animate="visible">
-          <PageSection
-            variant="form"
-            icon={Plus}
-            title="Nuevo curso"
-            description="Cada curso pertenece a un grado y a una sección configurada para el periodo académico."
-          >
-            <form className="form-grid" onSubmit={handleFormSubmit}>
-              <FormField label="Código" hint="Letras, números, - y _" error={errors.codigo}>
-                <CodigoInput
-                  value={form.codigo}
-                  onValueChange={(codigo) => {
-                    setErrors((p) => clearFieldError(p, "codigo"));
-                    setForm((p) => ({ ...p, codigo }));
-                  }}
-                  required
-                />
-              </FormField>
-              <FormField label="Nombre del curso" error={errors.nombre}>
-                <CourseNameInput
-                  placeholder="Comunicación"
-                  value={form.nombre}
-                  onValueChange={(nombre) => {
-                    setErrors((p) => clearFieldError(p, "nombre"));
-                    setForm((p) => ({ ...p, nombre }));
-                  }}
-                  required
-                />
-              </FormField>
-              <FormField label="Profesor">
-                <select
-                  className={INPUT_CLASS}
-                  value={lockProfesorId ?? form.profesorId}
-                  onChange={(e) => setForm((p) => ({ ...p, profesorId: e.target.value }))}
-                  required
-                  disabled={!!lockProfesorId}
-                >
-                  <option value="">Seleccione docente</option>
-                  {teachers.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.nombres} {t.apellidos} — {t.especialidad}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
-              <FormField label="Grado">
-                <select
-                  className={INPUT_CLASS}
-                  value={form.gradoId}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, gradoId: e.target.value, seccionId: "" }))
-                  }
-                  required
-                >
-                  <option value="">Seleccione grado</option>
-                  {grados.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.label}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
-              <FormField label="Sección (salón)">
-                <select
-                  className={INPUT_CLASS}
-                  value={form.seccionId}
-                  onChange={(e) => setForm((p) => ({ ...p, seccionId: e.target.value }))}
-                  required
-                  disabled={!form.gradoId}
-                >
-                  <option value="">
-                    {form.gradoId ? "Seleccione sección" : "Primero elija el grado"}
-                  </option>
-                  {seccionesDelGrado.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      Sección {s.nombre}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
-              <p className="form-grid-full text-xs text-[var(--text-muted)]">
-                El código se genera a partir del grado y la sección configurados, sin repetirse entre salones.
-              </p>
-              <button type="submit" className="btn-primary form-grid-full" disabled={submitting}>
-                <BookOpen className="h-4 w-4" />
-                {submitting ? "Guardando…" : "Crear curso"}
-              </button>
-            </form>
-          </PageSection>
-        </motion.div>
-      ) : null}
 
       {/* Courses Table */}
       <motion.div variants={cardVariants} initial="hidden" animate="visible">

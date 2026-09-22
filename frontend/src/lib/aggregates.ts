@@ -100,6 +100,9 @@ export function averageLmsParticipation(students: Student[]): number {
 
 /** Estudiantes matriculados en el salón del curso (misma sección). */
 export function studentsInCourseSalon(students: Student[], course: Course): Student[] {
+  if (students.some((student) => student.enrolledCourseIds !== undefined)) {
+    return students.filter((student) => student.enrolledCourseIds?.includes(course.id));
+  }
   if (!course.seccionId) return students;
   return students.filter((s) => s.seccionId === course.seccionId);
 }
@@ -133,7 +136,7 @@ export function failCountByCourse(
   return courses.map((c) => ({
     courseId: c.id,
     nombre: c.nombre,
-    desaprobados: studentsInCourseSalon(students, c).filter((s) => s.metrics.promedioGeneral < umbral)
+    desaprobados: studentsInCourseSalon(students, c).filter((s) => s.hasGrades && s.metrics.promedioGeneral < umbral)
       .length,
   }));
 }

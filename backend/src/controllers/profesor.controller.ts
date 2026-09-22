@@ -28,6 +28,10 @@ async function teacherId(req: Request): Promise<bigint> {
 
 const studentListInclude = {
   seccion: { include: { grado: { include: { nivel: true } } } },
+  inscripciones: {
+    where: { estado: "activa" as const, course: { activo: true, anioLectivo: { anio: 2026 } } },
+    select: { cursoOfertaId: true },
+  },
   predicciones: { orderBy: { createdAt: "desc" as const }, take: 1 },
   alertas: { where: { estado: { in: ["nueva", "en_seguimiento"] as ("nueva" | "en_seguimiento")[] } } },
 };
@@ -48,6 +52,7 @@ async function mapStudentRow(
     indicators: await studentIndicators(s.id),
     predictions: s.predicciones,
     alerts: s.alertas,
+    enrolledCourseIds: s.inscripciones.map((enrollment) => idToString(enrollment.cursoOfertaId)),
   };
 }
 

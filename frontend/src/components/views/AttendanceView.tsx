@@ -24,6 +24,7 @@ import {
   type AttendanceEstado,
 } from "@/lib/attendance-status";
 import { CalendarCheck } from "lucide-react";
+import { averageAttendance } from "@/lib/aggregates";
 
 type AttendanceRow = {
   id: string;
@@ -137,14 +138,7 @@ export function AttendanceView({
     };
   }, [bulkEstados, filteredStudents.length]);
 
-  const pct =
-    summary.total > 0
-      ? Math.round(
-          (filteredStudents.reduce((s, st) => s + st.metrics.asistenciaGeneral, 0) /
-            filteredStudents.length) *
-            10,
-        ) / 10
-      : 0;
+  const pct = averageAttendance(filteredStudents);
 
   async function saveBulk() {
     if (!filters.seccionId) {
@@ -210,7 +204,7 @@ export function AttendanceView({
           { label: "Tardanzas", value: summary.tardanza, tone: "warning" },
           { label: "Faltas", value: summary.falta, tone: "danger" },
           { label: "Justificadas", value: summary.just },
-          { label: "% asist. general", value: `${pct}%` },
+          { label: "% asist. general", value: pct == null ? "—" : `${pct}%` },
         ]}
       />
 
@@ -315,7 +309,7 @@ export function AttendanceView({
                     <td>
                       <span className={estadoBadgeClass(estado)}>{estadoLabel(estado)}</span>
                     </td>
-                    <td>{st ? `${st.metrics.asistenciaGeneral}%` : "—"}</td>
+                    <td>{st?.hasAttendance ? `${st.metrics.asistenciaGeneral}%` : "—"}</td>
                   </tr>
                 );
               })}

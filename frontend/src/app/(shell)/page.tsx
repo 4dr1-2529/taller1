@@ -35,11 +35,7 @@ import {
   defaultTeacherForm,
   type NewTeacherForm,
 } from "@/components/views/TeachersView";
-import {
-  CoursesView,
-  defaultCourseForm,
-  type NewCourseForm,
-} from "@/components/views/CoursesView";
+import { CoursesView } from "@/components/views/CoursesView";
 import { TeacherAssignmentsView } from "@/components/views/TeacherAssignmentsView";
 import { GradesView } from "@/components/views/GradesView";
 import { ProfessorGradesView } from "@/components/views/ProfessorGradesView";
@@ -182,7 +178,6 @@ export default function Home() {
     updateTeacher,
     deactivateTeacher,
     createTeacherAccount,
-    addCourse,
     updateCourse,
     deactivateCourse,
     addMatricula,
@@ -193,7 +188,6 @@ export default function Home() {
 
   const [newStudent, setNewStudent] = useState<NewStudentForm>(defaultStudentForm);
   const [newTeacher, setNewTeacher] = useState<NewTeacherForm>(defaultTeacherForm);
-  const [newCourse, setNewCourse] = useState<NewCourseForm>(defaultCourseForm);
   const [matriculaForm, setMatriculaForm] = useState<NewMatriculaForm>(initialMatricula);
 
   const useApi = dataSource === "api";
@@ -251,21 +245,6 @@ export default function Home() {
   async function handleAddTeacher(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (await addTeacher(newTeacher)) setNewTeacher(defaultTeacherForm);
-  }
-
-  async function handleAddCourse(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const profesorId = user?.teacherId ?? newCourse.profesorId;
-    if (!profesorId || !newCourse.seccionId) return;
-    if (await addCourse({
-      codigo: newCourse.codigo,
-      nombre: newCourse.nombre,
-      profesorId,
-      seccionId: newCourse.seccionId,
-      gradoId: newCourse.gradoId,
-    })) {
-      setNewCourse({ ...defaultCourseForm, profesorId: user?.teacherId ?? "" });
-    }
   }
 
   function renderSection() {
@@ -338,15 +317,9 @@ export default function Home() {
           <CoursesView
             courses={courses}
             teachers={teachers}
-            secciones={secciones}
-            form={newCourse}
-            setForm={setNewCourse}
-            onSubmit={handleAddCourse}
             onReassignProfesor={(courseId, profesorId) => updateCourse(courseId, { profesorId })}
             onDeactivate={isDirector ? deactivateCourse : undefined}
-            canEdit={isDirector}
             canReassign={isDirector}
-            lockProfesorId={role === "docente" ? user?.teacherId ?? undefined : undefined}
           />
         );
       case "Matrículas":

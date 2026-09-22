@@ -9,16 +9,19 @@ export async function buildProfesorDashboard(teacherId: bigint) {
   const workload = await getTeacherWorkload(teacherId);
 
   const courses = await prisma.course.findMany({
-    where: { profesorId: teacherId, activo: true },
+    where: { profesorId: teacherId, activo: true, anioLectivo: { anio: 2026 } },
     include: {
       seccion: { include: { grado: true } },
       cursoCatalogo: { select: { nombre: true } },
-      calificaciones: { select: { nota: true, periodo: { select: { id: true, numero: true } } } },
+      calificaciones: {
+        where: { periodo: { anioLectivo: { anio: 2026 } } },
+        select: { nota: true, periodo: { select: { id: true, numero: true } } },
+      },
     },
   });
 
   const periodos = await prisma.periodoAcademico.findMany({
-    where: { numero: { in: [1, 2] }, activo: true },
+    where: { numero: { in: [1, 2] }, anioLectivo: { anio: 2026 } },
     select: { id: true, numero: true },
     take: 2,
   });
@@ -39,28 +42,30 @@ export async function buildProfesorDashboard(teacherId: bigint) {
 
     const salon = c.seccion ? `${c.seccion.grado.numero}°${c.seccion.nombre}` : "—";
     const notas = c.calificaciones.map((g) => Number(g.nota));
-    const avg = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
-    const prev = avgBySectionMap.get(salon) ?? { sum: 0, count: 0 };
-    avgBySectionMap.set(salon, { sum: prev.sum + avg, count: prev.count + 1 });
+    if (notas.length) {
+      const avg = notas.reduce((a, b) => a + b, 0) / notas.length;
+      const prev = avgBySectionMap.get(salon) ?? { sum: 0, count: 0 };
+      avgBySectionMap.set(salon, { sum: prev.sum + avg, count: prev.count + 1 });
+    }
   }
 
   const avgByCourse = courses.map((c) => {
     const notas = c.calificaciones.map((g) => Number(g.nota));
-    const avg = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
+    const avg = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : null;
     const grado = c.seccion?.grado?.numero ?? 0;
     const sec = c.seccion?.nombre ?? "";
     return {
       courseId: String(c.id),
       nombre: c.cursoCatalogo?.nombre ?? c.codigo,
       salon: grado && sec ? `${grado}°${sec}` : "—",
-      promedio: Math.round(avg * 10) / 10,
+      promedio: avg == null ? null : Math.round(avg * 10) / 10,
       totalNotas: notas.length,
     };
   });
 
   const avgBySection = [...avgBySectionMap.entries()].map(([salon, v]) => ({
     salon,
-    promedio: v.count ? Math.round((v.sum / v.count) * 10) / 10 : 0,
+    promedio: Math.round((v.sum / v.count) * 10) / 10,
   }));
 
   return {

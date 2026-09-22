@@ -59,7 +59,7 @@ export async function loadStudentProfile(studentId: bigint) {
 
 async function activePeriodoLabel(): Promise<string | null> {
   const p = await prisma.periodoAcademico.findFirst({
-    where: { activo: true },
+    where: { activo: true, anioLectivo: { anio: 2026 } },
     orderBy: { numero: "desc" },
     select: { nombre: true },
   });
@@ -261,7 +261,7 @@ export async function buildEstudianteAsistencia(studentId: bigint, query: Asiste
   }
   if (query.bimestre && /^[1-4]$/.test(query.bimestre)) {
     const periodo = await prisma.periodoAcademico.findFirst({
-      where: { numero: Number(query.bimestre), activo: true },
+      where: { numero: Number(query.bimestre), anioLectivo: { anio: 2026 } },
       orderBy: { numero: "desc" },
     });
     if (periodo) {
@@ -324,8 +324,10 @@ export async function buildEstudianteAsistencia(studentId: bigint, query: Asiste
     else if (r.estado === "Justificada") justificadas++;
   }
   const total = items.length;
-  const porcentaje =
-    total > 0 ? Math.round(((asistencias + tardanzas) / Math.max(1, total - justificadas)) * 1000) / 10 : profile?.asistenciaGeneral ?? null;
+  const computable = total - justificadas;
+  const porcentaje = computable > 0
+    ? Math.round(((asistencias + tardanzas) / computable) * 1000) / 10
+    : null;
 
   return {
     profile,
@@ -363,7 +365,7 @@ export async function buildEstudiantePrediccion(studentId: bigint) {
       probabilidadAbandono: Number(pred.probabilidadAbandono),
       nivelRiesgo: LEVEL_LABEL[pred.nivelRiesgo] ?? pred.nivelRiesgo,
       nivel: pred.nivelRiesgo,
-      modelo: pred.modelo?.nombre ?? "Modelo ensemble local",
+      modelo: pred.modelName ?? pred.modelo?.nombre ?? "Modelo registrado",
       modeloVersion: pred.modelo?.version ?? null,
       fecha: pred.createdAt,
       factores: pred.factores.map((f) => ({

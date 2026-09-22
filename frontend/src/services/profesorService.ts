@@ -67,7 +67,7 @@ export type ProfesorDashboardData = {
   alertsBySalonShort: { salon: string; count: number }[];
   attendanceByGrado: { grado: string; asistencia: number }[];
   lmsActivityByGrado: { grado: string; alta: number; media: number; baja: number; sin: number }[];
-  avgByCourse: { courseId: string; nombre: string; salon: string; promedio: number; totalNotas: number }[];
+  avgByCourse: { courseId: string; nombre: string; salon: string; promedio: number | null; totalNotas: number }[];
   riskTrend: { periodo: string; riesgoGlobal: number }[];
 };
 

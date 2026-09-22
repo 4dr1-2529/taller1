@@ -55,6 +55,7 @@ type ApiStudent = {
   lmsEngagement?: string;
   indicators?: { dias_activos: number; actividades_realizadas: number; recursos_consultados: number; tiempo_interaccion_lms: number; promedio_general: number | null; asistencia_general: number | null };
   predictions?: ApiStoredPrediction[];
+  enrolledCourseIds?: string[];
 };
 
 type ApiTeacherCourse = {
@@ -138,6 +139,7 @@ export function mapStudentFromApi(row: ApiStudent): Student {
     hasAttendance: ind ? ind.asistencia_general != null : true,
     nivel: nivelLabel,
     seccionId: row.seccionId ?? row.seccion?.id,
+    enrolledCourseIds: row.enrolledCourseIds,
     correo: row.correo ?? "",
     telefono: row.telefono ?? "",
     estado: mapEstado(row.estado),

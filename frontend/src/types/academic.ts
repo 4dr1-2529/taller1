@@ -28,6 +28,7 @@ export type Student = {
   /** Etiqueta legible: Primaria · 3° A */
   nivel: string;
   seccionId?: string;
+  enrolledCourseIds?: string[];
   correo: string;
   telefono: string;
   estado: StudentStatus;

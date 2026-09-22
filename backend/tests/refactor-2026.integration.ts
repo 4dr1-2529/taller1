@@ -13,6 +13,8 @@ const { default: router } = await import("../src/routes/index.js");
 const { errorHandler } = await import("../src/middleware/errorHandler.js");
 const { recordLmsEvent, studentIndicators } = await import("../src/services/lms.service.js");
 const { buildDashboardAnalytics } = await import("../src/services/dashboard-analytics.service.js");
+const { buildEstudianteAsistencia, buildEstudiantePrediccion, loadStudentProfile } = await import("../src/services/estudiante.service.js");
+const { buildProfesorDashboard } = await import("../src/services/profesor-dashboard.service.js");
 
 const app = express();
 app.set("json replacer", (_key: string, value: unknown) => typeof value === "bigint" ? String(value) : value);
@@ -29,7 +31,9 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
   const roles = await Promise.all((["admin", "docente", "estudiante"] as const).map(codigo => prisma.role.upsert({ where: { codigo }, create: { codigo, nombre: codigo }, update: {} })));
   const inst = await prisma.institucion.create({ data: { codigo: "TEST-2026", nombre: "Institution for automated tests" } });
   const year = await prisma.anioLectivo.create({ data: { institucionId: inst.id, anio: 2026, nombre: "2026", activo: true, fechaInicio: new Date("2026-03-01"), fechaFin: new Date("2026-12-20") } });
-  const period = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 1, nombre: "I", activo: true, fechaInicio: new Date("2026-03-01"), fechaFin: new Date("2026-05-31") } });
+  const period = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 1, nombre: "I", activo: false, fechaInicio: new Date("2026-03-01"), fechaFin: new Date("2026-05-31") } });
+  const period2 = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 2, nombre: "II", activo: false, fechaInicio: new Date("2026-06-01"), fechaFin: new Date("2026-08-31") } });
+  const period3 = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 3, nombre: "III", activo: true, fechaInicio: new Date("2026-09-01"), fechaFin: new Date("2026-10-31") } });
   const level = await prisma.nivelEducativo.create({ data: { codigo: "TEST", nombre: "Primaria test" } });
   const grade = await prisma.grado.create({ data: { nivelId: level.id, numero: 1, nombre: "Primero" } });
   const section = await prisma.seccion.create({ data: { gradoId: grade.id, nombre: "A", capacidad: 10 } });
@@ -136,6 +140,83 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     assert.equal(await prisma.prediction.count({ where: { studentId: first.student.id } }), 2);
     assert.equal(await prisma.alert.count({ where: { studentId: first.student.id } }), 1);
     assert.equal((await call("/predict", "student", { studentId: String(first.student.id) })).status, 403);
+  });
+  await t.test("course offering cannot be created outside teacher assignments", async () => {
+    const response = await call("/courses", "admin", {
+      codigo: "BYPASS",
+      nombre: catalog.nombre,
+      profesorId: String(teacher.id),
+      seccionId: String(section.id),
+      cursoCatalogoId: String(catalog.id),
+    });
+    assert.equal(response.status, 404);
+  });
+  await t.test("student attendance resolves historical 2026 terms and justified-only is null", async () => {
+    await prisma.attendance.createMany({
+      data: [
+        { studentId: first.student.id, fecha: new Date("2026-04-10"), presente: true },
+        { studentId: first.student.id, fecha: new Date("2026-07-10"), presente: false },
+        { studentId: other.student.id, fecha: new Date("2026-04-11"), presente: false, justificado: true },
+      ],
+    });
+    const b1 = await buildEstudianteAsistencia(first.student.id, { bimestre: "1" });
+    const b2 = await buildEstudianteAsistencia(first.student.id, { bimestre: "2" });
+    assert.ok(b1.items.some((item) => new Date(item.fecha).toISOString().startsWith("2026-04-10")));
+    assert.ok(b2.items.some((item) => new Date(item.fecha).toISOString().startsWith("2026-07-10")));
+    const justified = await buildEstudianteAsistencia(other.student.id, { bimestre: "1" });
+    assert.equal(justified.resumen.total, 1);
+    assert.equal(justified.resumen.justificadas, 1);
+    assert.equal(justified.resumen.porcentaje, null);
+    assert.equal((await loadStudentProfile(first.student.id))?.periodoAcademico, "III");
+  });
+  await t.test("teacher reports and prediction history remain inside filtered scope", async () => {
+    const roster = await call("/profesor/estudiantes?all=true", "teacher");
+    assert.equal(roster.status, 200);
+    const rosterItems = (await roster.json()).data.items as { id: string }[];
+    assert.ok(rosterItems.length > 0);
+    assert.ok(rosterItems.every((item) => item.id !== String(other.student.id)));
+
+    const expectations = [
+      `/profesor/historial-predicciones?gradoId=${grade.id}`,
+      `/profesor/historial-predicciones?seccionId=${section.id}`,
+      `/profesor/historial-predicciones?cursoId=${course.id}`,
+      "/profesor/historial-predicciones?riskLevel=alto",
+      `/profesor/historial-predicciones?search=${first.student.codigo}`,
+    ];
+    for (const path of expectations) {
+      const response = await call(path, "teacher");
+      assert.equal(response.status, 200, await response.clone().text());
+      const items = (await response.json()).data.items as { studentId: string; level: string }[];
+      assert.ok(items.length > 0, path);
+      assert.ok(items.every((item) => item.studentId !== String(other.student.id)), path);
+      if (path.includes("riskLevel")) assert.ok(items.every((item) => item.level === "alto"));
+    }
+    const outsideHistory = await call(`/profesor/historial-predicciones?studentId=${other.student.id}`, "teacher");
+    assert.equal(outsideHistory.status, 403);
+  });
+  await t.test("teacher dashboard uses B1-B2 with III active and omits fake course averages", async () => {
+    const emptyCatalog = await prisma.cursoCatalogo.create({ data: { areaId: area.id, codigo: "TEST-EMPTY", nombre: "Sin notas" } });
+    const emptyCourse = await prisma.course.create({ data: { cursoId: emptyCatalog.id, seccionId: section.id, profesorId: teacher.id, anioLectivoId: year.id, codigo: "TEST-EMPTY-A" } });
+    await prisma.grade.upsert({
+      where: { studentId_cursoOfertaId_periodoId: { studentId: first.student.id, cursoOfertaId: course.id, periodoId: period2.id } },
+      create: { studentId: first.student.id, cursoOfertaId: course.id, periodoId: period2.id, nota: 15 },
+      update: { nota: 15 },
+    });
+    const dashboard = await buildProfesorDashboard(teacher.id);
+    assert.ok(dashboard.kpis.notasPendientes >= 0);
+    assert.ok(dashboard.avgByCourse.some((row) => row.courseId === String(course.id) && row.totalNotas > 0));
+    assert.ok(dashboard.avgByCourse.some((row) => row.courseId === String(emptyCourse.id) && row.promedio === null));
+    assert.ok(dashboard.avgByCourse.every((row) => row.totalNotas > 0 || row.promedio === null));
+    const pred = await buildEstudiantePrediccion(first.student.id);
+    assert.equal(pred.prediction?.modelo, "test-stub");
+  });
+  await t.test("teacher grades accept periodoNumero while III is active", async () => {
+    for (const numero of [1, 2]) {
+      const response = await call(`/profesor/notas?courseId=${course.id}&periodoNumero=${numero}`, "teacher");
+      assert.equal(response.status, 200, await response.clone().text());
+      const items = (await response.json()).data.items as { bimestre: number }[];
+      assert.ok(items.every((item) => item.bimestre === numero));
+    }
   });
   await t.test("teacher roster is restricted to directors", async () => {
     assert.equal((await call("/teachers", "admin")).status, 200);
@@ -307,7 +388,7 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     const grade3 = await prisma.grado.create({ data: { nivelId: level.id, numero: 3, nombre: "TerceroT" } });
     const secD = await prisma.seccion.create({ data: { gradoId: grade3.id, nombre: "D", capacidad: 10 } });
     const catR = await prisma.cursoCatalogo.create({ data: { areaId: area.id, codigo: "TEST-REAS", nombre: "Reasignacion" } });
-    const per2 = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 2, nombre: "II-T", activo: true, fechaInicio: new Date("2026-06-01"), fechaFin: new Date("2026-08-31") } });
+    const per2 = period2;
     const alu = await registerStudent(input("90000209", secD.id), String(admin.id));
     const assCreate = await call("/teacher-assignments", "admin", { profesorId: String(teacher.id), cursoId: String(catR.id), seccionId: String(secD.id) });
     assert.equal(assCreate.status, 201, await assCreate.text());
@@ -362,7 +443,7 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     const g4 = await prisma.grado.create({ data: { nivelId: level.id, numero: 4, nombre: "CuartoH" } });
     const secE = await prisma.seccion.create({ data: { gradoId: g4.id, nombre: "E", capacidad: 10 } });
     const catH = await prisma.cursoCatalogo.create({ data: { areaId: area.id, codigo: "TEST-HON", nombre: "Honestidad" } });
-    const p3 = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 3, nombre: "III-H", activo: true, fechaInicio: new Date("2026-08-01"), fechaFin: new Date("2026-10-31") } });
+    const p3 = period3;
     const p4 = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 4, nombre: "IV-H", activo: true, fechaInicio: new Date("2026-11-01"), fechaFin: new Date("2026-12-15") } });
     const mk = async (dni: string) => (await registerStudent(input(dni, secE.id), String(admin.id))).student;
     const m1 = await mk("90000221");

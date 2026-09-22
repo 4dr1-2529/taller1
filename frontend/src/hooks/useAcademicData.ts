@@ -10,7 +10,6 @@ import {
 } from "@/lib/api-mappers";
 import { fetchAllStudents } from "@/lib/fetch-all-students";
 import {
-  validateCourseForm,
   validateMatriculaForm,
   validatePassword,
   validateStudentForm,
@@ -68,7 +67,9 @@ export function useAcademicData() {
         return true;
       }
       const [st, te, co, stats] = await Promise.all([
-        isDocente ? Promise.resolve([]) : fetchAllStudents(false),
+        isDocente
+          ? profesorService.getEstudiantes({ all: true }).then((r) => r.items.map(mapStudentFromApi))
+          : fetchAllStudents(false),
         isDocente ? Promise.resolve({ items: [] }) : api.getTeachers(),
         isDocente ? profesorService.getCursos() : api.getCourses(),
         isDocente ? Promise.resolve(null) : api.getMatriculaStats().catch(() => null),
@@ -92,7 +93,9 @@ export function useAcademicData() {
           return true;
         }
         const [st, te, co, stats] = await Promise.all([
-          isDocente ? Promise.resolve([]) : fetchAllStudents(false),
+          isDocente
+            ? profesorService.getEstudiantes({ all: true }).then((r) => r.items.map(mapStudentFromApi))
+            : fetchAllStudents(false),
           isDocente ? Promise.resolve({ items: [] }) : api.getTeachers(),
           isDocente ? profesorService.getCursos() : api.getCourses(),
           isDocente ? Promise.resolve(null) : api.getMatriculaStats().catch(() => null),
@@ -278,41 +281,6 @@ export function useAcademicData() {
     }
   }
 
-  async function addCourse(payload: {
-    codigo: string;
-    nombre: string;
-    profesorId: string;
-    seccionId: string;
-    gradoId?: string;
-  }): Promise<boolean> {
-    if (!api.hasToken) {
-      toast.error("Inicie sesión para crear cursos");
-      return false;
-    }
-    const fieldErrors = validateCourseForm({
-      codigo: payload.codigo,
-      nombre: payload.nombre,
-      profesorId: payload.profesorId,
-      gradoId: payload.gradoId ?? "",
-      seccionId: payload.seccionId,
-    });
-    const validationMsg = firstError(fieldErrors);
-    if (validationMsg) {
-      toast.error(validationMsg);
-      return false;
-    }
-    try {
-      const res = await api.createCourse({ ...payload, periodo: "2026" });
-      const row = mapCourseFromApi(res.course as Parameters<typeof mapCourseFromApi>[0]);
-      setCourses((prev) => [...prev, row]);
-      toast.success("Curso creado");
-      return true;
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Error al crear curso");
-      return false;
-    }
-  }
-
   async function addMatricula(form: NewMatriculaForm): Promise<boolean> {
     const fieldErrors = validateMatriculaForm(form);
     const validationMsg = firstError(fieldErrors);
@@ -354,7 +322,6 @@ export function useAcademicData() {
     updateTeacher,
     deactivateTeacher,
     createTeacherAccount,
-    addCourse,
     updateCourse,
     deactivateCourse,
     addMatricula,

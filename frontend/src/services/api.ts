@@ -495,10 +495,6 @@ class ApiClient {
     );
   }
 
-  async createCourse(payload: Record<string, unknown>) {
-    return this.request<{ course: Course }>("/courses", { method: "POST", body: JSON.stringify(payload) });
-  }
-
   async updateCourse(id: string, payload: Record<string, unknown>) {
     return this.request<{ course: Course }>(`/courses/${id}`, { method: "PUT", body: JSON.stringify(payload) });
   }

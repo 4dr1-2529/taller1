@@ -7,6 +7,7 @@ import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { RiskGauge } from "@/components/ui/RiskGauge";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import { formatContributionPoints } from "@/lib/prediction-display";
 
 function riskLevelKey(nivel: string): "bajo" | "medio" | "alto" {
   const l = nivel.toLowerCase();
@@ -100,7 +101,7 @@ export function StudentPredictionView() {
                   {pred.factores.map((f) => (
                     <li key={f.key}>
                       <strong className="text-[var(--text-primary)]">{f.label}</strong> — contribución{" "}
-                      {(f.contribution * 100).toFixed(0)}%
+                      {formatContributionPoints(f.contribution)}
                     </li>
                   ))}
                 </ul>

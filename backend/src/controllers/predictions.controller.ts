@@ -4,6 +4,7 @@ import { prisma } from "../utils/prisma.js";
 import { resolveStudentScope, assertStudentInScope } from "../utils/student-scope.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
+import { buildProfesorStudentWhere, parseProfesorQuery, requireTeacherIdFromUser } from "../utils/profesor-query.js";
 
 function mapPrediction(p: {
   id: bigint;
@@ -42,8 +43,14 @@ function mapPrediction(p: {
 export async function listPredictions(req: Request, res: Response, next: NextFunction) {
   try {
     const user = req.user!;
-    const scope = await resolveStudentScope(user);
+    const scope = user.role === "docente"
+      ? await buildProfesorStudentWhere(await requireTeacherIdFromUser(user.sub), parseProfesorQuery(req))
+      : await resolveStudentScope(user);
     const studentId = req.query.studentId as string | undefined;
+    const riskLevel = req.query.riskLevel as string | undefined;
+    if (riskLevel && !["bajo", "medio", "alto"].includes(riskLevel)) {
+      throw new AppError(400, "riskLevel inválido");
+    }
     if (studentId) await assertStudentInScope(user, studentId);
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(100, Number(req.query.limit) || 30);
@@ -52,6 +59,7 @@ export async function listPredictions(req: Request, res: Response, next: NextFun
     const where = {
       student: scope,
       ...(studentId ? { studentId: toDbId(studentId) } : {}),
+      ...(riskLevel ? { nivelRiesgo: riskLevel as "bajo" | "medio" | "alto" } : {}),
     };
 
     const [rows, total] = await Promise.all([

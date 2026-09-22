@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { validateStudentForm, validateTeacherForm, validatePassword } from "../src/lib/validation";
-import { attachPredictions, averageGrade, globalRiskScore, lowLmsStudents } from "../src/lib/aggregates";
+import { attachPredictions, averageAttendance, averageGrade, globalRiskScore, lowLmsStudents, studentsInCourseSalon } from "../src/lib/aggregates";
 import { mapStudentFromApi } from "../src/lib/api-mappers";
+import { formatContributionPoints } from "../src/lib/prediction-display";
 import type { Student } from "../src/types/academic";
 
 test("student registration accepts only identification and section, with optional contacts", () => {
@@ -56,4 +57,16 @@ test("mapper distingue sin-datos de cero real", () => {
   assert.equal(ceroReal.metrics.promedioGeneral, 0);
   assert.equal(averageGrade([sinDatos]), null);
   assert.equal(averageGrade([sinDatos, ceroReal]), 0);
+  assert.equal(averageAttendance([sinDatos]), null);
+  assert.equal(averageAttendance([sinDatos, ceroReal]), 0);
+});
+test("prediction contribution is displayed as points without percentage scaling", () => {
+  assert.equal(formatContributionPoints(16), "16 pts");
+  assert.equal(formatContributionPoints(16.4), "16 pts");
+});
+test("teacher report rows follow active course enrollment instead of section alone", () => {
+  const enrolled = { ...blankStudent("1"), seccionId: "section-a", enrolledCourseIds: ["course-a"] };
+  const outside = { ...blankStudent("2"), seccionId: "section-a", enrolledCourseIds: ["course-b"] };
+  const course = { id: "course-a", codigo: "MAT-1A", nombre: "Matematica", nivel: "1A", profesorId: "teacher-1", seccionId: "section-a" };
+  assert.deepEqual(studentsInCourseSalon([enrolled, outside], course).map((student) => student.id), ["1"]);
 });
