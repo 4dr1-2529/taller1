@@ -18,6 +18,7 @@ jobs:
           python-version: "3.12"
       - run: npm ci --ignore-scripts
       - run: npm run prisma:generate
+      - run: npm run type-check:tools --workspace=backend
       - run: npm run build --workspace=@tesis/shared
       - run: npm run type-check
       - run: npm run lint

@@ -1,3 +1,4 @@
+throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
 /**
  * Limpia datos operativos/demo y deja solo la estructura institucional (seed.ts).
  * Uso: npm run db:reset:full

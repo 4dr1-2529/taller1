@@ -1,3 +1,4 @@
+throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
 /** Explicit, scoped demo cleanup. Never invoked by migrations or deployment. */
 import { readFileSync } from "node:fs";
 import { PrismaClient } from "@prisma/client";

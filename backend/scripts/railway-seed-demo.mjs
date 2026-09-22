@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
 /**
  * Poblar demo en Railway (consola del servicio backend, raíz del monorepo):
  *   npm run railway:seed:demo

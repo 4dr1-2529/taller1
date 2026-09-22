@@ -1,3 +1,4 @@
+throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
 /**
  * Repara cuentas de acceso y notas I–II sin borrar toda la base.
  * Uso: tsx scripts/repair-institutional-data.ts

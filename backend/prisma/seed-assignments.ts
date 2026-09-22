@@ -1,3 +1,4 @@
+throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
 /**
  * Seed demo — asignación docente institucional
  * 1°–2°: un tutor exclusivo por salón (dicta todos los cursos de ese aula)

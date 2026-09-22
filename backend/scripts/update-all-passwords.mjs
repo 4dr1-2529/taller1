@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import { requireDemoPassword } from "./demo-env.mjs";
