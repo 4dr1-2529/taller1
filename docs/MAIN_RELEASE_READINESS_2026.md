@@ -139,3 +139,50 @@ Todavía NO ejecutado. Main queda como base oficial para iniciarlo.
 
 ## Veredicto final pre-Data-Seed - 2026-09-21
 `MAIN COMPLETO, VALIDADO Y LISTO PARA DATA SEED V2`
+
+## Certificación definitiva del Release Gate pre-Data-Seed - 2026-09-21
+- Base funcional certificada: `9da29cfc0ec8e13ccf0aff3a3b102b5cdfa6dcc1` en `main`.
+- GitHub Actions run `35681161994`: `completed / success`.
+- El flujo de escritura de notas por bimestre se validó exhaustivamente contra una base MariaDB
+  aislada usando el backend real y sus migraciones productivas. Con el bimestre III activo se
+  comprobó la escritura explícita en I y II, la aceptación de la nota `0`, la actualización de una
+  nota existente y la asociación al `periodoId` seleccionado; ninguna operación terminó en III.
+- La integración también verificó períodos homónimos 2025/2026, evidencia académica limitada a
+  2026, cursos del profesor restringidos a asignaciones 2026 y ausencia de promedios ficticios.
+- La base aislada fue eliminada al terminar. No se ejecutaron Data Seed, cambios de schema,
+  migraciones nuevas, resets ni operaciones destructivas.
+
+## Política del smoke productivo final
+- La mutación de notas B1/B2 en producción se omitió deliberadamente. Crear una nota temporal solo
+  para completar un smoke habría alterado datos académicos productivos sin aportar evidencia
+  adicional frente a la integración aislada. Esta omisión preserva la integridad de producción y
+  no constituye una cobertura pendiente.
+- Producción se validó de forma no destructiva para autenticación, RBAC, navegación, lectura,
+  scopes y respuestas HTTP 403. El smoke recorrió 36 vistas: 15 de Director, 12 de Profesor y 9 de
+  Estudiante.
+- Director: dashboard, estudiantes, profesores, asignaciones, cursos, matrícula 2026, notas,
+  asistencia, LMS, predicción, historial, alertas, mensajería, reportes y configuración.
+- Profesor: dashboard, cursos 2026, estudiantes de scope, notas B1/B2 en lectura, asistencia,
+  materiales, actividades, LMS, predicción, historial, alertas y reportes.
+- Estudiante: dashboard, cursos, notas 2026, asistencia 2026, materiales, actividades, LMS,
+  predicción y mensajería, siempre dentro de su identidad autenticada.
+- Consola y red: 0 errores JavaScript inesperados, 0 `pageerror`, 0 HTTP 500 inesperados, 0 errores
+  CORS, 0 `undefined` y 0 `NaN` visibles.
+- Railway deployment asociado al SHA: `success`. Backend
+  `https://backend-production-fcb1.up.railway.app`; `GET /api/v1/health` HTTP 200.
+- CORS productivo permite exactamente `https://taller1-frontend.vercel.app`.
+- Vercel deployment asociado al SHA: `success`. `/login` y los paneles por rol responden y
+  consumen el backend Railway vigente.
+
+## Evidencia consolidada del gate
+- Prisma validate, type-check, lint, build backend y build frontend: correctos.
+- Backend: 59/59 pruebas.
+- Integración aislada: 39/39 pruebas.
+- Frontend: 16/16 pruebas.
+- ML: 7/7 pruebas; contrato activo de 7 features, sin entrenamiento ni predicciones ficticias.
+- Smoke productivo no destructivo: 36 vistas y tres roles, sin errores inesperados.
+- La combinación de CI, suites, builds, pruebas específicas B1/B2 y smoke productivo no
+  destructivo completa el Release Gate. Data Seed V2 todavía NO fue ejecutado.
+
+## Veredicto definitivo del Release Gate
+`MAIN RELEASE GATE 10/10 APROBADO — BASE CONGELADA Y LISTA PARA DATA SEED V2 250`
