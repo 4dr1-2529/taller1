@@ -94,7 +94,7 @@ async function main() {
 
   const anio = await prisma.anioLectivo.upsert({
     where: { institucionId_anio: { institucionId: institucion.id, anio: 2026 } },
-    update: { activo: true },
+    update: { fechaInicio: new Date("2026-03-01"), fechaFin: new Date("2026-12-15"), activo: true },
     create: {
       institucionId: institucion.id,
       anio: 2026,
@@ -105,17 +105,23 @@ async function main() {
     },
   });
 
-  for (let n = 1; n <= 4; n++) {
+  const periodos = [
+    [1, "I Bimestre", "2026-03-02", "2026-05-08", false],
+    [2, "II Bimestre", "2026-05-11", "2026-07-24", false],
+    [3, "III Bimestre", "2026-08-03", "2026-10-09", true],
+    [4, "IV Bimestre", "2026-10-12", "2026-12-15", false],
+  ] as const;
+  for (const [n, nombre, inicio, fin, activo] of periodos) {
     await prisma.periodoAcademico.upsert({
       where: { anioLectivoId_numero: { anioLectivoId: anio.id, numero: n } },
-      update: { activo: n === 1 },
+      update: { nombre, fechaInicio: new Date(inicio), fechaFin: new Date(fin), activo },
       create: {
         anioLectivoId: anio.id,
         numero: n,
-        nombre: `${["I", "II", "III", "IV"][n - 1]} Bimestre`,
-        fechaInicio: new Date(`2026-${String(1 + (n - 1) * 2).padStart(2, "0")}-01`),
-        fechaFin: new Date(`2026-${String(2 + (n - 1) * 2).padStart(2, "0")}-${n % 2 === 0 ? "30" : "28"}`),
-        activo: n === 1,
+        nombre,
+        fechaInicio: new Date(inicio),
+        fechaFin: new Date(fin),
+        activo,
       },
     });
   }
@@ -204,10 +210,11 @@ async function main() {
   for (const f of ML_FEATURES) {
     await prisma.mlFeatureDef.upsert({
       where: { codigo: f.codigo },
-      update: {},
+      update: f,
       create: f,
     });
   }
+  await prisma.mlFeatureDef.deleteMany({ where: { codigo: { notIn: ML_FEATURES.map(({ codigo }) => codigo) } } });
 
   await prisma.mensajeSala.upsert({
     where: { roomId: "global-institucion" },
@@ -233,44 +240,13 @@ async function main() {
     create: { clave: "anio_lectivo_activo", valor: "2026" },
   });
 
-  const dataset = await prisma.mlDataset.upsert({
-    where: { codigo_version: { codigo: "blenkir_primaria", version: "1.0.0" } },
-    update: {},
-    create: {
-      codigo: "blenkir_primaria",
-      version: "1.0.0",
-      rutaArchivo: "machine-learning/data/synthetic_blenkir.csv",
-      registros: 2500,
-      descripcion: "Dataset sintético alineado a variables tesis",
-    },
-  });
-
-  let train = await prisma.mlEntrenamiento.findFirst({ where: { codigo: "TRAIN-2026-001" } });
-  if (!train) {
-    train = await prisma.mlEntrenamiento.create({
-      data: {
-        datasetId: dataset.id,
-        codigo: "TRAIN-2026-001",
-        algoritmos: ["random_forest", "hist_gradient_boosting", "stacking"],
-        estado: "completado",
-        iniciadoAt: new Date(),
-        finalizadoAt: new Date(),
-      },
+  for (const [entidad, prefijo] of [
+    ["estudiante", "EST-"], ["profesor", "PROF-"], ["matricula", "MAT-2026-"],
+  ] as const) {
+    await prisma.correlativo.upsert({
+      where: { entidad }, update: { prefijo }, create: { entidad, prefijo, ultimoNumero: 0 },
     });
   }
-
-  await prisma.mlModelo.upsert({
-    where: { codigo: "RF-2026" },
-    update: { esProduccion: true },
-    create: {
-      entrenamientoId: train.id,
-      codigo: "RF-2026",
-      nombre: "Random Forest",
-      rutaArtifact: "machine-learning/models/best_model.joblib",
-      version: "1.0.0",
-      esProduccion: true,
-    },
-  });
 
   const secciones = await prisma.seccion.count();
   const cursos = await prisma.cursoCatalogo.count();

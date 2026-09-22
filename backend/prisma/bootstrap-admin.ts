@@ -10,9 +10,11 @@ const prisma = new PrismaClient();
 async function main() {
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
+  const nombres = process.env.ADMIN_NOMBRES?.trim();
+  const apellidos = process.env.ADMIN_APELLIDOS?.trim();
 
-  if (!email || !password || password.length < 8) {
-    console.error("Defina ADMIN_EMAIL y ADMIN_PASSWORD (mín. 8 caracteres).");
+  if (!email || !password || password.length < 12 || !nombres || !apellidos) {
+    console.error("Defina ADMIN_EMAIL, ADMIN_PASSWORD (mín. 12), ADMIN_NOMBRES y ADMIN_APELLIDOS.");
     process.exit(1);
   }
 
@@ -22,14 +24,16 @@ async function main() {
     process.exit(1);
   }
 
+  const role = await prisma.role.findUnique({ where: { codigo: "admin" } });
+  if (!role) throw new Error("No existe el rol admin. Ejecute primero db:seed:structure.");
   const hash = await bcrypt.hash(password, 12);
   const user = await prisma.user.create({
     data: {
       email: email.toLowerCase(),
       passwordHash: hash,
-      nombres: process.env.ADMIN_NOMBRES ?? "Administrador",
-      apellidos: process.env.ADMIN_APELLIDOS ?? "Sistema",
-      role: "admin",
+      nombres,
+      apellidos,
+      rolId: role.id,
     },
   });
 
