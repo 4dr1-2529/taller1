@@ -42,6 +42,7 @@
     "db:bootstrap": "npm run db:bootstrap:admin",
     "db:bootstrap:admin": "tsx prisma/bootstrap-admin.ts",
     "db:validate:preseed": "node scripts/validate-preseed-zero.mjs",
+    "db:cleanup:preseed": "node scripts/preseed-cleanup-v2.mjs",
     "db:studio": "prisma studio",
     "type-check": "tsc --noEmit",
     "type-check:tools": "tsc -p tsconfig.tools.json",
