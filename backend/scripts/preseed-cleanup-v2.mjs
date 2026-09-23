@@ -208,6 +208,13 @@ async function collectQaState(client) {
     ] },
   });
 
+  const legacyLmsIndicadores = await client.$queryRawUnsafe(`
+    SELECT id, estudiante_id, periodo_id, frecuencia_acceso, tiempo_plataforma,
+           tareas_ratio, participacion, uso_foros, disminucion_actividad, updated_at
+    FROM lms_indicador_estudiante
+    ORDER BY id
+  `);
+
   const predictions = await client.prediction.findMany({ where: { studentId: { in: studentIds } } });
   const predictionIds = ids(predictions);
   const predictionSnapshots = await client.prediccionFeatureSnapshot.findMany({ where: { prediccionId: { in: predictionIds } } });
@@ -292,6 +299,7 @@ async function collectQaState(client) {
     activityIds,
     activityProgress,
     lmsEvents,
+    legacyLmsIndicadores,
     predictions,
     predictionIds,
     predictionSnapshots,
@@ -371,10 +379,42 @@ async function assertFingerprint(client, state) {
   if (state.mlDatasets.length !== 1 || state.mlTrainings.length !== 1 || state.mlModels.length !== 1) fail("FINGERPRINT_MISMATCH ML artifacts");
 
   const legacyCounts = {};
-  for (const table of ["lms_actividad_semanal", "lms_entrega_tarea", "lms_indicador_estudiante"]) {
+
+  for (const table of ["lms_actividad_semanal", "lms_entrega_tarea"]) {
     legacyCounts[table] = await countLegacyTable(client, table);
-    if (legacyCounts[table] !== null && legacyCounts[table] !== 0) fail(`FINGERPRINT_MISMATCH legacy table ${table}=${legacyCounts[table]}`);
+    if (legacyCounts[table] !== 0) {
+      fail(`FINGERPRINT_MISMATCH legacy table ${table}=${legacyCounts[table]}`);
+    }
   }
+
+  legacyCounts.lms_indicador_estudiante =
+    await countLegacyTable(client, "lms_indicador_estudiante");
+
+  if (legacyCounts.lms_indicador_estudiante !== 9) {
+    fail(`FINGERPRINT_MISMATCH legacy table lms_indicador_estudiante=${legacyCounts.lms_indicador_estudiante}`);
+  }
+
+  if (state.legacyLmsIndicadores.length !== 9) {
+    fail(`FINGERPRINT_MISMATCH legacy LMS rows=${state.legacyLmsIndicadores.length}`);
+  }
+
+  const qaStudentSet = new Set(state.studentIds.map(String));
+  const legacyStudentIds = [...new Set(
+    state.legacyLmsIndicadores.map((row) => String(row.estudiante_id))
+  )];
+
+  if (legacyStudentIds.length !== 9) {
+    fail(`FINGERPRINT_MISMATCH legacy LMS students=${legacyStudentIds.length}`);
+  }
+
+  const unsafeLegacyRows = state.legacyLmsIndicadores.filter(
+    (row) => !qaStudentSet.has(String(row.estudiante_id))
+  );
+
+  if (unsafeLegacyRows.length !== 0) {
+    fail(`FINGERPRINT_MISMATCH legacy LMS non-QA rows=${unsafeLegacyRows.length}`);
+  }
+
   return { counts, coverage, legacyCounts };
 }
 
@@ -407,6 +447,7 @@ function buildBackup(state, fingerprint) {
       activities: state.activities,
       activityProgress: state.activityProgress,
       lmsEvents: state.lmsEvents,
+      legacyLmsIndicadores: state.legacyLmsIndicadores,
       predictions: state.predictions,
       predictionSnapshots: state.predictionSnapshots,
       predictionFactors: state.predictionFactors,
@@ -469,6 +510,7 @@ function planFrom(state) {
       predictionSnapshots: state.predictionSnapshots.length,
       predictions: state.predictions.length,
       lmsEvents: state.lmsEvents.length,
+      legacyLmsIndicadorEstudiante: state.legacyLmsIndicadores.length,
       activityProgress: state.activityProgress.length,
       resources: state.resources.length,
       activities: state.activities.length,
@@ -530,6 +572,23 @@ async function applyCleanup(tx, state) {
   await delIds("prediction", state.predictions);
   await delIds("lmsEvent", state.lmsEvents);
 
+  if (state.legacyLmsIndicadores.length) {
+    const qaStudentIdsSql = state.studentIds
+      .map((id) => BigInt(id).toString())
+      .join(",");
+
+    const deletedLegacy = await tx.$executeRawUnsafe(
+      `DELETE FROM \`lms_indicador_estudiante\`
+       WHERE estudiante_id IN (${qaStudentIdsSql})`
+    );
+
+    if (Number(deletedLegacy) !== state.legacyLmsIndicadores.length) {
+      fail(
+        `CLEANUP_FAILED legacy LMS expected=${state.legacyLmsIndicadores.length} deleted=${deletedLegacy}`
+      );
+    }
+  }
+
   if (state.activityProgress.length) {
     await tx.activityProgress.deleteMany({ where: { OR: [{ studentId: { in: state.studentIds } }, { activityId: { in: state.activityIds } }] } });
   }
@@ -588,6 +647,11 @@ async function assertZero(client) {
       : await client[model].count();
     if (count !== 0) fail(`POSTCHECK_FAILED ${model}=${count}`);
   }
+  for (const table of ["lms_actividad_semanal", "lms_entrega_tarea", "lms_indicador_estudiante"]) {
+    const count = await countLegacyTable(client, table);
+    if (count !== 0) fail(`POSTCHECK_FAILED legacy table ${table}=${count}`);
+  }
+
   if (await client.mensajeSala.count({ where: { alcance: "directo" } }) !== 0) fail("POSTCHECK_FAILED direct rooms");
   const rooms = (await client.mensajeSala.findMany({ select: { roomId: true } })).map((row) => row.roomId).sort();
   if (rooms.join("|") !== ["global-institucion", "profesores-interno"].sort().join("|")) fail(`POSTCHECK_FAILED rooms=${rooms.join(",")}`);
@@ -638,8 +702,13 @@ async function main() {
   console.log(`UPDATE_PLAN=${JSON.stringify(plan.update)}`);
 
   if (!EXECUTE) {
-    const afterDryRun = await majorCounts(prisma);
-    if (JSON.stringify(afterDryRun) !== JSON.stringify(fingerprint.counts)) fail("DRY_RUN_MUTATION_DETECTED");
+    const afterDryRunState = await collectQaState(prisma);
+    const afterDryRunFingerprint = await assertFingerprint(prisma, afterDryRunState);
+
+    if (JSON.stringify(afterDryRunFingerprint) !== JSON.stringify(fingerprint)) {
+      fail("DRY_RUN_MUTATION_DETECTED");
+    }
+
     console.log("DRY_RUN_OK");
     console.log(`BACKUP_VERIFIED_SHA256=${backupMeta.sha256}`);
     return;
