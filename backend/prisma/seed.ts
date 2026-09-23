@@ -20,7 +20,7 @@ const PERMISOS = [
 ];
 
 const ROLE_PERMS: Record<RolCodigo, string[]> = {
-  admin: PERMISOS.filter(p => !["notas.write", "asistencia.write"].includes(p.codigo)).map((p) => p.codigo),
+  admin: PERMISOS.map((p) => p.codigo),
   docente: [
     "estudiantes.read",
     "notas.write",
