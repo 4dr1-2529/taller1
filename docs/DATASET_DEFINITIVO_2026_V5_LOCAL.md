@@ -94,3 +94,28 @@ Archivos nuevos de implementacion:
 - Este documento.
 
 El XLSX V5 fue proporcionado por el usuario y no fue modificado. Los cambios permanecen locales y sin commit. Schema y servicios de negocio no fueron modificados.
+
+## Preflight conectado de solo lectura
+
+El checkpoint inicial quedo registrado en `fbfe680242787c7fd3ab5fe0a8b75012795f235f`.
+Una ruta independiente permite `npm run db:dataset:production-dry-run --workspace=backend`.
+Requiere `NODE_ENV=production` y un `DATABASE_URL` MySQL suministrado externamente;
+no carga dotenv, no acepta argumentos EXECUTE y no genera hashes de passwords.
+Solo informa SET/MISSING de las tres variables de login.
+
+El adaptador congelado expone unicamente count/findUnique/findFirst/findMany y tres
+SELECT COUNT fijos para legacy. No expone PrismaClient, SQL arbitrario, transacciones
+ni metodos de escritura. Comprueba PRESEED_ZERO antes de generar el plan, valida
+claves naturales y resuelve las 328 ofertas con IDs estructurales existentes.
+
+Antes y despues compara conteos de todas las tablas contempladas, correlativos y
+huellas SHA256 del contenido estructural (incluye SystemConfig y salas).
+Cualquier diferencia produce READ_ONLY_GUARD_VIOLATION=true. Esta comparacion
+detecta cambios observables entre snapshots; no atribuye a la herramienta cambios
+que pudiera realizar concurrentemente otro proceso.
+
+La suite local incluye rechazo de poblacion, estructura ausente, features incorrectas,
+correlativos no cero, claves naturales invalidas, configuracion ausente, IDs distintos,
+conteos alterados y cambios estructurales sin cambio de conteo. Ninguna prueba
+automatizada se conecta a Railway. Un PASS local no equivale a un PASS productivo:
+este ultimo requiere ejecutar la ruta nueva contra el datasource verificado.

@@ -82,6 +82,7 @@ export function memoryDatabase(source, failModel) {
     });
   };
   return {
+    get readClient() { return tx; },
     get rows() { return rows; }, get writes() { return writes; }, get committed() { return committed; },
     $transaction: async (fn, options) => {
       assert.equal(options.isolationLevel, "Serializable");
