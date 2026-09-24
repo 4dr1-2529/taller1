@@ -14,6 +14,12 @@ export function executionMode(args, env) {
 
 const date = value => value.toISOString().slice(0, 10);
 const key = (a, b) => `${a}/${b}`;
+// Measured sequential round-trip through the Railway SSH tunnel is ~205 ms/query.
+// The import performs ~1.000 round-trips (bulk batches + read-backs + per-student summaries),
+// so it needs ~210 s plus insert execution. The previous 180 s limit aborted the transaction
+// with P2028 before any data problem could occur. 600 s is finite and ~2x the measured need.
+const TRANSACTION_TIMEOUT_MS = 600000;
+const TRANSACTION_MAX_WAIT_MS = 10000;
 const zeroModels = [...Object.keys(COUNTS), ...ML_EMPTY, "session", "notification", "report", "chatMessage", "messageRead", "alertaFactor", "alertaHistorial", "dashboardSnapshot", "horarioClase", "studentApoderado", "apoderado"];
 
 export async function verifyPreseed(tx, source) {
@@ -64,66 +70,124 @@ async function batches(tx, name, rows) {
   for (let i = 0; i < rows.length; i += 500) await tx[name].createMany({ data: rows.slice(i, i + 500) });
 }
 
+// Tracks the current import step so a failure can be reported without exposing data.
+let currentPhase = "idle";
+export function importPhase() { return currentPhase; }
+const mark = name => { currentPhase = name; };
+
+// Bulk inserts cannot return ids, so ids are read back once and keyed by a unique column.
+// Production preseed is verified empty inside this transaction, so the read-back is exactly what we wrote.
+async function readBackByKey(tx, name, keyField, expected) {
+  const rows = await tx[name].findMany({ orderBy: { id: "asc" } });
+  check(rows.length === expected, `bulk read-back count ${name}`);
+  const map = new Map();
+  for (const row of rows) {
+    check(!map.has(row[keyField]), `bulk read-back duplicate ${name}.${keyField}`);
+    map.set(row[keyField], row.id);
+  }
+  return map;
+}
+
+// Same read-back, but the natural key is not persisted: position is verified against a stored FK.
+async function readBackByPosition(tx, name, expected, verify) {
+  const rows = await tx[name].findMany({ orderBy: { id: "asc" } });
+  check(rows.length === expected, `bulk read-back count ${name}`);
+  rows.forEach((row, i) => verify(row, i));
+  return rows;
+}
+
 export async function importDataset(prisma, source, dataset, passwordHashes) {
   validateDataset(source, dataset);
   return prisma.$transaction(async tx => {
     // Serializes competing imports before the zero-state check; rollback includes every write.
+    mark("lock");
     await tx.$queryRaw`SELECT id FROM anio_lectivo WHERE anio = 2026 FOR UPDATE`;
+    mark("preseed");
     const structure = await verifyPreseed(tx, source);
     const t = dataset.tables;
     const createdAt = new Date("2026-03-01T12:00:00.000Z");
     const updatedAt = new Date("2026-09-21T17:00:00.000Z");
-    const users = new Map();
+    mark("users");
+    const userRows = [];
     for (const row of t.user) {
       const { role, passwordEnv, ...data } = row;
       check(["DIRECTOR_INITIAL_PASSWORD", "TEACHER_INITIAL_PASSWORD", "STUDENT_INITIAL_PASSWORD"].includes(passwordEnv), "password reference");
       check(passwordHashes.has(row.email), "missing password hash");
-      const u = await tx.user.create({ data: { ...data, rolId: structure.roles.get(role), passwordHash: passwordHashes.get(row.email), createdAt, updatedAt } });
-      users.set(row.email, u.id);
+      userRows.push({ ...data, rolId: structure.roles.get(role), passwordHash: passwordHashes.get(row.email), createdAt, updatedAt });
     }
-    const teachers = new Map();
-    for (const row of t.teacher) { const r = await tx.teacher.create({ data: { ...row, usuarioId: users.get(row.email), createdAt } }); teachers.set(row.codigo, r.id); }
-    const students = new Map();
-    for (const row of t.student) {
+    await batches(tx, "user", userRows);
+    const users = await readBackByKey(tx, "user", "email", t.user.length);
+    mark("teachers");
+    await batches(tx, "teacher", t.teacher.map(row => ({ ...row, usuarioId: users.get(row.email), createdAt })));
+    const teachers = await readBackByKey(tx, "teacher", "codigo", t.teacher.length);
+    mark("students");
+    await batches(tx, "student", t.student.map(row => {
       const { section, fechaIngreso, ...data } = row;
-      const r = await tx.student.create({ data: { ...data, fechaIngreso: new Date(fechaIngreso), seccionId: structure.sections.get(section).id, usuarioId: users.get(row.email), createdAt, updatedAt } });
-      students.set(row.codigo, r.id);
-    }
+      return { ...data, fechaIngreso: new Date(fechaIngreso), seccionId: structure.sections.get(section).id, usuarioId: users.get(row.email), createdAt, updatedAt };
+    }));
+    const students = await readBackByKey(tx, "student", "codigo", t.student.length);
+    mark("matriculas");
     await batches(tx, "matricula", t.matricula.map(({ student, section, fechaMatricula, ...r }) => ({ ...r, estudianteId: students.get(student), seccionId: structure.sections.get(section).id, anioLectivoId: structure.year.id, fechaMatricula: new Date(fechaMatricula) })));
+    mark("tutors");
     await batches(tx, "tutorSeccion", t.tutorSeccion.map(r => ({ seccionId: structure.sections.get(r.section).id, profesorId: teachers.get(r.teacher), anioLectivoId: structure.year.id, activo: true })));
+    mark("courses");
+    await batches(tx, "course", t.course.map(c => ({ codigo: c.codigo, cursoId: structure.catalogs.get(c.catalog).id, seccionId: structure.sections.get(c.section).id, profesorId: teachers.get(c.teacher), anioLectivoId: structure.year.id, activo: true, createdAt })));
+    const codigoToKey = new Map(t.course.map(c => [c.codigo, c.key]));
     const courses = new Map();
-    for (const a of t.teacherCourseAssignment) {
+    for (const [codigo, id] of await readBackByKey(tx, "course", "codigo", t.course.length)) {
+      const offeringKey = codigoToKey.get(codigo);
+      check(offeringKey !== undefined, "course offering key");
+      courses.set(offeringKey, id);
+    }
+    check(courses.size === t.course.length, "course offering map");
+    mark("teacherAssignments");
+    await batches(tx, "teacherCourseAssignment", t.teacherCourseAssignment.map(a => {
       const section = structure.sections.get(a.section);
-      const offering = t.course.find(c => c.key === a.course);
-      const assignment = await tx.teacherCourseAssignment.create({ data: { profesorId: teachers.get(a.teacher), cursoId: structure.catalogs.get(a.catalog).id, gradoId: section.gradoId, seccionId: section.id, anioLectivoId: structure.year.id, esTutor: a.esTutor, activo: true, createdAt, updatedAt } });
-      const c = await tx.course.create({ data: { codigo: offering.codigo, cursoId: assignment.cursoId, seccionId: assignment.seccionId, anioLectivoId: assignment.anioLectivoId, profesorId: assignment.profesorId, activo: true, createdAt } });
-      await tx.teacherCourseAssignment.update({ where: { id: assignment.id }, data: { cursoOfertaId: c.id, updatedAt } });
-      courses.set(a.course, c.id);
-    }
+      return { profesorId: teachers.get(a.teacher), cursoId: structure.catalogs.get(a.catalog).id, gradoId: section.gradoId, seccionId: section.id, anioLectivoId: structure.year.id, cursoOfertaId: courses.get(a.course), esTutor: a.esTutor, activo: true, createdAt, updatedAt };
+    }));
+    mark("enrollments");
     await batches(tx, "enrollment", t.enrollment.map(r => ({ studentId: students.get(r.student), cursoOfertaId: courses.get(r.course), estado: r.estado, createdAt: new Date(r.createdAt) })));
-    const resources = new Map(), activities = new Map();
-    for (const [table, map] of [["courseResource", resources], ["academicActivity", activities]]) for (const r of t[table]) {
-      const { key: code, course, teacher, createdAt: created, ...data } = r;
-      const inserted = await tx[table].create({ data: { ...data, courseId: courses.get(course), profesorId: teachers.get(teacher), createdAt: new Date(created), updatedAt } });
-      map.set(code, inserted.id);
-    }
+    mark("resources");
+    await batches(tx, "courseResource", t.courseResource.map(r => {
+      const { key, course, teacher, createdAt: created, ...data } = r;
+      return { ...data, courseId: courses.get(course), profesorId: teachers.get(teacher), createdAt: new Date(created), updatedAt };
+    }));
+    const resources = new Map();
+    const storedResources = await readBackByPosition(tx, "courseResource", t.courseResource.length, (row, i) => check(row.courseId === courses.get(t.courseResource[i].course), "courseResource read-back order"));
+    t.courseResource.forEach((r, i) => resources.set(r.key, storedResources[i].id));
+    mark("activities");
+    await batches(tx, "academicActivity", t.academicActivity.map(r => {
+      const { key, course, teacher, createdAt: created, ...data } = r;
+      return { ...data, courseId: courses.get(course), profesorId: teachers.get(teacher), createdAt: new Date(created), updatedAt };
+    }));
+    const activities = new Map();
+    const storedActivities = await readBackByPosition(tx, "academicActivity", t.academicActivity.length, (row, i) => check(row.courseId === courses.get(t.academicActivity[i].course), "academicActivity read-back order"));
+    t.academicActivity.forEach((r, i) => activities.set(r.key, storedActivities[i].id));
+    mark("grades");
     await batches(tx, "grade", t.grade.map(r => ({ studentId: students.get(r.student), cursoOfertaId: courses.get(r.course), periodoId: structure.periods.get(r.period), nota: r.nota, createdAt: new Date(r.createdAt) })));
+    mark("attendance");
     await batches(tx, "attendance", t.attendance.map(({ student, fecha, createdAt, ...r }) => ({ ...r, studentId: students.get(student), fecha: new Date(fecha), createdAt: new Date(createdAt) })));
+    mark("academicHistory");
     for (const name of ["academicHistory", "resumenAsistencia"]) await batches(tx, name, t[name].map(({ student, period, ...r }) => ({ ...r, studentId: students.get(student), periodoId: structure.periods.get(period), ...(name === "academicHistory" ? { createdAt: updatedAt } : {}) })));
+    mark("activityProgress");
     await batches(tx, "activityProgress", t.activityProgress.map(r => ({ studentId: students.get(r.student), activityId: activities.get(r.activity), estado: r.estado, startedAt: r.startedAt ? new Date(r.startedAt) : null, completedAt: r.completedAt ? new Date(r.completedAt) : null, updatedAt })));
+    mark("lmsEvents");
     await batches(tx, "lmsEvent", t.lmsEvent.map(r => ({ studentId: students.get(r.student), tipo: r.tipo, courseId: r.course ? courses.get(r.course) : null, resourceId: r.resource ? resources.get(r.resource) : null, activityId: r.activity ? activities.get(r.activity) : null, durationSeconds: r.durationSeconds, createdAt: new Date(r.createdAt) })));
+    mark("attendanceSummary");
     for (const [code, id] of students) {
       const summary = await refreshImportedSummary(tx, id);
       const expected = t.student.find(s => s.codigo === code);
       // Compare integer cents: SQL/groupBy ordering can change binary rounding at a half cent.
       check(Math.abs(Math.round(summary.promedioGeneral * 100) - Math.round(expected.promedioGeneral * 100)) <= 1 && summary.asistenciaGeneral === expected.asistenciaGeneral, "POSTCHECK academic summary from stored evidence");
     }
+    mark("correlativos");
     for (const c of source.CorrelativosFinales) await tx.correlativo.update({ where: { entidad: c.entidad }, data: { ultimoNumero: c.ultimo_numero, updatedAt } });
+    mark("postcheck");
     for (const [name, n] of Object.entries(COUNTS)) check(await tx[name].count() === n, `POSTCHECK ${name}`);
     for (const name of ML_EMPTY) check(await tx[name].count() === 0, `POSTCHECK ${name}`);
     check(await tx.enrollment.count({ where: { estado: "activa" } }) === 3354 && await tx.enrollment.count({ where: { estado: "retirada" } }) === 370, "POSTCHECK enrollment states");
     return { imported: true };
-  }, { isolationLevel: "Serializable", timeout: 180000, maxWait: 10000 });
+  }, { isolationLevel: "Serializable", timeout: TRANSACTION_TIMEOUT_MS, maxWait: TRANSACTION_MAX_WAIT_MS });
 }
 
 // Same queries, formula, and rounding as academic-records.service.refreshAcademicSummary.

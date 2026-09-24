@@ -77,3 +77,33 @@ test("V5: complete importer payloads match Prisma fields and FK order in memory"
   assert.equal(rollback.committed, false);
   assert.equal(rollback.rows.user.length, 0);
 });
+test("V5: transaction budget covers the measured round-trip cost (P2028 regression)", async () => {
+  // Production runs through a tunnel measuring ~205 ms per sequential round-trip. The original
+  // importer issued ~3.500 sequential creates inside a 180 s transaction, which always exceeded
+  // the budget (~719 s) and aborted with P2028 before touching any data.
+  const MEASURED_MS_PER_ROUND_TRIP = 300;
+  const db = memoryDatabase(source);
+  const hashes = new Map(source.Usuarios.map(u => [u.email, "test-double-hash-not-a-login-credential"]));
+  const runTransaction = db.$transaction;
+  let roundTrips = 0;
+  let timeout;
+  db.$transaction = async (fn, options) => {
+    timeout = options.timeout;
+    assert.equal(options.isolationLevel, "Serializable");
+    return runTransaction(async tx => {
+      const counted = { $queryRaw: async (...a) => (roundTrips++, tx.$queryRaw(...a)), $queryRawUnsafe: async (...a) => (roundTrips++, tx.$queryRawUnsafe(...a)) };
+      for (const [name, delegate] of Object.entries(tx)) {
+        if (!delegate || typeof delegate !== "object") continue;
+        counted[name] = {};
+        for (const [method, call] of Object.entries(delegate)) {
+          if (typeof call === "function") counted[name][method] = (...args) => (roundTrips++, call(...args));
+        }
+      }
+      return fn(counted);
+    }, options);
+  };
+  await importDataset(db, source, dataset, hashes);
+  assert.equal(db.committed, true);
+  assert.ok(roundTrips < 1500, `bulk import must stay under 1.500 round-trips, saw ${roundTrips}`);
+  assert.ok(timeout >= roundTrips * MEASURED_MS_PER_ROUND_TRIP, `timeout ${timeout} ms cannot cover ${roundTrips} round-trips at ${MEASURED_MS_PER_ROUND_TRIP} ms each`);
+});
