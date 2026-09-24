@@ -29,8 +29,12 @@ DATABASE_URL="mysql://root:SU_CLAVE@localhost:3306/tesis_dashboard"
 ```bash
 npm run db:push
 npm run db:seed
-npm run db:seed:demo   # 660 estudiantes demo + cuentas de acceso
+npm run db:seed:demo   # LEGACY: población demo antigua. NO usar en producción (V5 ya importado)
 npm run db:bootstrap   # opcional si no usó seed:demo
 ```
+
+> El **Data Seed definitivo V5** (275 usuarios) ya está importado en producción. Los comandos
+> anteriores son solo para levantar una **BD local nueva**; ejecutar `db:push`/`db:seed` sobre
+> la BD de producción está prohibido.
 
 El esquema lo genera **Prisma** (`backend/prisma/schema.prisma`). El archivo `database/postgresql/schema.sql` es referencia histórica; para MySQL use `db:push`.

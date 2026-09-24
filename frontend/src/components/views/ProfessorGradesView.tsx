@@ -82,10 +82,15 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
   const gradeMap = useMemo(() => {
     const m = new Map<string, GradeRow>();
     for (const g of grades) {
-      if (String(g.bimestre) === pf.applied.bimestre) m.set(g.studentId, g);
+      if (String(g.bimestre) !== pf.applied.bimestre) continue;
+      // Un alumno puede tener notas en varios cursos del mismo profesor y
+      // mismo bimestre: el curso aplicado desempata para no mostrar una
+      // nota de otro curso como si fuera la del curso en edición.
+      if (pf.applied.courseId && g.courseId !== pf.applied.courseId) continue;
+      m.set(g.studentId, g);
     }
     return m;
-  }, [grades, pf.applied.bimestre]);
+  }, [grades, pf.applied.bimestre, pf.applied.courseId]);
 
   const courseName = courses.find((c) => c.id === pf.applied.courseId)?.nombre ?? "—";
 

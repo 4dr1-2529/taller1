@@ -92,7 +92,8 @@ export function AttendanceView({
       }));
       setItems(rows);
       setTotal((res as { total?: number }).total ?? rows.length);
-    } catch {
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudo cargar la asistencia");
       setItems([]);
       setTotal(0);
     } finally {

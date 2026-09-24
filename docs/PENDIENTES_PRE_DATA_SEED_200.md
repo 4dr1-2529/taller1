@@ -24,6 +24,10 @@ más rama `audit/full-functional-review` (solo documentación hasta ahora).
 ## Abierto (no bloqueante para el seed salvo 1)
 1. Barrido visual interactivo por rol × viewport — requiere navegador con sesión (este entorno
    no tiene browser conectado). Hacerlo antes de la exposición, no del seed.
+   **Estado 2026-09-24:** sustituido provisionalmente por un **smoke por API** contra producción
+   (67/67: 3 logins V5, 42 endpoints permitidos y 15 denegados, 0 predicciones fabricadas).
+   El barrido visual en navegador real sigue **PENDIENTE** (navegador de escritorio desconectado;
+   no se ejecutó porque las contraseñas por rol no estaban en variables de entorno locales).
 2. Servicio ML en producción — requiere dataset autorizado; PROHIBIDO entrenar con sintéticos.
    El seed v2 debe generarse igualmente (los perfiles funcionales variados servirán al pipeline futuro).
 3. Limpieza opcional: rama remota `origin/fix/final-hardening-pre-seed` (huérfana, sin efecto).

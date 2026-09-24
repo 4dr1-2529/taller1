@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { BASE_URL, PASSWORD, OUT_CAP, OUT_LEGACY } from "./config.mjs";
+import { BASE_URL, passwordForEmail, OUT_CAP, OUT_LEGACY } from "./config.mjs";
 
 export async function shot(page, relPath, fullPage = true) {
   const dest = path.join(OUT_CAP, relPath);
@@ -39,7 +39,7 @@ export async function login(page, email) {
   await page.goto(`${BASE_URL}/login`, { waitUntil: "domcontentloaded", timeout: 120_000 });
   await waitReady(page);
   await page.locator("#login-email").fill(email);
-  await page.locator("#login-password").fill(PASSWORD);
+  await page.locator("#login-password").fill(passwordForEmail(email));
   await page.getByRole("button", { name: /Ingresar al panel/i }).click();
   await page.waitForURL((u) => !u.pathname.includes("/login"), { timeout: 60_000 });
   await waitReady(page, 2500);

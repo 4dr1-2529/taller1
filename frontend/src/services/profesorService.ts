@@ -11,6 +11,11 @@ export type ProfesorQueryParams = {
   gradoId?: string;
   seccionId?: string;
   cursoId?: string;
+  /**
+   * `/profesor/notas` delega en `listGrades`, que filtra por `courseId`
+   * (distinto de `cursoId`, que usan el resto de rutas `/profesor/*`).
+   */
+  courseId?: string;
   search?: string;
   bimestre?: string;
   periodoNumero?: number;
@@ -27,6 +32,7 @@ function qs(params: ProfesorQueryParams): string {
   if (params.gradoId) q.set("gradoId", params.gradoId);
   if (params.seccionId) q.set("seccionId", params.seccionId);
   if (params.cursoId) q.set("cursoId", params.cursoId);
+  if (params.courseId) q.set("courseId", params.courseId);
   if (params.search) q.set("search", params.search);
   if (params.bimestre) q.set("bimestre", params.bimestre);
   if (params.periodoNumero != null) q.set("periodoNumero", String(params.periodoNumero));
@@ -92,8 +98,12 @@ export const profesorService = {
       `/profesor/estudiantes${qs(params ?? {})}`,
     ),
 
-  getNotas: (params?: ProfesorQueryParams) =>
-    api.call<{ items: unknown[] }>(`/profesor/notas${qs(params ?? {})}`),
+  getNotas: (params?: ProfesorQueryParams) => {
+    // `listGrades` solo entiende `courseId`: se traduce aquí para no romper
+    // el resto de rutas `/profesor/*`, que sí usan `cursoId`.
+    const { cursoId, ...rest } = params ?? {};
+    return api.call<{ items: unknown[] }>(`/profesor/notas${qs({ ...rest, courseId: cursoId })}`);
+  },
 
   createNota: (payload: Record<string, unknown>) =>
     api.call<{ item: unknown }>("/profesor/notas", {

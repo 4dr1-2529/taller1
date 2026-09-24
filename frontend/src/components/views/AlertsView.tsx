@@ -72,7 +72,10 @@ export function AlertsView({
       setApiAlerts(res.items);
       setSalonSummary(res.salonSummary ?? []);
       setTotal(res.total ?? res.items.length);
-    } catch {
+    } catch (e) {
+      // Un fallo de API no es "sin alertas": se avisa en lugar de mostrar un
+      // listado vacío como si fuera un resultado real.
+      toast.error(e instanceof Error ? e.message : "No se pudieron cargar las alertas");
       setApiAlerts([]);
       setSalonSummary([]);
       setTotal(0);
@@ -145,7 +148,12 @@ export function AlertsView({
           <input
             type="checkbox"
             checked={includeResolved}
-            onChange={(e) => setIncludeResolved(e.target.checked)}
+            onChange={(e) => {
+              setIncludeResolved(e.target.checked);
+              // Sin reset, la página conservada puede quedar fuera del nuevo
+              // total y mostrar una tabla vacía que parece "sin alertas".
+              setPage(1);
+            }}
           />
           <span>Incluir alertas resueltas</span>
         </label>

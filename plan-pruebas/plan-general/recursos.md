@@ -45,10 +45,10 @@
 
 | Entidad | Cantidad | Origen |
 |---------|----------|--------|
-| Estudiantes | 660 | `npm run db:seed:demo` |
-| Profesores | 23 | `docs/cuentas-demo/profesores.csv` |
-| Salones | 22 × 30 alumnos | `validate-demo-data.mjs` |
-| Contraseña demo | variable `DEMO_PASSWORD` | `backend/scripts/demo-env.mjs` |
+| Estudiantes | 250 | Data Seed definitivo V5 (Railway) |
+| Profesores | 24 | Data Seed definitivo V5 (Railway) |
+| Salones | 22 | Data Seed definitivo V5 (estructura) |
+| Contraseñas | variables de entorno por rol | `DIRECTOR/TEACHER/STUDENT_INITIAL_PASSWORD` |
 
 ---
 
@@ -57,8 +57,8 @@
 | Rol | Email | API role (`RolCodigo`) |
 |-----|-------|------------------------|
 | Director | `director@blenkir.edu.pe` | `admin` |
-| Profesor | `pro50000001@blenkir.edu.pe` | `docente` |
-| Estudiante | `mateo.quispe0001@blenkir.edu.pe` | `estudiante` |
+| Profesor | `prof001@blenkir.edu.pe` | `docente` |
+| Estudiante | `est0002@alumnos.blenkir.edu.pe` | `estudiante` |
 
 ---
 

@@ -67,9 +67,9 @@ export function useAcademicData() {
         return true;
       }
       const [st, te, co, stats] = await Promise.all([
-        isDocente
-          ? profesorService.getEstudiantes({ all: true }).then((r) => r.items.map(mapStudentFromApi))
-          : fetchAllStudents(false),
+        // Pagina hasta agotar `pages`: `{ all: true }` lo ignora el backend y
+        // truncaba el alcance del docente en 200 estudiantes.
+        fetchAllStudents(isDocente),
         isDocente ? Promise.resolve({ items: [] }) : api.getTeachers(),
         isDocente ? profesorService.getCursos() : api.getCourses(),
         isDocente ? Promise.resolve(null) : api.getMatriculaStats().catch(() => null),
@@ -93,9 +93,7 @@ export function useAcademicData() {
           return true;
         }
         const [st, te, co, stats] = await Promise.all([
-          isDocente
-            ? profesorService.getEstudiantes({ all: true }).then((r) => r.items.map(mapStudentFromApi))
-            : fetchAllStudents(false),
+          fetchAllStudents(isDocente),
           isDocente ? Promise.resolve({ items: [] }) : api.getTeachers(),
           isDocente ? profesorService.getCursos() : api.getCourses(),
           isDocente ? Promise.resolve(null) : api.getMatriculaStats().catch(() => null),

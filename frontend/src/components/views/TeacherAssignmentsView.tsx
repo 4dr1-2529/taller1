@@ -60,7 +60,8 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
       if (filters.esTutor) params.esTutor = filters.esTutor;
       const res = await api.getTeacherAssignments(params);
       setItems(res.items);
-    } catch {
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudieron cargar las asignaciones");
       setItems([]);
     } finally {
       setLoading(false);

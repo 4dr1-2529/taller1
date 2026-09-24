@@ -2,13 +2,18 @@ import fs from "node:fs";
 import https from "node:https";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { requireDemoPassword } from "./demo-env.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.resolve(__dirname, "../../docs/cuentas-demo");
-const API_URL = (process.env.API_URL ?? "https://taller1-production.up.railway.app/api/v1").replace(/\/$/, "");
+const API_URL = (process.env.API_URL ?? "https://backend-production-fcb1.up.railway.app/api/v1").replace(/\/$/, "");
 const DIRECTOR_EMAIL = process.env.DIRECTOR_EMAIL ?? "director@blenkir.edu.pe";
-const DIRECTOR_PASSWORD = process.env.DIRECTOR_PASSWORD?.trim() || requireDemoPassword();
+const DIRECTOR_PASSWORD = process.env.DIRECTOR_PASSWORD?.trim() || process.env.DIRECTOR_INITIAL_PASSWORD?.trim();
+if (!DIRECTOR_PASSWORD) throw new Error("Defina DIRECTOR_INITIAL_PASSWORD (o DIRECTOR_PASSWORD) en el entorno.");
+
+// Nunca se escribe el valor de una contraseña: los CSV solo referencian el
+// nombre de la variable de entorno que corresponde a cada rol.
+const TEACHER_PASSWORD_ENV = "TEACHER_INITIAL_PASSWORD";
+const STUDENT_PASSWORD_ENV = "STUDENT_INITIAL_PASSWORD";
 
 function apiRequest(pathname, method, body, token) {
   return new Promise((resolve, reject) => {
@@ -64,29 +69,37 @@ function csvEscape(v) {
 function writeCsvFiles(data) {
   fs.mkdirSync(outDir, { recursive: true });
 
-  const password = data.password ?? DIRECTOR_PASSWORD;
-
   const teacherCsv = [
-    "codigo,tipo,nombres,apellidos,email_login,password,especialidad,cuenta_activa",
+    "codigo,tipo,nombres,apellidos,email_login,password_env,especialidad,cuenta_activa",
     ...data.teachers.map((t) =>
-      [t.codigo, t.tipo, t.nombres, t.apellidos, t.email, password, t.especialidad, t.cuentaActiva ? "si" : "no"]
+      [t.codigo, t.tipo, t.nombres, t.apellidos, t.email, TEACHER_PASSWORD_ENV, t.especialidad, t.cuentaActiva ? "si" : "no"]
         .map(csvEscape)
         .join(","),
     ),
   ].join("\n");
 
   const studentCsv = [
-    "codigo,salon,nombres,apellidos,email_login,password,cuenta_activa",
+    "codigo,salon,nombres,apellidos,email_login,password_env,cuenta_activa",
     ...data.students.map((s) =>
-      [s.codigo, s.salon, s.nombres, s.apellidos, s.email, password, s.cuentaActiva ? "si" : "no"]
+      [s.codigo, s.salon, s.nombres, s.apellidos, s.email, STUDENT_PASSWORD_ENV, s.cuentaActiva ? "si" : "no"]
         .map(csvEscape)
         .join(","),
     ),
   ].join("\n");
 
+  // Las credenciales jamás se persisten en disco: solo el nombre de la variable.
+  const sanitized = {
+    ...data,
+    password: undefined,
+    director: data.director ? { ...data.director, passwordEnv: "DIRECTOR_INITIAL_PASSWORD" } : data.director,
+    teachers: data.teachers.map((t) => ({ ...t, passwordEnv: TEACHER_PASSWORD_ENV })),
+    students: data.students.map((s) => ({ ...s, passwordEnv: STUDENT_PASSWORD_ENV })),
+  };
+  delete sanitized.password;
+
   fs.writeFileSync(path.join(outDir, "profesores.csv"), teacherCsv, "utf8");
   fs.writeFileSync(path.join(outDir, "estudiantes.csv"), studentCsv, "utf8");
-  fs.writeFileSync(path.join(outDir, "cuentas.json"), JSON.stringify(data, null, 2), "utf8");
+  fs.writeFileSync(path.join(outDir, "cuentas.json"), JSON.stringify(sanitized, null, 2), "utf8");
 
   for (const obsolete of [
     "estudiantes-produccion.csv",

@@ -22,7 +22,28 @@ export function PredictionView({ students }: { students: Student[]; secciones?: 
     <label>Estudiante<select className={INPUT_CLASS} value={id} onChange={e => { setId(e.target.value); setPrediction(null); setError(""); }}><option value="">Seleccione</option>{students.map(s => <option key={s.id} value={s.id}>{s.codigo} · {s.nombres} {s.apellidos}</option>)}</select></label>
     <button className="btn-primary" disabled={!id || loading} onClick={() => void run()}>{loading ? "Calculando…" : "Generar predicción"}</button>
     {error && <p role="alert">{error}</p>}
-    {prediction && <article className="premium-card p-5"><h3>Riesgo {prediction.level}</h3><p>Probabilidad estimada de clase alta: {(prediction.probability * 100).toFixed(1)}%</p><p>{prediction.recommendation}</p><p>Modelo: {prediction.modelName}</p><time>{prediction.predictedAt}</time></article>}
+    {prediction && (
+      <article className="premium-card p-5">
+        <h3>
+          Riesgo {prediction.level}
+        </h3>
+        <p>
+          Probabilidad estimada de clase alta:{" "}
+          {prediction.probability != null && Number.isFinite(prediction.probability)
+            ? `${(prediction.probability * 100).toFixed(1)}%`
+            : "—"}
+        </p>
+        <p>{prediction.recommendation}</p>
+        <p>
+          Modelo: {prediction.modelName}
+        </p>
+        <time dateTime={prediction.predictedAt}>
+          {Number.isNaN(Date.parse(prediction.predictedAt))
+            ? prediction.predictedAt
+            : new Date(prediction.predictedAt).toLocaleString("es-PE")}
+        </time>
+      </article>
+    )}
     {!students.length && <p>No hay estudiantes en su alcance.</p>}
     <MlMetricsSection />
   </section>;

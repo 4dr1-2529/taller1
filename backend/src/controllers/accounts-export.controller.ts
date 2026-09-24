@@ -2,9 +2,12 @@ import { sendSuccess } from "../utils/response.js";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/prisma.js";
 import { buildStudentAccountEmail } from "../utils/person-accounts.js";
-import { getInstitutionDefaultPassword } from "../config/institution-password.js";
 
-/** Director: exportar correos de login reales (tabla usuario). */
+/**
+ * Director: exportar correos de login reales (tabla usuario).
+ * Nunca devuelve el valor de ninguna contraseña: cada rol usa su propia
+ * variable de entorno en Railway y los hashes permanecen solo en la BD.
+ */
 export async function exportAccessAccounts(_req: Request, res: Response, next: NextFunction) {
   try {
     const director = await prisma.user.findFirst({
@@ -29,7 +32,11 @@ export async function exportAccessAccounts(_req: Request, res: Response, next: N
 
     sendSuccess(res, {
       generatedAt: new Date().toISOString(),
-      password: getInstitutionDefaultPassword(),
+      passwordEnvByRole: {
+        director: "DIRECTOR_INITIAL_PASSWORD",
+        docente: "TEACHER_INITIAL_PASSWORD",
+        estudiante: "STUDENT_INITIAL_PASSWORD",
+      },
       director: director
         ? { ...director, rol: "Director" }
         : { email: "director@blenkir.edu.pe", rol: "Director" },

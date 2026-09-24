@@ -75,6 +75,8 @@ npm run evidence:generate
 
 ---
 
-## Credenciales demo (seed)
+## Credenciales (Data Seed V5)
 
-`director@blenkir.edu.pe` · `pro50000001@blenkir.edu.pe` · `mateo.quispe0001@blenkir.edu.pe` — contraseña en `DEMO_PASSWORD` (`backend/.env`)
+`director@blenkir.edu.pe` · `prof001@blenkir.edu.pe` · `est0002@alumnos.blenkir.edu.pe` —
+contraseñas en las variables de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`
+y `STUDENT_INITIAL_PASSWORD`. No se publican valores.

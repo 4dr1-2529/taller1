@@ -98,20 +98,22 @@ plan-pruebas/                  → Plan de pruebas (raíz del repositorio)
 | Servicio | URL |
 |----------|-----|
 | Frontend (Vercel) | https://taller1-frontend.vercel.app |
-| Backend API (Railway) | https://taller1-production.up.railway.app/api/v1 |
-| Health check | https://taller1-production.up.railway.app/health |
+| Backend API (Railway) | https://backend-production-fcb1.up.railway.app/api/v1 |
+| Health check | https://backend-production-fcb1.up.railway.app/health |
 | GitHub | https://github.com/4dr1-2529/taller1 |
 
 ---
 
-## 7. Credenciales demo (pruebas)
+## 7. Credenciales de producto (Data Seed V5)
 
-Contraseña: **`DEMO_PASSWORD`** en `backend/.env`
+Contraseñas: **solo variables de entorno** en Railway (`TALLER1` → `production` → servicio `backend`):
+`DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`, `STUDENT_INITIAL_PASSWORD`.
+No se publica ningún valor.
 
 | Rol | Email |
 |-----|-------|
 | Director | `director@blenkir.edu.pe` |
-| Profesor | `pro50000001@blenkir.edu.pe` |
-| Estudiante | `mateo.quispe0001@blenkir.edu.pe` |
+| Profesor | `prof001@blenkir.edu.pe` |
+| Estudiante | `est0002@alumnos.blenkir.edu.pe` |
 
-Listado completo: [cuentas-demo/estudiantes.csv](cuentas-demo/estudiantes.csv), [profesores.csv](cuentas-demo/profesores.csv).
+Listado completo de las 275 cuentas: [BLENKIR_LOGIN_ACCOUNTS_2026.md](BLENKIR_LOGIN_ACCOUNTS_2026.md).

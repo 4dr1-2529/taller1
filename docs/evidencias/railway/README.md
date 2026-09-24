@@ -15,7 +15,7 @@ Despliegue backend, MySQL y variables de entorno.
 
 ## URL producción
 
-https://taller1-production.up.railway.app/health
+https://backend-production-fcb1.up.railway.app/health
 
 ## Referencia
 

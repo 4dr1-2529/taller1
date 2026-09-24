@@ -22,11 +22,12 @@
 5. ALERTAS → listar y actualizar estado.
 6. ML → health y predict.
 
-## Datos demo
+## Cuentas (Data Seed V5)
 
-Tras `npm run db:seed:demo`:
+Las contraseñas **no se publican**: cada rol usa su variable de entorno en Railway
+(`DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`, `STUDENT_INITIAL_PASSWORD`).
 
-- Director: `director@blenkir.edu.pe` / `DEMO_PASSWORD`
-- Profesor tutor: `pro50000001@blenkir.edu.pe` / `DEMO_PASSWORD`
-- Estudiante: `mateo.quispe0001@blenkir.edu.pe` / `DEMO_PASSWORD`
-- Listado completo: `docs/cuentas-demo/estudiantes.csv` y `profesores.csv` (columna `email_login`)
+- Director: `director@blenkir.edu.pe`
+- Profesor: `prof001@blenkir.edu.pe`
+- Estudiante: `est0002@alumnos.blenkir.edu.pe`
+- Listado completo de las 275 cuentas: [BLENKIR_LOGIN_ACCOUNTS_2026.md](BLENKIR_LOGIN_ACCOUNTS_2026.md)
