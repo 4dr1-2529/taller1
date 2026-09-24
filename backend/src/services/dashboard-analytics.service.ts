@@ -1,6 +1,7 @@
 import { prisma } from "../utils/prisma.js";
 import type { Prisma } from "@prisma/client";
 import { getMlMetrics } from "./ml-client.js";
+import { idToString } from "../utils/ids.js";
 
 type Scope = Prisma.StudentWhereInput;
 
@@ -57,6 +58,9 @@ export async function buildDashboardAnalytics(scope: Scope) {
       where: scope,
       select: {
         id: true,
+        codigo: true,
+        nombres: true,
+        apellidos: true,
         seccionId: true,
         seccion: {
           select: {
@@ -64,7 +68,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
             grado: { select: { numero: true, nombre: true, nivel: { select: { nombre: true } } } },
           },
         },
-        predicciones: { orderBy: { createdAt: "desc" }, take: 1, select: { nivelRiesgo: true, score: true } },
+        predicciones: { orderBy: { createdAt: "desc" }, take: 1, select: { nivelRiesgo: true, score: true, probabilidadAbandono: true } },
       },
     }),
     prisma.seccion.findMany({
@@ -252,6 +256,46 @@ export async function buildDashboardAnalytics(scope: Scope) {
   const featureImportance = extractFeatureImportance(mlMetrics);
   const modelComparison = extractModelComparison(mlMetrics);
 
+  // Estado del modelo experimental (V6) para el dashboard del director.
+  const evaluatedRows = studentsWithSection.filter((st) => st.predicciones[0]);
+  const probabilities = evaluatedRows
+    .map((st) => Number(st.predicciones[0]?.probabilidadAbandono ?? NaN))
+    .filter((value) => Number.isFinite(value));
+  const avgProbability = probabilities.length
+    ? Math.round((probabilities.reduce((a, b) => a + b, 0) / probabilities.length) * 1000) / 1000
+    : null;
+  const prioritized = evaluatedRows
+    .map((st) => ({
+      studentId: idToString(st.id),
+      codigo: st.codigo,
+      nombres: st.nombres,
+      apellidos: st.apellidos,
+      nivel: st.predicciones[0]?.nivelRiesgo ?? null,
+      probabilidad: Number(st.predicciones[0]?.probabilidadAbandono ?? 0),
+    }))
+    .filter((row) => row.nivel === "alto" || row.nivel === "medio")
+    .sort((a, b) => b.probabilidad - a.probabilidad)
+    .slice(0, 10);
+  const mlMeta = (mlMetrics ?? {}) as Record<string, unknown>;
+  const ml = {
+    dataMode: typeof mlMeta.data_mode === "string" ? mlMeta.data_mode : null,
+    datasetVersion: typeof mlMeta.dataset_version === "string" ? mlMeta.dataset_version : null,
+    modelVersion: typeof mlMeta.model_version === "string" ? mlMeta.model_version : null,
+    modelSelected: typeof mlMeta.best_model === "string" ? mlMeta.best_model : null,
+    contractVersion: typeof mlMeta.contract_version === "string" ? mlMeta.contract_version : null,
+    decisionThreshold: typeof mlMeta.decision_threshold === "number" ? mlMeta.decision_threshold : null,
+    riskThresholds: (mlMeta.risk_thresholds ?? null) as Record<string, unknown> | null,
+    nFeatures: typeof mlMeta.n_features === "number" ? mlMeta.n_features : null,
+    metricsAvailable: mlMetrics != null,
+    experimental: (typeof mlMeta.data_mode === "string" ? mlMeta.data_mode : null) === "synthetic_scientific",
+    evaluated: evaluatedRows.length,
+    evaluatedTotal: totalStudents,
+    avgProbability,
+    byLevel,
+    alertsActive: openAlerts,
+    prioritized,
+  };
+
   const [instConfig, directorUser] = await Promise.all([
     prisma.systemConfig.findUnique({ where: { clave: "institucion.nombre" } }),
     prisma.user.findFirst({
@@ -278,6 +322,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
         : null,
       directorEmail: directorUser?.email ?? null,
     },
+    ml,
     riskTrend,
     riskBySection,
     riskByGrado,

@@ -1,5 +1,11 @@
 # Dataset definitivo 2026 V5: revision local
 
+> **SUPERADO POR** `docs/DATASET_DEFINITIVO_2026_V6_LOCAL.md`: el lector
+> (`backend/scripts/lib/definitive-dataset-reader.mjs`) ahora exige el workbook V6
+> (`BLENKIR_DATASET_DEFINITIVO_2026_CIENTIFICO_SINTETICO_V6.xlsx`,
+> `DATASET_ID=BLENKIR_DATA_SEED_V6_250`). Este documento se conserva como referencia
+> histórica de la versión auditada V5.
+
 DATOS 100% SINTÉTICOS — USO EXCLUSIVO PARA PRUEBAS TECNOLÓGICAS, QA Y DEMOSTRACIÓN. NO REPRESENTAN LA POBLACIÓN REAL DE LA I.E.P. BLENKIR Y NO CONSTITUYEN EVIDENCIA CIENTÍFICA PARA ENTRENAR O VALIDAR EL MODELO PREDICTIVO.
 
 ## Fuente inmutable

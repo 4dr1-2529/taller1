@@ -48,6 +48,7 @@
     "db:dataset:production-dry-run": "node scripts/validate-production-definitive-dataset-2026.mjs",
     "db:dataset:import": "node scripts/import-definitive-dataset-2026.mjs",
     "db:studio": "prisma studio",
+    "ml:v6:predict-all": "tsx scripts/predict-all-v6.ts",
     "type-check": "tsc --noEmit",
     "type-check:tools": "tsc -p tsconfig.tools.json",
     "test:integration": "tsx --test tests/refactor-2026.integration.ts"

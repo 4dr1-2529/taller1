@@ -93,6 +93,12 @@ export type ApiPredictionResult = {
   modelo_usado?: string;
   fecha_prediccion?: string;
   datos_ingresados?: Record<string, unknown>;
+  /** Trazabilidad del modelo experimental V6 */
+  modelVersion?: string | null;
+  datasetVersion?: string | null;
+  dataMode?: string | null;
+  contractVersion?: string | null;
+  experimental?: boolean;
 };
 
 export type ApiPredictionHistoryItem = Prediction & {
@@ -103,6 +109,11 @@ export type ApiPredictionHistoryItem = Prediction & {
     source?: string;
   } | null;
   student?: { id: string; codigo: string; nombres: string; apellidos: string };
+  dataMode?: string | null;
+  datasetVersion?: string | null;
+  modelVersion?: string | null;
+  contractVersion?: string | null;
+  experimental?: boolean;
 };
 
 export type Alert = {
@@ -683,6 +694,31 @@ class ApiClient {
       alertsBySalonShort?: { salon: string; count: number }[];
       modelComparison: { modelo: string; f1: number; accuracy: number }[];
       featureImportance: { variable: string; peso: number }[];
+      ml?: {
+        dataMode?: string | null;
+        datasetVersion?: string | null;
+        modelVersion?: string | null;
+        modelSelected?: string | null;
+        contractVersion?: string | null;
+        decisionThreshold?: number | null;
+        riskThresholds?: Record<string, unknown> | null;
+        nFeatures?: number | null;
+        metricsAvailable?: boolean;
+        experimental?: boolean;
+        evaluated?: number;
+        evaluatedTotal?: number;
+        avgProbability?: number | null;
+        byLevel?: { bajo: number; medio: number; alto: number };
+        alertsActive?: number;
+        prioritized?: {
+          studentId: string;
+          codigo?: string;
+          nombres: string;
+          apellidos: string;
+          nivel: string | null;
+          probabilidad: number;
+        }[];
+      };
     }>("/dashboard/kpis");
   }
 

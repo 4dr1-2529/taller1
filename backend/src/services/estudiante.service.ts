@@ -5,6 +5,7 @@ import { idToString } from "../utils/ids.js";
 import { courseDisplayName, courseListInclude } from "../utils/course-label.js";
 import { notaEstadoLabel } from "../utils/grade-status.js";
 import { getActiveAnioLectivoId } from "../utils/academic-period.js";
+import { splitPredictionInput } from "../utils/prediction-format.js";
 
 const LEVEL_LABEL: Record<string, string> = {
   bajo: "Bajo",
@@ -359,6 +360,9 @@ export async function buildEstudiantePrediccion(studentId: bigint) {
     return { profile, prediction: null };
   }
 
+  const { meta } = splitPredictionInput(pred.inputData);
+  const asString = (v: unknown) => (typeof v === "string" && v ? v : null);
+
   return {
     profile,
     prediction: {
@@ -369,7 +373,9 @@ export async function buildEstudiantePrediccion(studentId: bigint) {
       nivelRiesgo: LEVEL_LABEL[pred.nivelRiesgo] ?? pred.nivelRiesgo,
       nivel: pred.nivelRiesgo,
       modelo: pred.modelName ?? pred.modelo?.nombre ?? "Modelo registrado",
-      modeloVersion: pred.modelo?.version ?? null,
+      modeloVersion: pred.modelo?.version ?? asString(meta.modelVersion),
+      dataMode: asString(meta.dataMode),
+      datasetVersion: asString(meta.datasetVersion),
       fecha: pred.createdAt,
       factores: pred.factores.map((f) => ({
         key: f.factorKey,

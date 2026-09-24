@@ -46,7 +46,8 @@ test("production preflight: reads datasource, resolves real supplied IDs and pre
   assert.equal(result.resolved.offers.length, 328);
   assert.ok(result.resolved.offers.every(o => o.cursoId > 4000n && o.seccionId > 4000n));
   assert.equal(result.validation.counts.academicHistory, 725);
-  assert.equal(result.validation.logicalSha256, "18d80a5e2e0813269d15c63c8be95867c58abd34907ace68b9c84c96d57302b0");
+  // Digesto lógico del Data Seed V6 (incluye el hash del XLSX fuente).
+  assert.equal(result.validation.logicalSha256, "9eb428bd0612a1f6c19040219bea939429dcaaf410b376a0211d13418fb09c50");
 });
 for (const [name, mutate] of [
   ["population", db => db.rows.user.push({ id: 1n })],

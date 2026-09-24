@@ -2,13 +2,14 @@
  * Pruebas smoke del API — requiere backend en :4000 (o API_URL).
  * Ejecutar: node scripts/smoke-tests.mjs
  *
- * Data Seed V5: cada rol usa su propia variable de entorno.
+ * Data Seed V6: cada rol usa su propia variable de entorno.
  *   director  → DIRECTOR_INITIAL_PASSWORD
  *   docente   → TEACHER_INITIAL_PASSWORD
  *   estudiante→ STUDENT_INITIAL_PASSWORD
  *
- * ML todavía no está entrenado (Prediction=0, MlModelo=0): los chequeos ML son
- * informativos y no fallan la ejecución. No se crean predicciones ni métricas.
+ * El modelo V6 está entrenado (artefactos sintéticos): las comprobaciones ML
+ * verifican trazabilidad (dataMode, modelo, dataset, contrato y umbral), nunca
+ * crean predicciones ni métricas.
  */
 
 const API = (process.env.API_URL ?? "http://localhost:4000/api/v1").replace(/\/$/, "");
@@ -80,9 +81,9 @@ async function main() {
     if (!r.ok) throw new Error(`status ${r.status}`);
   });
 
-  await test("login director (V5)", async () => await login("director"));
-  await test("login profesor (V5)", async () => await login("docente"));
-  await test("login estudiante (V5)", async () => await login("estudiante"));
+  await test("login director (V6)", async () => await login("director"));
+  await test("login profesor (V6)", async () => await login("docente"));
+  await test("login estudiante (V6)", async () => await login("estudiante"));
 
   await test("RBAC: estudiante no listado global", async () => {
     const token = await login("estudiante");
@@ -103,15 +104,21 @@ async function main() {
     if (!body) throw new Error("dashboard sin cuerpo");
   });
 
-  await test("sin predicciones fabricadas", async () => {
+  await test("predicciones con trazabilidad V6", async () => {
     const token = await login("director");
     const { status, body } = await get("/predictions?limit=5", token);
     if (status !== 200) throw new Error(`predictions ${status}`);
     const items = body?.data?.items ?? body?.items ?? [];
     if (!Array.isArray(items)) throw new Error("predictions sin lista");
-    if (items.length > 0) {
-      throw new Error(`se esperaba 0 predicciones (ML sin entrenar), hay ${items.length}`);
-    }
+    // 0 predicciones es un estado honesto ("Sin evaluación predictiva").
+    // Si existen, deben ser trazables al experimento V6: sin meta => es fabricación.
+    items.forEach((p, i) => {
+      if (p.dataMode !== "synthetic_scientific") throw new Error(`predicción[${i}] sin dataMode sintético declarado`);
+      if (!p.modelVersion || !p.datasetVersion) throw new Error(`predicción[${i}] sin versión de modelo/dataset`);
+      if (p.contractVersion !== "2026-v3") throw new Error(`predicción[${i}] con contrato ${p.contractVersion}`);
+      if (typeof p.decisionThreshold !== "number") throw new Error(`predicción[${i}] sin decisionThreshold`);
+      if (p.experimental !== true) throw new Error(`predicción[${i}] sin marca experimental`);
+    });
   });
 
   // --- Matriz RBAC por rol (exclusivamente GET: cero escrituras) ---
@@ -196,22 +203,22 @@ async function main() {
     }
   }
 
-  // Informativo: conteos V5 reales. No es aserción, para no acoplar este
+  // Informativo: conteos V6 reales. No es aserción, para no acoplar este
   // script a una población concreta (la FASE 6 los verificó contra la BD).
   {
     const { body } = await get("/dashboard/kpis", roles.director);
     const k = body?.data?.kpis ?? body?.kpis ?? {};
     console.log(
-      `• KPIs V5: estudiantes=${k.totalStudents} profesores=${k.totalTeachers} ` +
+      `• KPIs V6: estudiantes=${k.totalStudents} profesores=${k.totalTeachers} ` +
         `salones=${k.totalSalones} alertasAbiertas=${k.openAlerts} ` +
         `riesgoPromedio=${k.avgRisk ?? "null"} nivelAlto=${k.byLevel?.alto ?? "?"}`,
     );
   }
 
-  // --- Informativo ML: SOLO LECTURA ---
+  // --- Solo lectura: las métricas deben ser reales y trazables al V6 ---
   // Nunca se llama a POST /predict: aunque el servicio estuviera caído, esa
-  // llamada podría persistir una predicción y el encargo prohíbe crearlas.
-  await test("ML sin métricas inventadas", async () => {
+  // llamada podría persistir una predicción.
+  await test("métricas ML reales y marcadas como experimentales", async () => {
     const token = await login("director");
     const { status, body } = await get("/ml/metrics", token);
     if (status !== 200) {
@@ -221,16 +228,22 @@ async function main() {
     }
     const metrics = body?.data?.metrics ?? body?.metrics ?? null;
     if (metrics && typeof metrics === "object") {
-      // El backend devuelve `{ message: "ML service no disponible" }` como
-      // marcador honesto cuando el servicio ML está caído. Solo un objeto que
-      // contenga modelos con `f1_score` constituiría un set de métricas.
+      // `{ message: "ML service no disponible" }` es el marcador honesto del backend.
       const models = Object.values(metrics).filter(
         (v) => v && typeof v === "object" && "f1_score" in v,
       );
-      if (models.length > 0) {
-        throw new Error(`el servicio reporta ${models.length} modelo(s) con el modelo sin entrenar`);
+      if (models.length === 0) {
+        noteMl("/ml/metrics", "sin modelos (estado honesto: modelo pendiente)");
+        return;
       }
-      noteMl("/ml/metrics", "sin modelos (estado honesto: modelo pendiente)");
+      // Hay métricas: deben declarar origen sintético, modelo y umbral reales.
+      if (metrics.data_mode !== "synthetic_scientific") throw new Error(`data_mode=${metrics.data_mode}`);
+      if (metrics.experimental !== true) throw new Error("sin marca experimental");
+      if (!metrics.model_version || !metrics.dataset_version) throw new Error("sin versión de modelo/dataset");
+      if (metrics.best_model !== metrics.model_used) throw new Error(`best_model=${metrics.best_model} ≠ model_used=${metrics.model_used}`);
+      if (metrics.holdout_used_for_selection !== false) throw new Error("holdout usado para la selección");
+      if (typeof metrics.decision_threshold !== "number") throw new Error("sin umbral de decisión");
+      if (typeof metrics.final_metrics?.f1_score !== "number") throw new Error("sin métricas de holdout");
       return;
     }
     noteMl("/ml/metrics", "respuesta sin métricas");

@@ -49,15 +49,24 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
     if (metrics.promedio_general === null || metrics.asistencia_general === null) throw new AppError(409, "Datos académicos insuficientes para predecir");
     const payload = buildMlPayload(metrics);
     const ml = await predictWithMl(payload);
-    if (!ml) throw new AppError(503, "Modelo 2026 no disponible. No se genera riesgo ficticio.");
+    if (!ml) throw new AppError(503, "Modelo experimental V6 no disponible. No se genera riesgo ficticio.");
+    const probability = ml.probabilidadDesercion ?? ml.probability_abandono ?? ml.probability;
+    const level = (ml.nivelRiesgo ?? ml.level) as NivelRiesgo;
     const result = {
-      score: ml.score, level: ml.level as NivelRiesgo,
-      probability: ml.probability_abandono ?? ml.probability,
-      probabilityAbandono: ml.probability_abandono ?? ml.probability,
-      factors: ml.factors ?? [], modelName: ml.model_name,
+      score: ml.score, level,
+      probability,
+      probabilityAbandono: probability,
+      factors: ml.factors ?? [],
+      modelName: ml.modelo ?? ml.model_name,
       predictionSource: "ml_model" as const,
-      recommendation: buildRecommendation(ml.level, ml.factors ?? [], ml.recommendation),
-      predictedAt: ml.predicted_at ?? new Date().toISOString(), inputData: payload,
+      recommendation: buildRecommendation(level, ml.factors ?? [], ml.recommendation),
+      predictedAt: ml.predicted_at ?? new Date().toISOString(),
+      inputData: payload,
+      modelVersion: ml.modelVersion,
+      datasetVersion: ml.datasetVersion,
+      dataMode: ml.dataMode,
+      contractVersion: ml.contractVersion ?? "2026-v3",
+      decisionThreshold: ml.decisionThreshold,
     };
 
     const { prediction: savedPrediction, alert: alertCreated } = await persistPrediction(student!.id, result, user.sub, req.ip);
@@ -72,6 +81,11 @@ export async function predict(req: Request, res: Response, next: NextFunction) {
       recommendation: result.recommendation,
       predictedAt: result.predictedAt,
       inputData: result.inputData as Record<string, unknown>,
+      modelVersion: result.modelVersion,
+      datasetVersion: result.datasetVersion,
+      dataMode: result.dataMode,
+      contractVersion: result.contractVersion,
+      decisionThreshold: result.decisionThreshold,
       id: savedPrediction ? idToString(savedPrediction.id) : undefined,
       studentId: student ? idToString(student.id) : undefined,
     });

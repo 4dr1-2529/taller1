@@ -5,6 +5,7 @@ import { resolveStudentScope, assertStudentInScope } from "../utils/student-scop
 import { AppError } from "../middleware/errorHandler.js";
 import { paramBigIntId, toDbId, idToString } from "../utils/ids.js";
 import { buildProfesorStudentWhere, parseProfesorQuery, requireTeacherIdFromUser } from "../utils/profesor-query.js";
+import { splitPredictionInput } from "../utils/prediction-format.js";
 
 function mapPrediction(p: {
   id: bigint;
@@ -19,12 +20,15 @@ function mapPrediction(p: {
   modelName?: string | null;
   inputData?: unknown;
   recommendation?: string | null;
+  contractVersion?: string | null;
 }) {
   const factors = p.factores.map((f) => ({
     key: f.factorKey,
     label: f.etiqueta,
     contribution: Number(f.contribucion),
   }));
+  const { features, meta } = splitPredictionInput(p.inputData);
+  const dataMode = typeof meta.dataMode === "string" ? meta.dataMode : undefined;
   return {
     ...p,
     id: idToString(p.id),
@@ -35,7 +39,13 @@ function mapPrediction(p: {
     probabilityAbandono: Number(p.probabilidadAbandono),
     factors,
     modelName: p.modelName ?? "Modelo histórico",
-    meta: { inputData: p.inputData, recommendation: p.recommendation },
+    contractVersion: p.contractVersion ?? (typeof meta.contractVersion === "string" ? meta.contractVersion : null),
+    modelVersion: typeof meta.modelVersion === "string" ? meta.modelVersion : null,
+    datasetVersion: typeof meta.datasetVersion === "string" ? meta.datasetVersion : null,
+    dataMode: dataMode ?? null,
+    decisionThreshold: typeof meta.decisionThreshold === "number" ? meta.decisionThreshold : null,
+    experimental: dataMode === "synthetic_scientific",
+    meta: { inputData: features, recommendation: p.recommendation },
   };
 }
 

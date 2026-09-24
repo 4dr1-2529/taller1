@@ -122,6 +122,8 @@ export const estudianteService = {
         nivel: string;
         modelo: string;
         modeloVersion: string | null;
+        dataMode?: string | null;
+        datasetVersion?: string | null;
         fecha: string;
         factores: { key: string; label: string; contribution: number }[];
         recomendacion: string;

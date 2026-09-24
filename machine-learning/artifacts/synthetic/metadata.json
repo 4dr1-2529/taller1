@@ -1,0 +1,45 @@
+{
+  "data_mode": "synthetic_scientific",
+  "dataset_version": "BLENKIR_V6_SYNTH_20260924",
+  "n_features": 7,
+  "feature_names": [
+    "promedio_general",
+    "cursos_desaprobados",
+    "asistencia_general",
+    "frecuencia_acceso_lms",
+    "tiempo_interaccion_lms",
+    "actividades_realizadas",
+    "recursos_consultados"
+  ],
+  "model_version": "BLENKIR_V6_BIN_20260924",
+  "model_selected": "stacking",
+  "contract_version": "2026-v3",
+  "trained_at": "2026-09-24T18:40:33.449896+00:00",
+  "cutoffs": [
+    "2026-07-31",
+    "2026-09-21"
+  ],
+  "outcome_date": "2026-12-15",
+  "target": "target_desercion",
+  "decision_threshold": 0.41,
+  "risk_thresholds": {
+    "medio": 0.41,
+    "alto": 0.65,
+    "rule": "bajo < 0.41 <= medio < 0.65 <= alto",
+    "note": "Umbrales operativos/experimentales (Data Seed V6 sintético), no validados científicamente; se conservan como base operativa documentada."
+  },
+  "splits": {
+    "train": 316,
+    "validation": 68,
+    "holdout": 66
+  },
+  "split_students": {
+    "train": 158,
+    "validation": 34,
+    "holdout": 33
+  },
+  "n_students": 225,
+  "n_snapshots": 450,
+  "experimental": true,
+  "labeling": "RESULTADOS EXPERIMENTALES CON DATOS SINTÉTICOS"
+}

@@ -1,0 +1,285 @@
+{
+  "trained_at": "2026-09-24T18:40:33.449896+00:00",
+  "best_model": "stacking",
+  "best_f1_score": 0.4333,
+  "decision_threshold": 0.41,
+  "n_samples": 450,
+  "data_mode": "synthetic_scientific",
+  "dataset_version": "BLENKIR_V6_SYNTH_20260924",
+  "model_version": "BLENKIR_V6_BIN_20260924",
+  "selection": "validation_f1_desercion",
+  "holdout_results": {
+    "random_forest": {
+      "model": "random_forest",
+      "n_samples": 66,
+      "positive_rate_true": 0.2121,
+      "positive_rate_pred": 0.5303,
+      "threshold": 0.27,
+      "accuracy": 0.6212,
+      "precision": 0.3429,
+      "recall": 0.8571,
+      "f1_score": 0.4898,
+      "f1_desercion": 0.4898,
+      "balanced_accuracy": 0.7074,
+      "roc_auc": 0.6648,
+      "pr_auc": 0.3898,
+      "brier": 0.1752,
+      "confusion_matrix": [
+        [
+          29,
+          23
+        ],
+        [
+          2,
+          12
+        ]
+      ],
+      "tn": 29,
+      "fp": 23,
+      "fn": 2,
+      "tp": 12,
+      "specificity": 0.5577,
+      "sensitivity": 0.8571,
+      "probability_distribution": {
+        "min": 0.0262,
+        "p25": 0.1783,
+        "median": 0.2778,
+        "p75": 0.4565,
+        "max": 0.6693,
+        "mean": 0.3089
+      },
+      "class_labels": [
+        "permanece",
+        "deserta"
+      ],
+      "target": "target_desercion"
+    },
+    "xgboost": {
+      "model": "xgboost",
+      "n_samples": 66,
+      "positive_rate_true": 0.2121,
+      "positive_rate_pred": 0.7879,
+      "threshold": 0.05,
+      "accuracy": 0.3636,
+      "precision": 0.2308,
+      "recall": 0.8571,
+      "f1_score": 0.3636,
+      "f1_desercion": 0.3636,
+      "balanced_accuracy": 0.544,
+      "roc_auc": 0.6168,
+      "pr_auc": 0.3676,
+      "brier": 0.1805,
+      "confusion_matrix": [
+        [
+          12,
+          40
+        ],
+        [
+          2,
+          12
+        ]
+      ],
+      "tn": 12,
+      "fp": 40,
+      "fn": 2,
+      "tp": 12,
+      "specificity": 0.2308,
+      "sensitivity": 0.8571,
+      "probability_distribution": {
+        "min": 0.0024,
+        "p25": 0.0605,
+        "median": 0.1719,
+        "p75": 0.3095,
+        "max": 0.9304,
+        "mean": 0.2335
+      },
+      "class_labels": [
+        "permanece",
+        "deserta"
+      ],
+      "target": "target_desercion"
+    },
+    "stacking": {
+      "model": "stacking",
+      "n_samples": 66,
+      "positive_rate_true": 0.2121,
+      "positive_rate_pred": 0.4242,
+      "threshold": 0.41,
+      "accuracy": 0.6364,
+      "precision": 0.3214,
+      "recall": 0.6429,
+      "f1_score": 0.4286,
+      "f1_desercion": 0.4286,
+      "balanced_accuracy": 0.6387,
+      "roc_auc": 0.6277,
+      "pr_auc": 0.3081,
+      "brier": 0.2011,
+      "confusion_matrix": [
+        [
+          33,
+          19
+        ],
+        [
+          5,
+          9
+        ]
+      ],
+      "tn": 33,
+      "fp": 19,
+      "fn": 5,
+      "tp": 9,
+      "specificity": 0.6346,
+      "sensitivity": 0.6429,
+      "probability_distribution": {
+        "min": 0.1217,
+        "p25": 0.2902,
+        "median": 0.3755,
+        "p75": 0.5059,
+        "max": 0.6583,
+        "mean": 0.3958
+      },
+      "class_labels": [
+        "permanece",
+        "deserta"
+      ],
+      "target": "target_desercion"
+    }
+  },
+  "validation_results": {
+    "random_forest": {
+      "model": "random_forest",
+      "n_samples": 68,
+      "positive_rate_true": 0.2059,
+      "positive_rate_pred": 0.7794,
+      "threshold": 0.27,
+      "accuracy": 0.4265,
+      "precision": 0.2642,
+      "recall": 1.0,
+      "f1_score": 0.4179,
+      "f1_desercion": 0.4179,
+      "balanced_accuracy": 0.6389,
+      "roc_auc": 0.5556,
+      "pr_auc": 0.2299,
+      "brier": 0.2211,
+      "confusion_matrix": [
+        [
+          15,
+          39
+        ],
+        [
+          0,
+          14
+        ]
+      ],
+      "tn": 15,
+      "fp": 39,
+      "fn": 0,
+      "tp": 14,
+      "specificity": 0.2778,
+      "sensitivity": 1.0,
+      "probability_distribution": {
+        "min": 0.0526,
+        "p25": 0.2862,
+        "median": 0.4541,
+        "p75": 0.5672,
+        "max": 0.7303,
+        "mean": 0.4148
+      },
+      "class_labels": [
+        "permanece",
+        "deserta"
+      ],
+      "target": "target_desercion"
+    },
+    "xgboost": {
+      "model": "xgboost",
+      "n_samples": 68,
+      "positive_rate_true": 0.2059,
+      "positive_rate_pred": 0.8676,
+      "threshold": 0.05,
+      "accuracy": 0.3382,
+      "precision": 0.2373,
+      "recall": 1.0,
+      "f1_score": 0.3836,
+      "f1_desercion": 0.3836,
+      "balanced_accuracy": 0.5833,
+      "roc_auc": 0.5542,
+      "pr_auc": 0.2442,
+      "brier": 0.2533,
+      "confusion_matrix": [
+        [
+          9,
+          45
+        ],
+        [
+          0,
+          14
+        ]
+      ],
+      "tn": 9,
+      "fp": 45,
+      "fn": 0,
+      "tp": 14,
+      "specificity": 0.1667,
+      "sensitivity": 1.0,
+      "probability_distribution": {
+        "min": 0.0044,
+        "p25": 0.1771,
+        "median": 0.4038,
+        "p75": 0.5702,
+        "max": 0.882,
+        "mean": 0.3936
+      },
+      "class_labels": [
+        "permanece",
+        "deserta"
+      ],
+      "target": "target_desercion"
+    },
+    "stacking": {
+      "model": "stacking",
+      "n_samples": 68,
+      "positive_rate_true": 0.2059,
+      "positive_rate_pred": 0.6765,
+      "threshold": 0.41,
+      "accuracy": 0.5,
+      "precision": 0.2826,
+      "recall": 0.9286,
+      "f1_score": 0.4333,
+      "f1_desercion": 0.4333,
+      "balanced_accuracy": 0.6587,
+      "roc_auc": 0.5913,
+      "pr_auc": 0.2486,
+      "brier": 0.2378,
+      "confusion_matrix": [
+        [
+          21,
+          33
+        ],
+        [
+          1,
+          13
+        ]
+      ],
+      "tn": 21,
+      "fp": 33,
+      "fn": 1,
+      "tp": 13,
+      "specificity": 0.3889,
+      "sensitivity": 0.9286,
+      "probability_distribution": {
+        "min": 0.1336,
+        "p25": 0.3758,
+        "median": 0.4952,
+        "p75": 0.5862,
+        "max": 0.6748,
+        "mean": 0.4749
+      },
+      "class_labels": [
+        "permanece",
+        "deserta"
+      ],
+      "target": "target_desercion"
+    }
+  }
+}

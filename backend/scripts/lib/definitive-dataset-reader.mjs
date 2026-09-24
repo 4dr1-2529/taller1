@@ -4,8 +4,10 @@ import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 import XLSX from "xlsx";
 
-export const SOURCE = fileURLToPath(new URL("../../prisma/data/definitive-2026/BLENKIR_DATASET_DEFINITIVO_2026_AUDITADO_V5.xlsx", import.meta.url));
-export const SOURCE_HASH = "978d9480fdea74944e3ecb0e8f33e0f55f7324c2a9ee4897742af2aefb3ba72e";
+export const SOURCE = fileURLToPath(new URL("../../prisma/data/definitive-2026/BLENKIR_DATASET_DEFINITIVO_2026_CIENTIFICO_SINTETICO_V6.xlsx", import.meta.url));
+export const SOURCE_HASH = "0bb7dd701ddc1dd9d14386d7b908ba7238e733e67b522e649da2cab74fcd0a0c";
+export const DATASET_ID = "BLENKIR_DATA_SEED_V6_250";
+export const DATASET_VERSION = "6.0-synthetic-scientific-twin";
 export const FEATURES = ["promedio_general", "cursos_desaprobados", "asistencia_general", "frecuencia_acceso_lms", "tiempo_interaccion_lms", "actividades_realizadas", "recursos_consultados"];
 export const PERIODS = [[1, "2026-03-02", "2026-05-08", false], [2, "2026-05-11", "2026-07-24", false], [3, "2026-08-03", "2026-10-09", true], [4, "2026-10-12", "2026-12-15", false]];
 export function check(condition, message) { if (!condition) throw new Error(`DATASET_INVALID: ${message}`); }
@@ -30,7 +32,11 @@ const HEADERS = {
 };
 
 export function readDataset(path = SOURCE) {
-  check(readdirSync(dirname(path)).filter(n => /\.xlsx$/i.test(n)).length === 1, "ambiguous XLSX source directory");
+  // El directorio debe tener un único XLSX activo de datos institucionales (V6).
+  // Las versiones legadas (V5 auditado) se conservan solo como referencia histórica
+  // y se excluyen explícitamente de esta validación de unicidad.
+  const siblings = readdirSync(dirname(path)).filter(n => /\.xlsx$/i.test(n) && !/AUDITADO_V5/i.test(n));
+  check(siblings.length === 1, "ambiguous XLSX source directory");
   const bytes = readFileSync(path);
   check(createHash("sha256").update(bytes).digest("hex") === SOURCE_HASH, "DATASET_HASH_MISMATCH");
   const book = XLSX.read(bytes, { type: "buffer", cellDates: false });
@@ -53,7 +59,7 @@ export function validateSource(d) {
   for (const [name, count] of Object.entries(counts)) check(d[name].length === count, `${name}: count`);
   const config = Object.fromEntries(d.ImportConfig.map(r => [r.clave, r.valor]));
   check(config.random_seed === 20260921 && config.cutoff_date === "2026-09-21", "seed/cutoff");
-  check(config.dataset_id === "BLENKIR_DATA_SEED_V2_250" && config.bcrypt_cost === 12, "dataset/password configuration");
+  check(config.dataset_id === DATASET_ID && config.dataset_version === DATASET_VERSION && config.bcrypt_cost === 12, "dataset/password configuration");
   for (const k of ["DIRECTOR_INITIAL_PASSWORD", "TEACHER_INITIAL_PASSWORD", "STUDENT_INITIAL_PASSWORD"]) check(config[k] === "SET_IN_RAILWAY_ENV", "password value in workbook");
   const envs = { admin: "DIRECTOR_INITIAL_PASSWORD", docente: "TEACHER_INITIAL_PASSWORD", estudiante: "STUDENT_INITIAL_PASSWORD" };
   for (const key of ["email", "dni_sintetico", "telefono_sintetico"]) unique(d.Usuarios, r => r[key].toLowerCase(), key);

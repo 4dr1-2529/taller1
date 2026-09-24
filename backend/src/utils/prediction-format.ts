@@ -23,6 +23,13 @@ export type InternalPrediction = {
   inputData?: Record<string, unknown>;
   id?: string;
   studentId?: string;
+  // Trazabilidad del modelo experimental (V6)
+  modelVersion?: string;
+  datasetVersion?: string;
+  dataMode?: string;
+  contractVersion?: string;
+  decisionThreshold?: number;
+  experimental?: boolean;
 };
 
 const NIVEL_LABEL: Record<RiskLevelDb, string> = {
@@ -30,6 +37,35 @@ const NIVEL_LABEL: Record<RiskLevelDb, string> = {
   medio: "Medio",
   alto: "Alto",
 };
+
+/** Claves de trazabilidad del modelo guardadas junto a las features en input_data. */
+export const PREDICTION_META_KEYS = [
+  "modelVersion",
+  "datasetVersion",
+  "dataMode",
+  "contractVersion",
+  "decisionThreshold",
+] as const;
+
+export type PredictionMeta = Partial<Record<(typeof PREDICTION_META_KEYS)[number], unknown>>;
+
+/** Separa las siete features del snapshot de la trazabilidad del modelo. */
+export function splitPredictionInput(inputData: unknown): {
+  features: Record<string, unknown>;
+  meta: PredictionMeta;
+} {
+  const source = (inputData && typeof inputData === "object" ? inputData : {}) as Record<string, unknown>;
+  const meta: PredictionMeta = {};
+  const features: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(source)) {
+    if ((PREDICTION_META_KEYS as readonly string[]).includes(key)) {
+      (meta as Record<string, unknown>)[key] = value;
+    } else {
+      features[key] = value;
+    }
+  }
+  return { features, meta };
+}
 
 /** Respuesta estándar para informe / consumo externo */
 export type ThesisPredictionResponse = {
@@ -74,5 +110,11 @@ export function buildPredictionApiPayload(p: InternalPrediction) {
     modelName: p.modelName,
     predictedAt: p.predictedAt,
     inputData: p.inputData,
+    modelVersion: p.modelVersion,
+    datasetVersion: p.datasetVersion,
+    dataMode: p.dataMode,
+    contractVersion: p.contractVersion,
+    decisionThreshold: p.decisionThreshold,
+    experimental: p.experimental ?? p.dataMode === "synthetic_scientific",
   };
 }

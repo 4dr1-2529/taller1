@@ -15,6 +15,7 @@ import {
 import { Brain } from "lucide-react";
 import { api } from "@/services/api";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import { ExperimentalBadge } from "@/components/ui/ExperimentalBadge";
 
 const COLORS = ["var(--chart-primary)", "var(--chart-secondary)", "var(--risk-medium)", "var(--risk-low)"];
 
@@ -23,7 +24,12 @@ type ModelMetrics = {
   precision: number;
   recall: number;
   f1_score: number;
+  balanced_accuracy?: number;
+  roc_auc?: number;
+  pr_auc?: number;
+  brier?: number;
   confusion_matrix: number[][];
+  threshold?: number;
 };
 
 const METRIC_KEYS = new Set([
@@ -31,6 +37,10 @@ const METRIC_KEYS = new Set([
   "precision",
   "recall",
   "f1_score",
+  "balanced_accuracy",
+  "roc_auc",
+  "pr_auc",
+  "brier",
   "confusion_matrix",
 ]);
 
@@ -69,6 +79,15 @@ export function MlMetricsSection() {
   const data = useMemo(() => (raw ? extractModels(raw) : null), [raw]);
   const bestModel = (raw?.best_model as string) ?? "—";
   const features = (raw?.features as string[]) ?? [];
+  const dataMode = (raw?.data_mode as string | undefined) ?? null;
+  const datasetVersion = (raw?.dataset_version as string | undefined) ?? null;
+  const modelVersion = (raw?.model_version as string | undefined) ?? null;
+  const holdout = useMemo(() => {
+    const h = raw?.holdout_results as Record<string, ModelMetrics> | undefined;
+    if (!h || typeof h !== "object") return null;
+    const best = h[bestModel];
+    return best ?? (Object.values(h)[0] as ModelMetrics | undefined) ?? null;
+  }, [raw, bestModel]);
 
   if (loading) {
     return (
@@ -116,12 +135,20 @@ export function MlMetricsSection() {
           <h3 className="text-base font-semibold text-[var(--text-primary)]">
             Comparación de modelos (ensemble learning)
           </h3>
+          <ExperimentalBadge dataMode={dataMode} datasetVersion={datasetVersion} compact />
         </div>
         <span className="badge bg-violet-500/15 text-violet-300">
-          Mejor por F1: <strong>{bestModel.replaceAll("_", " ")}</strong>
+          Mejor por F1 (validación): <strong>{bestModel.replaceAll("_", " ")}</strong>
           {bestEntry ? ` (${(bestEntry[1].f1_score * 100).toFixed(1)}%)` : ""}
         </span>
       </div>
+
+      <p className="text-xs text-[var(--text-muted)]">
+        Selección por el conjunto de validación · umbral de decisión afinado solo en validación ·
+        evaluación final en holdout.
+        {datasetVersion ? ` Dataset ${datasetVersion}.` : ""}
+        {modelVersion ? ` Modelo ${modelVersion}.` : ""}
+      </p>
 
       <div className="h-80 min-w-0">
         <ResponsiveContainer width="100%" height="100%">
@@ -164,6 +191,11 @@ export function MlMetricsSection() {
               <li>Precision: {(m.precision * 100).toFixed(1)}%</li>
               <li>Recall: {(m.recall * 100).toFixed(1)}%</li>
               <li>F1-score: {(m.f1_score * 100).toFixed(1)}%</li>
+              {m.balanced_accuracy != null && <li>Balanced acc.: {(m.balanced_accuracy * 100).toFixed(1)}%</li>}
+              {m.roc_auc != null && <li>ROC-AUC: {m.roc_auc.toFixed(4)}</li>}
+              {m.pr_auc != null && <li>PR-AUC: {m.pr_auc.toFixed(4)}</li>}
+              {m.brier != null && <li>Brier: {m.brier.toFixed(4)}</li>}
+              {m.threshold != null && <li>Umbral: {m.threshold.toFixed(2)}</li>}
             </ul>
             <p className="mt-2 text-xs uppercase tracking-wide text-[var(--text-muted)]">
               Matriz de confusión
@@ -179,10 +211,35 @@ export function MlMetricsSection() {
         ))}
       </div>
 
+      {holdout ? (
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-500">
+              Evaluación final · holdout (una sola vez, sin usar para selección)
+            </p>
+            <ExperimentalBadge dataMode={dataMode} datasetVersion={datasetVersion} compact />
+          </div>
+          <ul className="mt-2 grid gap-x-6 gap-y-1 text-sm text-[var(--text-secondary)] sm:grid-cols-2 lg:grid-cols-4">
+            <li>Accuracy: {(holdout.accuracy * 100).toFixed(1)}%</li>
+            <li>Precision: {(holdout.precision * 100).toFixed(1)}%</li>
+            <li>Recall: {(holdout.recall * 100).toFixed(1)}%</li>
+            <li>F1: {(holdout.f1_score * 100).toFixed(1)}%</li>
+            <li>Balanced acc.: {((holdout.balanced_accuracy ?? 0) * 100).toFixed(1)}%</li>
+            <li>ROC-AUC: {(holdout.roc_auc ?? 0).toFixed(4)}</li>
+            <li>PR-AUC: {(holdout.pr_auc ?? 0).toFixed(4)}</li>
+            <li>Brier: {(holdout.brier ?? 0).toFixed(4)}</li>
+          </ul>
+          <p className="mt-2 text-xs text-[var(--text-muted)]">
+            Matriz de confusión: {JSON.stringify(holdout.confusion_matrix)} (TN, FP / FN, TP) ·
+            objetivo binario: deserción.
+          </p>
+        </div>
+      ) : null}
+
       {features.length > 0 ? (
         <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/20 p-4">
           <p className="text-xs font-semibold uppercase text-[var(--text-muted)]">
-            Variables del modelo (importancia por orden de entrada)
+            Variables del modelo (importancia del Random Forest · señal observada)
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {features.map((f) => (

@@ -5,16 +5,31 @@ type Result = {
   score: number; level: NivelRiesgo; probabilityAbandono: number; modelName: string;
   recommendation: string; inputData: Prisma.InputJsonObject;
   factors: { key: string; label: string; contribution: number }[];
+  modelVersion?: string; datasetVersion?: string; dataMode?: string;
+  contractVersion?: string; decisionThreshold?: number;
 };
 
 export async function persistPrediction(studentId: bigint, result: Result, actor: string, ip?: string) {
   return prisma.$transaction(async tx => {
     await tx.$queryRaw`SELECT id FROM estudiante WHERE id = ${studentId} FOR UPDATE`;
     const student = await tx.student.findUniqueOrThrow({ where: { id: studentId } });
+    // La trazabilidad del modelo (versión, dataset, modo) se guarda en input_data
+    // junto a las siete features: no se crean columnas ni migraciones nuevas.
+    const inputData: Prisma.InputJsonObject = {
+      ...result.inputData,
+      ...(result.modelVersion ? { modelVersion: result.modelVersion } : null),
+      ...(result.datasetVersion ? { datasetVersion: result.datasetVersion } : null),
+      ...(result.dataMode ? { dataMode: result.dataMode } : null),
+      ...(result.contractVersion ? { contractVersion: result.contractVersion } : null),
+      ...(typeof result.decisionThreshold === "number"
+        ? { decisionThreshold: result.decisionThreshold }
+        : null),
+    };
     const prediction = await tx.prediction.create({ data: {
       studentId, score: result.score, nivelRiesgo: result.level,
       probabilidad: result.probabilityAbandono, probabilidadAbandono: result.probabilityAbandono,
-      modelName: result.modelName, contractVersion: "2026-v2", inputData: result.inputData,
+      modelName: result.modelName, contractVersion: (result.contractVersion ?? "2026-v2").slice(0, 20),
+      inputData,
       recommendation: result.recommendation,
       features: { create: Object.entries(result.inputData).filter(([,v]) => typeof v === "number").map(([featureCodigo, v]) => ({ featureCodigo, valorNumerico: v as number })) },
       factores: { create: result.factors.map(f => ({ factorKey: f.key, etiqueta: f.label, contribucion: f.contribution })) },
@@ -28,7 +43,7 @@ export async function persistPrediction(studentId: bigint, result: Result, actor
       if (!existing) {
         alert = await tx.alert.create({ data: {
           studentId, prediccionId: prediction.id, titulo: `Alerta temprana: riesgo ${result.level}`,
-          descripcion: `Probabilidad estimada de clase alta: ${(result.probabilityAbandono * 100).toFixed(1)}%.`,
+          descripcion: `Probabilidad estimada de deserción (P target=1): ${(result.probabilityAbandono * 100).toFixed(1)}%.`,
           nivelRiesgo: result.level, score: result.score, probabilidad: result.probabilityAbandono,
           recomendacion: result.recommendation, estado: "nueva",
         } });

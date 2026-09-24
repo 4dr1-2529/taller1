@@ -54,6 +54,7 @@ export function BentoDashboard({
     modelComparison: { modelo: string; f1: number; accuracy: number }[];
     featureImportance: { variable: string; peso: number }[];
   } | null>(null);
+  const [apiMl, setApiMl] = useState<Awaited<ReturnType<typeof api.getDashboardKpis>>["ml"] | null>(null);
 
   useEffect(() => {
     if (!useApi) return;
@@ -67,6 +68,7 @@ export function BentoDashboard({
           alertsByLevel?: Record<string, number>;
         };
         setApiKpis(k);
+        setApiMl(r.ml ?? null);
         setApiAnalytics({
           riskTrend: (r.riskTrend as { periodo: string; riesgoGlobal: number }[]) ?? [],
           riskBySection:
@@ -92,6 +94,7 @@ export function BentoDashboard({
       .catch(() => {
         setApiKpis(null);
         setApiAnalytics(null);
+        setApiMl(null);
       });
   }, [useApi, students.length]);
 
@@ -153,6 +156,12 @@ export function BentoDashboard({
 
   const kpis: KpiItem[] = [
     { label: "Estudiantes", value: students.length, icon: Users },
+    {
+      label: "Evaluados por el modelo",
+      value: apiMl?.evaluated ?? "—",
+      hint: apiMl?.evaluatedTotal != null ? `de ${apiMl.evaluatedTotal} estudiantes` : "Sin evaluación predictiva",
+      icon: Activity,
+    },
     { label: "Cursos", value: courses.length, icon: BookOpen },
     {
       label: "Matrículas activas",
@@ -173,6 +182,11 @@ export function BentoDashboard({
           healthScore={healthScore}
           trend={trend}
           topStudent={topAtRisk[0]}
+          experimental={apiMl?.experimental ?? false}
+          datasetVersion={apiMl?.datasetVersion ?? null}
+          evaluated={apiMl?.evaluated}
+          evaluatedTotal={apiMl?.evaluatedTotal}
+          avgProbability={apiMl?.avgProbability ?? null}
         />
         <BentoDistribution data={riskDistribution} />
       </div></BentoCell>

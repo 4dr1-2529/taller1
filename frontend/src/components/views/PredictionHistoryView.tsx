@@ -18,6 +18,7 @@ import { RiskBadge } from "@/components/ui/RiskBadge";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import type { Student } from "@/types/academic";
 import { SELECT_CLASS } from "@/lib/ui";
+import { ExperimentalBadge } from "@/components/ui/ExperimentalBadge";
 
 type PredictionHistoryViewProps = {
   students: Student[];
@@ -148,8 +149,10 @@ export function PredictionHistoryView({
               <th>Fecha</th>
               <th>Estudiante</th>
               <th>Score</th>
+              <th>Prob. deserción</th>
               <th>Nivel</th>
               <th>Modelo</th>
+              <th>Datos</th>
               <th>Recomendación</th>
             </tr>
           </thead>
@@ -165,10 +168,22 @@ export function PredictionHistoryView({
                     : p.studentId.slice(0, 8)}
                 </td>
                 <td className="font-semibold tabular-nums">{p.score.toFixed(1)}</td>
+                <td className="tabular-nums">
+                  {p.probability != null && Number.isFinite(p.probability)
+                    ? `${(p.probability * 100).toFixed(1)}%`
+                    : "—"}
+                </td>
                 <td>
                   <RiskBadge level={p.level} score={p.score} />
                 </td>
                 <td className="text-xs">{p.modelName}</td>
+                <td>
+                  <ExperimentalBadge
+                    dataMode={p.dataMode}
+                    datasetVersion={p.datasetVersion}
+                    compact
+                  />
+                </td>
                 <td className="max-w-xs text-xs text-[var(--text-secondary)]">
                   {p.meta?.recommendation ?? "—"}
                 </td>

@@ -8,6 +8,7 @@ import { RiskBadge } from "@/components/ui/RiskBadge";
 import { RiskGauge } from "@/components/ui/RiskGauge";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 import { formatContributionPoints } from "@/lib/prediction-display";
+import { ExperimentalBadge, ExperimentalNote } from "@/components/ui/ExperimentalBadge";
 
 function riskLevelKey(nivel: string): "bajo" | "medio" | "alto" {
   const l = nivel.toLowerCase();
@@ -52,6 +53,7 @@ export function StudentPredictionView() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <p className="text-sm text-[var(--text-secondary)]">{ESTUDIANTE_MSG.riesgo}</p>
+        <ExperimentalBadge dataMode={pred?.dataMode} datasetVersion={pred?.datasetVersion} compact />
       </div>
 
       {!pred ? (
@@ -74,7 +76,7 @@ export function StudentPredictionView() {
                 <p className="text-lg font-bold">{pred.score}</p>
               </div>
               <div>
-                <p className="text-[var(--text-muted)]">Probabilidad de abandono</p>
+                <p className="text-[var(--text-muted)]">Probabilidad de deserción</p>
                 <p className="text-lg font-bold">{(pred.probabilidadAbandono * 100).toFixed(1)}%</p>
               </div>
               <div>
@@ -96,7 +98,7 @@ export function StudentPredictionView() {
 
             {pred.factores.length > 0 ? (
               <div>
-                <p className="mb-2 font-semibold text-[var(--text-primary)]">Factores principales</p>
+                <p className="mb-2 font-semibold text-[var(--text-primary)]">Señales observadas asociadas</p>
                 <ul className="space-y-1 text-[var(--text-secondary)]">
                   {pred.factores.map((f) => (
                     <li key={f.key}>
@@ -112,6 +114,12 @@ export function StudentPredictionView() {
               <p className="font-semibold text-[var(--text-primary)]">Recomendación personalizada</p>
               <p className="mt-1 text-[var(--text-secondary)]">{pred.recomendacion}</p>
             </div>
+
+            <ExperimentalNote
+              dataMode={pred.dataMode}
+              datasetVersion={pred.datasetVersion}
+              modelVersion={pred.modeloVersion}
+            />
           </div>
         </div>
       )}
