@@ -2,18 +2,28 @@ import fs from "node:fs";
 import https from "node:https";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { requireDemoPassword } from "./demo-env.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.resolve(__dirname, "../../docs/cuentas-demo");
-const API_URL = (process.env.API_URL ?? "https://taller1-production.up.railway.app/api/v1").replace(/\/$/, "");
-const PASSWORD = process.env.INSTITUTION_PASSWORD?.trim() || requireDemoPassword();
+const API_URL = (process.env.API_URL ?? "https://backend-production-fcb1.up.railway.app/api/v1").replace(/\/$/, "");
+
+// En el Data Seed V5 cada rol tiene su propia contraseña de entorno: no existe
+// una única clave compartida, por lo que se resuelve por rol en cada intento.
+const PASSWORD_BY_ROLE = {
+  director: process.env.DIRECTOR_INITIAL_PASSWORD?.trim(),
+  docente: process.env.TEACHER_INITIAL_PASSWORD?.trim(),
+  estudiante: process.env.STUDENT_INITIAL_PASSWORD?.trim(),
+};
+for (const [role, value] of Object.entries(PASSWORD_BY_ROLE)) {
+  if (!value) throw new Error(`Defina la contraseña de entorno del rol "${role}" antes de verificar.`);
+}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function loginRequest(email) {
+function loginRequest(email, role) {
+  const password = PASSWORD_BY_ROLE[role];
   return new Promise((resolve) => {
-    const payload = JSON.stringify({ email, password: PASSWORD });
+    const payload = JSON.stringify({ email, password });
     const url = new URL(`${API_URL}/auth/login`);
     const req = https.request(
       url,
@@ -49,7 +59,7 @@ function loginRequest(email) {
   });
 }
 
-async function verifySample(items, sampleSize = 6) {
+async function verifySample(items, role, sampleSize = 6) {
   const picks = [items[0], items[Math.floor(items.length / 2)], items[items.length - 1]];
   let i = 0;
   while (picks.length < sampleSize && i < items.length) {
@@ -61,7 +71,7 @@ async function verifySample(items, sampleSize = 6) {
   let ok = 0;
   const failed = [];
   for (const row of unique) {
-    const result = await loginRequest(row.email);
+    const result = await loginRequest(row.email, role);
     if (result.ok) ok++;
     else failed.push(`${row.email} (${result.message})`);
     await sleep(1200);
@@ -72,7 +82,7 @@ async function verifySample(items, sampleSize = 6) {
 async function main() {
   const jsonPath = path.join(outDir, "cuentas.json");
   if (!fs.existsSync(jsonPath)) {
-    console.error("Falta cuentas.json — ejecute: npm run export:accounts:web");
+    console.error("Falta cuentas.json — ejecute: node scripts/export-production-accounts.mjs");
     process.exit(1);
   }
 
@@ -81,11 +91,11 @@ async function main() {
 
   await sleep(3000);
 
-  const director = await loginRequest(data.director?.email ?? "director@blenkir.edu.pe");
+  const director = await loginRequest(data.director?.email ?? "director@blenkir.edu.pe", "director");
   console.log(`  Director: ${director.ok ? "OK" : director.message}`);
 
-  const teacherCheck = await verifySample(data.teachers, 5);
-  const studentCheck = await verifySample(data.students, 5);
+  const teacherCheck = await verifySample(data.teachers, "docente", 5);
+  const studentCheck = await verifySample(data.students, "estudiante", 5);
 
   console.log(`  Profesores: ${teacherCheck.ok}/${teacherCheck.tested} OK`);
   console.log(`  Estudiantes: ${studentCheck.ok}/${studentCheck.tested} OK`);

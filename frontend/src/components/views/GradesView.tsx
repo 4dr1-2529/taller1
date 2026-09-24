@@ -141,7 +141,8 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
         ? await api.getProfesorGrades(undefined, filters.courseId, periodoNumero)
         : await api.getGrades(undefined, filters.courseId, periodoNumero);
       setItems(res.items as GradeRow[]);
-    } catch {
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudieron cargar las notas");
       setItems([]);
     } finally {
       setLoading(false);

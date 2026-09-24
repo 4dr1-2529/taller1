@@ -6,7 +6,9 @@
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
-    { "key": "DEMO_PASSWORD", "value": "" },
+    { "key": "DIRECTOR_INITIAL_PASSWORD", "value": "" },
+    { "key": "TEACHER_INITIAL_PASSWORD", "value": "" },
+    { "key": "STUDENT_INITIAL_PASSWORD", "value": "" },
     { "key": "token", "value": "" },
     { "key": "studentId", "value": "" },
     { "key": "courseId", "value": "" },
@@ -38,7 +40,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"director.demo@blenkir.edu.pe\",\n  \"password\": \"{{DEMO_PASSWORD}}\"\n}"
+              "raw": "{\n  \"email\": \"director@blenkir.edu.pe\",\n  \"password\": \"{{DIRECTOR_INITIAL_PASSWORD}}\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }
@@ -142,7 +144,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"profesor1.demo@blenkir.edu.pe\",\n  \"password\": \"{{DEMO_PASSWORD}}\"\n}"
+              "raw": "{\n  \"email\": \"prof001@blenkir.edu.pe\",\n  \"password\": \"{{TEACHER_INITIAL_PASSWORD}}\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }
@@ -197,7 +199,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"alumno01.demo@blenkir.edu.pe\",\n  \"password\": \"{{DEMO_PASSWORD}}\"\n}"
+              "raw": "{\n  \"email\": \"est0002@alumnos.blenkir.edu.pe\",\n  \"password\": \"{{STUDENT_INITIAL_PASSWORD}}\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }

@@ -1,7 +1,11 @@
 # Auditoría final del proyecto
 
 ## 1. Resumen
-Se corrigieron los controles de reset demo, logout, recuperación P3009, configuración MySQL, contrato ML y documentación principal. La demo vigente queda definida para 1 director, 3 profesores y 9 estudiantes ficticios.
+Se corrigieron los controles de reset demo, logout, recuperación P3009, configuración MySQL, contrato ML y documentación principal. La demo de **esa fase** quedó definida para 1 director, 3 profesores y 9 estudiantes ficticios.
+
+> ⚠️ **Histórico.** Esa población demo ya fue reemplazada por el **Data Seed definitivo V5**
+> (275 usuarios reales en producción). El estado vigente se documenta en
+> [`docs/CIERRE_INTEGRAL_BLENKIR_V5_2026.md`](docs/CIERRE_INTEGRAL_BLENKIR_V5_2026.md).
 
 ## 2. Problemas encontrados
 - Seed demo heredado para 660 estudiantes y 23 profesores.

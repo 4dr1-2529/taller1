@@ -43,6 +43,10 @@
     "db:bootstrap:admin": "tsx prisma/bootstrap-admin.ts",
     "db:validate:preseed": "node scripts/validate-preseed-zero.mjs",
     "db:cleanup:preseed": "node scripts/preseed-cleanup-v2.mjs",
+    "db:dataset:validate": "node scripts/validate-definitive-dataset-2026.mjs",
+    "db:dataset:dry-run": "node scripts/import-definitive-dataset-2026.mjs --dry-run",
+    "db:dataset:production-dry-run": "node scripts/validate-production-definitive-dataset-2026.mjs",
+    "db:dataset:import": "node scripts/import-definitive-dataset-2026.mjs",
     "db:studio": "prisma studio",
     "type-check": "tsc --noEmit",
     "type-check:tools": "tsc -p tsconfig.tools.json",
@@ -62,6 +66,7 @@
     "prisma": "^6.3.1",
     "typescript": "^5",
     "xss": "^1.0.15",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {

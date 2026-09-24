@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { attachPredictions } from "@/lib/aggregates";
 import { mapStudentFromApi } from "@/lib/api-mappers";
 import { profesorService } from "@/services/profesorService";
@@ -37,7 +38,8 @@ export function ProfessorStudentsView({ courses, secciones }: ProfessorStudentsV
         limit: 800,
       });
       setRows(res.items.map((r) => mapStudentFromApi(r as Parameters<typeof mapStudentFromApi>[0])));
-    } catch {
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudieron cargar los estudiantes");
       setRows([]);
     } finally {
       setLoading(false);

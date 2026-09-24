@@ -275,7 +275,38 @@ class ApiClient {
     };
     if (this.token) headers.Authorization = `Bearer ${this.token}`;
 
-    const res = await fetch(`${requireApiBaseUrl()}${path}`, { ...options, headers });
+    // Timeout defensivo: evita spinners infinitos cuando Railway devuelve un
+    // 502 del proxy o la conexión se cuelga sin rechazar.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20_000);
+    const onExternalAbort = () => controller.abort();
+    options.signal?.addEventListener("abort", onExternalAbort);
+
+    let res: Response;
+    try {
+      res = await fetch(`${requireApiBaseUrl()}${path}`, { ...options, headers, signal: controller.signal });
+    } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") {
+        throw new Error(
+          options.signal?.aborted
+            ? "Solicitud cancelada."
+            : "El servidor tardó demasiado en responder. Intente de nuevo.",
+        );
+      }
+      throw new Error("No se pudo conectar con el servidor.");
+    } finally {
+      clearTimeout(timer);
+      options.signal?.removeEventListener("abort", onExternalAbort);
+    }
+
+    // Un 502 del proxy devuelve HTML: sin esta guarda `res.json()` lanza un
+    // SyntaxError críptico que llega tal cual a la UI.
+    if (!(res.headers.get("content-type") ?? "").includes("application/json")) {
+      throw new Error(
+        res.ok ? "Respuesta inesperada del servidor." : `Servidor no disponible (HTTP ${res.status}).`,
+      );
+    }
+
     const body = (await res.json()) as ApiEnvelope<T> & Record<string, unknown>;
 
     if (!res.ok || body.success === false) {
@@ -515,7 +546,10 @@ class ApiClient {
     estado?: string;
     q?: string;
   }) {
-    const q = new URLSearchParams({ estado: params?.estado ?? "activa" });
+    // `""` (opción "Todas") debe viajar vacío: el backend solo aplica el filtro
+    // cuando recibe un valor, y omite el parámetro → por defecto "activa".
+    const q = new URLSearchParams();
+    if (params?.estado !== undefined) q.set("estado", params.estado);
     if (params?.seccionId) q.set("seccionId", params.seccionId);
     if (params?.gradoId) q.set("gradoId", params.gradoId);
     if (params?.page) q.set("page", String(params.page));

@@ -68,7 +68,7 @@ flowchart TB
 | Capa | Plataforma | URL |
 |------|------------|-----|
 | Frontend | Vercel | https://taller1-frontend.vercel.app |
-| Backend + BD | Railway | https://taller1-production.up.railway.app/api/v1 |
+| Backend + BD | Railway | https://backend-production-fcb1.up.railway.app/api/v1 |
 | ML | Local / opcional Railway | http://localhost:5000 |
 
 ---

@@ -156,7 +156,8 @@ export function BentoDashboard({
     { label: "Cursos", value: courses.length, icon: BookOpen },
     {
       label: "Matrículas activas",
-      value: matriculaStats?.matriculasActivas ?? students.length,
+      // Nunca se sustituye por `students.length`: son métricas distintas.
+      value: matriculaStats?.matriculasActivas ?? "—",
       icon: GraduationCap,
     },
     { label: "Asistencia prom.", value: avgAtt ?? "—", suffix: avgAtt == null ? undefined : "%", icon: Activity },

@@ -1,17 +1,35 @@
 import path from "path";
 import { fileURLToPath } from "url";
-import { requireDemoPassword } from "../../backend/scripts/demo-env.mjs";
 
 const ROOT = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 
 export const BASE_URL = "http://localhost:3029";
 export const API_URL = "http://localhost:4000/api/v1";
-export const PASSWORD = () => requireDemoPassword();
+
+// Data Seed V5: cada rol usa su propia variable de entorno. Nunca un valor literal.
+const PASSWORD_BY_ROLE = {
+  director: process.env.DIRECTOR_INITIAL_PASSWORD?.trim(),
+  profesor: process.env.TEACHER_INITIAL_PASSWORD?.trim(),
+  estudiante: process.env.STUDENT_INITIAL_PASSWORD?.trim(),
+};
+export const PASSWORD = (role) => {
+  const value = PASSWORD_BY_ROLE[role];
+  if (!value) throw new Error(`Defina la variable de entorno de contraseña para el rol "${role}".`);
+  return value;
+};
+
+/** Resuelve la contraseña por entorno según el correo (V5: una por rol). */
+export const passwordForEmail = (email) => {
+  const e = String(email).toLowerCase();
+  if (e.startsWith("prof")) return PASSWORD("profesor");
+  if (e.startsWith("est") || e.includes("@alumnos.")) return PASSWORD("estudiante");
+  return PASSWORD("director");
+};
 
 export const USERS = {
-  director: { email: "director@blenkir.edu.pe", label: "Director" },
-  profesor: { email: "pro50000001@blenkir.edu.pe", label: "Profesor" },
-  estudiante: { email: "mateo.quispe0001@blenkir.edu.pe", label: "Alumno" },
+  director: { email: "director@blenkir.edu.pe", label: "Director", role: "director" },
+  profesor: { email: "prof001@blenkir.edu.pe", label: "Profesor", role: "profesor" },
+  estudiante: { email: "est0002@alumnos.blenkir.edu.pe", label: "Alumno", role: "estudiante" },
 };
 
 export const OUT = path.join(ROOT, "docs", "evidencias_finales");

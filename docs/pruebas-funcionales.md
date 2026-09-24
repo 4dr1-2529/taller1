@@ -36,13 +36,19 @@
 
 ## Pruebas manuales por rol
 
-| Rol | Credencial demo | Verificar |
-|-----|-----------------|-----------|
-| Director | `director.demo@blenkir.edu.pe` | Totales globales, CRUD, reportes |
-| Profesor demo | `profesor1.demo@blenkir.edu.pe` | Filtros salón, notas propias |
-| Estudiante demo | `alumno01.demo@blenkir.edu.pe` | Sin filtros globales, solo `/estudiante/*` |
+## Credenciales vigentes (Data Seed V5)
 
-Contraseña: variable `DEMO_PASSWORD`; no se publica en documentación.
+| Rol | Credencial | Verificar |
+|-----|------------|-----------|
+| Director | `director@blenkir.edu.pe` | Totales globales, CRUD, reportes |
+| Profesor | `prof001@blenkir.edu.pe` | Filtros salón, notas propias |
+| Estudiante | `est0002@alumnos.blenkir.edu.pe` | Sin filtros globales, solo `/estudiante/*` |
+
+Contraseñas: variables de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`
+y `STUDENT_INITIAL_PASSWORD`; no se publican valores en la documentación.
+
+> **Deprecated:** las cuentas `*.demo@…` y el comando `npm run db:seed:demo` pertenecen a la
+> población demo anterior y ya no existen. Ver `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md`.
 
 ## Ejecución local
 

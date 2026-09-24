@@ -1,24 +1,38 @@
-# Cuentas demo del sistema
+# Cuentas de acceso
 
-`DEMO_PASSWORD=<CONFIGURAR_EN_VARIABLE_DE_ENTORNO>`
+El repositorio **no publica ninguna contraseña**. Cada rol usa su propia variable de entorno:
 
-No se publica ninguna contraseña en el repositorio.
+```bash
+DIRECTOR_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
+TEACHER_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
+STUDENT_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
+```
 
-El seed vigente crea 1 director, 3 profesores y 9 estudiantes ficticios. Las contraseñas nunca se almacenan en este directorio.
+## Data Seed V5 (vigente en producción)
 
-## Actualizar desde producción (datos reales verificados)
+| Rol | Cantidad |
+|-----|----------|
+| Director | 1 |
+| Profesores | 24 |
+| Estudiantes | 250 |
+| **Total** | **275** |
+
+Listado completo (códigos, emails, grado/sección y estado de matrícula):
+[BLENKIR_LOGIN_ACCOUNTS_2026.md](../BLENKIR_LOGIN_ACCOUNTS_2026.md).
+
+> **Deprecated:** `DEMO_PASSWORD` / `INSTITUTION_DEFAULT_PASSWORD` corresponden a la población
+> demo anterior, ya reemplazada por el Data Seed V5. Los scripts antiguos de exportación apuntaban
+> al dominio obsoleto `taller1-production.up.railway.app` y ya no se usan.
+
+## Exportar desde producción
 
 ```bash
 cd tesis-dashboard/backend
-npm run export:accounts:web
+node scripts/export-production-accounts.mjs   # requiere DIRECTOR_INITIAL_PASSWORD
+node scripts/verify-production-accounts.mjs   # requiere las tres variables de rol
 ```
 
-Eso descarga correos de la tabla `usuario`, prueba logins y sobrescribe los CSV.
+Los CSV/JSON resultantes **no se versionan** (`.gitignore` cubre `docs/cuentas-demo/*.csv|json|xlsx`)
+y solo contienen la columna `password_env` (nombre de la variable), nunca el valor.
 
-> Requiere que Railway tenga desplegado el endpoint `/admin/cuentas-acceso`.
-
-## Si el login falla en la web
-
-En Railway → **taller1-production** → **Variables** → agregar `RUN_REPAIR=1` → redeploy → quitar la variable.
-
-Los archivos exportados desde producción no se versionan. Configure `DEMO_PASSWORD` localmente y use `npm run db:reset:demo` con `RESET_DEMO_DB=1`.
+> Requiere el endpoint `GET /admin/cuentas-acceso` (admin) desplegado en Railway.

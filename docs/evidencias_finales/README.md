@@ -1,5 +1,12 @@
 # Evidencias finales — ejecución 100% local
 
+> ⚠️ **LEGACY / DEPRECATED.** Estas evidencias corresponden a una ejecución **anterior** al Data
+> Seed definitivo V5 (población demo de 660 estudiantes · 23 profesores, contraseñas vía
+> `DEMO_PASSWORD`). Se conservan **sin modificar** como registro histórico. El estado vigente es
+> V5 en producción: 275 usuarios (1 director · 24 profesores · 250 estudiantes), backend
+> `https://backend-production-fcb1.up.railway.app/api/v1` y frontend
+> `https://taller1-frontend.vercel.app`.
+
 > Generado con datos reales del sistema en ejecución local (MySQL XAMPP + Backend :4000 + Frontend :3029 + ML :5000).  
 > **No se utilizó Railway ni Vercel.**
 
@@ -12,13 +19,16 @@
 | Modelo IA | http://localhost:5000 | FastAPI |
 | MySQL | `tesis_dashboard` | 660 estudiantes · 23 profesores |
 
-### Credenciales demo (capturas)
+### Credenciales demo (capturas) — históricas
 
-| Rol | Email | Contraseña |
-|-----|-------|------------|
-| Director | director@blenkir.edu.pe | DEMO_PASSWORD |
-| Profesor | pro50000001@blenkir.edu.pe | DEMO_PASSWORD |
-| Alumno | mateo.quispe0001@blenkir.edu.pe | DEMO_PASSWORD |
+| Rol | Email | Contraseña (histórica) |
+|-----|-------|------------------------|
+| Director | director@blenkir.edu.pe | `DEMO_PASSWORD` |
+| Profesor | pro50000001@blenkir.edu.pe | `DEMO_PASSWORD` |
+| Alumno | mateo.quispe0001@blenkir.edu.pe | `DEMO_PASSWORD` |
+
+> Cuentas demo ya retiradas. Para las cuentas vigentes ver
+> [BLENKIR_LOGIN_ACCOUNTS_2026.md](../BLENKIR_LOGIN_ACCOUNTS_2026.md).
 
 ## Estructura de entrega
 

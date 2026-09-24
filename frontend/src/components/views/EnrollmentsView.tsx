@@ -78,7 +78,8 @@ export function EnrollmentsView({
           seccionId: filters.seccionId || undefined,
           gradoId: filters.gradoId || undefined,
           q: query.trim() || undefined,
-          estado: estado || undefined,
+          // "Todas" es `""` y debe conservarse (no convertirse en undefined).
+          estado,
           page,
           limit: PAGE_SIZE,
         }),
@@ -93,7 +94,8 @@ export function EnrollmentsView({
           anioLectivoId: an.items.find((a) => a.anio === 2026 && a.activo)?.id ?? "",
         }));
       }
-    } catch {
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudieron cargar las matrículas");
       setItems([]);
       setTotal(0);
     } finally {

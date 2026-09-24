@@ -99,7 +99,8 @@ export function StudentsView({
             res.items.map((r) => mapStudentFromApi(r as Parameters<typeof mapStudentFromApi>[0])),
           );
           setTotal(res.total);
-        } catch {
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : "No se pudo cargar el listado de estudiantes");
           setServerRows(null);
         }
       })();

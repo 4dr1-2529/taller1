@@ -4,11 +4,16 @@ Con servicios desplegados:
 
 | Check | URL / acción |
 |-------|--------------|
-| Health backend | `GET https://taller1-production.up.railway.app/health` |
+| Health backend | `GET https://backend-production-fcb1.up.railway.app/health` |
+| API base | `https://backend-production-fcb1.up.railway.app/api/v1` |
 | Login web | https://taller1-frontend.vercel.app |
-| Director | `director@blenkir.edu.pe` / `DEMO_PASSWORD` |
-| Profesor tutor | `pro50000001@blenkir.edu.pe` / `DEMO_PASSWORD` |
-| Estudiante | `mateo.quispe0001@blenkir.edu.pe` / `DEMO_PASSWORD` |
+| Director | `director@blenkir.edu.pe` / `DIRECTOR_INITIAL_PASSWORD` |
+| Profesor tutor | `prof001@blenkir.edu.pe` / `TEACHER_INITIAL_PASSWORD` |
+| Estudiante | `est0002@alumnos.blenkir.edu.pe` / `STUDENT_INITIAL_PASSWORD` |
+
+Las contraseñas son **solo variables de entorno** en Railway (proyecto `TALLER1` →
+`production` → servicio `backend`); no se publican valores en este documento.
+Listado completo de las 275 cuentas: [BLENKIR_LOGIN_ACCOUNTS_2026.md](BLENKIR_LOGIN_ACCOUNTS_2026.md).
 
 Verificar por rol:
 
@@ -16,7 +21,8 @@ Verificar por rol:
 2. Estudiante no puede acceder a rutas `/students` (403)
 3. Profesor solo ve sus secciones en filtros
 
-Seed en BD vacía (consola Railway): `npm run db:seed --workspace=backend && npm run db:seed:demo --workspace=backend`
+Data Seed: ya está importado en producción (V5). **No ejecutar** `db:seed`, `db:seed:demo`,
+`db:push` ni ningún reset sobre esa BD.
 
 Guía: [DEPLOY.md](DEPLOY.md)
 
@@ -59,13 +65,13 @@ cd machine-learning && python tests/test_predict.py
 4. Predicción y alertas globales
 
 ### Profesor
-5. Login `pro50000001@blenkir.edu.pe`
+5. Login `prof001@blenkir.edu.pe`
 6. Filtros grado → sección → Buscar en Notas/Asistencia/LMS
 7. Registrar nota y asistencia solo en sus salones
 8. Profesor en curso ajeno → 403
 
 ### Estudiante
-9. Login `mateo.quispe0001@blenkir.edu.pe`
+9. Login `est0002@alumnos.blenkir.edu.pe`
 10. Dashboard personal (sin totales globales)
 11. Mis notas / asistencia / LMS / riesgo — solo datos propios
 12. `GET /students` o `/profesor/dashboard` → 403
@@ -74,7 +80,7 @@ cd machine-learning && python tests/test_predict.py
 ### General
 14. Login inválido → 401
 15. Predicción medio/alto genera alerta
-16. Smoke: `npm run test:smoke` con servicios levantados
+16. Smoke: `npm run test:smoke` (requiere `API_URL` y las tres variables de contraseña de rol)
 
 ## Smoke (integración)
 

@@ -32,20 +32,21 @@ npm run ml:train
 | Servicio | URL |
 |----------|-----|
 | Frontend | https://taller1-frontend.vercel.app |
-| Backend | https://taller1-production.up.railway.app/api/v1 |
-| Health | https://taller1-production.up.railway.app/health |
+| Backend | https://backend-production-fcb1.up.railway.app/api/v1 |
+| Health | https://backend-production-fcb1.up.railway.app/health |
 
 ---
 
 ## Credenciales
 
-Contraseña: **`DEMO_PASSWORD`** en `backend/.env`
+Contraseñas: **solo variables de entorno** en Railway (`TALLER1` → `production` → servicio `backend`):
+`DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`, `STUDENT_INITIAL_PASSWORD`. No se publican valores.
 
 | Rol | Email |
 |-----|-------|
 | Director | `director@blenkir.edu.pe` |
-| Profesor | `pro50000001@blenkir.edu.pe` |
-| Estudiante | `mateo.quispe0001@blenkir.edu.pe` |
+| Profesor | `prof001@blenkir.edu.pe` |
+| Estudiante | `est0002@alumnos.blenkir.edu.pe` |
 
 Listado completo: [docs/cuentas-demo/](../../docs/cuentas-demo/README.md)
 

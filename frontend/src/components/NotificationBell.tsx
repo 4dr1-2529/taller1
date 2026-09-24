@@ -34,7 +34,14 @@ export function NotificationBell() {
   if (!isAuthenticated) return null;
 
   async function markRead(id: string) {
-    await api.markNotificationRead(id);
+    try {
+      await api.markNotificationRead(id);
+    } catch (e) {
+      // Sin este catch la promesa queda sin manejar si el PATCH falla (token
+      // expirado o red) y la UI no da ninguna retroalimentación.
+      console.error("No se pudo marcar la notificación como leída", e);
+      return;
+    }
     void load();
   }
 

@@ -1,9 +1,21 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { requireDemoPassword } from "../../backend/scripts/demo-env.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const PP = join(ROOT, "plan-pruebas");
+
+// Data Seed V5: cada rol usa su propia variable de entorno; nunca un valor literal.
+const ENV_BY_ROLE = {
+  admin: "DIRECTOR_INITIAL_PASSWORD",
+  docente: "TEACHER_INITIAL_PASSWORD",
+  estudiante: "STUDENT_INITIAL_PASSWORD",
+};
+function requirePassword(role) {
+  const name = ENV_BY_ROLE[role];
+  const value = name ? process.env[name]?.trim() : undefined;
+  if (!value) throw new Error(`Defina ${name ?? "la contraseña del rol"} en el entorno.`);
+  return value;
+}
 
 export const PATHS = {
   root: ROOT,
@@ -26,10 +38,8 @@ export const URLS = {
   ml: process.env.ML_URL ?? "http://localhost:5000",
 };
 
-const demoPassword = () => requireDemoPassword();
-
 export const CREDS = {
-  director: { email: "director@blenkir.edu.pe", get password() { return demoPassword(); }, role: "admin" },
-  profesor: { email: "pro50000001@blenkir.edu.pe", get password() { return demoPassword(); }, role: "docente" },
-  estudiante: { email: "mateo.quispe0001@blenkir.edu.pe", get password() { return demoPassword(); }, role: "estudiante" },
+  director: { email: "director@blenkir.edu.pe", get password() { return requirePassword("director"); }, role: "admin" },
+  profesor: { email: "prof001@blenkir.edu.pe", get password() { return requirePassword("docente"); }, role: "docente" },
+  estudiante: { email: "est0002@alumnos.blenkir.edu.pe", get password() { return requirePassword("estudiante"); }, role: "estudiante" },
 };

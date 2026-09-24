@@ -31,8 +31,8 @@ Validar de forma **ejecutable y trazable** el sistema educativo predictivo (Next
 | Web | `http://localhost:3029` | `npm run dev:web` |
 | ML | `http://localhost:5000` | `npm run dev:ml` |
 
-**Datos:** `npm run db:seed` + `npm run db:seed:demo`  
-**Credenciales:** `director@blenkir.edu.pe` · `pro50000001@blenkir.edu.pe` · `mateo.quispe0001@blenkir.edu.pe` · contraseña `DEMO_PASSWORD` en `backend/.env`
+**Datos:** Data Seed definitivo V5 en Railway (275 usuarios · 250 estudiantes · 24 profesores)
+**Credenciales:** `director@blenkir.edu.pe` · `prof001@blenkir.edu.pe` · `est0002@alumnos.blenkir.edu.pe` — contraseñas en `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD` (variables de entorno, sin valores publicados)
 
 ## 4. Herramientas
 
@@ -56,11 +56,11 @@ Validar de forma **ejecutable y trazable** el sistema educativo predictivo (Next
 
 ## 6. Roles probados
 
-| Rol | Usuario demo | Secciones UI |
-|-----|--------------|--------------|
+| Rol | Usuario vigente | Secciones UI |
+|-----|-----------------|--------------|
 | Director (admin) | director@blenkir.edu.pe | 14 |
-| Profesor (docente) | pro50000001@blenkir.edu.pe | 10 |
-| Alumno (estudiante) | mateo.quispe0001@blenkir.edu.pe | 6 |
+| Profesor (docente) | prof001@blenkir.edu.pe | 10 |
+| Alumno (estudiante) | est0002@alumnos.blenkir.edu.pe | 6 |
 
 ## 7. Módulos probados
 

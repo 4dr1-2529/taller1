@@ -630,18 +630,18 @@ Configuracion:
 - Framework: Next.js.
 - Root Directory recomendado: `frontend`.
 - Variable obligatoria:
-  - `NEXT_PUBLIC_API_URL=https://taller1-production.up.railway.app/api/v1`
+  - `NEXT_PUBLIC_API_URL=https://backend-production-fcb1.up.railway.app/api/v1`
 - `frontend/vercel.json` instala dependencias desde la raiz del monorepo y compila `@tesis/shared` y `frontend`.
 
 El frontend no incluye la base de datos. Solo consume la API de Railway mediante HTTPS y JWT.
 
 ### 8.2 Railway: backend
 
-URL documentada: `https://taller1-production.up.railway.app`
+URL documentada: `https://backend-production-fcb1.up.railway.app`
 
-API base: `https://taller1-production.up.railway.app/api/v1`
+API base: `https://backend-production-fcb1.up.railway.app/api/v1`
 
-Healthcheck: `https://taller1-production.up.railway.app/health`
+Healthcheck: `https://backend-production-fcb1.up.railway.app/health`
 
 Configuracion de `railway.toml`:
 
@@ -704,7 +704,10 @@ npm run db:seed --workspace=backend
 npm run db:seed:demo --workspace=backend
 ```
 
-Las cuentas de demostracion se documentan en `docs/cuentas-demo/` y requieren `DEMO_PASSWORD`.
+El Data Seed definitivo V5 (275 usuarios) ya esta importado en produccion. Las cuentas se
+documentan en `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md` y las contraseñas viven solo en las variables
+de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD`.
+No se ejecutan `db:seed`, `db:seed:demo`, `db:push` ni resets sobre produccion.
 
 ---
 

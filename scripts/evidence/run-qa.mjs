@@ -32,7 +32,7 @@ async function apiChecks() {
   const lines = [];
   const tests = [
     { name: "health", url: "http://localhost:4000/health" },
-    { name: "login-director", url: `${API_URL}/auth/login`, method: "POST", body: { email: "director@blenkir.edu.pe", password: PASSWORD() } },
+    { name: "login-director", url: `${API_URL}/auth/login`, method: "POST", body: { email: "director@blenkir.edu.pe", password: PASSWORD("director") } },
     { name: "login-invalido", url: `${API_URL}/auth/login`, method: "POST", body: { email: "bad@blenkir.edu.pe", password: "wrong" }, expectFail: true },
   ];
 
