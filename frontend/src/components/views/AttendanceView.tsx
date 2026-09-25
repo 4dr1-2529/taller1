@@ -272,7 +272,7 @@ export function AttendanceView({
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
         <DataTablePanel
           title="Historial de asistencia"
-          description={loading ? "Cargando registros…" : `${total} registro(s)`}
+          description={loading ? "Cargando registros…" : `${total} ${total === 1 ? "registro" : "registros"}`}
           isEmpty={!loading && items.length === 0}
           emptyMessage={filters.search || filters.seccionId || filters.fecha ? "No existen registros para los filtros seleccionados." : "Sin registros de asistencia."}
           page={page}

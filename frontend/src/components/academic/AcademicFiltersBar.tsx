@@ -215,7 +215,7 @@ export function AcademicFiltersBar({
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
-                className={`${INPUT_CLASS} w-full pl-9`}
+                className={`${INPUT_CLASS} input-with-icon w-full`}
                 placeholder="Nombre, apellido o código"
                 value={filters.search}
                 onChange={(e) => onChange("search", e.target.value)}

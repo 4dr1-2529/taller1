@@ -12,7 +12,10 @@ import { AcademicFiltersBar } from "@/components/academic/AcademicFiltersBar";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { salonShortFromSeccion, teachersForSelect } from "@/lib/student-filters";
 import { PageSection } from "@/components/ui/PageSection";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { RiskBadge } from "@/components/ui/RiskBadge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { useAuth } from "@/contexts/AuthProvider";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -20,6 +23,9 @@ const STATUS_LABEL: Record<string, string> = {
   en_seguimiento: "En seguimiento",
   resuelta: "Resuelta",
 };
+
+/** Orden de severidad para priorizar la lectura del listado. */
+const SEVERITY_ORDER: Record<string, number> = { alto: 0, medio: 1, bajo: 2 };
 
 type AlertsViewProps = {
   students: Student[];
@@ -39,6 +45,7 @@ export function AlertsView({
   const [salonSummary, setSalonSummary] = useState<{ salon: string; count: number }[]>([]);
   const [viewSalon, setViewSalon] = useState<string | "all">("all");
   const [includeResolved, setIncludeResolved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const ALERTS_PAGE_SIZE = 20;
@@ -72,10 +79,13 @@ export function AlertsView({
       setApiAlerts(res.items);
       setSalonSummary(res.salonSummary ?? []);
       setTotal(res.total ?? res.items.length);
+      setError(null);
     } catch (e) {
       // Un fallo de API no es "sin alertas": se avisa en lugar de mostrar un
       // listado vacío como si fuera un resultado real.
-      toast.error(e instanceof Error ? e.message : "No se pudieron cargar las alertas");
+      const msg = e instanceof Error ? e.message : "No se pudieron cargar las alertas.";
+      toast.error(msg);
+      setError(msg);
       setApiAlerts([]);
       setSalonSummary([]);
       setTotal(0);
@@ -103,14 +113,27 @@ export function AlertsView({
       .sort((a, b) => b.prediction.score - a.prediction.score);
   }, [students]);
 
+  /** Severidad primero (alto → medio → bajo) y, dentro de cada nivel, más recientes. */
   const displayedAlerts = useMemo(() => {
     if (!useApi) return [];
-    if (viewSalon === "all") return apiAlerts;
-    return apiAlerts.filter((a) => {
-      const st = students.find((s) => s.id === a.student.id);
-      if (!st?.seccionId) return false;
-      const sec = secciones.find((x) => x.id === st.seccionId);
-      return sec ? salonShortFromSeccion(sec) === viewSalon : false;
+    const filtered =
+      viewSalon === "all"
+        ? apiAlerts
+        : apiAlerts.filter((a) => {
+            const st = students.find((s) => s.id === a.student.id);
+            if (!st?.seccionId) return false;
+            const sec = secciones.find((x) => x.id === st.seccionId);
+            return sec ? salonShortFromSeccion(sec) === viewSalon : false;
+          });
+    return [...filtered].sort((a, b) => {
+      const lv = (SEVERITY_ORDER[a.level] ?? 3) - (SEVERITY_ORDER[b.level] ?? 3);
+      if (lv !== 0) return lv;
+      const sa = a.score ?? 0;
+      const sb = b.score ?? 0;
+      if (sb !== sa) return sb - sa;
+      return (
+        Date.parse(b.fecha ?? b.createdAt ?? "") - Date.parse(a.fecha ?? a.createdAt ?? "")
+      );
     });
   }, [useApi, apiAlerts, viewSalon, students, secciones]);
 
@@ -126,6 +149,13 @@ export function AlertsView({
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        icon={AlertTriangle}
+        eyebrow="Seguimiento temprano"
+        title="Alertas que requieren acción"
+        description="Señales de riesgo ordenadas por severidad. Atienda primero los casos de riesgo alto y registre el seguimiento de cada uno."
+      />
+
       <AcademicFiltersBar
         filters={filters}
         onChange={(k, v) => { updateFilter(k, v); setPage(1); }}
@@ -142,22 +172,6 @@ export function AlertsView({
           search: true,
         }}
       />
-
-      {useApi ? (
-        <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-          <input
-            type="checkbox"
-            checked={includeResolved}
-            onChange={(e) => {
-              setIncludeResolved(e.target.checked);
-              // Sin reset, la página conservada puede quedar fuera del nuevo
-              // total y mostrar una tabla vacía que parece "sin alertas".
-              setPage(1);
-            }}
-          />
-          <span>Incluir alertas resueltas</span>
-        </label>
-      ) : null}
 
       {useApi && salonSummary.length > 0 ? (
         <SummaryStatsRow
@@ -188,20 +202,50 @@ export function AlertsView({
               className={viewSalon === s.salon ? "btn-primary text-xs" : "btn-secondary text-xs"}
               onClick={() => setViewSalon(s.salon)}
             >
-              {s.salon} = {s.count} alertas
+              {s.salon} = {s.count} {s.count === 1 ? "alerta" : "alertas"}
             </button>
           ))}
         </div>
       ) : null}
 
+      {error ? (
+        <ErrorState
+          message={error}
+          technicalDetail="GET /alerts"
+          onRetry={() => void loadApi()}
+          retryLabel="Reintentar"
+        />
+      ) : null}
+
       <PageSection
         icon={AlertTriangle}
-        title="Alertas tempranas"
-        description="Generadas cuando el modelo detecta riesgo medio o alto de deserción."
+        title="Listado de alertas"
+        description="Ordenadas de mayor a menor severidad. Actualice el estado de cada caso según su seguimiento."
+        action={
+          useApi ? (
+            <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+              <input
+                type="checkbox"
+                checked={includeResolved}
+                onChange={(e) => {
+                  setIncludeResolved(e.target.checked);
+                  // Sin reset, la página conservada puede quedar fuera del nuevo
+                  // total y mostrar una tabla vacía que parece "sin alertas".
+                  setPage(1);
+                }}
+              />
+              <span>Incluir resueltas</span>
+            </label>
+          ) : undefined
+        }
       >
         <ul className="space-y-4">
           {useApi ? (
-            displayedAlerts.length === 0 ? (
+            error ? (
+              <li className="py-8 text-center text-sm text-[var(--text-muted)]">
+                No fue posible cargar el listado.
+              </li>
+            ) : displayedAlerts.length === 0 ? (
               <li className="py-12 text-center text-sm text-[var(--text-muted)]">
                 Sin alertas para este filtro. Ejecute predicciones desde el módulo correspondiente.
               </li>
@@ -226,9 +270,10 @@ export function AlertsView({
                       </div>
                       <div className="flex flex-wrap gap-2">
                         <RiskBadge level={a.level} score={a.score ?? undefined} />
-                        <span className="badge-info">
-                          {a.estado_label ?? STATUS_LABEL[a.status] ?? a.status}
-                        </span>
+                        <StatusBadge
+                          status={a.status}
+                          label={a.estado_label ?? STATUS_LABEL[a.status] ?? a.status}
+                        />
                       </div>
                     </div>
 
@@ -238,11 +283,11 @@ export function AlertsView({
                         <dd className="font-medium capitalize">{a.nivel_riesgo ?? a.level}</dd>
                       </div>
                       <div>
-                        <dt className="text-[var(--text-muted)]">Probabilidad abandono</dt>
+                        <dt className="text-[var(--text-muted)]">Probabilidad de deserción</dt>
                         <dd className="font-medium">{prob}</dd>
                       </div>
                       <div>
-                        <dt className="text-[var(--text-muted)]">Score</dt>
+                        <dt className="text-[var(--text-muted)]">Puntaje</dt>
                         <dd className="font-medium">{a.score != null ? `${a.score}/100` : "—"}</dd>
                       </div>
                       <div>
@@ -262,7 +307,7 @@ export function AlertsView({
                           {factores.map((f) => (
                             <li
                               key={f.key}
-                              className="rounded-lg bg-white/5 px-2 py-1 text-xs text-[var(--text-secondary)]"
+                              className="rounded-lg bg-[var(--surface-muted)] px-2 py-1 text-xs text-[var(--text-secondary)]"
                             >
                               {f.label} ({Math.round(f.contribution)} pts)
                             </li>
@@ -325,7 +370,9 @@ export function AlertsView({
         </ul>
         {useApi && total > ALERTS_PAGE_SIZE ? (
           <div className="flex items-center justify-between gap-2 px-1 pt-4 text-xs text-[var(--text-muted)]">
-            <span>{total} alerta(s)</span>
+            <span>
+              {total} {total === 1 ? "alerta" : "alertas"}
+            </span>
             <span className="flex gap-2">
               <button type="button" className="btn-ghost py-1.5 disabled:opacity-40" disabled={page <= 1} onClick={() => setPage((v) => Math.max(1, v - 1))}>
                 Anterior

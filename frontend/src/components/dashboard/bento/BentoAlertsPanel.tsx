@@ -21,14 +21,14 @@ export function BentoAlertsPanel({ items }: BentoAlertsPanelProps) {
           </p>
           <h3 className="mt-1 text-lg font-semibold text-[var(--text-primary)]">Cola de intervención</h3>
         </div>
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-500/10 ring-1 ring-rose-500/20">
-          <Bell className="h-4 w-4 text-rose-400" />
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--risk-high)]/12 ring-1 ring-[var(--risk-high)]/25">
+          <Bell className="h-4 w-4 text-[var(--risk-high)]" aria-hidden />
         </span>
       </div>
 
       <ul className="mt-5 flex-1 space-y-3 overflow-y-auto pr-1">
         {items.length === 0 ? (
-          <li className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 py-10 text-center text-sm text-[var(--text-muted)]">
+          <li className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-[var(--border-subtle)] py-10 text-center text-sm text-[var(--text-muted)]">
             Sin alertas activas en el cohorte
           </li>
         ) : (

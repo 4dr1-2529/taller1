@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { AuditView } from "@/components/views/AuditView";
 import { SettingsView } from "@/components/views/SettingsView";
@@ -162,7 +162,10 @@ function sectionSubtitle(section: AppSection, role: string): string {
 export default function Home() {
   const { user, loading: authLoading, isAuthenticated, isDocente, isEstudiante } = useAuth();
   const role = user?.role;
-  const visibleSections = role ? (ROLE_SECTIONS[role] ?? ROLE_SECTIONS.estudiante) : ROLE_SECTIONS.admin;
+  const visibleSections = useMemo(
+    () => (role ? (ROLE_SECTIONS[role] ?? ROLE_SECTIONS.estudiante) : ROLE_SECTIONS.admin),
+    [role],
+  );
 
   const [activeSection, setActiveSection] = useState<AppSection>("Dashboard");
   const {
@@ -201,7 +204,11 @@ export default function Home() {
   }, [authLoading, isAuthenticated]);
 
   useEffect(() => {
-    if (!role || !visibleSections.includes(activeSection)) {
+    // Mientras AuthProvider restaura la sesión (`role` aún indefinido) no se
+    // debe pisar el valor inicial "Dashboard": antes de esta guarda, todas las
+    // sesiones aterrizaban en la primera sección de la lista del rol.
+    if (!role) return;
+    if (!visibleSections.includes(activeSection)) {
       setActiveSection(visibleSections[0]);
     }
   }, [role, visibleSections, activeSection]);

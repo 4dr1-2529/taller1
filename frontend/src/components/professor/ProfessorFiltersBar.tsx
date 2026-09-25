@@ -69,7 +69,7 @@ export function ProfessorFiltersBar({
         <p className="text-sm font-medium text-[var(--text-secondary)]">
           {resultCount === 0
             ? "0 resultados encontrados"
-            : `${resultCount} resultado(s) encontrado(s)`}
+            : `${resultCount} ${resultCount === 1 ? "resultado encontrado" : "resultados encontrados"}`}
         </p>
       ) : null}
       {requireSalonMessage && resultCount === undefined && !filters.gradoId && !filters.seccionId ? (

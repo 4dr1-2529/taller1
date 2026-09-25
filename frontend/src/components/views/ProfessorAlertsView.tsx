@@ -10,6 +10,8 @@ import { ProfessorFiltersBar } from "@/components/professor/ProfessorFiltersBar"
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { PageSection } from "@/components/ui/PageSection";
 import { RiskBadge } from "@/components/ui/RiskBadge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { PROFESOR_HINTS } from "@/constants/blenkir";
 import type { Course } from "@/types/academic";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
@@ -82,7 +84,7 @@ export function ProfessorAlertsView({ courses, secciones }: ProfessorAlertsViewP
     setShowAllMode(false);
     const count = await fetchAlerts({ applied });
     if (count === 0) toast.info(PROFESOR_HINTS.noAlerts);
-    else toast.success(`${count} alerta(s) encontrada(s)`);
+    else toast.success(`${count} ${count === 1 ? "alerta encontrada" : "alertas encontradas"}`);
   }, [pf, fetchAlerts]);
 
   const loadAll = useCallback(async () => {
@@ -103,10 +105,14 @@ export function ProfessorAlertsView({ courses, secciones }: ProfessorAlertsViewP
     setError(null);
   }, [pf]);
 
-  const displayedAlerts =
-    viewSalon === "all"
-      ? apiAlerts
-      : apiAlerts.filter((a) => salonLabel(a) === viewSalon);
+  const displayedAlerts = (
+    viewSalon === "all" ? apiAlerts : apiAlerts.filter((a) => salonLabel(a) === viewSalon)
+  ).slice().sort((a, b) => {
+    const order: Record<string, number> = { alto: 0, medio: 1, bajo: 2 };
+    const lv = (order[a.level] ?? 3) - (order[b.level] ?? 3);
+    if (lv !== 0) return lv;
+    return (b.score ?? 0) - (a.score ?? 0);
+  });
 
   async function updateStatus(id: string, status: "en_seguimiento" | "resuelta") {
     try {
@@ -156,9 +162,12 @@ export function ProfessorAlertsView({ courses, secciones }: ProfessorAlertsViewP
       ) : null}
 
       {error ? (
-        <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
-          {error}
-        </p>
+        <ErrorState
+          message={error}
+          technicalDetail="GET /profesor/alertas"
+          onRetry={() => void (pf.searched && !showAllMode ? search() : loadAll())}
+          retryLabel="Reintentar"
+        />
       ) : null}
 
       {salonSummary.length > 0 ? (
@@ -197,8 +206,8 @@ export function ProfessorAlertsView({ courses, secciones }: ProfessorAlertsViewP
 
       <PageSection
         icon={AlertTriangle}
-        title="Alertas tempranas"
-        description="Solo alertas de sus estudiantes asignados."
+        title="Listado de alertas"
+        description="Solo alertas de sus estudiantes asignados, ordenadas de mayor a menor severidad."
       >
         <ul className="space-y-4">
           {!pf.searched && !showAllMode ? (
@@ -230,9 +239,10 @@ export function ProfessorAlertsView({ courses, secciones }: ProfessorAlertsViewP
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <RiskBadge level={a.level} score={a.score ?? undefined} />
-                      <span className="badge-info">
-                        {a.estado_label ?? STATUS_LABEL[a.status] ?? a.status}
-                      </span>
+                      <StatusBadge
+                        status={a.status}
+                        label={a.estado_label ?? STATUS_LABEL[a.status] ?? a.status}
+                      />
                     </div>
                   </div>
                   <dl className="grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
@@ -245,7 +255,7 @@ export function ProfessorAlertsView({ courses, secciones }: ProfessorAlertsViewP
                       <dd className="font-medium">{prob}</dd>
                     </div>
                     <div>
-                      <dt className="text-[var(--text-muted)]">Score</dt>
+                      <dt className="text-[var(--text-muted)]">Puntaje</dt>
                       <dd className="font-medium">{a.score != null ? `${a.score}/100` : "—"}</dd>
                     </div>
                     <div>

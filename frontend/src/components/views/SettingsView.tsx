@@ -4,7 +4,7 @@ import { KeyRound, Settings2, BellRing } from "lucide-react";
 import { api } from "@/services/api";
 import { validatePassword } from "@/lib/validation";
 import { useAuth } from "@/contexts/AuthProvider";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { FormField } from "@/components/ui/FormField";
 import { INPUT_CLASS, SELECT_CLASS } from "@/lib/ui";
 
@@ -31,12 +31,24 @@ export function SettingsView() {
     finally { setBusy(false); }
   }
   return <div className="space-y-6">
-    <SectionHeading
-      title="Configuración"
-      description="Alertas institucionales y seguridad de su cuenta."
-      icon={<Settings2 className="h-4 w-4" aria-hidden />}
+    <PageHeader
+      icon={Settings2}
+      eyebrow="Su cuenta"
+      title="Preferencias de alertas y seguridad"
+      description="Defina desde qué nivel de riesgo se generan las alertas institucionales y actualice el acceso a su cuenta."
     />
-    {message ? <p role="status" className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2.5 text-sm text-[var(--text-secondary)]">{message}</p> : null}
+    {message ? (
+      <p
+        role="status"
+        className={`rounded-[var(--radius-md)] border px-4 py-2.5 text-sm ${
+          /guardados/i.test(message)
+            ? "border-[var(--success)]/35 bg-[var(--success)]/10 text-[var(--success)]"
+            : "border-[var(--danger)]/35 bg-[var(--danger)]/10 text-[var(--danger)]"
+        }`}
+      >
+        {message}
+      </p>
+    ) : null}
     {user?.role === "admin" && <form className="premium-card space-y-4 rounded-[var(--radius-lg)] p-5 md:p-6" onSubmit={e => { e.preventDefault(); void save("/admin/settings", { nivelMinimoAlerta: threshold }, "PUT"); }}>
       <h3 className="flex items-center gap-2 text-base font-bold text-[var(--text-primary)]"><BellRing className="h-4 w-4 text-[var(--accent)]" aria-hidden /> Alertas institucionales · 2026</h3>
       <FormField label="Generar alertas desde el nivel">

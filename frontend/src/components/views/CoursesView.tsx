@@ -66,7 +66,7 @@ export function CoursesView({
               : "Cursos asignados a usted por grado y sección"}
           </p>
         </div>
-        <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
+        <span className="badge badge-info">
           {filtered.length} {filtered.length === 1 ? "curso" : "cursos"}
         </span>
       </motion.div>
@@ -136,7 +136,7 @@ export function CoursesView({
                       <td>
                         <button
                           type="button"
-                          className="btn-ghost text-xs text-rose-400"
+                          className="btn-ghost text-xs text-[var(--danger)]"
                           onClick={() => onDeactivate(course.id, course.nombre)}
                         >
                           Desactivar
