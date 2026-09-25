@@ -1,0 +1,26 @@
+# Build context del servicio ML (Root Directory de Railway = machine-learning/).
+#
+# REGLA V6: NO excluir artifacts/ ni sus archivos. La imagen necesita
+#   artifacts/synthetic/metadata.json    -> data_mode, versiones, umbrales
+#   artifacts/synthetic/metrics.json     -> metricas servidas en /metrics
+#   artifacts/synthetic/features.joblib  -> orden exacto de las 7 features
+#   artifacts/synthetic/best_model.joblib -> modelo servido (stacking)
+# sin ellos /health responde modelLoaded=false y /predict devuelve 503.
+# (Verificado: machine-learning/Dockerfile hace COPY artifacts/synthetic.)
+
+# Basura de Python / entornos virtuales (nunca necesaria en la imagen).
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Artefactos V6: proteccion explicita por si se anade un patron global abajo.
+!artifacts/
+!artifacts/**
+!**/metadata.json
+!**/metrics.json
+!**/*.joblib
