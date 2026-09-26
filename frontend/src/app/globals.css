@@ -1287,7 +1287,10 @@ textarea { resize: vertical; }
 .badge-info { color: var(--text-secondary); background: var(--surface-muted); border-color: var(--border-subtle); }
 .avatar-chip { background: var(--brand-navy); }
 .empty-state-panel { padding-inline: 1.25rem; }
-.animate-pulse, .animate-spin, .animate-float, .animate-glow, .pulse-glow, .shimmer { animation-iteration-count: 1; animation-duration: .3s; }
+/* Solo se limitan las animaciones decorativas. Los spinners reales
+   (`.animate-spin`) y el shimmer de los skeletons deben girar/buclear
+   indefinidamente mientras la interfaz esté cargando. */
+.animate-pulse, .animate-float, .animate-glow, .pulse-glow { animation-iteration-count: 1; animation-duration: .3s; }
 .login-page { display: grid; min-height: 100dvh; background: var(--background); }
 .login-theme { position: absolute; top: 1.5rem; right: 1.5rem; z-index: 10; }
 .login-brand { display: none; background: #182f4d; color: #fff; padding: clamp(2rem,4vw,4.5rem); }
@@ -1376,7 +1379,8 @@ textarea { resize: vertical; }
   .notification-panel { position: fixed; top: 8.5rem; right: 1rem; left: 1rem; width: auto; margin-top: 0; max-height: calc(100dvh - 10rem); }
   .sidebar-profile { padding-bottom: max(1rem,env(safe-area-inset-bottom)); }
 }
-.float-animation, .glow-pulse, .skeleton { animation: none; }
+/* Los skeletons conservan su shimmer: sin él, "cargando" se ve congelado. */
+.float-animation, .glow-pulse { animation: none; }
 
 :root { --chart-primary: #345b87; --chart-secondary: #087e91; }
 .dark { --chart-primary: #99bce8; --chart-secondary: #70c8d6; }
@@ -1388,7 +1392,7 @@ textarea { resize: vertical; }
 /* Final refinements for compact screens and controls. */
 .login-password-toggle { background: transparent; }
 .login-form-card input#login-password { padding-right: 3.5rem; }
-.skeleton { background: var(--surface-muted); border-radius: .5rem; }
+.skeleton { border-radius: .5rem; }
 .report-action { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; min-height: 6rem; text-align: left; font-size: .9375rem; font-weight: 550; border: 1px solid var(--border-subtle); border-radius: 1rem; background: var(--surface-elevated); color: var(--text-primary); transition: background .2s, border-color .2s, transform .2s; }
 .report-action svg { width: 1.5rem; height: 1.5rem; flex-shrink: 0; color: var(--accent); }
 .report-action:hover:not(:disabled) { background: var(--surface-muted); border-color: var(--accent); transform: translateY(-1px); }
@@ -1450,7 +1454,7 @@ textarea { resize: vertical; }
 .risk-distribution header h3 { font-size: .9375rem; }
 .risk-distribution__chart { min-width: 0; width: 100%; }
 .risk-distribution__legend { display: grid; gap: .65rem; padding: 0 .5rem; }
-.risk-distribution__legend > span { display: flex; gap: .5rem; font-size: .8125rem; }
+.risk-distribution__legend > li { display: flex; gap: .5rem; font-size: .8125rem; align-items: center; }
 .risk-distribution__legend strong { margin-left: auto; font-size: .9375rem; color: var(--text-primary); font-variant-numeric: tabular-nums; }
 .bento-queue { padding: 1.4rem; }
 .bento-queue ul { margin-top: .75rem; }
@@ -1465,6 +1469,14 @@ textarea { resize: vertical; }
 .institution-pulse__item { padding-right: 1rem; border-right: 1px solid var(--border-subtle); }
 .institution-pulse__item:last-child { border: 0; }
 .institution-pulse__item > p { margin-top: .5rem; }
+/* La tira de KPIs comparte fila con el estado del modelo. En 2×2 ocupa el alto
+   completo de la tarjeta en lugar de dejar un vacío bajo los valores. */
+@media (min-width: 1024px) {
+  .bento-cell > .institution-pulse { grid-template-columns: repeat(2, minmax(0, 1fr)); height: 100%; align-content: center; row-gap: 1.5rem; }
+  .bento-cell > .institution-pulse .institution-pulse__item { border-right: 0; padding-right: 0; }
+  .bento-cell > .institution-pulse .institution-pulse__item:nth-child(even) { border-left: 1px solid var(--border-subtle); padding-left: 1.5rem; }
+  .bento-cell > .institution-pulse .institution-pulse__item:nth-child(n + 3) { border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; }
+}
 .analytics-canvas { border: 0; background: transparent; box-shadow: none; overflow: visible; }
 .analytics-heading { margin-block: 1rem 1.5rem; }
 .analytics-heading h2 { font-size: 1.65rem; font-weight: 600; letter-spacing: -.03em; margin-top: .4rem; }
@@ -1541,10 +1553,16 @@ textarea { resize: vertical; }
 .data-table tbody td { padding-block: .9rem; }
 .data-table tbody tr { transition: background .18s; }
 .data-table tbody td:first-child { font-weight: 550; }
-.page-section:not(.chart-card):not(.records-panel) { box-shadow: none; }
+/* Tablas normalizadas: números a la derecha, acciones agrupadas y fila zebra
+   sutil. El hover se declara después para tener la misma especificidad y ganar. */
+.data-table th.col-num, .data-table td.col-num { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table th.col-actions, .data-table td.col-actions { text-align: right; white-space: nowrap; }
+.data-table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-muted) 50%, transparent); }
+.data-table tbody tr:hover td { background: var(--surface-muted); }
+.page-section { box-shadow: var(--card-shadow); }
 .form-grid { gap: 1.25rem 1.5rem; }
 .input-premium { border-radius: .55rem; }
-.intelligence-empty { box-shadow: none; border-style: none; background: var(--section-surface); padding-block: 2.5rem; }
+.intelligence-empty { box-shadow: none; background: var(--section-surface); padding-block: 2.5rem; }
 .dashboard-skeleton { display: grid; gap: 2rem; padding: 1.5rem; background: var(--card); border-radius: 1rem; }
 .dashboard-skeleton__focus { display: grid; grid-template-columns: 180px 1fr; align-items: center; gap: 2rem; }
 .dashboard-skeleton__ring { width: 160px; height: 160px; border-radius: 50%; border: 20px solid var(--surface-muted); background: transparent; }
@@ -1676,4 +1694,11 @@ textarea { resize: vertical; }
   .risk-distribution__body { display: grid; grid-template-columns: minmax(185px,1fr) minmax(100px,.7fr); align-items: center; }
   .command-risk-cell + .bento-cell { grid-column: span 12; min-height: 0; }
   .command-risk-cell + .bento-cell .bento-queue ul { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .25rem 1.5rem; }
+}
+
+/* Campos con icono superpuesto: el padding base de .input-premium deja el texto
+   encima del icono, así que solo esos campos ganan separación a la izquierda. */
+.input-premium.input-with-icon { padding-left: 2.25rem; }
+@media (max-width: 639px) {
+  .academic-filter-bar .input-premium.input-with-icon { padding-left: 1.9rem; }
 }

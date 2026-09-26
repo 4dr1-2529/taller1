@@ -20,7 +20,9 @@ export function AppHeader({ activeSection, subtitle }: AppHeaderProps) {
   const reduced = useReducedMotion();
   const { user } = useAuth();
   const [now, setNow] = useState("");
-  const crumbs = SECTION_BREADCRUMB[activeSection] ?? [activeSection];
+  const baseCrumbs = SECTION_BREADCRUMB[activeSection] ?? [activeSection];
+  // La última migaja usa la etiqueta visible por rol ("Mis alertas", "Mis cursos"…).
+  const crumbs = [...baseCrumbs.slice(0, -1), getSectionLabel(activeSection, user?.role)];
 
   useEffect(() => {
     const tick = () => {

@@ -11,6 +11,7 @@ import { ProfessorFiltersBar } from "@/components/professor/ProfessorFiltersBar"
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { GradeInput } from "@/components/ui/ValidatedInputs";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { parseGrade } from "@/lib/validation";
 import { PROFESOR_HINTS } from "@/constants/blenkir";
 import { notaEstado, parseGradoNumero, parseSeccionLetra, salónLabel } from "@/lib/student-filters";
@@ -35,6 +36,7 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
   const [grades, setGrades] = useState<GradeRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [draftNotas, setDraftNotas] = useState<Record<string, string>>({});
 
   const search = useCallback(async () => {
@@ -44,6 +46,7 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
       return;
     }
     setLoading(true);
+    setError(null);
     try {
       const [stRes, grRes] = await Promise.all([
         profesorService.getEstudiantes({
@@ -71,9 +74,13 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
       );
       setDraftNotas({});
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Error al cargar");
+      // ERROR de consulta ≠ "no hay estudiantes en la sección".
+      const msg = e instanceof Error ? e.message : "No se pudieron cargar las notas.";
+      toast.error(msg);
+      setError(msg);
       setStudents([]);
       setGrades([]);
+      setDraftNotas({});
     } finally {
       setLoading(false);
     }
@@ -137,6 +144,7 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
           pf.clear();
           setStudents([]);
           setGrades([]);
+          setError(null);
         }}
         grados={pf.grados}
         secciones={pf.seccionOptions}
@@ -145,7 +153,13 @@ export function ProfessorGradesView({ courses, secciones }: ProfessorGradesViewP
         show={{ grado: true, seccion: true, course: true, bimestre: true, search: true }}
       />
 
-      {pf.searched && students.length > 0 ? (
+      {error ? (
+        <ErrorState
+          message={error}
+          technicalDetail="GET /profesor/estudiantes + GET /profesor/notas"
+          onRetry={() => void search()}
+        />
+      ) : pf.searched && students.length > 0 ? (
         <>
           <SummaryStatsRow
             stats={[

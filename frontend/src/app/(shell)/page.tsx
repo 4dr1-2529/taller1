@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { AuditView } from "@/components/views/AuditView";
 import { SettingsView } from "@/components/views/SettingsView";
@@ -20,6 +20,7 @@ import { StudentDashboard } from "@/components/student/StudentDashboard";
 import { StudentGradesView } from "@/components/student/StudentGradesView";
 import { StudentAttendanceView } from "@/components/student/StudentAttendanceView";
 import { StudentPredictionView } from "@/components/student/StudentPredictionView";
+import { StudentAlertsView } from "@/components/student/StudentAlertsView";
 import { ProfessorStudentsView } from "@/components/views/ProfessorStudentsView";
 import { AlertsView } from "@/components/views/AlertsView";
 import { ProfessorAlertsView } from "@/components/views/ProfessorAlertsView";
@@ -42,63 +43,11 @@ import { ProfessorGradesView } from "@/components/views/ProfessorGradesView";
 import { AttendanceView } from "@/components/views/AttendanceView";
 import { ProfessorAttendanceView } from "@/components/views/ProfessorAttendanceView";
 import { type AppSection } from "@/data/navigation";
+import { ROLE_SECTIONS } from "@/data/role-sections";
 import { earlyAlertCount } from "@/lib/aggregates";
 import { useAcademicData } from "@/hooks/useAcademicData";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/contexts/AuthProvider";
-
-/** Director, Profesor, Estudiante — permisos según tesis ML deserción */
-const ROLE_SECTIONS: Record<string, AppSection[]> = {
-  admin: [
-    "Grados y secciones", "Auditoría", "Configuración",
-    "Dashboard",
-    "Estudiantes",
-    "Profesores",
-    "Asignaciones",
-    "Cursos",
-    "Matrículas",
-    "Notas",
-    "Asistencia",
-    "Actividad LMS",
-    "Predicción",
-    "Historial predicciones",
-    "Alertas",
-    "Mensajería Académica",
-    "Avisos",
-    "Materiales",
-    "Actividades",
-    "Reportes",
-  ],
-  docente: [
-    "Reportes", "Configuración",
-    "Dashboard",
-    "Estudiantes",
-    "Cursos",
-    "Notas",
-    "Asistencia",
-    "Actividad LMS",
-    "Predicción",
-    "Historial predicciones",
-    "Alertas",
-    "Mensajería Académica",
-    "Avisos",
-    "Materiales",
-    "Actividades",
-  ],
-  estudiante: [
-    "Configuración",
-    "Dashboard",
-    "Cursos",
-    "Notas",
-    "Asistencia",
-    "Actividad LMS",
-    "Predicción",
-    "Mensajería Académica",
-    "Avisos",
-    "Materiales",
-    "Actividades",
-  ],
-};
 
 const initialMatricula: NewMatriculaForm = {
   estudianteId: "",
@@ -119,6 +68,8 @@ function sectionSubtitle(section: AppSection, role: string): string {
         return "Esta es tu actividad LMS.";
       case "Predicción":
         return "Este es tu riesgo actual.";
+      case "Alertas":
+        return "Tus alertas personales, en solo lectura.";
       case "Mensajería Académica":
         return "Mensajes enviados a tu perfil.";
       default:
@@ -162,7 +113,10 @@ function sectionSubtitle(section: AppSection, role: string): string {
 export default function Home() {
   const { user, loading: authLoading, isAuthenticated, isDocente, isEstudiante } = useAuth();
   const role = user?.role;
-  const visibleSections = role ? (ROLE_SECTIONS[role] ?? ROLE_SECTIONS.estudiante) : ROLE_SECTIONS.admin;
+  const visibleSections = useMemo(
+    () => (role ? (ROLE_SECTIONS[role] ?? ROLE_SECTIONS.estudiante) : ROLE_SECTIONS.admin),
+    [role],
+  );
 
   const [activeSection, setActiveSection] = useState<AppSection>("Dashboard");
   const {
@@ -201,7 +155,11 @@ export default function Home() {
   }, [authLoading, isAuthenticated]);
 
   useEffect(() => {
-    if (!role || !visibleSections.includes(activeSection)) {
+    // Mientras AuthProvider restaura la sesión (`role` aún indefinido) no se
+    // debe pisar el valor inicial "Dashboard": antes de esta guarda, todas las
+    // sesiones aterrizaban en la primera sección de la lista del rol.
+    if (!role) return;
+    if (!visibleSections.includes(activeSection)) {
       setActiveSection(visibleSections[0]);
     }
   }, [role, visibleSections, activeSection]);
@@ -366,6 +324,7 @@ export default function Home() {
           <PredictionView students={students} secciones={secciones} useApi={useApi} />
         );
       case "Alertas":
+        if (isEstudiante) return <StudentAlertsView />;
         return role === "docente" ? (
           <ProfessorAlertsView courses={courses} secciones={secciones} />
         ) : (

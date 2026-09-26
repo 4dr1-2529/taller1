@@ -74,7 +74,7 @@ export function ProfessorStudentsView({ courses, secciones }: ProfessorStudentsV
           loading
             ? "Buscando…"
             : pf.searched
-              ? `${rows.length} resultado(s)`
+              ? `${rows.length} ${rows.length === 1 ? "resultado" : "resultados"}`
               : PROFESOR_HINTS.pressSearch
         }
         isEmpty={pf.searched && !loading && rows.length === 0}

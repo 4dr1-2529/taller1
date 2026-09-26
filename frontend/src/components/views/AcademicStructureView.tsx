@@ -1,18 +1,21 @@
 "use client";
 
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, GraduationCap, Layers, School } from "lucide-react";
 import { api, type ApiNivel } from "@/services/api";
 import { useAuth } from "@/contexts/AuthProvider";
 import { EmptyState } from "@/components/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 
 export function AcademicStructureView() {
   const { isAuthenticated } = useAuth();
   const [niveles, setNiveles] = useState<ApiNivel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated || !api.hasToken) {
@@ -32,7 +35,7 @@ export function AcademicStructureView() {
         setLoading(false);
       }
     })();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, reloadKey]);
 
   if (!isAuthenticated) {
     return (
@@ -45,19 +48,22 @@ export function AcademicStructureView() {
   }
 
   if (loading) {
-    return <p className="text-sm text-[var(--text-muted)]">Cargando estructura educativa…</p>;
+    return (
+      <div className="grid gap-4 md:grid-cols-2">
+        <CardSkeleton />
+        <CardSkeleton />
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="premium-card rounded-[var(--radius-lg)] p-5 md:p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/10">
-            <Layers className="h-4 w-4 text-rose-400" />
-          </div>
-          <p className="text-sm text-rose-400">{error}</p>
-        </div>
-      </div>
+      <ErrorState
+        message={error}
+        technicalDetail="GET /niveles + /secciones"
+        onRetry={() => setReloadKey((k) => k + 1)}
+        retryLabel="Volver a intentar"
+      />
     );
   }
 
@@ -69,24 +75,12 @@ export function AcademicStructureView() {
   return (
     <div className="space-y-8">
       {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] ring-1 ring-[var(--border-subtle)]">
-              <School className="h-4 w-4 text-[var(--accent)]" />
-            </div>
-            <SectionHeading title="Estructura académica" />
-          </div>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Niveles, grados y secciones configurados para el periodo académico
-          </p>
-        </div>
-      </motion.div>
+      <PageHeader
+        icon={School}
+        eyebrow="Configuración institucional"
+        title="Niveles, grados y secciones"
+        description="Organización académica vigente para el periodo lectivo en curso."
+      />
 
       {/* Info Card */}
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
@@ -123,7 +117,7 @@ export function AcademicStructureView() {
                 <GraduationCap className="h-4 w-4 text-[var(--accent)]" />
               </div>
               <h4 className="font-semibold capitalize text-[var(--text-primary)]">{nivel.nombre}</h4>
-              <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-[var(--text-secondary)] ring-1 ring-white/10">
+              <span className="rounded-full bg-[var(--surface-muted)] px-2 py-0.5 text-xs text-[var(--text-secondary)] ring-1 ring-[var(--border-subtle)]">
                 {nivel.grados.length} grados
               </span>
             </div>
@@ -135,9 +129,9 @@ export function AcademicStructureView() {
                     {grado.secciones.map((sec) => (
                       <span
                         key={sec.id}
-                        className="inline-flex items-center gap-1 rounded-lg bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-300 ring-1 ring-violet-500/20"
+                        className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-muted)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] ring-1 ring-[var(--brand-orange)]/25"
                       >
-                        <BookOpen className="h-3 w-3" />
+                        <BookOpen className="h-3 w-3" aria-hidden />
                         Sección {sec.nombre}
                       </span>
                     ))}

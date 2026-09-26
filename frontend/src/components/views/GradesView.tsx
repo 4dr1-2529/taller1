@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ClipboardList, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
@@ -205,17 +205,12 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-muted)] ring-1 ring-[var(--brand-orange)]/30">
-          <GraduationCap className="h-5 w-5 text-[var(--brand-orange)]" />
-        </div>
-        <div>
-          <SectionHeading title="Registro de notas" />
-          <p className="text-sm text-[var(--text-secondary)]">
-            Grado → sección → curso → bimestre → alumnos del salón
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={GraduationCap}
+        eyebrow="Evaluación académica"
+        title="Registro de notas"
+        description="Grado → sección → curso → bimestre → alumnos del salón. Escala 0–20 del sistema educativo peruano."
+      />
 
       <AcademicFiltersBar
         filters={filters}
@@ -305,7 +300,7 @@ export function GradesView({ students, courses, teachers, secciones }: GradesVie
           <div className="xl:col-span-2">
             <DataTablePanel
               title="Alumnos del salón"
-              description={loading ? "Cargando…" : `${filteredStudents.length} estudiante(s)`}
+              description={loading ? "Cargando…" : `${filteredStudents.length} ${filteredStudents.length === 1 ? "estudiante" : "estudiantes"}`}
               isEmpty={false}
             >
               <TableWrap>

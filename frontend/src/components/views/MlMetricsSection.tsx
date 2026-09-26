@@ -137,7 +137,7 @@ export function MlMetricsSection() {
           </h3>
           <ExperimentalBadge dataMode={dataMode} datasetVersion={datasetVersion} compact />
         </div>
-        <span className="badge bg-violet-500/15 text-violet-300">
+        <span className="badge badge-info">
           Mejor por F1 (validación): <strong>{bestModel.replaceAll("_", " ")}</strong>
           {bestEntry ? ` (${(bestEntry[1].f1_score * 100).toFixed(1)}%)` : ""}
         </span>
@@ -243,7 +243,7 @@ export function MlMetricsSection() {
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {features.map((f) => (
-              <span key={f} className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-[var(--text-secondary)]">
+              <span key={f} className="rounded-full bg-[var(--surface-muted)] px-2 py-0.5 text-xs text-[var(--text-secondary)]">
                 {f}
               </span>
             ))}

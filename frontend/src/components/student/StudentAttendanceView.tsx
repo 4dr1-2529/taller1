@@ -1,12 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { estudianteService } from "@/services/estudianteService";
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { SELECT_CLASS, INPUT_CLASS } from "@/lib/ui";
 
 type AsistenciaItem = {
@@ -18,25 +21,30 @@ type AsistenciaItem = {
   profesor: string | null;
 };
 
+type ResumenAsistencia = {
+  asistencias: number;
+  tardanzas: number;
+  faltas: number;
+  justificadas: number;
+  porcentaje: number | null;
+  total: number;
+};
+
+const EMPTY_RESUMEN: ResumenAsistencia = {
+  asistencias: 0,
+  tardanzas: 0,
+  faltas: 0,
+  justificadas: 0,
+  porcentaje: 0,
+  total: 0,
+};
+
 export function StudentAttendanceView() {
   const { ready, isEstudiante } = useAuthReady();
   const [items, setItems] = useState<AsistenciaItem[]>([]);
-  const [resumen, setResumen] = useState<{
-    asistencias: number;
-    tardanzas: number;
-    faltas: number;
-    justificadas: number;
-    porcentaje: number | null;
-    total: number;
-  }>({
-    asistencias: 0,
-    tardanzas: 0,
-    faltas: 0,
-    justificadas: 0,
-    porcentaje: 0,
-    total: 0,
-  });
+  const [resumen, setResumen] = useState<ResumenAsistencia>(EMPTY_RESUMEN);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [mes, setMes] = useState("");
   const [bimestre, setBimestre] = useState("");
   const [estado, setEstado] = useState("");
@@ -46,6 +54,7 @@ export function StudentAttendanceView() {
   const load = useCallback(async () => {
     if (!ready || !isEstudiante) return;
     setLoading(true);
+    setError(null);
     try {
       const res = await estudianteService.getAsistencia({
         mes: mes || undefined,
@@ -54,10 +63,16 @@ export function StudentAttendanceView() {
         desde: desde || undefined,
         hasta: hasta || undefined,
       });
-      setItems(res.items);
-      setResumen(res.resumen);
-    } catch {
+      setItems(res.items ?? []);
+      setResumen(res.resumen ?? EMPTY_RESUMEN);
+    } catch (e) {
+      // Fallo de API: se limpia el resumen anterior para no mostrar KPIs
+      // obsoletos junto a un error de la consulta nueva.
+      const msg = e instanceof Error ? e.message : "No se pudo cargar tu asistencia.";
+      toast.error(msg);
+      setError(msg);
       setItems([]);
+      setResumen(EMPTY_RESUMEN);
     } finally {
       setLoading(false);
     }
@@ -78,7 +93,10 @@ export function StudentAttendanceView() {
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-[var(--text-secondary)]">{ESTUDIANTE_MSG.asistencia}</p>
+      <PageHeader
+        eyebrow="Asistencia diaria"
+        title="Historial de asistencia"
+      />
 
       <div className="premium-card grid gap-3 rounded-xl p-4 sm:grid-cols-2 lg:grid-cols-5">
         <label className="text-sm">
@@ -125,6 +143,12 @@ export function StudentAttendanceView() {
 
       {loading ? (
         <CardSkeleton />
+      ) : error ? (
+        <ErrorState
+          message={error}
+          technicalDetail="GET /estudiante/asistencia"
+          onRetry={() => void load()}
+        />
       ) : (
         <>
           <SummaryStatsRow

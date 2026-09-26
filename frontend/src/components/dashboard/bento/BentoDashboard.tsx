@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Activity, BookOpen, GraduationCap, Users } from "lucide-react";
+import { Activity, CalendarCheck, GraduationCap, Percent } from "lucide-react";
 import {
   attachPredictions,
   averageAttendance,
@@ -22,6 +22,7 @@ import { BentoAlertsPanel } from "./BentoAlertsPanel";
 import { BentoKpiStrip, type KpiItem } from "./BentoKpiStrip";
 import { BentoRiskTrend, BentoDistribution, BentoCourseBars } from "./BentoCharts";
 import { BentoAtRiskList } from "./BentoAtRiskList";
+import { BentoMlStatus } from "./BentoMlStatus";
 
 type BentoDashboardProps = {
   role: string;
@@ -154,22 +155,44 @@ export function BentoDashboard({
     ].filter((d) => d.value > 0);
   }, [withPred, hasPredictions, highRisk, lowRisk, useApi, apiKpis]);
 
+  /** Probabilidad media: API primero; si no, promedio local de predicciones guardadas. */
+  const avgProbability = useMemo(() => {
+    if (useApi && apiMl?.avgProbability != null) return apiMl.avgProbability;
+    if (!withPred.length) return null;
+    const sum = withPred.reduce((acc, s) => acc + (s.prediction.probability ?? 0), 0);
+    return sum / withPred.length;
+  }, [useApi, apiMl, withPred]);
+
+  // `.institution-pulse` es de 4 columnas: se mantienen exactamente 4 KPIs y
+  // fuera los que ya aparecen en la banda institucional superior.
   const kpis: KpiItem[] = [
-    { label: "Estudiantes", value: students.length, icon: Users },
     {
       label: "Evaluados por el modelo",
       value: apiMl?.evaluated ?? "—",
-      hint: apiMl?.evaluatedTotal != null ? `de ${apiMl.evaluatedTotal} estudiantes` : "Sin evaluación predictiva",
+      hint:
+        apiMl?.evaluatedTotal != null
+          ? `de ${apiMl.evaluatedTotal} estudiantes`
+          : "Sin evaluación predictiva",
       icon: Activity,
     },
-    { label: "Cursos", value: courses.length, icon: BookOpen },
+    {
+      label: "Probabilidad media",
+      value: avgProbability != null ? `${(avgProbability * 100).toFixed(1)}%` : "—",
+      hint: "Deserción estimada en el cohorte",
+      icon: Percent,
+    },
     {
       label: "Matrículas activas",
       // Nunca se sustituye por `students.length`: son métricas distintas.
       value: matriculaStats?.matriculasActivas ?? "—",
       icon: GraduationCap,
     },
-    { label: "Asistencia prom.", value: avgAtt ?? "—", suffix: avgAtt == null ? undefined : "%", icon: Activity },
+    {
+      label: "Asistencia prom.",
+      value: avgAtt ?? "—",
+      suffix: avgAtt == null ? undefined : "%",
+      icon: CalendarCheck,
+    },
   ];
 
   return (
@@ -195,8 +218,12 @@ export function BentoDashboard({
         <BentoAlertsPanel items={alertQueue} />
       </BentoCell>
 
-      <BentoCell col={12} row={1} delay={0.08}>
+      <BentoCell col={8} row={1} delay={0.08}>
         <BentoKpiStrip items={kpis} />
+      </BentoCell>
+
+      <BentoCell col={4} row={1} delay={0.1}>
+        <BentoMlStatus ml={apiMl} showHint />
       </BentoCell>
 
       <BentoCell col={12} row={2} delay={0.1} className="analytics-lead">

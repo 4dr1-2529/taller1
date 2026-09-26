@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthProvider";
 import type { Course, Student, Teacher } from "@/types/academic";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import { useAcademicFilters } from "@/hooks/useAcademicFilters";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { AcademicFiltersBar } from "@/components/academic/AcademicFiltersBar";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { FILTER_HINTS } from "@/constants/blenkir";
@@ -69,6 +70,9 @@ export function AttendanceView({
     filteredCourses,
   } = useAcademicFilters(students, courses, secciones, teachers);
 
+  // Debounce SOLO de la búsqueda textual: evita una petición por tecla.
+  const searchQuery = useDebouncedValue(filters.search, 320);
+
   const studentMap = useMemo(() => new Map(students.map((s) => [s.id, s])), [students]);
 
   const load = useCallback(async () => {
@@ -80,7 +84,7 @@ export function AttendanceView({
         : await api.getAttendance({
             seccionId: filters.seccionId || undefined,
             gradoId: filters.gradoId || undefined,
-            q: filters.search.trim() || undefined,
+            q: searchQuery.trim() || undefined,
             from: filters.fecha || undefined,
             to: filters.fecha || undefined,
             page,
@@ -99,7 +103,7 @@ export function AttendanceView({
     } finally {
       setLoading(false);
     }
-  }, [filters.seccionId, filters.gradoId, filters.search, filters.fecha, isDocente, page]);
+  }, [filters.seccionId, filters.gradoId, searchQuery, filters.fecha, isDocente, page]);
 
   useEffect(() => {
     if (isAuthenticated) void load();
@@ -272,7 +276,7 @@ export function AttendanceView({
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
         <DataTablePanel
           title="Historial de asistencia"
-          description={loading ? "Cargando registros…" : `${total} registro(s)`}
+          description={loading ? "Cargando registros…" : `${total} ${total === 1 ? "registro" : "registros"}`}
           isEmpty={!loading && items.length === 0}
           emptyMessage={filters.search || filters.seccionId || filters.fecha ? "No existen registros para los filtros seleccionados." : "Sin registros de asistencia."}
           page={page}

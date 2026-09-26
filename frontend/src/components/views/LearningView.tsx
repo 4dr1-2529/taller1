@@ -6,6 +6,9 @@ import { toast } from "sonner";
 import { api } from "@/services/api";
 import { useAuth } from "@/contexts/AuthProvider";
 import { PageSection } from "@/components/ui/PageSection";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { EmptyState } from "@/components/EmptyState";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 import { INPUT_CLASS } from "@/lib/ui";
 
 type Resource = { id: string; titulo: string; descripcion?: string; tipo: string; url: string };
@@ -68,22 +71,148 @@ export function LearningView({ mode }: { mode: "materials" | "activities" | "cou
     finally { setSaving(false); }
   }
   const heading = mode === "materials" ? "Materiales educativos" : mode === "activities" ? "Actividades académicas" : "Mis cursos";
-  return <PageSection icon={BookOpen} title={heading} description="Año lectivo 2026">
-    <label className="block mb-4">Curso<select className={INPUT_CLASS} value={courseId} onChange={e => setCourseId(e.target.value)}><option value="">Seleccione un curso</option>{courses.map(c => <option key={c.id} value={c.id}>{c.nombre || c.codigo}</option>)}</select></label>
-    {error && <p role="alert">{error} <button onClick={() => void load()}>Reintentar</button></p>}
-    {loading ? <p role="status">Cargando…</p> : !courses.length ? <p>No hay cursos asignados.</p> : <>
-      {user?.role === "docente" && mode !== "courses" && courseId && <form className="grid gap-3 mb-6" onSubmit={publish}>
-        <label>Título<input className={INPUT_CLASS} value={title} onChange={e => setTitle(e.target.value)} required minLength={2} maxLength={150} /></label>
-        <label>Descripción<textarea className={INPUT_CLASS} value={description} onChange={e => setDescription(e.target.value)} maxLength={4000} /></label>
-        <label>Tipo<select className={INPUT_CLASS} value={type} onChange={e => setType(e.target.value)}>{(mode === "materials" ? ["pdf", "documento", "presentacion", "enlace", "guia", "repaso"] : ["practica", "lectura", "repaso", "material_obligatorio", "otra"]).map(t => <option key={t} value={t}>{t.replaceAll("_", " ")}</option>)}</select></label>
-        {mode === "materials" && <label>URL del material<input className={INPUT_CLASS} type="url" value={url} onChange={e => setUrl(e.target.value)} required /></label>}
-        <button className="btn-primary" disabled={saving}>{saving ? "Publicando…" : "Publicar"}</button>
-      </form>}
-      {mode !== "activities" && <div className="grid gap-4 sm:grid-cols-2">{items.resources.length ? items.resources.map(r => <article className="premium-card p-4" key={r.id}><h3>{r.titulo}</h3><p>{r.descripcion}</p><button className="btn-secondary mt-3" onClick={() => void openResource(r.id)}>Consultar {r.tipo}</button></article>) : <p>No hay materiales publicados.</p>}</div>}
-      {mode !== "materials" && <div className="grid gap-4 sm:grid-cols-2 mt-4">{items.activities.length ? items.activities.map(a => {
-        const status = a.progress[0]?.estado ?? "pendiente";
-        return <article className="premium-card p-4" key={a.id}><h3>{a.titulo}</h3><p>{a.descripcion}</p>{user?.role === "estudiante" && <><p>Estado: {status}</p>{status !== "completada" && <button className="btn-secondary mt-3" disabled={saving} onClick={() => void progress(a.id, status === "pendiente" ? "iniciada" : "completada")}>{status === "pendiente" ? "Iniciar actividad" : "Marcar completada"}</button>}</>}</article>;
-      }) : <p>No hay actividades publicadas.</p>}</div>}
-    </>}
-  </PageSection>;
+  const emptyText =
+    mode === "materials"
+      ? { title: "Sin materiales publicados", description: "Aún no hay materiales educativos para este curso." }
+      : { title: "Sin actividades publicadas", description: "Aún no hay actividades académicas para este curso." };
+
+  return (
+    <PageSection icon={BookOpen} title={heading} description="Año lectivo 2026">
+      <label className="mb-4 block">
+        <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+          Curso
+        </span>
+        <select className={INPUT_CLASS} value={courseId} onChange={(e) => setCourseId(e.target.value)}>
+          <option value="">Seleccione un curso</option>
+          {courses.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.nombre || c.codigo}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      {error ? (
+        <ErrorState message={error} technicalDetail="GET /learning" onRetry={() => void load()} />
+      ) : loading ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
+      ) : !courses.length ? (
+        <EmptyState
+          icon={BookOpen}
+          title="Sin cursos asignados"
+          description="Cuando el administrador asigne sus cursos aparecerán aquí."
+        />
+      ) : (
+        <>
+          {user?.role === "docente" && mode !== "courses" && courseId ? (
+            <form className="mb-6 grid gap-3" onSubmit={publish}>
+              <label>
+                Título
+                <input
+                  className={INPUT_CLASS}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  minLength={2}
+                  maxLength={150}
+                />
+              </label>
+              <label>
+                Descripción
+                <textarea
+                  className={INPUT_CLASS}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  maxLength={4000}
+                />
+              </label>
+              <label>
+                Tipo
+                <select className={INPUT_CLASS} value={type} onChange={(e) => setType(e.target.value)}>
+                  {(mode === "materials"
+                    ? ["pdf", "documento", "presentacion", "enlace", "guia", "repaso"]
+                    : ["practica", "lectura", "repaso", "material_obligatorio", "otra"]
+                  ).map((t) => (
+                    <option key={t} value={t}>
+                      {t.replaceAll("_", " ")}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {mode === "materials" && (
+                <label>
+                  URL del material
+                  <input
+                    className={INPUT_CLASS}
+                    type="url"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    required
+                  />
+                </label>
+              )}
+              <button className="btn-primary" disabled={saving}>
+                {saving ? "Publicando…" : "Publicar"}
+              </button>
+            </form>
+          ) : null}
+
+          {mode !== "activities" ? (
+            items.resources.length ? (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {items.resources.map((r) => (
+                  <article className="premium-card p-4" key={r.id}>
+                    <h3>{r.titulo}</h3>
+                    <p>{r.descripcion}</p>
+                    <button className="btn-secondary mt-3" onClick={() => void openResource(r.id)}>
+                      Consultar {r.tipo}
+                    </button>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <EmptyState icon={BookOpen} title={emptyText.title} description={emptyText.description} />
+            )
+          ) : null}
+
+          {mode !== "materials" ? (
+            items.activities.length ? (
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                {items.activities.map((a) => {
+                  const status = a.progress[0]?.estado ?? "pendiente";
+                  return (
+                    <article className="premium-card p-4" key={a.id}>
+                      <h3>{a.titulo}</h3>
+                      <p>{a.descripcion}</p>
+                      {user?.role === "estudiante" ? (
+                        <>
+                          <p>Estado: {status}</p>
+                          {status !== "completada" ? (
+                            <button
+                              className="btn-secondary mt-3"
+                              disabled={saving}
+                              onClick={() => void progress(a.id, status === "pendiente" ? "iniciada" : "completada")}
+                            >
+                              {status === "pendiente" ? "Iniciar actividad" : "Marcar completada"}
+                            </button>
+                          ) : null}
+                        </>
+                      ) : null}
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-4">
+                <EmptyState icon={BookOpen} title={emptyText.title} description={emptyText.description} />
+              </div>
+            )
+          ) : null}
+        </>
+      )}
+    </PageSection>
+  );
 }

@@ -7,6 +7,7 @@ import clsx from "clsx";
 import type { ReactNode } from "react";
 import { PageSection } from "@/components/ui/PageSection";
 import { TableExportButtons, TablePagination } from "@/components/ui/TableToolbar";
+import { localSearchMatch } from "@/lib/search-text";
 
 type DataTablePanelProps = {
   title: string;
@@ -126,9 +127,8 @@ export function useTableFilter<T>(
   getSearchText: (item: T) => string,
 ) {
   return useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((item) => getSearchText(item).toLowerCase().includes(q));
+    if (!query.trim()) return items;
+    return items.filter((item) => localSearchMatch(getSearchText(item), query));
   }, [items, query, getSearchText]);
 }
 

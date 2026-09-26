@@ -27,7 +27,8 @@ export function ExperimentalBadge({
   if (!dataMode && !(datasetVersion ?? "").includes("V6")) return null;
 
   const version = datasetVersion ?? "V6";
-  const short = version.includes("V6") ? "Sintético V6" : version;
+  // Etiqueta corta de versión sin repetir "Sintético" ("V6", no "Sintético V6").
+  const versionLabel = version.includes("V6") ? "V6" : version;
 
   return (
     <span
@@ -35,7 +36,7 @@ export function ExperimentalBadge({
       title="Modelo experimental entrenado con datos científicos sintéticos V6: no constituye evidencia institucional."
     >
       <FlaskConical className="h-3 w-3" aria-hidden />
-      {compact ? short : `Modelo experimental · Datos sintéticos ${short}`}
+      {compact ? `Sintético ${versionLabel}` : `Modelo experimental · Datos sintéticos · ${versionLabel}`}
     </span>
   );
 }

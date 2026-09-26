@@ -16,12 +16,20 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { TrendingUp, Target } from "lucide-react";
+import { TrendingUp, Target, TriangleAlert, CircleAlert, CircleCheck, CircleHelp } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { CourseRiskRow } from "@/lib/aggregates";
 import type { RiskHistoryPoint } from "@/types/academic";
 
 const gridStroke = "var(--border-subtle)";
 const tickFill = "var(--text-muted)";
+
+/** Nivel de riesgo → icono: la leyenda no depende solo del color. */
+const LEVEL_ICON: Record<string, LucideIcon> = {
+  Alto: TriangleAlert,
+  Medio: CircleAlert,
+  Bajo: CircleCheck,
+};
 
 type BentoRiskTrendProps = {
   data: RiskHistoryPoint[];
@@ -33,8 +41,8 @@ export function BentoRiskTrend({ data, highRisk }: BentoRiskTrendProps) {
     <div className="flex h-full flex-col p-5 md:p-6">
       <header className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] ring-1 ring-white/10">
-            <TrendingUp className="h-4 w-4 text-[var(--chart-primary)]" />
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent-muted)] ring-1 ring-[var(--brand-orange)]/25">
+            <TrendingUp className="h-4 w-4 text-[var(--brand-orange)]" aria-hidden />
           </span>
           <div>
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Tendencia de riesgo</h3>
@@ -77,11 +85,13 @@ type BentoDistributionProps = {
 };
 
 export function BentoDistribution({ data }: BentoDistributionProps) {
+  const total = data.reduce((acc, d) => acc + d.value, 0);
+  const summary = data.map((d) => `${d.name}: ${d.value}`).join(", ") || "Sin datos";
   return (
     <div className="risk-distribution">
       <header className="flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] ring-1 ring-white/10">
-          <Target className="h-4 w-4 text-amber-400" />
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent-muted)] ring-1 ring-[var(--brand-orange)]/25">
+          <Target className="h-4 w-4 text-[var(--brand-orange)]" aria-hidden />
         </span>
         <div>
           <h3 className="text-base font-semibold text-[var(--text-primary)]">Distribución</h3>
@@ -93,7 +103,17 @@ export function BentoDistribution({ data }: BentoDistributionProps) {
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" fill="var(--text-muted)" fontSize={12}>Riesgo</text>
-              <Pie isAnimationActive={false} data={data} dataKey="value" innerRadius={64} outerRadius={88} paddingAngle={3} strokeWidth={0}>
+              <Pie
+                isAnimationActive={false}
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={64}
+                outerRadius={88}
+                paddingAngle={3}
+                strokeWidth={0}
+                aria-label={`Distribución de riesgo. ${summary}`}
+              >
                 {data.map((e) => (
                   <Cell key={e.name} fill={e.fill} />
                 ))}
@@ -105,14 +125,26 @@ export function BentoDistribution({ data }: BentoDistributionProps) {
           <p className="text-sm text-[var(--text-muted)]">Sin datos</p>
         )}
       </div>
-      <div className="risk-distribution__legend">
-        {data.map((d) => (
-          <span key={d.name} className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
-            <span className="h-2 w-2 rounded-full" style={{ background: d.fill }} />
-            <span>{d.name}</span><strong>{d.value}</strong>
-          </span>
-        ))}
-      </div></div>
+      <ul className="risk-distribution__legend" aria-label="Leyenda de niveles de riesgo">
+        {data.map((d) => {
+          const Icon = LEVEL_ICON[d.name] ?? CircleHelp;
+          const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+          return (
+            <li
+              key={d.name}
+              className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]"
+            >
+              <Icon className="h-3.5 w-3.5 shrink-0" style={{ color: d.fill }} aria-hidden />
+              <span>
+                Nivel {d.name}
+              </span>
+              <strong className="tabular-nums text-[var(--text-primary)]">
+                {d.value} <span className="font-normal text-[var(--text-muted)]">({pct}%)</span>
+              </strong>
+            </li>
+          );
+        })}
+      </ul></div>
     </div>
   );
 }

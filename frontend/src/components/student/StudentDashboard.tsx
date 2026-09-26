@@ -17,6 +17,9 @@ import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { DashboardSkeleton } from "@/components/ui/Skeleton";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { RiskGauge } from "@/components/ui/RiskGauge";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 const TIPO_ACTIVIDAD_LABEL: Record<string, string> = {
   login: "Ingreso",
@@ -39,32 +42,52 @@ function riskLevelKey(label: string): "bajo" | "medio" | "alto" {
   return "bajo";
 }
 
+/** Traduce la etiqueta en español del estado a la clave interna del badge. */
+function statusKey(estado: string): string {
+  const l = estado.toLowerCase().trim();
+  if (l.startsWith("nueva")) return "nueva";
+  if (l.startsWith("en seguimiento")) return "en_seguimiento";
+  if (l.startsWith("resuelt")) return "resuelta";
+  return l.replace(/\s+/g, "_");
+}
+
 export function StudentDashboard() {
   const { ready, isEstudiante } = useAuthReady();
   const [data, setData] = useState<EstudianteDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!ready || !isEstudiante) return;
     setLoading(true);
+    setFailed(false);
     void estudianteService
       .getDashboard()
-      .then(setData)
-      .catch(() => setData(null))
+      .then((r) => setData(r))
+      .catch(() => {
+        setData(null);
+        setFailed(true);
+      })
       .finally(() => setLoading(false));
-  }, [ready, isEstudiante]);
+  }, [ready, isEstudiante, reloadKey]);
 
   if (loading) {
-    return (
-      <DashboardSkeleton />
-    );
+    return <DashboardSkeleton />;
   }
 
   if (!data?.profile) {
     return (
-      <p className="text-sm text-[var(--text-muted)]">
-        No se pudo cargar tu perfil. Verifique que su cuenta esté vinculada a un estudiante activo.
-      </p>
+      <ErrorState
+        message={
+          failed
+            ? "No se pudo cargar tu información académica."
+            : "No se pudo cargar tu perfil. Verifique que su cuenta esté vinculada a un estudiante activo."
+        }
+        technicalDetail="GET /estudiante/dashboard"
+        onRetry={() => setReloadKey((k) => k + 1)}
+        retryLabel="Volver a intentar"
+      />
     );
   }
 
@@ -76,12 +99,11 @@ export function StudentDashboard() {
 
   return (
     <div className="student-dashboard space-y-6">
-      <div className="student-welcome rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-elevated)] p-6 sm:p-8">
-        <p className="text-page-title font-semibold text-[var(--text-primary)]">Mi progreso académico</p>
-        <p className="mt-2 text-[15px] text-[var(--text-secondary)]">
-        Bienvenido, {profile.nombres}. Aquí tienes un resumen de tu situación académica.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Mi panel"
+        title="Mi progreso académico"
+        description={`Bienvenido/a, ${profile.nombres}. Aquí tienes un resumen de tu situación académica.`}
+      />
 
       <div className="metric-band student-metrics">
         <KpiCard label="Mi grado" value={kpis.grado} icon={GraduationCap} index={0} />
@@ -164,7 +186,10 @@ export function StudentDashboard() {
               <li key={a.id} className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-muted)]/50 p-4 text-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-semibold text-[var(--text-primary)]">{a.titulo}</span>
-                  <span className="text-xs text-[var(--text-muted)]">{a.nivel} · {a.estado}</span>
+                  <span className="flex flex-wrap items-center gap-2">
+                    <RiskBadge level={riskLevelKey(a.nivel)} />
+                    <StatusBadge status={statusKey(a.estado)} label={a.estado} />
+                  </span>
                 </div>
                 {a.recomendacion ? (
                   <p className="mt-1 text-[var(--text-secondary)]">{a.recomendacion}</p>

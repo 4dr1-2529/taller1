@@ -7,7 +7,6 @@ import clsx from "clsx";
 import {
   KeyRound,
   Pencil,
-  Search,
   UserPlus,
   UserX,
   Users,
@@ -17,6 +16,8 @@ import { api } from "@/services/api";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import type { Teacher } from "@/types/academic";
 import { PageSection } from "@/components/ui/PageSection";
+import { localSearchMatch } from "@/lib/search-text";
+import { SearchField } from "@/components/ui/SearchField";
 import { INPUT_CLASS } from "@/lib/ui";
 import { PersonNameInput, PhoneInput } from "@/components/ui/ValidatedInputs";
 import {
@@ -123,10 +124,12 @@ export function TeachersView({
   }, [expandedId, editingId]);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return teachers;
+    if (!query.trim()) return teachers;
     return teachers.filter((t) =>
-      `${t.nombres} ${t.apellidos} ${t.codigo} ${t.especialidad} ${t.correo}`.toLowerCase().includes(q),
+      localSearchMatch(
+        `${t.nombres} ${t.apellidos} ${t.codigo} ${t.especialidad} ${t.correo}`,
+        query,
+      ),
     );
   }, [teachers, query]);
 
@@ -157,19 +160,19 @@ export function TeachersView({
             Perfiles docentes, cursos asignados y acceso al sistema
           </p>
         </div>
-        <span className="badge bg-white/5 text-[var(--text-secondary)] ring-1 ring-white/10">
-          {filtered.length} teachers
+        <span className="badge badge-info">
+          {filtered.length} {filtered.length === 1 ? "profesor" : "profesores"}
         </span>
       </motion.div>
 
       {canEdit ? (
         <motion.div variants={cardVariants} initial="hidden" animate="visible" className="space-y-4">
-          <div className="rounded-2xl border border-violet-500/25 bg-violet-500/10 px-4 py-3 text-sm text-[var(--text-secondary)]">
-            <p className="font-semibold text-violet-600 dark:text-violet-300">Cuentas de correo para profesores</p>
+          <div className="rounded-2xl border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-4 py-3 text-sm text-[var(--text-secondary)]">
+            <p className="font-semibold text-[var(--accent)]">Cuentas de correo para profesores</p>
             <p className="mt-1">
               El <strong className="text-[var(--text-primary)]">correo</strong> del docente será su usuario de
               acceso. Marque «Crear cuenta de acceso» al registrar o use «Activar acceso» en docentes ya guardados.
-              Supervise su actividad en <strong className="text-[var(--text-primary)]">Administración → Monitoreo docentes</strong>.
+              Supervise su actividad en <strong className="text-[var(--text-primary)]">Auditoría</strong>.
             </p>
           </div>
           <PageSection
@@ -210,7 +213,7 @@ export function TeachersView({
                     }}
                     required
                   />
-                  {formErrors.nombres ? <span className="mt-1 block text-xs text-rose-400">{formErrors.nombres}</span> : null}
+                  {formErrors.nombres ? <span className="mt-1 block text-xs text-[var(--danger)]">{formErrors.nombres}</span> : null}
                 </label>
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Apellidos</span>
@@ -222,7 +225,7 @@ export function TeachersView({
                     }}
                     required
                   />
-                  {formErrors.apellidos ? <span className="mt-1 block text-xs text-rose-400">{formErrors.apellidos}</span> : null}
+                  {formErrors.apellidos ? <span className="mt-1 block text-xs text-[var(--danger)]">{formErrors.apellidos}</span> : null}
                 </label>
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Especialidad</span>
@@ -236,7 +239,7 @@ export function TeachersView({
                     required
                   />
                   {formErrors.especialidad ? (
-                    <span className="mt-1 block text-xs text-rose-400">{formErrors.especialidad}</span>
+                    <span className="mt-1 block text-xs text-[var(--danger)]">{formErrors.especialidad}</span>
                   ) : null}
                 </label>
                 <label className="block text-sm sm:col-span-2">
@@ -254,7 +257,7 @@ export function TeachersView({
                     }}
                     required
                   />
-                  {formErrors.correo ? <span className="mt-1 block text-xs text-rose-400">{formErrors.correo}</span> : null}
+                  {formErrors.correo ? <span className="mt-1 block text-xs text-[var(--danger)]">{formErrors.correo}</span> : null}
                 </label>
                 <label className="block text-sm">
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">
@@ -268,7 +271,7 @@ export function TeachersView({
                       setForm((p) => ({ ...p, telefono }));
                     }}
                   />
-                  {formErrors.telefono ? <span className="mt-1 block text-xs text-rose-400">{formErrors.telefono}</span> : null}
+                  {formErrors.telefono ? <span className="mt-1 block text-xs text-[var(--danger)]">{formErrors.telefono}</span> : null}
                 </label>
               </div>
               <label className="form-grid-full flex items-center gap-2 text-sm text-[var(--text-secondary)]">
@@ -280,7 +283,7 @@ export function TeachersView({
                   <span className="mb-1.5 block font-medium text-[var(--text-secondary)]">Contraseña inicial</span>
                   <input type="password" className={INPUT_CLASS} value={form.password} onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))} minLength={8} required />
                   <span className="mt-1 block text-xs text-[var(--text-muted)]">Mínimo 8 caracteres, con mayúscula, minúscula y número.</span>
-                  {formErrors.password ? <span className="mt-1 block text-xs text-rose-400">{formErrors.password}</span> : null}
+                  {formErrors.password ? <span className="mt-1 block text-xs text-[var(--danger)]">{formErrors.password}</span> : null}
                 </label>
               ) : null}
 
@@ -303,10 +306,13 @@ export function TeachersView({
           <div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)]">Plantilla docente ({filtered.length})</h3>
           </div>
-          <label className="relative block w-full sm:max-w-xs">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
-            <input type="search" className={clsx(INPUT_CLASS, "pl-9")} placeholder="Buscar…" value={query} onChange={(e) => setQuery(e.target.value)} />
-          </label>
+          <SearchField
+            id="teachers-search"
+            value={query}
+            onChange={setQuery}
+            placeholder="Buscar por nombre, código, especialidad o correo…"
+            className="w-full sm:max-w-xs"
+          />
         </div>
         <ul className="mt-6 space-y-3">
           {filtered.map((teacher) => {
@@ -316,7 +322,7 @@ export function TeachersView({
             const courses = teacher.courses ?? [];
 
             return (
-              <li key={teacher.id} className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/50 transition hover:border-violet-500/30">
+              <li key={teacher.id} className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/50 transition hover:border-[var(--accent)]/30">
                 <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
                   <button type="button" className="flex-1 text-left" onClick={() => setExpandedId(open ? null : teacher.id)}>
                     <p className="font-semibold text-[var(--text-primary)]">
@@ -334,7 +340,7 @@ export function TeachersView({
                       <button type="button" className="btn-ghost text-xs py-1" onClick={() => { setEditingId(teacher.id); setEditForm(startEdit(teacher)); setExpandedId(teacher.id); }}>
                         <Pencil className="h-3.5 w-3.5" /> Editar
                       </button>
-                      <button type="button" className="btn-ghost text-xs py-1 text-rose-400 border-rose-500/30" onClick={() => void onDeactivate(teacher.id)}>
+                      <button type="button" className="btn-ghost text-xs py-1 text-[var(--danger)] border-rose-500/30" onClick={() => void onDeactivate(teacher.id)}>
                         <UserX className="h-3.5 w-3.5" /> Desactivar
                       </button>
                     </div>) : null}
@@ -403,7 +409,7 @@ export function TeachersView({
                       />
                     </div>
                     {firstError(editErrors) ? (
-                      <p className="mt-2 text-xs text-rose-400">{firstError(editErrors)}</p>
+                      <p className="mt-2 text-xs text-[var(--danger)]">{firstError(editErrors)}</p>
                     ) : null}
                     <button type="submit" className="btn-primary mt-3">Guardar cambios</button>
                   </form>

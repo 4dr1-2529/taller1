@@ -29,6 +29,8 @@ import { profesorService, type ProfesorDashboardData } from "@/services/profesor
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DashboardSkeleton } from "@/components/ui/Skeleton";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { AcademicTooltip, ChartCard } from "@/components/ui/ChartCard";
 
 const RISK_COLORS: Record<string, string> = { Bajo: "var(--risk-low)", Medio: "var(--risk-medium)", Alto: "var(--risk-high)" };
@@ -38,6 +40,7 @@ export function ProfessorDashboard() {
   const { ready, isDocente } = useAuthReady();
   const [data, setData] = useState<ProfesorDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!ready || !isDocente) return;
@@ -47,50 +50,60 @@ export function ProfessorDashboard() {
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, [ready, isDocente]);
+  }, [ready, isDocente, reloadKey]);
 
   if (loading) {
-    return (
-      <DashboardSkeleton />
-    );
+    return <DashboardSkeleton />;
   }
 
   if (!data) {
     return (
-      <p className="text-sm text-[var(--text-muted)]">
-        No se pudo cargar el panel del profesor. Verifique su sesión.
-      </p>
+      <ErrorState
+        message="No se pudo cargar el panel docente. Verifique su sesión."
+        technicalDetail="GET /profesor/dashboard"
+        onRetry={() => setReloadKey((k) => k + 1)}
+        retryLabel="Volver a intentar"
+      />
     );
   }
 
-  const { kpis } = data;
+  // Defensa ante respuestas parciales: un campo ausente no debe tumbar la vista.
+  const kpis = data.kpis ?? ({} as ProfesorDashboardData["kpis"]);
+  const byLevel = kpis.byLevel ?? { bajo: 0, medio: 0, alto: 0 };
   const workload = data.workload;
+  const riskBySection = data.riskBySection ?? [];
+  const alertsBySalonShort = data.alertsBySalonShort ?? [];
+  const avgByCourse = data.avgByCourse ?? [];
+  const attendanceByGrado = data.attendanceByGrado ?? [];
   const riskPie = [
-    { name: "Bajo", value: kpis.byLevel.bajo },
-    { name: "Medio", value: kpis.byLevel.medio },
-    { name: "Alto", value: kpis.byLevel.alto },
+    { name: "Bajo", value: byLevel.bajo },
+    { name: "Medio", value: byLevel.medio },
+    { name: "Alto", value: byLevel.alto },
   ].filter((d) => d.value > 0);
 
   return (
     <div className="professor-dashboard space-y-6">
-      <div className="professor-intro">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-orange)]">Seguimiento académico</p>
-        <h2 className="text-page-title font-bold text-[var(--text-primary)]">Mi aula en foco</h2>
-        <p className="mt-2 max-w-2xl text-[15px] text-[var(--text-secondary)]">
-          {workload?.tipoAsignacion ?? "Indicadores de sus cursos, secciones y estudiantes asignados."}
-        </p>
-        {workload?.cursos.length ? (
-          <p className="teaching-context">
-            Cursos: {workload.cursos.map((c) => c.nombre).join(" · ")} — Salones: {workload.secciones.join(", ")}
-          </p>
-        ) : null}
-      </div>
+      <PageHeader
+        eyebrow="Seguimiento académico"
+        title="Mi aula en foco"
+        description={
+          workload?.tipoAsignacion ?? "Indicadores de sus cursos, secciones y estudiantes asignados."
+        }
+        extra={
+          workload?.cursos?.length ? (
+            <p className="teaching-context">
+              Cursos: {workload.cursos.map((c) => c.nombre).join(" · ")} — Salones:{" "}
+              {workload.secciones?.join(", ")}
+            </p>
+          ) : null
+        }
+      />
 
       <section className="teaching-focus grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <ChartCard title="Atención por sección" description="Estudiantes por nivel de riesgo en sus secciones. Compare dónde concentrar el acompañamiento." isEmpty={!data.riskBySection.length}>
-          <div className="min-w-0" style={{ height: Math.max(320, data.riskBySection.slice(0, 8).length * 48) }}>
+        <ChartCard title="Atención por sección" description="Estudiantes por nivel de riesgo en sus secciones. Compare dónde concentrar el acompañamiento." isEmpty={!riskBySection.length}>
+          <div className="min-w-0" style={{ height: Math.max(320, riskBySection.slice(0, 8).length * 48) }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.riskBySection.slice(0, 8)} layout="vertical" margin={{ left: 10, right: 20, top: 12, bottom: 8 }}>
+              <BarChart data={riskBySection.slice(0, 8)} layout="vertical" margin={{ left: 10, right: 20, top: 12, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis type="number" allowDecimals={false} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="label" interval={0} width={115} tick={<ChartCategoryTick vertical />} axisLine={false} tickLine={false} />
@@ -122,44 +135,44 @@ export function ProfessorDashboard() {
 
       </section>
       <section className="teaching-summary"><p className="intelligence-eyebrow">Resumen docente</p><div className="metric-band">
-        <KpiCard label="Estudiantes asignados" value={kpis.totalAlumnos ?? kpis.totalStudents} icon={Users} index={0} />
-        <KpiCard label="Cursos asignados" value={kpis.totalCourses ?? workload?.cursos.length ?? 0} icon={BookOpen} index={1} />
-        <KpiCard label="Alertas activas" value={kpis.openAlerts} icon={AlertTriangle} index={2} />
-        <KpiCard label="Promedio general" value={kpis.avgGrade} suffix="/20" icon={GraduationCap} index={3} />
+        <KpiCard label="Estudiantes asignados" value={kpis.totalAlumnos ?? kpis.totalStudents ?? "—"} icon={Users} index={0} />
+        <KpiCard label="Cursos asignados" value={kpis.totalCourses ?? workload?.cursos?.length ?? "—"} icon={BookOpen} index={1} />
+        <KpiCard label="Alertas activas" value={kpis.openAlerts ?? "—"} icon={AlertTriangle} index={2} />
+        <KpiCard label="Promedio general" value={kpis.avgGrade ?? "—"} suffix={kpis.avgGrade == null ? undefined : "/20"} icon={GraduationCap} index={3} />
 
         <KpiCard label="Secciones asignadas" value={kpis.misSecciones ?? 0} icon={Layers} />
         <KpiCard label="Notas pendientes (B1-B2)" value={kpis.notasPendientes ?? 0} icon={GraduationCap} />
-        <KpiCard label="Asistencia promedio" value={kpis.avgAttendance} suffix="%" icon={TrendingUp} />
+        <KpiCard label="Asistencia promedio" value={kpis.avgAttendance ?? "—"} suffix={kpis.avgAttendance == null ? undefined : "%"} icon={TrendingUp} />
       </div></section>
 
       <SummaryStatsRow
         stats={[
-          { label: "Riesgo alto", value: kpis.byLevel.alto, tone: "danger" },
-          { label: "Riesgo medio", value: kpis.byLevel.medio, tone: "warning" },
-          { label: "Riesgo bajo", value: kpis.byLevel.bajo, tone: "success" },
-          { label: "Score promedio IA", value: kpis.avgRisk },
+          { label: "Riesgo alto", value: byLevel.alto, tone: "danger" },
+          { label: "Riesgo medio", value: byLevel.medio, tone: "warning" },
+          { label: "Riesgo bajo", value: byLevel.bajo, tone: "success" },
+          { label: "Puntaje promedio IA", value: kpis.avgRisk ?? "—" },
         ]}
       />
 
       <div className="teaching-analytics grid gap-6 xl:grid-cols-2">
-        <ChartCard title="Alertas por sección" description="Casos abiertos que requieren seguimiento." isEmpty={!data.alertsBySalonShort.length}>
+        <ChartCard title="Alertas por sección" description="Casos abiertos que requieren seguimiento." isEmpty={!alertsBySalonShort.length}>
           <div className="h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.alertsBySalonShort}>
+              <BarChart data={alertsBySalonShort}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="salon" />
                 <YAxis allowDecimals={false} />
                 <Tooltip content={<AcademicTooltip />} />
-                <Bar isAnimationActive={false} dataKey="count" name="Alertas" fill="#f47c20" radius={[4, 4, 0, 0]} />
+                <Bar isAnimationActive={false} dataKey="count" name="Alertas" fill="var(--brand-orange)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </ChartCard>
 
-        <ChartCard title="Promedio por curso" description="Rendimiento observado en sus cursos." isEmpty={!data.avgByCourse.length}>
+        <ChartCard title="Promedio por curso" description="Rendimiento observado en sus cursos." isEmpty={!avgByCourse.length}>
           <div className="h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.avgByCourse.slice(0, 10)}>
+              <BarChart data={avgByCourse.slice(0, 10)}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="nombre" height={80} tick={<ChartCategoryTick />} />
                 <YAxis domain={[0, 20]} />
@@ -170,10 +183,10 @@ export function ProfessorDashboard() {
           </div>
         </ChartCard>
 
-        <ChartCard title="Asistencia por sección (grado)" description="Promedio de asistencia disponible por grado." className="xl:col-span-2" isEmpty={!data.attendanceByGrado.length}>
+        <ChartCard title="Asistencia por sección (grado)" description="Promedio de asistencia disponible por grado." className="xl:col-span-2" isEmpty={!attendanceByGrado.length}>
           <div className="h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.attendanceByGrado}>
+              <BarChart data={attendanceByGrado}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="grado" />
                 <YAxis domain={[0, 100]} />

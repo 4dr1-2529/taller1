@@ -98,6 +98,7 @@ export type ApiPredictionResult = {
   datasetVersion?: string | null;
   dataMode?: string | null;
   contractVersion?: string | null;
+  decisionThreshold?: number | null;
   experimental?: boolean;
 };
 

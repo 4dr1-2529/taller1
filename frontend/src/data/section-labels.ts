@@ -30,8 +30,18 @@ export function getSectionLabel(section: AppSection, role?: string): string {
       Asistencia: "Mi asistencia",
       "Actividad LMS": "Mi actividad LMS",
       Predicción: "Mi riesgo",
+      Alertas: "Mis alertas",
     };
     if (studentLabels[section]) return studentLabels[section]!;
+  }
+  if (role === "docente") {
+    // El rol interno sigue siendo `docente`; en la interfaz se muestra "Profesor".
+    const teacherLabels: Partial<Record<AppSection, string>> = {
+      Estudiantes: "Mis estudiantes",
+      Cursos: "Mis cursos",
+      Reportes: "Mis reportes",
+    };
+    if (teacherLabels[section]) return teacherLabels[section]!;
   }
   return SECTION_LABELS[section] ?? section;
 }
@@ -42,6 +52,12 @@ export const ENTIDAD_LABELS: Record<string, string> = {
   Course: "Curso",
   Alert: "Alerta",
   Prediction: "Predicción",
+  // Modelos reales del esquema Prisma que también registran auditoría.
+  Grade: "Nota",
+  Attendance: "Asistencia",
+  Matricula: "Matrícula",
+  User: "Usuario",
+  TeacherCourseAssignment: "Asignación docente",
 };
 
 export function getEntidadLabel(entidad: string): string {

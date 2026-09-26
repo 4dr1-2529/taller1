@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import clsx from "clsx";
+import { toast } from "sonner";
 import { estudianteService, type EstudianteNotasData } from "@/services/estudianteService";
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 function estadoClass(estado: string): string {
   if (estado === "Aprobado") return "text-emerald-600 dark:text-emerald-400";
@@ -20,16 +23,28 @@ export function StudentGradesView() {
   const { ready, isEstudiante } = useAuthReady();
   const [data, setData] = useState<EstudianteNotasData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!ready || !isEstudiante) return;
     setLoading(true);
-    void estudianteService
+    setError(null);
+    estudianteService
       .getNotas()
-      .then(setData)
-      .catch(() => setData(null))
+      .then((res) => setData(res))
+      .catch((e) => {
+        // Un fallo de API NO es "sin notas": se limpia y se muestra el error.
+        const msg = e instanceof Error ? e.message : "No se pudieron cargar tus notas.";
+        toast.error(msg);
+        setError(msg);
+        setData(null);
+      })
       .finally(() => setLoading(false));
   }, [ready, isEstudiante]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (loading) {
     return (
@@ -40,13 +55,28 @@ export function StudentGradesView() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Desempeño académico"
+          title="Notas por curso"
+        />
+        <ErrorState message={error} technicalDetail="GET /estudiante/notas" onRetry={load} />
+      </div>
+    );
+  }
+
   const profile = data?.profile;
   const filas = data?.filas ?? [];
   const resumen = data?.resumen;
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-[var(--text-secondary)]">{ESTUDIANTE_MSG.notas}</p>
+      <PageHeader
+        eyebrow="Desempeño académico"
+        title="Notas por curso"
+      />
 
       {profile ? (
         <div className="premium-card grid gap-3 rounded-xl p-4 sm:grid-cols-2 lg:grid-cols-5 text-sm">

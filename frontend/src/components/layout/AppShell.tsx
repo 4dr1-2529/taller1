@@ -43,6 +43,14 @@ export function AppShell({
       <div className="app-orb app-orb-violet" aria-hidden />
       <div className="app-orb app-orb-cyan" aria-hidden />
 
+      {/* Accesibilidad: primer enlace de la página para saltar la navegación. */}
+      <a
+        href="#app-main"
+        className="sr-only rounded-lg bg-[var(--brand-navy)] px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[var(--brand-orange)]"
+      >
+        Saltar al contenido principal
+      </a>
+
       <AppSidebar
         sections={sections}
         activeSection={activeSection}
@@ -51,6 +59,8 @@ export function AppShell({
       />
 
       <motion.div
+        id="app-main"
+        tabIndex={-1}
         className="app-main flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
         initial={reduced ? false : { opacity: 0, x: 8 }}
         animate={{ opacity: 1, x: 0 }}

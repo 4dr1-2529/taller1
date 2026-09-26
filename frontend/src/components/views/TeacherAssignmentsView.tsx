@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ClipboardList, Plus, UserCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -8,7 +8,7 @@ import { api, type TeacherAssignment } from "@/services/api";
 import type { Teacher } from "@/types/academic";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
-import { SELECT_CLASS } from "@/lib/ui";
+import { FormSelect } from "@/components/ui/FormField";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 
 type Props = {
@@ -120,15 +120,12 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <ClipboardList className="h-6 w-6 text-[var(--brand-orange)]" />
-        <div>
-          <SectionHeading title="Asignaciones docentes" />
-          <p className="text-sm text-[var(--text-secondary)]">
-            Asignación docente por curso, grado, sección y año lectivo, según la estructura vigente.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Gestión académica"
+        title="Nueva asignación docente"
+        description="Cree asignaciones y revise las que están activas por sección, curso y año lectivo."
+        icon={ClipboardList}
+      />
 
       <form className="premium-card grid gap-3 rounded-xl p-4 md:grid-cols-2 lg:grid-cols-4" onSubmit={handleCreate}>
         <div className="lg:col-span-4 flex flex-wrap gap-2">
@@ -147,46 +144,46 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
             <Plus className="h-3.5 w-3.5" /> Docente por curso (3°-6°)
           </button>
         </div>
-        <select
-          className={SELECT_CLASS}
+        <FormSelect
+          label="Profesor"
           value={form.profesorId}
           onChange={(e) => setForm((p) => ({ ...p, profesorId: e.target.value }))}
           required
         >
-          <option value="">Profesor</option>
+          <option value="">Seleccione un profesor</option>
           {teachers.map((t) => (
             <option key={t.id} value={t.id}>
               {t.apellidos}, {t.nombres}
             </option>
           ))}
-        </select>
-        <select
-          className={SELECT_CLASS}
+        </FormSelect>
+        <FormSelect
+          label="Sección"
           value={form.seccionId}
           onChange={(e) => setForm((p) => ({ ...p, seccionId: e.target.value }))}
           required
         >
-          <option value="">Sección</option>
+          <option value="">Seleccione una sección</option>
           {secciones.map((s) => (
             <option key={s.id} value={s.id}>
               {s.label}
             </option>
           ))}
-        </select>
+        </FormSelect>
         {form.mode === "curso" ? (
-          <select
-            className={SELECT_CLASS}
+          <FormSelect
+            label="Curso del catálogo"
             value={form.cursoId}
             onChange={(e) => setForm((p) => ({ ...p, cursoId: e.target.value }))}
             required
           >
-            <option value="">Curso (catálogo)</option>
+            <option value="">Seleccione un curso</option>
             {catalogo.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.nombre}
               </option>
             ))}
-          </select>
+          </FormSelect>
         ) : (
           <p className="text-sm text-[var(--text-muted)] self-center">
             Se asignarán todos los cursos del grado en esa sección.
@@ -198,8 +195,8 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
       </form>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <select
-          className={SELECT_CLASS}
+        <FormSelect
+          label="Profesor filtro"
           value={filters.profesorId}
           onChange={(e) => setFilters((p) => ({ ...p, profesorId: e.target.value }))}
         >
@@ -209,9 +206,9 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
               {t.apellidos}, {t.nombres}
             </option>
           ))}
-        </select>
-        <select
-          className={SELECT_CLASS}
+        </FormSelect>
+        <FormSelect
+          label="Grado filtro"
           value={filters.gradoId}
           onChange={(e) => setFilters((p) => ({ ...p, gradoId: e.target.value, seccionId: "" }))}
         >
@@ -221,9 +218,9 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
               {g.label}
             </option>
           ))}
-        </select>
-        <select
-          className={SELECT_CLASS}
+        </FormSelect>
+        <FormSelect
+          label="Sección filtro"
           value={filters.seccionId}
           onChange={(e) => setFilters((p) => ({ ...p, seccionId: e.target.value }))}
         >
@@ -233,9 +230,9 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
               {s.label}
             </option>
           ))}
-        </select>
-        <select
-          className={SELECT_CLASS}
+        </FormSelect>
+        <FormSelect
+          label="Curso filtro"
           value={filters.cursoId}
           onChange={(e) => setFilters((p) => ({ ...p, cursoId: e.target.value }))}
         >
@@ -245,16 +242,16 @@ export function TeacherAssignmentsView({ teachers, secciones }: Props) {
               {c.nombre}
             </option>
           ))}
-        </select>
-        <select
-          className={SELECT_CLASS}
+        </FormSelect>
+        <FormSelect
+          label="Tipo de asignación"
           value={filters.esTutor}
           onChange={(e) => setFilters((p) => ({ ...p, esTutor: e.target.value }))}
         >
-          <option value="">Tipo: todos</option>
+          <option value="">Todos los tipos</option>
           <option value="true">Tutor de aula</option>
           <option value="false">Docente por curso</option>
-        </select>
+        </FormSelect>
       </div>
 
       {loading ? (
