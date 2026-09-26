@@ -1,6 +1,6 @@
 # Pruebas caja blanca — API
 
-Inventario **87 rutas** en `backend/src/routes/index.ts` — análisis por prefijo.
+Inventario **109 rutas** en `backend/src/routes/index.ts` (más 3 `app.get` de health = 112 handlers) — análisis por prefijo.
 
 ---
 
@@ -44,4 +44,4 @@ Inventario **87 rutas** en `backend/src/routes/index.ts` — análisis por prefi
 
 ## Repositorio (Prisma)
 
-Todas las rutas usan `prisma` desde `utils/prisma.ts` — 52 modelos en `schema.prisma`. Sin capa repository explícita; servicios encapsulan queries complejas (`dashboard-analytics.service.ts`).
+Todas las rutas usan `prisma` desde `utils/prisma.ts` — 57 modelos (54 activos + 3 `@@ignore`) en `schema.prisma`. Sin capa repository explícita; servicios encapsulan queries complejas (`dashboard-analytics.service.ts`).

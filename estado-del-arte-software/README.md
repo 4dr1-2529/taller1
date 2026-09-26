@@ -19,7 +19,7 @@ Documentación técnica basada **únicamente** en tecnologías implementadas en 
 ```
 ┌─────────────────┐     REST/JWT      ┌─────────────────┐     HTTP      ┌──────────────────┐
 │  Next.js :3029  │ ◄──────────────► │ Express :4000   │ ◄───────────► │ FastAPI ML :5000 │
-│  ROLE_SECTIONS  │                   │ 87 rutas + RBAC │               │ RF+XGB+Stacking  │
+│  ROLE_SECTIONS  │                   │ 109 rutas + RBAC │               │ RF+XGB+Stacking  │
 └─────────────────┘                   └────────┬────────┘               └──────────────────┘
                                                │ Prisma
                                                ▼

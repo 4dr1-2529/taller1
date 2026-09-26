@@ -1,5 +1,12 @@
 # Reporte final de pruebas — Tesis Dashboard v2.0
 
+> **HISTÓRICO.** Ejecución del **2026-06-30** sobre la población demo de entonces; los recuentos que
+> aparecen (660 estudiantes · 23 profesores · 31 pruebas backend · 6 ML) **no describen el estado actual**
+> y no se usan como vigentes. Resultados verificados el **2026-09-26** (auditoría técnica V6):
+> `type-check` 0 errores · `lint` 0 · unitarias 4/4 · frontend 40/40 · backend 81/81 · ML 32/32 ·
+> `build` correcto · `test:smoke` **NO DISPONIBLE** (faltan las contraseñas iniciales del entorno) ·
+> matriz de **86 casos: 80 aprobados, 6 observados, 0 fallidos**.
+
 **Generado:** 2026-06-30  
 **Ambiente:** Local exclusivo (MySQL XAMPP, API `:4000`, Web `:3029`, ML `:5000`)  
 **Norma:** ISO/IEC 29119  
@@ -9,7 +16,7 @@
 
 ## Resumen general
 
-Se completó el plan de pruebas con **ejecución real** contra código y datos demo del proyecto (660 estudiantes, 23 profesores, 19 680 notas bimestre I–II). Incluye pruebas unitarias (31 backend + 6 ML), smoke API, caja negra/seguridad/integración HTTP, rendimiento medido, auditoría caja blanca (41 archivos), capturas Playwright **20/20** (Director, Profesor, Alumno) y validación `type-check` / `build` / `test`.
+**Ejecución histórica (2026-06-30) — no vigente.** Se completó el plan de pruebas sobre la población demo de aquella etapa (660 estudiantes, 23 profesores, 19 680 notas bimestre I-II): pruebas unitarias (31 backend + 6 ML), smoke API, caja negra/seguridad/integración HTTP, rendimiento medido, auditoría caja blanca (41 archivos), capturas Playwright **20/20** (Director, Profesor, Alumno) y validación `type-check` / `build` / `test`. **Los recuentos de esta línea son históricos**: la cobertura vigente son 81 pruebas backend + 32 ML + 40 frontend + 4 unitarias (ver aviso de cabecera).
 
 ## Totales
 
@@ -71,8 +78,8 @@ Detalle: `pruebas-rendimiento/evidencias/performance-report.json`
 ## Recomendaciones
 
 1. Ejecutar `npm run qa:pipeline` antes de cada entrega.
-2. Mantener `npm run db:seed:demo` para datos coherentes.
-3. Añadir test automatizado para `POST /auth/refresh` y `POST /matriculas`.
+2. No usar `npm run db:seed:demo`: está deshabilitado (legacy); preparar la BD aislada de pruebas.
+3. `POST /auth/refresh` y `POST /matriculas` ya tienen prueba automatizada y se revalidaron el 2026-09-26.
 
 ## Conclusión
 

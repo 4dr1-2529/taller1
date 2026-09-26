@@ -8,15 +8,15 @@
 
 ## 1. Objetivo
 
-Validar de forma **ejecutable y trazable** el sistema educativo predictivo (Next.js + Express + Prisma/MySQL + FastAPI ML) con datos demo reales: 660 estudiantes, 23 profesores, notas bimestre I–II, predicción de riesgo y RBAC en 3 roles.
+Validar de forma **ejecutable y trazable** el sistema educativo predictivo (Next.js + Express + Prisma/MySQL + FastAPI ML) con datos autorizados del entorno de pruebas (BD aislada local 127.0.0.1:33316), notas 0-20, predicción de riesgo y RBAC en 3 roles.
 
 ## 2. Alcance
 
 | Capa | Incluido |
 |------|----------|
-| Backend API | ~96 rutas `backend/src/routes/index.ts` |
+| Backend API | 109 rutas `backend/src/routes/index.ts` (112 handlers) |
 | Frontend | Shell, login, dashboards, notas, predicción, reportes |
-| Base de datos | MySQL local `tesis_dashboard`, Prisma 52 modelos |
+| Base de datos | MySQL local `tesis_dashboard`, Prisma 57 modelos (54 activos + 3 legacy `@@ignore`) |
 | IA | Random Forest + XGBoost + Stacking (`machine-learning/`) |
 | Seguridad | JWT, RBAC admin/docente/estudiante |
 
@@ -69,7 +69,7 @@ Login · Dashboard (3 roles) · Usuarios/Estudiantes · Profesores · Cursos · 
 ## 8. Criterios de entrada
 
 - MySQL activo con schema migrado.
-- Seed demo ejecutado (660 estudiantes).
+- Esquema migrado en la BD de pruebas; los scripts de población legacy (`db:seed:demo`) están deshabilitados.
 - API :4000, Web :3029, ML :5000 respondiendo `GET /health` → 200.
 - `npm install` completado en raíz del monorepo.
 

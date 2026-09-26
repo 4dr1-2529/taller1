@@ -1,0 +1,167 @@
+=== test-backend ===
+fecha (local): 2026-09-26 11:35:28
+comando: npm run test:backend
+exit code: 0
+duracion_ms: 46378
+------------------------------------------------------------------------
+
+> tesis-dashboard@2.0.0 test:backend
+> npm run test --workspace=backend
+
+
+> backend@2.0.0 test
+> node --test tests/*.test.mjs && tsx --test tests/schemas.test.ts tests/teacher-scope.test.ts tests/validation-fields.test.ts tests/estudiante-scope.test.ts
+
+Ô£ö V5: full counts, scopes, period histories and evidence aggregates (3134.8127ms)
+Ô£ö V5: deterministic logical dataset (1668.4223ms)
+Ô£ö V5: reject source flags, counter, duplicate identity and bad references (91.2611ms)
+Ô£ö V5: reject fabricated history, altered aggregates, future events, scope bypass (3486.6429ms)
+Ô£ö V5: justified-only intervals remain no-data, tardiness counts (0.4449ms)
+Ô£ö V5: default mode and every missing execution guard prevent mutation (0.9368ms)
+Ô£ö V5: preseed populated database aborts transaction before any insert (3102.2719ms)
+Ô£ö V5: dry run child process succeeds without a database or passwords (3326.2593ms)
+Ô£ö V5: equivalence with real backend services using injected database doubles (3968.8739ms)
+Ô£ö V5: complete importer payloads match Prisma fields and FK order in memory (9737.8574ms)
+Ô£ö V5: transaction budget covers the measured round-trip cost (P2028 regression) (7855.7578ms)
+Ô£ö production preflight: read adapter cannot expose or acquire write methods (22.2188ms)
+Ô£ö production preflight: reads datasource, resolves real supplied IDs and preserves snapshots (4078.9967ms)
+Ô£ö production preflight: rejects population before generation (7.4115ms)
+Ô£ö production preflight: rejects missing section before generation (4.0109ms)
+Ô£ö production preflight: rejects wrong feature before generation (4.3533ms)
+Ô£ö production preflight: rejects nonzero counter before generation (7.2199ms)
+Ô£ö production preflight: rejects wrong natural key before generation (10.0275ms)
+Ô£ö production preflight: rejects missing config before generation (4.9606ms)
+Ô£ö production preflight: detects changed counts and does not declare success (3917.6834ms)
+Ô£ö production preflight: detects same-count structural alteration (3831.1067ms)
+Ô£ö production preflight: reports only password presence (0.4758ms)
+ÔûÂ Permisos DIRECTOR (admin)
+  Ô£ö acceso total gesti├│n (2.4016ms)
+Ô£ö Permisos DIRECTOR (admin) (5.9288ms)
+ÔûÂ Permisos PROFESOR (docente)
+  Ô£ö no crea estudiantes ni profesores (2.5258ms)
+  Ô£ö puede predecir en su ├ímbito (0.5349ms)
+  Ô£ö bloqueo acceso no autorizado ÔÇö eliminar asistencia global (0.4874ms)
+Ô£ö Permisos PROFESOR (docente) (5.1465ms)
+ÔûÂ Permisos ESTUDIANTE
+  Ô£ö solo informaci├│n propia (0.5353ms)
+Ô£ö Permisos ESTUDIANTE (1.0332ms)
+ÔûÂ Roles v├ílidos del sistema
+  Ô£ö solo 3 roles (68.161ms)
+Ô£ö Roles v├ílidos del sistema (68.8122ms)
+Ô£ô nivel_riesgo en espa├▒ol
+Ô£ô score_predictivo num├®rico
+Ô£ô probabilidad_abandono
+Ô£ô factores_riesgo array
+
+4 ok, 0 fallos
+Ô£ö tests\prediction-format.test.mjs (1814.1977ms)
+ÔûÂ API response envelope
+  Ô£ö ├®xito incluye success, message y data (22.2651ms)
+  Ô£ö error incluye success false y errors estructurados (0.6411ms)
+Ô£ö API response envelope (27.0829ms)
+ÔûÂ Estudiante ÔÇö reglas de visibilidad
+  Ô£ö solo usa endpoints /estudiante/* en frontend (17.4381ms)
+  Ô£ö no debe ver filtros globales de grado/secci├│n (2.3505ms)
+  Ô£ö estudiante no accede a endpoints de profesor (0.822ms)
+  Ô£ö estudiante no accede a endpoints de director (1.0074ms)
+  Ô£ö studentId del cliente no debe autorizar acceso ajeno (4.7564ms)
+Ô£ö Estudiante ÔÇö reglas de visibilidad (36.7183ms)
+ÔûÂ Profesor ÔÇö reglas de visibilidad
+  Ô£ö solo ve estudiantes de secciones donde dicta un curso (6.1639ms)
+  Ô£ö director no aplica filtro de secci├│n del profesor (0.5134ms)
+  Ô£ö profesorId del cliente no debe usarse para autorizar (0.6304ms)
+Ô£ö Profesor ÔÇö reglas de visibilidad (11.445ms)
+ÔûÂ Permisos permitidos
+  Ô£ö director gestiona profesores (5.201ms)
+  Ô£ö profesor predicci├│n (0.6401ms)
+  Ô£ö estudiante ve riesgo (0.6704ms)
+Ô£ö Permisos permitidos (12.6334ms)
+ÔûÂ Permisos prohibidos
+  Ô£ö estudiante no gestiona (9.021ms)
+  Ô£ö profesor no comunicados globales (0.8492ms)
+Ô£ö Permisos prohibidos (10.7621ms)
+ÔûÂ AUTH validaci├│n
+  Ô£ö login v├ílido (12.2269ms)
+  Ô£ö login inv├ílido ÔÇö email (1.8257ms)
+Ô£ö AUTH validaci├│n (22.8718ms)
+ÔûÂ Rangos acad├®micos
+  Ô£ö promedio 0-20 (3.7086ms)
+  Ô£ö asistencia 0-100 (1.7569ms)
+Ô£ö Rangos acad├®micos (6.2056ms)
+ÔûÂ Roles v├ílidos
+  Ô£ö solo 3 roles (0.92ms)
+Ô£ö Roles v├ílidos (1.4132ms)
+Ôä╣ tests 49
+Ôä╣ suites 12
+Ôä╣ pass 49
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 40396.6242
+ÔûÂ Estudiante ÔÇö alcance y seguridad
+  Ô£ö rechaza studentId del cliente distinto al del token (115.4057ms)
+  Ô£ö permite petici├│n sin studentId en query (0.3968ms)
+  Ô£ö permite studentId coincidente con el token (0.3623ms)
+Ô£ö Estudiante ÔÇö alcance y seguridad (118.7926ms)
+ÔûÂ Estudiante ÔÇö estado de notas
+  Ô£ö clasifica aprobado, en riesgo y desaprobado (0.3361ms)
+Ô£ö Estudiante ÔÇö estado de notas (0.588ms)
+ÔûÂ AUTH
+  Ô£ö login v├ílido (6.9685ms)
+  Ô£ö login inv├ílido ÔÇö email (1.7264ms)
+Ô£ö AUTH (11.2847ms)
+ÔûÂ Estudiantes
+  Ô£ö crear estudiante con campos obligatorios (2.7945ms)
+  Ô£ö nota fuera de rango (1.0999ms)
+Ô£ö Estudiantes (4.4006ms)
+ÔûÂ Predicci├│n y alertas
+  Ô£ö predict requiere identificador num├®rico; no m├®tricas manuales (1.4213ms)
+  Ô£ö estado de alerta v├ílido (1.1644ms)
+Ô£ö Predicci├│n y alertas (3.2812ms)
+ÔûÂ Roles y contrase├▒a
+  Ô£ö createUser solo roles permitidos (3.9071ms)
+  Ô£ö changePassword exige contrase├▒a segura (0.7391ms)
+  Ô£ö teacherAccount exige la misma regla segura (8 + may├║scula + min├║scula + n├║mero) (0.7374ms)
+Ô£ö Roles y contrase├▒a (6.6399ms)
+ÔûÂ Cursos y asistencia
+  Ô£ö curso con nombre y secci├│n (1.3658ms)
+  Ô£ö asistencia con fecha (3.4963ms)
+  Ô£ö profesor con email v├ílido (0.6136ms)
+Ô£ö Cursos y asistencia (6.2595ms)
+ÔûÂ teacher scope (secci├│n por curso)
+  Ô£ö agrupa secciones ├║nicas de cursos del profesor (3.277ms)
+  Ô£ö sin secciones ÔåÆ ning├║n estudiante (0.3816ms)
+  Ô£ö con secciones ÔåÆ filtro por seccionId (0.3334ms)
+  Ô£ö director no usa filtro de secci├│n (admin ve todos activos) (0.2413ms)
+Ô£ö teacher scope (secci├│n por curso) (6.7585ms)
+ÔûÂ zodToFieldErrors
+  Ô£ö devuelve field y message por campo (9.0372ms)
+Ô£ö zodToFieldErrors (11.0128ms)
+ÔûÂ Campos de texto ÔÇö sin n├║meros
+  Ô£ö rechaza nombres con d├¡gitos (0.7037ms)
+  Ô£ö observaci├│n sin n├║meros (0.6971ms)
+  Ô£ö nombre de curso sin n├║meros (0.3121ms)
+Ô£ö Campos de texto ÔÇö sin n├║meros (2.231ms)
+ÔûÂ Campos num├®ricos
+  Ô£ö nota entre 0 y 20 (1.0021ms)
+  Ô£ö asistencia entre 0 y 100 (0.2904ms)
+  Ô£ö DNI 8 d├¡gitos (0.4116ms)
+  Ô£ö tel├®fono 9 d├¡gitos (0.3824ms)
+Ô£ö Campos num├®ricos (2.5693ms)
+ÔûÂ Profesor ÔÇö alcance simulado
+  Ô£ö no ve alumnos de secciones ajenas (0.3365ms)
+  Ô£ö director ve todos los estudiantes (0.3493ms)
+Ô£ö Profesor ÔÇö alcance simulado (0.9203ms)
+ÔûÂ Filtros profesor ÔÇö limpieza dependiente
+  Ô£ö al cambiar grado limpia secci├│n y curso (0.336ms)
+  Ô£ö al cambiar secci├│n limpia curso (0.1583ms)
+Ô£ö Filtros profesor ÔÇö limpieza dependiente (0.66ms)
+Ôä╣ tests 32
+Ôä╣ suites 13
+Ôä╣ pass 32
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 1478.8377

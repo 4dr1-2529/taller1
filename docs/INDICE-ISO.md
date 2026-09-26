@@ -69,7 +69,7 @@ Este índice centraliza toda la documentación técnica, de calidad (ISO) y de e
 | 24 | [DEPLOY.md](DEPLOY.md) | Guía paso a paso Vercel + Railway, seed, troubleshooting. |
 | 25 | [pruebas.md](pruebas.md) | Comandos de test, smoke tests y checklist producción. |
 | 26 | [pruebas-funcionales.md](pruebas-funcionales.md) | Casos funcionales automatizados y manuales por rol. |
-| 27 | [cuentas-demo/README.md](cuentas-demo/README.md) | CSV verificados de login (660 estudiantes + 23 profesores). |
+| 27 | [cuentas-demo/README.md](cuentas-demo/README.md) | CSV verificados de login (población demo histórica; ya superada). |
 | 28 | [postman.md](postman.md) | Importación y uso de la colección Postman. |
 | 29 | [postman/tesis-dashboard.postman_collection.json](postman/tesis-dashboard.postman_collection.json) | Colección JSON de endpoints API. |
 

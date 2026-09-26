@@ -1,13 +1,57 @@
-# Machine Learning 2026-v2
+# Machine Learning 2026-v3 (modelo V6)
 
-Vector ordenado de **7 variables**: promedio_general, cursos_desaprobados, asistencia_general, frecuencia_acceso_lms, tiempo_interaccion_lms, actividades_realizadas, recursos_consultados.
+> Los **números de desempeño no se reproducen aquí**. Son documentos canónicos:
+> [`machine-learning/README.md`](../../machine-learning/README.md),
+> [`docs/ml/PIPELINE_ML_V6.md`](../ml/PIPELINE_ML_V6.md),
+> [`docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`](../ml/RESULTADOS_EXPERIMENTALES_V6.md) y
+> [`docs/ml/DATA_SEED_V6_METODOLOGIA.md`](../ml/DATA_SEED_V6_METODOLOGIA.md).
 
-Las mismas validaciones se aplican en carga de datos, contrato FastAPI y cliente backend. Todos los valores son finitos/no negativos; notas 0–20, asistencia 0–100 y recuentos enteros. Las entradas adicionales o ausentes se rechazan. No se inventan valores para registros faltantes.
+## Modelo seleccionado
 
-Se mantienen Random Forest, XGBoost (HistGradientBoosting si no es compatible) y Stacking. No hay ganador declarado. El entrenamiento futuro separa entrenamiento/validación/prueba estratificados; selecciona por F1 ponderado de validación y evalúa en holdout reservado. evaluate.py reutiliza ese holdout, no crea una partición distinta que pueda contener datos usados para entrenar.
+El modelo elegido es **Stacking** (base Random Forest + XGBoost, meta-estimador Random Forest) y ya existe
+como artefacto entrenado en `machine-learning/artifacts/synthetic/`:
 
-DATASET_PATH debe indicar un CSV autorizado con las siete variables y target bajo/medio/alto, codificados 0/1/2. La procedencia, unidad de observación, fechas, etiquetas y posibles fugas requieren revisión científica. El software no certifica por sí solo la validez de las etiquetas. No se ejecutó entrenamiento ni se modificaron conclusiones científicas.
+- `modelVersion`: `BLENKIR_V6_BIN_20260924`
+- `datasetVersion`: `BLENKIR_V6_SYNTH_20260924`
+- `dataMode`: `synthetic_scientific`
+- `contractVersion`: `2026-v3`
+- `experimental`: `true`
 
-Las métricas y artefactos antiguos están en legacy/ml-v1. No prueban desempeño del nuevo vector. Sin best_model.joblib compatible, features.joblib y metadata coherente, la API no produce predicciones. Los factores actuales describen indicadores por reglas; no son importancia aprendida ni causalidad.
+**Selección hecha únicamente con el conjunto de validación**
+(`selection=validation_f1_desercion`, `holdout_used_for_selection=false`). El holdout **ya fue evaluado una
+sola vez** y su resultado quedó registrado en `artifacts/synthetic/metrics.json`
+(`final_metrics`, `split=holdout`); no se reparte ni se reutiliza para tomar decisiones de selección.
 
-Pruebas: python -m unittest discover -s machine-learning/tests -p test_predict.py desde raíz. Entrenamiento posterior: cd machine-learning; python train.py. No generar datos sintéticos ahora. Los futuros 200 registros serán demostración tecnológica, no evidencia científica.
+## Contrato de entrada
+
+Vector ordenado de **7 variables**: `promedio_general`, `cursos_desaprobados`, `asistencia_general`,
+`frecuencia_acceso_lms`, `tiempo_interaccion_lms`, `actividades_realizadas`, `recursos_consultados`.
+
+Las mismas validaciones se aplican en la carga de datos, el contrato FastAPI y el cliente backend.
+Todos los valores son finitos y no negativos; notas 0–20, asistencia 0–100 y recuentos enteros.
+Las entradas adicionales o ausentes se rechazan: **no se imputan ni se inventan valores**.
+La etiqueta es binaria (`permanece` / `deserta`); los niveles de riesgo (bajo/medio/alto) se derivan
+después con los umbrales `p < 0.41`, `0.41 <= p < 0.65` y `p >= 0.65`.
+
+Sin `best_model.joblib`, `features.joblib` y `metadata.json` coherentes, la API responde `503`:
+no hay degradación a riesgo Bajo ni predicciones ficticias.
+
+## Datos
+
+El dataset vigente es **científico-sintético** (`dataMode=synthetic_scientific`, 225 estudiantes sintéticos
+/ 450 registros, particiones por estudiante en entrenamiento, validación y holdout). Procedencia, unidad de
+observación, fechas, etiquetas y posibles fugas requieren revisión científica: **el software no certifica por
+sí solo la validez de las etiquetas**.
+
+**Advertencia — modelo experimental:** sus resultados son experimentales y no constituyen evidencia de la
+prevalencia del riesgo en la institución ni validación institucional. Los factores que muestra la aplicación
+son indicadores descriptivos por reglas; **no** son importancia aprendida, atribuciones de tipo SHAP ni
+evidencia causal.
+
+## Pruebas y entrenamiento
+
+- Pruebas: `npm run ml:test` (desde la raíz; equivale a
+  `cd machine-learning && python tests/test_predict.py`).
+- Reentrenamiento: `cd machine-learning` y su pipeline documentado en
+  [`docs/ml/PIPELINE_ML_V6.md`](../ml/PIPELINE_ML_V6.md). Nunca sobre datos reales sin autorización.
+- Los artefactos y métricos antiguos están en `legacy/ml-v1` y **no** describen el desempeño del vector actual.

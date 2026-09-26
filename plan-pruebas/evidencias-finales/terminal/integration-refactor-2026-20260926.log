@@ -1,0 +1,48 @@
+2026 registration, concurrency, rollback, scopes, messages and learning
+  Ô£ö EST-200 ÔåÆ EST-201; deactivate EST-050 ÔåÆ EST-202 (2015.4723ms)
+  Ô£ö failed enrollment rolls back user, student, audit and counter (1142.9369ms)
+  Ô£ö concurrent admissions generate distinct codes (1925.2191ms)
+  Ô£ö student cannot read other student; professor cannot read outside scope (93.2096ms)
+  Ô£ö direct-message matrix, including forged room IDs (337.2759ms)
+  Ô£ö announcements cannot be answered (45.5356ms)
+  Ô£ö director cannot enter marks or attendance (10.126ms)
+  Ô£ö materials and activities are scoped and generate real events (144.4467ms)
+  Ô£ö teacher records derive marks, attendance and completed activities (411.1683ms)
+  Ô£ö automatic alerts are deduplicated and preserve prediction history (88.8297ms)
+  Ô£ö course offering cannot be created outside teacher assignments (6.0969ms)
+  Ô£ö student attendance resolves historical 2026 terms and justified-only is null (156.5154ms)
+  Ô£ö teacher reports and prediction history remain inside filtered scope (193.4135ms)
+  Ô£ö teacher dashboard uses B1-B2 with III active and omits fake course averages (216.1148ms)
+  Ô£ö teacher grades accept periodoNumero while III is active (87.3332ms)
+  Ô£ö teacher writes and updates grades in the selected closed term (414.1045ms)
+  Ô£ö period resolution and student current evidence are restricted to 2026 (103.7107ms)
+  Ô£ö teacher roster is restricted to directors (31.1372ms)
+  Ô£ö teachers cannot read grades from another teacher's course (1398.7537ms)
+  Ô£ö teachers are confined to their own courses (149.6529ms)
+  Ô£ö students are read-only for predictions and institutional data (101.1696ms)
+  Ô£ö recommendations and risks respect staff scope (95.9638ms)
+  Ô£ö asistencia por fecha exacta ignora timezone (103.4258ms)
+  Ô£ö listados con b├║squeda y paginaci├│n real (101.6006ms)
+  Ô£ö cuenta docente exige contrase├▒a segura (1022.319ms)
+  Ô£ö RBAC listado general de estudiantes (164.5959ms)
+  Ô£ö dashboard snapshot solo lo escribe el director (60.5094ms)
+  Ô£ö alertas combinan grado+seccion+profesor+busqueda (72.6136ms)
+  Ô£ö profesor no accede al listado general de estudiantes (90.8379ms)
+  Ô£ö estudiante retirado pierde scopes dependientes de matr├¡cula (252.387ms)
+  Ô£ö salonSummary es global aunque la p├ígina sea parcial (32.0394ms)
+  Ô£ö mensajer├¡a refleja solo relaciones activas 2026 (1236.4123ms)
+  Ô£ö profesor con asignacion activa no se desactiva por PUT (93.79ms)
+  Ô£ö reasignacion docente mantiene coherencia y conserva historial (1254.7746ms)
+  Ô£ö traslado y retiro no crean segunda matricula y conservan historial (866.5191ms)
+  Ô£ö dashboard estudiante expone actividad LMS honesta (71.2095ms)
+  Ô£ö dashboard promedia solo evidencia real 2026 (5490.5881ms)
+  Ô£ö auth: login, refresh, logout y cambio de clave (1615.8017ms)
+Ô£ö 2026 registration, concurrency, rollback, scopes, messages and learning (24557.3904ms)
+Ôä╣ tests 39
+Ôä╣ suites 0
+Ôä╣ pass 39
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 28780.61

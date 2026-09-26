@@ -9,8 +9,12 @@ npx prisma db push --accept-data-loss
 npx prisma generate
 cd ..
 npm run db:seed
-npm run db:seed:demo
+# npm run db:seed:demo  # DESHABILITADO (legacy-population-disabled.mjs)
 ```
+
+> **HISTÓRICO / YA APLICADO.** Esta migración puntual ya se ejecutó. No usar
+> `prisma db push --accept-data-loss` sobre producción: el esquema vigente se aplica con
+> `npm run db:migrate:deploy`.
 
 El script `migrate-roles.sql`:
 

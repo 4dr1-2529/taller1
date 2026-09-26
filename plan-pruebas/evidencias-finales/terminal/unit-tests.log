@@ -1,0 +1,16 @@
+=== test-unit ===
+fecha (local): 2026-09-26 11:34:33
+comando: npm run test:unit
+exit code: 0
+duracion_ms: 2703
+------------------------------------------------------------------------
+
+> tesis-dashboard@2.0.0 test:unit
+> node backend/tests/prediction-format.test.mjs
+
+Ô£ô nivel_riesgo en espa├▒ol
+Ô£ô score_predictivo num├®rico
+Ô£ô probabilidad_abandono
+Ô£ô factores_riesgo array
+
+4 ok, 0 fallos

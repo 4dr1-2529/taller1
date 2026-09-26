@@ -1,0 +1,65 @@
+[
+    {
+        "prueba":  "type-check",
+        "comando":  "npm run type-check",
+        "exit":  0,
+        "ms":  27557,
+        "log":  "plan-pruebas\\evidencias-finales\\terminal\\type-check.log"
+    },
+    {
+        "prueba":  "lint",
+        "comando":  "npm run lint",
+        "exit":  0,
+        "ms":  37523,
+        "log":  "plan-pruebas\\evidencias-finales\\terminal\\lint.log"
+    },
+    {
+        "prueba":  "test-unit",
+        "comando":  "npm run test:unit",
+        "exit":  0,
+        "ms":  2703,
+        "log":  "plan-pruebas\\evidencias-finales\\terminal\\unit-tests.log"
+    },
+    {
+        "prueba":  "test-frontend",
+        "comando":  "npm run test --workspace=frontend",
+        "exit":  0,
+        "ms":  8610,
+        "log":  "plan-pruebas\\evidencias-finales\\terminal\\frontend-tests.log"
+    },
+    {
+        "prueba":  "test-backend",
+        "comando":  "npm run test:backend",
+        "exit":  0,
+        "ms":  46378,
+        "log":  "plan-pruebas\\pruebas-unitarias\\evidencias\\backend-tests.log"
+    },
+    {
+        "prueba":  "test-ml",
+        "comando":  "npm run ml:test",
+        "exit":  0,
+        "ms":  9034,
+        "log":  "plan-pruebas\\pruebas-unitarias\\evidencias\\ml-tests.log"
+    },
+    {
+        "prueba":  "build",
+        "comando":  "npm run build",
+        "exit":  0,
+        "ms":  107108,
+        "log":  "plan-pruebas\\evidencias-finales\\terminal\\build.log"
+    },
+    {
+        "prueba":  "prisma-validate",
+        "comando":  "npm run db:count-models",
+        "exit":  0,
+        "ms":  2840,
+        "log":  "plan-pruebas\\evidencias-finales\\terminal\\prisma-count-models.log"
+    },
+    {
+        "prueba":  "test-smoke",
+        "comando":  "npm run test:smoke",
+        "exit":  1,
+        "ms":  1402,
+        "log":  "plan-pruebas\\evidencias-finales\\terminal\\smoke-tests.log"
+    }
+]

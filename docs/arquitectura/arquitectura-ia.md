@@ -6,14 +6,16 @@
 
 ## 1. Rol en el sistema
 
-Microservicio de **inferencia y entrenamiento** que clasifica el riesgo de deserción en tres niveles (bajo, medio, alto) usando ensemble learning.
+Microservicio de **inferencia y entrenamiento**. Estima la probabilidad de deserción (etiqueta binaria
+`permanece` / `deserta`) con **7 variables** y la traduce a tres niveles de riesgo —bajo, medio, alto—
+mediante los umbrales `0.41` y `0.65`.
 
 ---
 
 ## 2. Pipeline IA
 
 ```
-MySQL (vía backend) → 9 features → RF + XGBoost → Stacking → Meta-RF
+MySQL (vía backend) → 7 variables → RF + XGBoost → Stacking → Meta-RF
     → best_model.joblib → /predict → Backend → Dashboard + Alertas
 ```
 
@@ -27,7 +29,16 @@ MySQL (vía backend) → 9 features → RF + XGBoost → Stacking → Meta-RF
 | XGBoost / HGB | Boosting, alta precisión tabular |
 | Stacking + Meta-RF | Fusión ensemble (tesis) |
 
-Selección: **mayor F1-Score** en test set.
+**Selección: únicamente por el mejor F1 sobre el conjunto de VALIDACIÓN**
+(`selection=validation_f1_desercion`). **`holdout_used_for_selection=false`**: el holdout no participa en
+ninguna decisión de selección y se reserva para la evaluación final del modelo elegido.
+
+Modelo desplegado: **Stacking**, `modelVersion=BLENKIR_V6_BIN_20260924`,
+`datasetVersion=BLENKIR_V6_SYNTH_20260924`, `dataMode=synthetic_scientific`,
+`contractVersion=2026-v3`, `experimental=true`.
+
+> **MODELO EXPERIMENTAL · DATOS CIENTÍFICO-SINTÉTICOS.** No representan todavía evidencia científica
+> obtenida con estudiantes reales de la institución; los umbrales son operativos y no validados.
 
 ---
 

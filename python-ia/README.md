@@ -2,6 +2,13 @@
 
 Análisis del módulo `machine-learning/` de **Tesis Dashboard v2.0**. Todo el contenido deriva del código fuente, artefactos `models/` y ejecución real de `train.py`.
 
+> **HISTÓRICO / PARCIALMENTE SUPERADO.** Estos análisis describen el entrenamiento anterior
+> (criterio `max(f1)`, `best_model: "random_forest"`, métricas triviales F1=1.0 en un dataset sintético
+> degenerado). El modelo **vigente es Stacking V6** (`BLENKIR_V6_BIN_20260924`, 7 variables, selección
+> por validación, `holdout_used_for_selection=false`): ver `docs/ml/PIPELINE_ML_V6.md`,
+> `docs/ml/RESULTADOS_EXPERIMENTALES_V6.md` y `docs/python-ia/modelo-predictivo.md`.
+> La estructura de los documentos se conserva sin cambios; solo se corrigieron recuentos (7 variables).
+
 ## Índice
 
 | Documento | Contenido |

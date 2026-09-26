@@ -65,4 +65,4 @@ Misma matriz de confusión monoclasse que RF (500× clase 0).
 
 ## Selección del mejor modelo
 
-Criterio: **F1-score ponderado máximo** entre `random_forest`, `xgboost`, `stacking` (L168). Empate actual en F1=1.0; gana `random_forest` por orden de `max()` sobre dict.
+Criterio: **F1-score ponderado máximo** entre `random_forest`, `xgboost`, `stacking` (L168). Empate registrado en esa corrida con F1=1.0 (dataset sintético degenerado); gana `random_forest` por orden de `max()` sobre dict. Corrida histórica: el modelo vigente es Stacking V6.

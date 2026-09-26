@@ -1,0 +1,57 @@
+{
+  "fecha": "2026-09-26",
+  "repo": "4dr1-2529/taller1",
+  "nota": "Análisis SonarCloud ejecutado por CI en el PR #5 (análisis real, no simulado). No se dispone de SONAR_TOKEN en este entorno, por lo que no se lanzó un análisis nuevo; se consulta únicamente el resultado del análisis ya ejecutado por GitHub Actions. No se modificó ninguna configuración de SonarQube/SonarCloud.",
+  "http_check_runs": 200,
+  "check_runs": [
+    {
+      "name": "SonarCloud Code Analysis",
+      "status": "completed",
+      "conclusion": "failure",
+      "details_url": "https://sonarcloud.io/dashboard?id=4dr1-2529_taller1&branch=main",
+      "started_at": "2026-09-26T15:24:54Z",
+      "completed_at": "2026-09-26T15:26:12Z"
+    },
+    {
+      "name": "validate",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/4dr1-2529/taller1/actions/runs/36251837341/job/108431202253",
+      "started_at": "2026-09-26T15:24:43Z",
+      "completed_at": "2026-09-26T15:26:44Z"
+    }
+  ],
+  "total_check_runs": 2,
+  "http_combined_status": 200,
+  "combined_state": "success",
+  "statuses": [
+    {
+      "context": "TALLER1 - backend",
+      "state": "success",
+      "target_url": "https://railway.com/project/5838eaa5-848f-4118-95cc-e4e8d466660c/service/d7f79649-9dca-4b15-85db-166c35b71d41",
+      "description": "No deployment needed - watched paths not modified"
+    },
+    {
+      "context": "Vercel",
+      "state": "success",
+      "target_url": "https://vercel.com/carlosadrian252925-4428s-projects/taller1-frontend/A3YXPA1DWPTeRDSDVjrtDRsJy2Mx",
+      "description": "Deployment has completed"
+    },
+    {
+      "context": "TALLER1 - ml",
+      "state": "success",
+      "target_url": "https://railway.com/project/5838eaa5-848f-4118-95cc-e4e8d466660c/service/61617858-1faf-432b-aae0-8d30415f84b2?id=df852abc-a6f0-45ef-b016-cadd87662ed2&environmentId=324f73b5-b746-42d3-ba2d-49f6b4be4f8b",
+      "description": "Success - ml-production-2a96.up.railway.app"
+    }
+  ],
+  "pr5": {
+    "title": "feat: refresh BLENKIR UI UX",
+    "state": "closed",
+    "merged": true,
+    "merged_at": "2026-09-26T15:24:38Z",
+    "merge_commit_sha": "d3c0b803e6d30c24fc0d24bff3465e15267d506d",
+    "head": "feat/ui-ux-refresh-v6",
+    "base": "main",
+    "html_url": "https://github.com/4dr1-2529/taller1/pull/5"
+  }
+}

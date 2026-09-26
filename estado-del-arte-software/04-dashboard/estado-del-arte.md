@@ -1,6 +1,6 @@
 # Estado del Arte — Dashboard (Learning Analytics / Visualización por Rol)
 
-**Tecnologías implementadas:** `RoleDashboard`, `StudentDashboard`, Recharts, KPIs de alertas, 14/10/6 secciones por rol.
+**Tecnologías implementadas:** `RoleDashboard`, `StudentDashboard`, Recharts, KPIs de alertas, 20/15/12 secciones por rol (`frontend/src/data/role-sections.ts`).
 
 **Evidencia:** `frontend/src/app/(shell)/page.tsx`, `frontend/src/components/dashboard/`, `frontend/src/lib/aggregates.ts`.
 
@@ -44,7 +44,7 @@ Sistematiza 66 LADs: tipos de visualización, audiencias (estudiante, docente, a
 
 ### Aplicación al proyecto
 
-`page.tsx` L54–90 define tres perfiles de navegación. Admin ve 14 secciones incluyendo Reportes y Matrículas; estudiante solo 6 (Dashboard, Notas, Asistencia, LMS, Predicción, Mensajería) — exactamente el principio de personalización por audiencia del artículo.
+`frontend/src/data/role-sections.ts` define tres perfiles de navegación. Admin ve 20 secciones incluyendo Reportes y Matrículas; estudiante solo 12 (Dashboard, Notas, Asistencia, LMS, Predicción, Mensajería) — exactamente el principio de personalización por audiencia del artículo.
 
 ---
 
@@ -131,7 +131,7 @@ Describe plataforma EWS con dashboards administrativos personalizados, formulari
 
 | Componente EarlySTEM | Tesis Dashboard |
 |----------------------|-----------------|
-| Dashboard admin | `RoleDashboard` + 14 secciones |
+| Dashboard admin | `RoleDashboard` + 20 secciones |
 | Captura datos | Formularios Students/Courses/Grades |
 | ML desacoplado | FastAPI `:5000` |
 | JWT + roles | `AuthProvider` + RBAC |
@@ -155,7 +155,7 @@ Fundamenta sistemas de alerta temprana online con indicadores de engagement y da
 
 | EWS element | Proyecto |
 |-------------|----------|
-| Indicadores riesgo | 9 features ML |
+| Indicadores riesgo | 7 features ML |
 | Alertas | Modelo `Alerta`, `AlertsView` |
 | Roles facilitador | `docente`, `admin` |
 | Online / LMS | Actividad LMS en dashboard |

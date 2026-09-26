@@ -43,7 +43,7 @@ Comentario en código L145: *"Stacking: RF + HGB (estable con sklearn 1.6+)"*.
 | `stacking_model.joblib` | Ensemble completo serializado |
 | `best_model.joblib` | Puede ser RF, XGB o stacking según F1 |
 
-Última ejecución: `best_model` = `random_forest` (no stacking), aunque stacking también alcanza F1=1.0.
+Corrida histórica: `best_model` = `random_forest` (no stacking), aunque stacking también alcanzaba F1=1.0. El modelo vigente es **Stacking V6** (`BLENKIR_V6_BIN_20260924`): ver [`docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`](../docs/ml/RESULTADOS_EXPERIMENTALES_V6.md).
 
 ## Métricas stacking (`metrics.json`)
 

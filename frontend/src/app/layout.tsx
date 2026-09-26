@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Panel I.E.P. Huancayo · Riesgo de deserción",
+  title: "BLENKIR · Riesgo de deserción estudiantil",
   description:
     "Sistema predictivo con modelos de aprendizaje automático, datos académicos y actividad en plataforma virtual.",
 };

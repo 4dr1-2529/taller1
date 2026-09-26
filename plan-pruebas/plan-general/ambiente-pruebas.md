@@ -21,7 +21,7 @@
 ```bash
 npm run db:push
 npm run db:seed
-npm run db:seed:demo
+# db:seed:demo DESHABILITADO (legacy-population-disabled.mjs): no puebla la BD
 npm run ml:train
 ```
 

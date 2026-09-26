@@ -1,0 +1,15 @@
+=== prisma-validate ===
+fecha (local): 2026-09-26 11:37:27
+comando: npm run db:count-models
+exit code: 0
+duracion_ms: 2840
+------------------------------------------------------------------------
+
+> tesis-dashboard@2.0.0 db:count-models
+> npm run db:count-models --workspace=backend
+
+
+> backend@2.0.0 db:count-models
+> node scripts/count-prisma-models.mjs
+
+Modelos Prisma: 57

@@ -1,5 +1,10 @@
 # Cierre integral Blenkir V5 — 2026-09-24
 
+> **HISTÓRICO / SUPERADO.** Este informe cierra la etapa **V5** (rama `dataset-definitivo-2026`,
+> 2026-09-24). Sirve como antecedente y como fuente de las verificaciones que se ejecutaron entonces;
+> **no describe el estado vigente del sistema**, que corresponde a la auditoría V6
+> ([ESTADO_ACTUAL_V6.md](ESTADO_ACTUAL_V6.md)). Los resultados internos se conservan sin cambios.
+
 Rama: `dataset-definitivo-2026`. Este documento refleja **únicamente verificaciones ejecutadas**;
 lo no ejecutado se declara como pendiente, sin estimaciones.
 
