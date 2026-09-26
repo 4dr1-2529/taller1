@@ -1,6 +1,7 @@
 import type { Course, Student, Teacher } from "@/types/academic";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import { lmsActivityTierFromMetrics } from "@/lib/lms-engagement";
+import { localSearchMatch } from "@/lib/search-text";
 
 export type AcademicFilterState = {
   gradoId: string;
@@ -76,10 +77,11 @@ export function salónLabel(gradoNum: number | null, seccionLetra: string): stri
 }
 
 export function matchSearch(student: Student, q: string): boolean {
-  const term = q.trim().toLowerCase();
-  if (!term) return true;
-  const full = `${student.nombres} ${student.apellidos} ${student.codigo}`.toLowerCase();
-  return full.includes(term);
+  if (!q.trim()) return true;
+  return localSearchMatch(
+    `${student.nombres} ${student.apellidos} ${student.codigo}`,
+    q,
+  );
 }
 
 export function filterStudents(

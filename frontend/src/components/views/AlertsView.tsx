@@ -17,6 +17,7 @@ import { RiskBadge } from "@/components/ui/RiskBadge";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useAuth } from "@/contexts/AuthProvider";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 const STATUS_LABEL: Record<string, string> = {
   nueva: "Nueva",
@@ -57,6 +58,9 @@ export function AlertsView({
     teachers,
   );
 
+  // Debounce SOLO de la búsqueda textual: los selects siguen reaccionando ya.
+  const searchQuery = useDebouncedValue(filters.search, 320);
+
   const loadApi = useCallback(async () => {
     if (!useApi) return;
     try {
@@ -66,7 +70,7 @@ export function AlertsView({
         status: filters.alertStatus || undefined,
         riskLevel: filters.riskLevel || undefined,
         all: includeResolved,
-        search: filters.search.trim() || undefined,
+        search: searchQuery.trim() || undefined,
         page,
         limit: ALERTS_PAGE_SIZE,
       };
@@ -98,7 +102,7 @@ export function AlertsView({
     isDocente,
     filters.alertStatus,
     filters.riskLevel,
-    filters.search,
+    searchQuery,
     includeResolved,
     page,
   ]);
@@ -301,7 +305,7 @@ export function AlertsView({
                     {factores.length > 0 && (
                       <div>
                         <p className="text-xs font-semibold uppercase text-[var(--text-muted)]">
-                          Factores de riesgo
+                          Indicadores asociados
                         </p>
                         <ul className="mt-1 flex flex-wrap gap-2">
                           {factores.map((f) => (

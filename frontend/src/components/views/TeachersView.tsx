@@ -7,7 +7,6 @@ import clsx from "clsx";
 import {
   KeyRound,
   Pencil,
-  Search,
   UserPlus,
   UserX,
   Users,
@@ -17,6 +16,8 @@ import { api } from "@/services/api";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import type { Teacher } from "@/types/academic";
 import { PageSection } from "@/components/ui/PageSection";
+import { localSearchMatch } from "@/lib/search-text";
+import { SearchField } from "@/components/ui/SearchField";
 import { INPUT_CLASS } from "@/lib/ui";
 import { PersonNameInput, PhoneInput } from "@/components/ui/ValidatedInputs";
 import {
@@ -123,10 +124,12 @@ export function TeachersView({
   }, [expandedId, editingId]);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return teachers;
+    if (!query.trim()) return teachers;
     return teachers.filter((t) =>
-      `${t.nombres} ${t.apellidos} ${t.codigo} ${t.especialidad} ${t.correo}`.toLowerCase().includes(q),
+      localSearchMatch(
+        `${t.nombres} ${t.apellidos} ${t.codigo} ${t.especialidad} ${t.correo}`,
+        query,
+      ),
     );
   }, [teachers, query]);
 
@@ -164,12 +167,12 @@ export function TeachersView({
 
       {canEdit ? (
         <motion.div variants={cardVariants} initial="hidden" animate="visible" className="space-y-4">
-          <div className="rounded-2xl border border-violet-500/25 bg-violet-500/10 px-4 py-3 text-sm text-[var(--text-secondary)]">
-            <p className="font-semibold text-violet-600 dark:text-violet-300">Cuentas de correo para profesores</p>
+          <div className="rounded-2xl border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-4 py-3 text-sm text-[var(--text-secondary)]">
+            <p className="font-semibold text-[var(--accent)]">Cuentas de correo para profesores</p>
             <p className="mt-1">
               El <strong className="text-[var(--text-primary)]">correo</strong> del docente será su usuario de
               acceso. Marque «Crear cuenta de acceso» al registrar o use «Activar acceso» en docentes ya guardados.
-              Supervise su actividad en <strong className="text-[var(--text-primary)]">Administración → Monitoreo docentes</strong>.
+              Supervise su actividad en <strong className="text-[var(--text-primary)]">Auditoría</strong>.
             </p>
           </div>
           <PageSection
@@ -303,10 +306,13 @@ export function TeachersView({
           <div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)]">Plantilla docente ({filtered.length})</h3>
           </div>
-          <label className="relative block w-full sm:max-w-xs">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
-            <input type="search" className={clsx(INPUT_CLASS, "input-with-icon")} placeholder="Buscar…" value={query} onChange={(e) => setQuery(e.target.value)} />
-          </label>
+          <SearchField
+            id="teachers-search"
+            value={query}
+            onChange={setQuery}
+            placeholder="Buscar por nombre, código, especialidad o correo…"
+            className="w-full sm:max-w-xs"
+          />
         </div>
         <ul className="mt-6 space-y-3">
           {filtered.map((teacher) => {
@@ -316,7 +322,7 @@ export function TeachersView({
             const courses = teacher.courses ?? [];
 
             return (
-              <li key={teacher.id} className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/50 transition hover:border-violet-500/30">
+              <li key={teacher.id} className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/50 transition hover:border-[var(--accent)]/30">
                 <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
                   <button type="button" className="flex-1 text-left" onClick={() => setExpandedId(open ? null : teacher.id)}>
                     <p className="font-semibold text-[var(--text-primary)]">

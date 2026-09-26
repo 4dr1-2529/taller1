@@ -9,6 +9,7 @@ import { FormField } from "@/components/ui/FormField";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { SELECT_CLASS } from "@/lib/ui";
+import { localSearchMatch } from "@/lib/search-text";
 
 type CoursesViewProps = {
   courses: Course[];
@@ -30,12 +31,11 @@ export function CoursesView({
   const [reassignTeacherId, setReassignTeacherId] = useState("");
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return courses;
+    if (!query.trim()) return courses;
     return courses.filter((c) => {
       const teacher = teachers.find((t) => t.id === c.profesorId);
       const teacherName = teacher ? `${teacher.nombres} ${teacher.apellidos}` : "";
-      return `${c.nombre} ${c.codigo} ${c.nivel} ${teacherName}`.toLowerCase().includes(q);
+      return localSearchMatch(`${c.nombre} ${c.codigo} ${c.nivel} ${teacherName}`, query);
     });
   }, [courses, teachers, query]);
 
@@ -76,7 +76,7 @@ export function CoursesView({
         <DataTablePanel
           title={`Oferta académica (${filtered.length})`}
           description="Cursos activos y docente asignado."
-          searchPlaceholder="Buscar curso o docente…"
+          searchPlaceholder={canReassign ? "Buscar curso o docente…" : "Buscar curso…"}
           searchValue={query}
           onSearch={setQuery}
           isEmpty={filtered.length === 0}
@@ -129,7 +129,9 @@ export function CoursesView({
                           </span>
                         </span>
                       ) : (
-                        <span className="badge-warning">Sin asignar</span>
+                        // Modo Profesor: la lista institucional de docentes no se
+                        // carga (privacidad) y la oferta mostrada ya es la suya.
+                        <span className="text-[var(--text-secondary)]">Usted</span>
                       )}
                     </td>
                     {canReassign && onDeactivate ? (

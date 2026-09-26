@@ -14,6 +14,11 @@ import { PROFESOR_HINTS } from "@/constants/blenkir";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { PageHeader } from "@/components/ui/PageHeader";
+import type { AcademicFilterState } from "@/lib/student-filters";
+import {
+  buildHistoryQuery,
+  resolveHistorySearchFilters,
+} from "@/lib/prediction-history-search";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
@@ -41,41 +46,48 @@ export function PredictionHistoryView({
   const [error, setError] = useState<string | null>(null);
   const [studentId, setStudentId] = useState("");
 
-  const load = useCallback(async () => {
-    if (!api.hasToken) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const res = professorMode || isDocente
-        ? await profesorService.getHistorialPredicciones({
-            gradoId: pf.applied.gradoId || undefined,
-            seccionId: pf.applied.seccionId || undefined,
-            cursoId: pf.applied.courseId || undefined,
-            riskLevel: pf.applied.riskLevel || undefined,
-            search: pf.applied.search || undefined,
-            limit: 50,
-          })
-        : await api.getPredictions({
-            studentId: studentId || undefined,
-            limit: 50,
-          });
-      setItems(res.items as ApiPredictionHistoryItem[]);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "No se pudo cargar el historial de predicciones.";
-      toast.error(msg);
-      setError(msg);
-      setItems([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [studentId, professorMode, isDocente, pf.applied]);
+  const load = useCallback(
+    async (filtersSnapshot?: AcademicFilterState) => {
+      if (!api.hasToken) return;
+      setLoading(true);
+      setError(null);
+      // El snapshot llega desde `search()`; sin él (carga inicial o reintento)
+      // se usan los filtros ya aplicados.
+      const filters = filtersSnapshot ?? pf.applied;
+      try {
+        const res = professorMode || isDocente
+          ? await profesorService.getHistorialPredicciones({
+              ...buildHistoryQuery(filters),
+              limit: 50,
+            })
+          : await api.getPredictions({
+              studentId: studentId || undefined,
+              limit: 50,
+            });
+        setItems(res.items as ApiPredictionHistoryItem[]);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "No se pudo cargar el historial de predicciones.";
+        toast.error(msg);
+        setError(msg);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [studentId, professorMode, isDocente, pf.applied],
+  );
 
-  const search = () => {
+  const search = useCallback(() => {
     if (professorMode || isDocente) {
+      // Snapshot de los filtros VISIBLES: `pf.applied` se actualiza de forma
+      // asíncrona y la primera búsqueda se haría con los filtros anteriores.
+      const snapshot = resolveHistorySearchFilters(pf.draft);
       if (!pf.applySearch()) return;
+      void load(snapshot);
+      return;
     }
     void load();
-  };
+  }, [professorMode, isDocente, pf, load]);
 
   useEffect(() => {
     if (isAuthenticated && !professorMode && !isDocente) void load();

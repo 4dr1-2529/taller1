@@ -16,6 +16,7 @@ import type { Student } from "@/types/academic";
 import type { MatriculaStats } from "@/hooks/useAcademicData";
 import type { SeccionOption } from "@/hooks/useAcademicStructure";
 import { useAcademicFilters } from "@/hooks/useAcademicFilters";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { AcademicFiltersBar } from "@/components/academic/AcademicFiltersBar";
 import { SummaryStatsRow } from "@/components/academic/SummaryStatsRow";
 import { PageSection } from "@/components/ui/PageSection";
@@ -67,6 +68,9 @@ export function EnrollmentsView({
   const { filters, updateFilter, resetFilters, grados, seccionOptions, filteredStudents } =
     useAcademicFilters(students, [], secciones);
 
+  // Debounce SOLO de la búsqueda textual (evita una petición por tecla).
+  const searchQuery = useDebouncedValue(query, 320);
+
   const activas = matriculaStats?.matriculasActivas ?? items.filter((m) => m.estado === "activa").length;
 
   const load = useCallback(async () => {
@@ -77,7 +81,7 @@ export function EnrollmentsView({
         api.getMatriculas({
           seccionId: filters.seccionId || undefined,
           gradoId: filters.gradoId || undefined,
-          q: query.trim() || undefined,
+          q: searchQuery.trim() || undefined,
           // "Todas" es `""` y debe conservarse (no convertirse en undefined).
           estado,
           page,
@@ -101,7 +105,7 @@ export function EnrollmentsView({
     } finally {
       setLoading(false);
     }
-  }, [filters.seccionId, filters.gradoId, form.anioLectivoId, setForm, query, estado, page]);
+  }, [filters.seccionId, filters.gradoId, form.anioLectivoId, setForm, searchQuery, estado, page]);
 
   useEffect(() => {
     void load();

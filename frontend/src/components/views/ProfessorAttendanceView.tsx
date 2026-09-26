@@ -7,6 +7,8 @@ import { profesorService } from "@/services/profesorService";
 import { useProfessorFilters } from "@/hooks/useProfessorFilters";
 import { ProfessorFiltersBar } from "@/components/professor/ProfessorFiltersBar";
 import { DataTablePanel, TableWrap } from "@/components/ui/DataTablePanel";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { AttendanceStatusPicker } from "@/components/ui/AttendanceStatusPicker";
 import { flagsToEstado, estadoToFlags, type AttendanceEstado } from "@/lib/attendance-status";
 import { PROFESOR_HINTS } from "@/constants/blenkir";
@@ -34,10 +36,12 @@ export function ProfessorAttendanceView({ courses, secciones }: ProfessorAttenda
   const [bulkEstados, setBulkEstados] = useState<Record<string, AttendanceEstado>>({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const search = useCallback(async () => {
     if (!pf.applySearch()) return;
     setLoading(true);
+    setError(null);
     try {
       const [stRes, attRes] = await Promise.all([
         profesorService.getEstudiantes({
@@ -63,7 +67,11 @@ export function ProfessorAttendanceView({ courses, secciones }: ProfessorAttenda
         next[s.id] = ex ? flagsToEstado(ex) : "presente";
       }
       setBulkEstados(next);
-    } catch {
+    } catch (e) {
+      // ERROR de consulta ≠ "no hay estudiantes en la sección".
+      const msg = e instanceof Error ? e.message : "No se pudo cargar la asistencia.";
+      toast.error(msg);
+      setError(msg);
       setStudents([]);
       setBulkEstados({});
     } finally {
@@ -93,6 +101,11 @@ export function ProfessorAttendanceView({ courses, secciones }: ProfessorAttenda
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        eyebrow="Registro diario"
+        title="Asistencia del grupo"
+        description="Consulte y registre la asistencia de los estudiantes de sus secciones y cursos."
+      />
       <ProfessorFiltersBar
         filters={pf.draft}
         onChange={pf.updateDraft}
@@ -101,6 +114,7 @@ export function ProfessorAttendanceView({ courses, secciones }: ProfessorAttenda
           pf.clear();
           setStudents([]);
           setBulkEstados({});
+          setError(null);
         }}
         grados={pf.grados}
         secciones={pf.seccionOptions}
@@ -109,7 +123,13 @@ export function ProfessorAttendanceView({ courses, secciones }: ProfessorAttenda
         show={{ grado: true, seccion: true, fecha: true, search: true }}
       />
 
-      {pf.searched && students.length > 0 ? (
+      {error ? (
+        <ErrorState
+          message={error}
+          technicalDetail="GET /profesor/estudiantes + GET /profesor/asistencia"
+          onRetry={() => void search()}
+        />
+      ) : pf.searched && students.length > 0 ? (
         <>
           <div className="flex justify-end">
             <button type="button" className="btn-primary" disabled={saving} onClick={() => void saveBulk()}>

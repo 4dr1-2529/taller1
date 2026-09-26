@@ -8,6 +8,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/EmptyState";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { TableWrap } from "@/components/ui/DataTablePanel";
+import { getEntidadLabel } from "@/data/section-labels";
 
 type Entry = {
   id: string;
@@ -27,6 +28,11 @@ export function AuditView() {
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  // Cambiar esta clave fuerza una consulta nueva: setPage(p => p) no reproducía
+  // el effect porque el estado no cambiaba.
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const reload = () => setReloadKey((k) => k + 1);
 
   useEffect(() => {
     let active = true;
@@ -49,7 +55,7 @@ export function AuditView() {
     return () => {
       active = false;
     };
-  }, [page]);
+  }, [page, reloadKey]);
 
   return (
     <PageSection
@@ -60,7 +66,7 @@ export function AuditView() {
       {loading ? (
         <TableSkeleton rows={6} cols={COLS.length} />
       ) : error ? (
-        <ErrorState message={error} technicalDetail="GET /admin/audit-logs" onRetry={() => setPage((p) => p)} />
+        <ErrorState message={error} technicalDetail="GET /admin/audit-logs" onRetry={reload} />
       ) : items.length === 0 ? (
         <EmptyState
           icon={History}
@@ -68,33 +74,32 @@ export function AuditView() {
           description="Aún no se han registrado movimientos en el sistema. Las operaciones aparecerán aquí automáticamente."
         />
       ) : (
+        // TableWrap YA renderiza el <table>: aquí sólo van thead/tbody.
         <TableWrap>
-          <table className="data-table w-full text-left text-sm">
-            <thead>
-              <tr>
-                {COLS.map((x) => (
-                  <th key={x} scope="col">
-                    {x}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((e) => (
-                <tr key={e.id}>
-                  <td className="whitespace-nowrap text-xs">
-                    {new Date(e.createdAt).toLocaleString("es-PE")}
-                  </td>
-                  <td>{e.usuario?.email ?? "Sistema"}</td>
-                  <td>
-                    {e.entidad} #{e.entidadId}
-                  </td>
-                  <td>{e.accion}</td>
-                  <td className="text-xs text-[var(--text-secondary)]">{e.detalle ?? "—"}</td>
-                </tr>
+          <thead>
+            <tr>
+              {COLS.map((x) => (
+                <th key={x} scope="col">
+                  {x}
+                </th>
               ))}
-            </tbody>
-          </table>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((e) => (
+              <tr key={e.id}>
+                <td className="whitespace-nowrap text-xs">
+                  {new Date(e.createdAt).toLocaleString("es-PE")}
+                </td>
+                <td>{e.usuario?.email ?? "Sistema"}</td>
+                <td>
+                  {getEntidadLabel(e.entidad)} #{e.entidadId}
+                </td>
+                <td>{e.accion}</td>
+                <td className="text-xs text-[var(--text-secondary)]">{e.detalle ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
         </TableWrap>
       )}
 

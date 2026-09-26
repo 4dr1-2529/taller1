@@ -30,12 +30,17 @@ export function SettingsView() {
     catch (e) { setMessage(e instanceof Error ? e.message : "No se pudo guardar"); }
     finally { setBusy(false); }
   }
+  const esDirector = user?.role === "admin";
   return <div className="space-y-6">
     <PageHeader
       icon={Settings2}
       eyebrow="Su cuenta"
-      title="Preferencias de alertas y seguridad"
-      description="Defina desde qué nivel de riesgo se generan las alertas institucionales y actualice el acceso a su cuenta."
+      title={esDirector ? "Preferencias de alertas y seguridad" : "Seguridad de la cuenta"}
+      description={
+        esDirector
+          ? "Defina desde qué nivel de riesgo se generan las alertas institucionales y actualice el acceso a su cuenta."
+          : "Actualice el acceso a su cuenta. El umbral de alertas institucionales lo define la dirección."
+      }
     />
     {message ? (
       <p

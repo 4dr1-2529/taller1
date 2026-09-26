@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { estudianteService } from "@/services/estudianteService";
 import { useAuthReady } from "@/hooks/useAuthReady";
 import { ESTUDIANTE_MSG } from "@/constants/estudiante";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { RiskGauge } from "@/components/ui/RiskGauge";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatContributionPoints } from "@/lib/prediction-display";
@@ -33,15 +35,38 @@ export function StudentPredictionView() {
   const [data, setData] = useState<Awaited<ReturnType<typeof estudianteService.getPrediccion>> | null>(null);
   const [alertas, setAlertas] = useState<Awaited<ReturnType<typeof estudianteService.getAlertas>> | null>(null);
   const [loading, setLoading] = useState(true);
+  // ERROR de API ≠ resultado vacío: cada consulta lleva su propio indicador.
+  const [predError, setPredError] = useState<string | null>(null);
+  const [alertasError, setAlertasError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!ready || !isEstudiante) return;
-    const [pred, al] = await Promise.all([
-      estudianteService.getPrediccion().catch(() => null),
-      estudianteService.getAlertas().catch(() => null),
+    setPredError(null);
+    setAlertasError(null);
+    const [pred, al] = await Promise.allSettled([
+      estudianteService.getPrediccion(),
+      estudianteService.getAlertas(),
     ]);
-    setData(pred);
-    setAlertas(al);
+
+    if (pred.status === "fulfilled") {
+      setData(pred.value);
+    } else {
+      const reason = pred.reason;
+      const msg = reason instanceof Error ? reason.message : "No se pudo consultar tu predicción.";
+      toast.error(msg);
+      setPredError(msg);
+      setData(null);
+    }
+
+    if (al.status === "fulfilled") {
+      setAlertas(al.value);
+    } else {
+      const reason = al.reason;
+      const msg = reason instanceof Error ? reason.message : "No se pudieron consultar tus alertas.";
+      toast.error(msg);
+      setAlertasError(msg);
+      setAlertas(null);
+    }
   }, [ready, isEstudiante]);
 
   useEffect(() => {
@@ -69,7 +94,13 @@ export function StudentPredictionView() {
         badges={<ExperimentalBadge dataMode={pred?.dataMode} datasetVersion={pred?.datasetVersion} />}
       />
 
-      {!pred ? (
+      {predError ? (
+        <ErrorState
+          message={predError}
+          technicalDetail="GET /estudiante/prediccion"
+          onRetry={() => void load()}
+        />
+      ) : !pred ? (
         <div className="premium-card rounded-xl p-6 text-center text-sm text-[var(--text-muted)]">
           {ESTUDIANTE_MSG.sinPrediccion}
         </div>
@@ -154,7 +185,14 @@ export function StudentPredictionView() {
 
       <div className="premium-card rounded-xl p-5">
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">Mis alertas activas</h3>
-        {!alertas?.items.length ? (
+        {alertasError ? (
+          <ErrorState
+            className="mt-3"
+            message={alertasError}
+            technicalDetail="GET /estudiante/alertas"
+            onRetry={() => void load()}
+          />
+        ) : !alertas?.items.length ? (
           <p className="mt-3 text-sm text-[var(--text-muted)]">{ESTUDIANTE_MSG.sinAlertas}</p>
         ) : (
           <ul className="mt-3 space-y-3">
