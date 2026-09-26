@@ -21,4 +21,4 @@
 | 11 | Reportes | `ReportsView` | export client-side | TC-CN-09 | reportes-vista-completa.png |
 | 12 | Admin cuentas | — | `GET /admin/cuentas-acceso` | TC-BE-08 | cuentas-demo/ |
 
-**Criterio aceptación:** 14 secciones visibles (TC-FE-03), 0 errores 401 en consola (TC-DASH-05 / smoke).
+**Criterio aceptación:** 20 secciones visibles (TC-FE-03; fuente unica `frontend/src/data/role-sections.ts`), 0 errores 401 en consola (TC-DASH-05 / smoke).

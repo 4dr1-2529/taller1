@@ -4,7 +4,7 @@
 
 ---
 
-## Checklist UAT (`ROLE_SECTIONS.docente` — 10 secciones)
+## Checklist UAT (`ROLE_SECTIONS.docente` — 15 secciones)
 
 | # | Módulo | Componente | API | Caso | Evidencia |
 |---|--------|------------|-----|------|-----------|

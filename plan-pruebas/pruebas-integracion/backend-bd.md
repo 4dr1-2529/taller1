@@ -8,22 +8,23 @@
 
 | ID | Verificación |
 |----|--------------|
-| TC-DB-01 | `prisma migrate deploy` sin P3009 |
-| TC-DB-02 | Seed estructura (grados, cursos) |
-| TC-DB-03 | 660 estudiantes demo |
-| TC-DB-04 | validate-demo-data.mjs |
-| TC-DB-05 | 23 profesores activos |
-| TC-DB-06 | Bimestres III–IV vacíos |
+| TC-DB-01 | `npm run db:count-models` → 57 modelos (54 activos + 3 `@@ignore`) |
+| TC-DB-02 | Seed estructura (`npm run db:seed`) — grados, cursos, catálogos |
+| TC-DB-03 | `npm run db:seed:demo` rechazado por `legacy-population-disabled.mjs` (exit 1, BD intacta) |
+| TC-DB-04 | `GET /teachers` → lista paginada (observado: captura histórica) |
+| TC-DB-05 | Períodos académicos 2026 en BD aislada (39/39 integration) |
+| TC-DB-06 | `POST /matriculas` → HTTP 201 con `item.id` persistido en BD aislada |
 
 ---
 
 ## Comandos
 
 ```bash
-npm run db:push
-npm run db:seed
-npm run db:seed:demo
-node backend/scripts/validate-demo-data.mjs
+npm run db:migrate:deploy   # esquema sin drift (nunca db push en producción)
+npm run db:seed              # estructura
+npm run db:count-models      # 57 modelos
+npm run test:integration     # 39/39 en BD aislada 127.0.0.1:33316
+# npm run db:seed:demo       # DESHABILITADO (legacy-population-disabled.mjs)
 ```
 
 ---

@@ -24,7 +24,7 @@
 | ESLint | `npm run lint` | frontend |
 | Smoke integración | `npm run test:smoke` | `backend/scripts/smoke-tests.mjs` |
 | Playwright (Edge) | `npm run evidence:generate` | `scripts/evidence/` |
-| Prisma Studio | `npm run db:studio` | inspección BD 52 modelos |
+| Prisma Studio | `npm run db:studio` | inspección BD 57 modelos |
 
 ---
 
@@ -64,6 +64,6 @@
 
 ## Documentación de soporte
 
-- API rutas: `backend/src/routes/index.ts` (87 rutas registradas)
+- API rutas: `backend/src/routes/index.ts` (109 rutas registradas)
 - Postman: `docs/postman/tesis-dashboard.postman_collection.json`
 - Roles UI: `ROLE_SECTIONS` en `frontend/src/app/(shell)/page.tsx` líneas 54–91

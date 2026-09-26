@@ -1,0 +1,30 @@
+Resumen de pruebas - auditoria tecnica BLENKIR V6
+fecha: 2026-09-26 11:37:29
+rama: chore/system-audit-v6
+HEAD: d3c0b803e6d30c24fc0d24bff3465e15267d506d
+
+
+prueba          comando                           exit     ms log                                                      
+------          -------                           ----     -- ---                                                      
+type-check      npm run type-check                   0  27557 plan-pruebas\evidencias-finales\terminal\type-check.log  
+lint            npm run lint                         0  37523 plan-pruebas\evidencias-finales\terminal\lint.log        
+test-unit       npm run test:unit                    0   2703 plan-pruebas\evidencias-finales\terminal\unit-tests.log  
+test-frontend   npm run test --workspace=frontend    0   8610 plan-pruebas\evidencias-finales\terminal\frontend-test...
+test-backend    npm run test:backend                 0  46378 plan-pruebas\pruebas-unitarias\evidencias\backend-test...
+test-ml         npm run ml:test                      0   9034 plan-pruebas\pruebas-unitarias\evidencias\ml-tests.log   
+build           npm run build                        0 107108 plan-pruebas\evidencias-finales\terminal\build.log       
+prisma-validate npm run db:count-models              0   2840 plan-pruebas\evidencias-finales\terminal\prisma-count-...
+test-smoke      npm run test:smoke                   1   1402 plan-pruebas\evidencias-finales\terminal\smoke-tests.log 
+
+
+
+git diff --check exit=0
+cmd : warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+En C:\Users\HP\AppData\Local\Temp\opencode\run-tests-v6.ps1: 37 Carácter: 13
++ $gitdiff = (cmd /c "chcp 65001>nul && git diff --check" 2>&1 | Out-St ...
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: in the... Git touches it:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+warning: in the working copy of 'frontend/src/app/layout.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it

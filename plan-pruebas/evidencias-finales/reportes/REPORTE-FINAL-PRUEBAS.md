@@ -1,5 +1,11 @@
 # Reporte final de pruebas — Tesis Dashboard v2.0
 
+> **HISTÓRICO / SUPERADO.** Copia generada el 2026-06-30 por `run-qa-pipeline.mjs` sobre la población demo
+> antigua (660 estudiantes · 23 profesores · 77 casos · 31 pruebas backend · 6 ML). No describe el estado
+> actual: la matriz vigente tiene **86 casos** y la cobertura verificada el 2026-09-26 es de 81 backend +
+> 40 frontend + 32 ML. Ver [`REPORTE-FINAL-PRUEBAS.md`](../../REPORTE-FINAL-PRUEBAS.md) (con su aviso de
+> cabecera) y [`../../../docs/ESTADO_ACTUAL_V6.md`](../../../docs/ESTADO_ACTUAL_V6.md).
+
 **Generado:** 2026-06-30T07:22:18.573Z  
 **Ambiente:** Local (MySQL XAMPP, API :4000, Web :3029, ML :5000)  
 **Norma referencia:** ISO/IEC 29119

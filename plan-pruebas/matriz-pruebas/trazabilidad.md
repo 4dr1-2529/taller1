@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-**77 casos** · Fuente: `matriz-pruebas/generate_matriz.py` (regenerar: `python generate_matriz.py`)
+**86 casos** · Fuente: `matriz-pruebas/generate_matriz.py` (regenerar: `python generate_matriz.py`)
 
 ---
 
@@ -9,8 +9,8 @@
 | Requisito (funcional) | Implementación | Casos | Evidencia |
 |----------------------|----------------|-------|-----------|
 | Login JWT 3 roles | `auth.controller.ts`, `login/page.tsx` | TC-BE-02, TC-FE-02, TC-CN-01 | `evidencias-finales/login/login.png` |
-| RBAC 87 rutas | `authorize()` en `routes/index.ts` | TC-SEC-03/04, TC-ROL-* | permissions.test.mjs |
-| 660 estudiantes demo | `seed-demo.ts` | TC-DB-03, TC-CN-02 | check-db.mjs |
+| RBAC 109 rutas, 82 con `authorize()` | `routes/index.ts` | TC-SEC-03/04, TC-ROL-* | permissions.test.mjs |
+| Población legacy deshabilitada | `scripts/legacy-population-disabled.mjs` | TC-DB-03 | salida `LEGACY...` + exit 1 (2026-09-26) |
 | Notas 0–20 bimestre | `gradeSchema`, `GradesView` | TC-CB-01, TC-CN-06 | notas-bimestre-*.png |
 | Predicción ensemble | `ml-client.ts`, `PredictionView` | TC-IA-*, TC-CN-07 | `evidencias-finales/prediccion/prediccion.png` |
 | Alertas automáticas | `predict` + tabla `alert` | TC-CN-08, TC-INT-03 | `evidencias-finales/alertas/alertas.png` |
@@ -29,7 +29,7 @@
 |-------|-------------------|-------------------|---------------------|
 | ISO/IEC 25010 | `docs/iso-25010/calidad-software.md` §2 | 29 características de producto | Tests + `plan-pruebas/evidencias-finales/` |
 | ISO 9001:2015 | `docs/iso-9001/macroproceso-academico.md` §10 | 19 cláusulas/procesos SGC | KPIs + capturas + seed demo |
-| ISO/IEC 29119 | `docs/iso-29119/plan-pruebas.md` §Trazabilidad | 21 actividades de prueba | 77 casos + 31+6 tests + manifest |
+| ISO/IEC 29119 | `docs/iso-29119/plan-pruebas.md` §Trazabilidad | 21 actividades de prueba | 86 casos + 153 tests automatizados + manifest |
 
 ---
 
@@ -52,7 +52,7 @@
 
 | Comando | Archivos | Casos cubiertos |
 |---------|----------|-----------------|
-| `npm run test:backend` | 11 archivos en `backend/tests/` | TC-BE-*, TC-SEC-*, TC-ROL-*, TC-CB-* (31 tests) |
-| `npm run ml:test` | `test_predict.py` | TC-IA-01 … TC-IA-06 |
+| `npm run test:backend` | 14 archivos en `backend/tests/` | TC-BE-*, TC-SEC-*, TC-ROL-*, TC-CB-* (81 tests: 49 + 32) |
+| `npm run ml:test` | `test_predict.py` (32 pruebas) | TC-IA-01 . TC-IA-06 |
 | `npm run test:smoke` | `smoke-tests.mjs` | TC-INT-01 … TC-INT-03 |
 | `npm run evidence:generate` | `scripts/evidence/` | TC-CN-* capturas → `plan-pruebas/evidencias-finales/` |

@@ -1,0 +1,14 @@
+=== lint ===
+fecha (local): 2026-09-26 11:34:30
+comando: npm run lint
+exit code: 0
+duracion_ms: 37523
+------------------------------------------------------------------------
+
+> tesis-dashboard@2.0.0 lint
+> npm run lint --workspace=frontend
+
+
+> frontend@2.0.0 lint
+> eslint src
+

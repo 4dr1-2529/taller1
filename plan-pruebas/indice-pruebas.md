@@ -1,6 +1,6 @@
 # Índice del plan de pruebas — ISO/IEC 29119
 
-**77 casos** · **87 rutas API** · **11 suites backend** · **7 tests ML**
+**86 casos** · **109 rutas API** · **14 archivos backend** (81 pruebas) · **32 tests ML**
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Archivo | ISO 29119 fase |
 |---------|----------------|
-| [plan-pruebas.md](plan-general/plan-pruebas.md) | Plan de pruebas (objetivo, 54 casos históricos + enlace matriz 77) |
+| [plan-pruebas.md](plan-general/plan-pruebas.md) | Plan de pruebas (objetivo; la matriz vigente tiene 86 casos) |
 | [alcance.md](plan-general/alcance.md) | Alcance |
 | [estrategia.md](plan-general/estrategia.md) | Estrategia |
 | [ambiente-pruebas.md](plan-general/ambiente-pruebas.md) | Ambiente |
@@ -50,4 +50,4 @@ Ver subcarpetas — cada archivo referencia rutas y tests reales.
 
 ## evidencias-finales/
 
-Capturas Playwright reales en `plan-pruebas/evidencias-finales/` (11 módulos + `ia/` + `resultados/`). Ver [README](../evidencias-finales/README.md).
+Capturas Playwright reales en `plan-pruebas/evidencias-finales/` (11 módulos + `ia/` + `resultados/`). Ver [README](evidencias-finales/README.md).
