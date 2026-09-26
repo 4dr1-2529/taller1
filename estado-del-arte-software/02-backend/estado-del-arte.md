@@ -21,7 +21,7 @@ Un sistema de predicción de deserción requiere:
 - Persistencia tipada y migraciones reproducibles.
 - Middleware transversal: CORS, sanitización, rate limiting y manejo de errores uniforme.
 
-Frameworks minimalistas como Express permiten implementar este contrato sin la sobrecarga de plataformas opinionadas, manteniendo control sobre las 87 rutas documentadas en `routes/index.ts`.
+Frameworks minimalistas como Express permiten implementar este contrato sin la sobrecarga de plataformas opinionadas, manteniendo control sobre las 109 rutas documentadas en `routes/index.ts`.
 
 ---
 
@@ -67,7 +67,7 @@ Evalúa Prisma ORM en backends Node.js: tipado automático, migraciones y reducc
 
 ### Aplicación al proyecto
 
-`backend/package.json` define `postinstall: prisma generate` y scripts `db:migrate`, `db:seed`. Los controladores importan `prisma` desde `utils/prisma.ts`; el artículo justifica esta elección frente a drivers MySQL crudos para un esquema de 51 tablas en `backend/prisma/schema.prisma`.
+`backend/package.json` define `postinstall: prisma generate` y scripts `db:migrate`, `db:seed`. Los controladores importan `prisma` desde `utils/prisma.ts`; el artículo justifica esta elección frente a drivers MySQL crudos para un esquema de 57 modelos Prisma (54 activos) en `backend/prisma/schema.prisma`.
 
 ---
 
@@ -166,4 +166,4 @@ Enums `RolCodigo { admin docente estudiante }` alimentan directamente `authorize
 
 ## Conclusión
 
-**Express** se eligió por ser el estándar de facto en APIs REST educativas documentadas (10.33050/ccit.v18i2.3603, 10.64643/ijirtv12i10-194282-459) con middleware verificable en `index.ts`. **Prisma** aporta tipado y migraciones sobre el esquema relacional (10.51454/decode.v4i3.792, 10.46299/j.isjea.20260503.05). La arquitectura REST desacoplada hacia el servicio ML sigue patrones de campus y registro universitario (10.31763/businta.v7i2.635, 10.1016/j.procs.2025.09.066), materializados en las 87 rutas de `backend/src/routes/index.ts`.
+**Express** se eligió por ser el estándar de facto en APIs REST educativas documentadas (10.33050/ccit.v18i2.3603, 10.64643/ijirtv12i10-194282-459) con middleware verificable en `index.ts`. **Prisma** aporta tipado y migraciones sobre el esquema relacional (10.51454/decode.v4i3.792, 10.46299/j.isjea.20260503.05). La arquitectura REST desacoplada hacia el servicio ML sigue patrones de campus y registro universitario (10.31763/businta.v7i2.635, 10.1016/j.procs.2025.09.066), materializados en las 109 rutas de `backend/src/routes/index.ts`.

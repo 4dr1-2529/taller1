@@ -1,5 +1,9 @@
 # Pendientes pre Data Seed 200
 
+> **HISTÓRICO / SUPERADO.** Lista de pendientes de la fase previa al Data Seed (estado a `bc04e46`
+> + rama `audit/full-functional-review`). Se conserva como registro; **no** representa los pendientes
+> vigentes del sistema V6 (ver [ESTADO_ACTUAL_V6.md](ESTADO_ACTUAL_V6.md)). Sin cambios internos.
+
 Criterio: solo entra aquí lo que bloquee generar datos sintéticos de QA. Estado a `bc04e46`
 más rama `audit/full-functional-review` (solo documentación hasta ahora).
 

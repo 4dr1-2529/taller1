@@ -1,5 +1,9 @@
 # Arquitectura Blenkir 2026-v2
 
+> **DOCUMENTO CANÓNICO DE ARQUITECTURA.** Su contenido prevalece sobre las variantes de
+> `docs/arquitectura/*.md`; si algo difiere, vale este archivo. Estado operativo verificado
+> (fechas, URLs, recuentos y modelo ML): [ESTADO_ACTUAL_V6.md](ESTADO_ACTUAL_V6.md).
+
 Año lectivo único operativo: **2026**. Next.js/TypeScript en Vercel → Express/TypeScript en Railway → Prisma/MySQL y FastAPI/Python.
 
 Se conservan JWT, refresh tokens, bcrypt, sesiones, Helmet, CORS, límites de peticiones, sanitización y scopes. Las bajas normales son lógicas. No hay poblaciones demo automáticas durante despliegues.
