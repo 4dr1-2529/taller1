@@ -23,15 +23,20 @@ const LEVEL_LABEL: Record<string, string> = {
   alto: "Alto",
 };
 
-/** Nombres legibles de las 7 variables del contrato; fallback humanizado. */
+/**
+ * Nombres legibles de las 7 features canónicas del contrato V6
+ * (promedio_general, cursos_desaprobados, asistencia_general,
+ * frecuencia_acceso_lms, tiempo_interaccion_lms, actividades_realizadas,
+ * recursos_consultados). Fallback humanizado para claves no listadas.
+ */
 const FEATURE_LABEL: Record<string, string> = {
   promedio_general: "Promedio general (0–20)",
+  cursos_desaprobados: "Cursos desaprobados",
   asistencia_general: "Asistencia general (%)",
-  dias_activos: "Días activos en LMS",
+  frecuencia_acceso_lms: "Frecuencia de acceso LMS",
+  tiempo_interaccion_lms: "Tiempo de interacción LMS",
   actividades_realizadas: "Actividades realizadas",
   recursos_consultados: "Recursos consultados",
-  tiempo_interaccion_lms: "Tiempo de interacción en LMS (h)",
-  tardanzas: "Tardanzas registradas",
 };
 
 const FRIENDLY_KEYS = new Set(["modelVersion", "datasetVersion", "dataMode", "contractVersion", "decisionThreshold"]);
