@@ -139,6 +139,10 @@ Observados: TC-BE-08, TC-DB-04, TC-SEC-07, TC-CN-02, TC-CN-04, TC-UAT-01.
 - No hay `SONAR_TOKEN` en este entorno, por lo que no se lanzó un análisis nuevo ni se modificó configuración.
 - Evidencia: `docs/evidencias/sonarqube/sonarcloud-estado-20260926.json`,
   `docs/evidencias/sonarqube/sonarcloud-quality-gate-pr5-20260926.json`.
+- **PR #6 (esta rama):** el check `SonarCloud Code Analysis` terminó en **`success`**
+  (2026-09-26T17:27:39Z), junto con `validate` y `Vercel`; su diff es solo documentación, sin «New Code»
+  funcional. **No** significa que el proyecto esté en verde: el Quality Gate de `main` y del PR #5 sigue
+  fallando. Evidencia: `docs/evidencias/sonarqube/sonarcloud-estado-pr6.json`.
 
 ### Docker (FASE 16)
 

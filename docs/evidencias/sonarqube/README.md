@@ -12,6 +12,7 @@ ejecutado por CI; el Quality Gate está en FAIL.**
 | Resultado Quality Gate | **FAILED** |
 | Condición incumplida | `C Reliability Rating on New Code` (se exigía ≥ `A`) |
 | Check `SonarCloud Code Analysis` en `main` | `completed` / **`failure`** |
+| Check `SonarCloud Code Analysis` en el PR #6 (esta rama) | `completed` / `success` — el diff es solo documentación, sin «New Code» funcional |
 | Análisis nuevo en esta auditoría | **No ejecutado** — no hay `SONAR_TOKEN` autorizado en este entorno; no se modificó ninguna configuración de Sonar |
 
 ## Evidencia guardada
@@ -20,6 +21,7 @@ ejecutado por CI; el Quality Gate está en FAIL.**
 |---------|-----------|
 | `sonarcloud-estado-20260926.json` | Check runs y combined status de `main` + estado del PR #5 (solo lectura vía API de GitHub) |
 | `sonarcloud-quality-gate-pr5-20260926.json` | Comentario del bot de SonarCloud con el Quality Gate del PR #5 |
+| `sonarcloud-estado-pr6.json` | Checks y estado del PR #6 (esta rama, documentación): SonarCloud `success`, `validate` `success`, Vercel `success` |
 
 ## Qué guardar aquí
 
