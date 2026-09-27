@@ -1,0 +1,54 @@
+{
+  "caso": "TC-DB-06",
+  "descripcion": "POST /matriculas (admin) - caso feliz",
+  "fecha": "2026-09-26",
+  "entorno": "BD AISLADA local 127.0.0.1:33316/blenkir_refactor_test (MariaDB 10.4 local, inicializada para la auditoria; NO es produccion)",
+  "servidor": "Express local efimero (puerto 0) montando backend/src/routes/index.ts",
+  "peticion": {
+    "metodo": "POST",
+    "ruta": "/matriculas",
+    "auth": "Bearer JWT de admin (login local POST /auth/login)",
+    "body": {
+      "estudianteId": "4",
+      "seccionId": "1",
+      "anioLectivoId": "1"
+    }
+  },
+  "respuesta": {
+    "http": 201,
+    "body": {
+      "success": true,
+      "message": "Recurso creado correctamente",
+      "data": {
+        "item": {
+          "id": "15",
+          "codigo": "MAT-2026-015",
+          "estado": "activa",
+          "fechaMatricula": "2026-09-26T00:00:00.000Z",
+          "estudianteId": "4",
+          "seccionId": "1",
+          "anioLectivoId": "1",
+          "estudiante": {
+            "id": "4",
+            "codigo": "EST-202",
+            "nombres": "Alumno",
+            "apellidos": "Prueba",
+            "seccionId": "1"
+          },
+          "seccion": {
+            "id": "1",
+            "nombre": "A",
+            "gradoNumero": 1,
+            "gradoNombre": "Primero",
+            "nivel": "Primaria test",
+            "label": "1° A"
+          },
+          "anioLectivo": { "id": "1", "anio": 2026, "nombre": "2026" }
+        }
+      }
+    },
+    "persistencia_verificada": "prisma.matricula.count -> id 15 existente tras la llamada"
+  },
+  "cobertura_automatizada_asociada": "backend/tests/refactor-2026.integration.ts (npm run test:integration) verifica ademas POST /matriculas con token docente -> 403 y duplicada -> 409; ejesion 39/39 PASS el 2026-09-26 en la misma BD aislada.",
+  "produccion_tocada": false
+}

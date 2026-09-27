@@ -1,0 +1,49 @@
+=== build ===
+fecha (local): 2026-09-26 11:37:24
+comando: npm run build
+exit code: 0
+duracion_ms: 107108
+------------------------------------------------------------------------
+
+> tesis-dashboard@2.0.0 build
+> npm run build --workspace=@tesis/shared && npm run build:api && npm run build --workspace=frontend
+
+
+> @tesis/shared@2.0.0 build
+> tsc
+
+
+> tesis-dashboard@2.0.0 build:api
+> npm run build --workspace=backend
+
+
+> backend@2.0.0 build
+> tsc
+
+
+> frontend@2.0.0 build
+> next build
+
+Ôû▓ Next.js 16.2.4 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 22.9s
+  Running TypeScript ...
+  Finished TypeScript in 31.9s ...
+  Collecting page data using 6 workers ...
+  Generating static pages using 6 workers (0/5) ...
+  Generating static pages using 6 workers (1/5) 
+  Generating static pages using 6 workers (2/5) 
+  Generating static pages using 6 workers (3/5) 
+Ô£ô Generating static pages using 6 workers (5/5) in 2.6s
+  Finalizing page optimization ...
+
+Route (app)
+Ôöî Ôùï /
+Ôö£ Ôùï /_not-found
+Ôöö Ôùï /login
+
+
+Ôùï  (Static)  prerendered as static content
+

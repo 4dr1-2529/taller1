@@ -137,7 +137,7 @@ function buildFinalReport(pipeline, okSteps, failSteps) {
 
 ## Resumen general
 
-Se ejecutó el pipeline QA completo contra el código y datos reales del proyecto (660 estudiantes, 23 profesores, credenciales demo Blenkir). Las pruebas incluyen unitarias (backend + ML), smoke API, caja negra/seguridad/integración HTTP, rendimiento, capturas Playwright (Director, Profesor, Alumno), auditoría caja blanca y validación \`type-check\` / \`build\` / \`test\`.
+Se ejecutó el pipeline QA completo contra el código y los datos autorizados del entorno de pruebas (la población demo antigua y sus scripts están deshabilitados). Las pruebas incluyen unitarias (backend + ML), smoke API, caja negra/seguridad/integración HTTP, rendimiento, capturas Playwright (Director, Profesor, Alumno), auditoría caja blanca y validación \`type-check\` / \`build\` / \`test\`.
 
 ## Totales
 
@@ -150,7 +150,7 @@ Se ejecutó el pipeline QA completo contra el código y datos reales del proyect
 | Casos aprobados (API run) | ${caseOk || "ver matriz"} |
 | Casos fallidos (API run) | ${caseFail} |
 | Casos observados | ${caseObs} |
-| Matriz completa | 77 casos en \`matriz-pruebas/matriz-casos.md\` |
+| Matriz completa | 86 casos en \`matriz-pruebas/matriz-casos.md\` |
 
 ## Evidencias generadas
 
@@ -185,7 +185,7 @@ ${failSteps > 0 ? "- Algunos pasos del pipeline reportaron incidencias — revis
 ## Recomendaciones
 
 1. Ejecutar \`node plan-pruebas/scripts/run-qa-pipeline.mjs\` antes de cada release.
-2. Mantener \`db:seed:demo\` para datos coherentes con casos UAT.
+2. No usar \`db:seed:demo\`: está deshabilitado (legacy).
 3. Automatizar pipeline en CI local (sin Railway/Vercel).
 
 ## Conclusión

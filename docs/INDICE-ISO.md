@@ -69,7 +69,7 @@ Este índice centraliza toda la documentación técnica, de calidad (ISO) y de e
 | 24 | [DEPLOY.md](DEPLOY.md) | Guía paso a paso Vercel + Railway, seed, troubleshooting. |
 | 25 | [pruebas.md](pruebas.md) | Comandos de test, smoke tests y checklist producción. |
 | 26 | [pruebas-funcionales.md](pruebas-funcionales.md) | Casos funcionales automatizados y manuales por rol. |
-| 27 | [cuentas-demo/README.md](cuentas-demo/README.md) | CSV verificados de login (660 estudiantes + 23 profesores). |
+| 27 | [cuentas-demo/README.md](cuentas-demo/README.md) | Población operativa/demo **actual** (1 director · 24 profesores · 250 estudiantes = 275); semilla importada originalmente como V5, sobre el sistema vigente BLENKIR V6. Las credenciales `*.demo@` de la población anterior están superadas. |
 | 28 | [postman.md](postman.md) | Importación y uso de la colección Postman. |
 | 29 | [postman/tesis-dashboard.postman_collection.json](postman/tesis-dashboard.postman_collection.json) | Colección JSON de endpoints API. |
 
@@ -104,7 +104,7 @@ plan-pruebas/                  → Plan de pruebas (raíz del repositorio)
 
 ---
 
-## 7. Credenciales de producto (Data Seed V5)
+## 7. Credenciales de producto (población operativa — semilla importada originalmente como V5)
 
 Contraseñas: **solo variables de entorno** en Railway (`TALLER1` → `production` → servicio `backend`):
 `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`, `STUDENT_INITIAL_PASSWORD`.

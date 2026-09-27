@@ -1,0 +1,17 @@
+=== test-smoke ===
+fecha (local): 2026-09-26 11:37:28
+comando: npm run test:smoke
+exit code: 1
+duracion_ms: 1402
+------------------------------------------------------------------------
+
+> tesis-dashboard@2.0.0 test:smoke
+> node backend/scripts/smoke-tests.mjs
+
+cmd : Faltan variables de contrase├▒a: DIRECTOR_INITIAL_PASSWORD, TEACHER_INITIAL_PASSWORD, STUDENT_INITIAL_PASSWORD
+En C:\Users\HP\AppData\Local\Temp\opencode\run-tests-v6.ps1: 13 Carácter: 10
++   $out = cmd /c "chcp 65001>nul && $cmd" 2>&1 | Out-String
++          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Faltan variable...NITIAL_PASSWORD:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

@@ -8,7 +8,7 @@ TEACHER_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
 STUDENT_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
 ```
 
-## Data Seed V5 (vigente en producción)
+## Población operativa/demo actual
 
 | Rol | Cantidad |
 |-----|----------|
@@ -16,6 +16,14 @@ STUDENT_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
 | Profesores | 24 |
 | Estudiantes | 250 |
 | **Total** | **275** |
+
+**Procedencia:** semilla operativa importada originalmente como **Data Seed V5**.
+**Sistema técnico vigente:** **BLENKIR V6** (el nombre "V5" solo describe la versión histórica
+del seed, no el sistema).
+
+> Esta población es **operativa/demo persistida**: no es un dataset de datos reales
+> institucionales (aún no disponibles). Tampoco confundir con el dataset ML V6 de 225 estudiantes
+> / 450 snapshots, que es científico-sintético y solo entrena al modelo.
 
 Listado completo (códigos, emails, grado/sección y estado de matrícula):
 [BLENKIR_LOGIN_ACCOUNTS_2026.md](../BLENKIR_LOGIN_ACCOUNTS_2026.md).

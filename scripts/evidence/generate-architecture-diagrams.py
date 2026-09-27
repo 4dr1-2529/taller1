@@ -127,7 +127,7 @@ def main():
     stack_diagram(
         "Base de Datos",
         [
-            ("schema.prisma (51 tablas)", "#dcfce7"),
+            ("schema.prisma (57 modelos Prisma)", "#dcfce7"),
             ("Prisma migrate + seed", "#bbf7d0"),
             ("MySQL XAMPP :3306", "#86efac"),
         ],
@@ -138,7 +138,7 @@ def main():
     stack_diagram(
         "Modelo IA — Ensemble local",
         [
-            ("generate_synthetic_data + features.py", "#f3e8ff"),
+            ("dataset CSV sintético V6 + features.py", "#f3e8ff"),
             ("Random Forest · XGBoost · HistGB", "#e9d5ff"),
             ("StackingClassifier → best_model.joblib", "#ddd6fe"),
             ("FastAPI :5000 + POST /predict", "#c4b5fd"),
@@ -156,21 +156,21 @@ def main():
 
     flow_diagram(
         "Pipeline Random Forest",
-        ["Datos", "Features", "Bootstrap", "150 árboles", "Clase bajo/medio/alto"],
+        ["Datos (CSV V6)", "7 Features", "Bootstrap", "300 árboles", "Target binario"],
         "pipeline-random-forest",
         [OUT, OUT_DIAG],
     )
 
     flow_diagram(
         "Pipeline XGBoost",
-        ["Datos", "Features", "Gradient Boosting", "150 estimators", "Clase"],
+        ["Datos (CSV V6)", "7 Features", "Gradient Boosting", "300 estimators", "Target binario"],
         "pipeline-xgboost",
         [OUT, OUT_DIAG],
     )
 
     flow_diagram(
-        "Pipeline Stacking",
-        ["RF", "XGB/HGB", "Stacking CV=3", "Meta-RF", "best_model"],
+        "Pipeline Stacking (ganador V6)",
+        ["RF (300)", "HGB (300)", "Stacking CV=3", "Meta-RF (150)", "best_model"],
         "pipeline-stacking",
         [OUT, OUT_DIAG],
     )
@@ -198,19 +198,36 @@ def main():
 
     flow_diagram(
         "ISO 29119 — Plan de pruebas",
-        ["Plan 54 casos", "Ejecución local test+capture", "Evidencias finales"],
+        ["Matriz 86 casos (80/6/0)", "Ejecución local test+capture", "Evidencias finales"],
         "iso-29119-aplicado",
         [OUT_ISO, OUT_DIAG],
     )
 
-    # ISO 25010 radial-ish as bar chart
-    fig, ax = plt.subplots(figsize=(10, 5))
-    chars = ["Funcionalidad", "Usabilidad", "Seguridad", "Fiabilidad", "Mantenibilidad"]
-    vals = [95, 90, 92, 88, 91]
-    ax.barh(chars, vals, color=["#1f3a5f", "#f47c20", "#2d6a4f", "#7b2cbf", "#0369a1"])
-    ax.set_xlim(0, 100)
-    ax.set_xlabel("Cobertura evidenciada (%)")
-    ax.set_title("ISO 25010 aplicado al sistema — evidencias locales")
+    # ISO 25010 — ESTADOS, no porcentajes (fuente: docs/iso-25010/calidad-software.md).
+    # No se inventa cobertura: cada característica muestra su estado verificado.
+    fig, ax = plt.subplots(figsize=(11, 5.5))
+    chars = [
+        "1 Idoneidad funcional", "2 Eficiencia", "3 Compatibilidad", "4 Usabilidad",
+        "5 Fiabilidad", "6 Seguridad", "7 Mantenibilidad", "8 Portabilidad",
+    ]
+    estados = [
+        "VERIFICADO", "PLANIFICADO", "PARCIAL", "PARCIAL",
+        "BLOQUEADO", "VERIFICADO", "VERIFICADO", "PLANIFICADO",
+    ]
+    nivel = {"PLANIFICADO": 0, "BLOQUEADO": 1, "PARCIAL": 2, "VERIFICADO": 3}
+    vals = [nivel[e] for e in estados]
+    paleta = {
+        "VERIFICADO": "#2d6a4f", "PARCIAL": "#f47c20",
+        "BLOQUEADO": "#9b2226", "PLANIFICADO": "#5c677d",
+    }
+    ax.barh(chars, vals, color=[paleta[e] for e in estados])
+    ax.set_xlim(0, 3.9)
+    ax.set_xticks([0, 1, 2, 3])
+    ax.set_xticklabels(["PLANIFICADO", "BLOQUEADO", "PARCIAL", "VERIFICADO"], fontsize=9)
+    ax.set_xlabel("Estado de la evidencia (fuente: docs/iso-25010/calidad-software.md)")
+    ax.set_title("ISO 25010 aplicado al sistema — estados, sin porcentajes inventados")
+    for i, e in enumerate(estados):
+        ax.text(vals[i] + 0.06, i, e, va="center", fontsize=9)
     save_matplotlib("iso-25010-aplicado", [OUT_ISO, OUT_DIAG])
 
     print("Diagramas completados.")

@@ -45,7 +45,7 @@ Presenta campus inteligente con servicios desacoplados, API Gateway y comunicaci
 
 ### Aplicación al proyecto
 
-Express concentra 87 rutas y actúa como backend-for-frontend hacia Next.js, análogo al gateway del artículo sin producto comercial intermedio. El servicio ML es un microservicio de inferencia invocado solo en predicción.
+Express concentra 109 rutas y actúa como backend-for-frontend hacia Next.js, análogo al gateway del artículo sin producto comercial intermedio. El servicio ML es un microservicio de inferencia invocado solo en predicción.
 
 ---
 
@@ -118,7 +118,7 @@ Define infraestructura de analítica predictiva confiable: pipeline de datos, se
 
 ### Aplicación al proyecto
 
-Backend agrega datos de `Nota`, `Asistencia`, `ActividadLMS` antes de llamar al servicio ML con vector de 9 features. El artículo fundamenta no embeber ML dentro del servidor Express — decisión arquitectónica explícita del repositorio.
+Backend agrega datos de `Nota`, `Asistencia`, `ActividadLMS` antes de llamar al servicio ML con vector de 7 features. El artículo fundamenta no embeber ML dentro del servidor Express — decisión arquitectónica explícita del repositorio.
 
 ---
 

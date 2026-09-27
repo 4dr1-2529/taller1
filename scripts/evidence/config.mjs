@@ -6,7 +6,7 @@ const ROOT = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 export const BASE_URL = "http://localhost:3029";
 export const API_URL = "http://localhost:4000/api/v1";
 
-// Data Seed V5: cada rol usa su propia variable de entorno. Nunca un valor literal.
+// Población operativa actual: cada rol usa su propia variable de entorno. Nunca un valor literal.
 const PASSWORD_BY_ROLE = {
   director: process.env.DIRECTOR_INITIAL_PASSWORD?.trim(),
   profesor: process.env.TEACHER_INITIAL_PASSWORD?.trim(),
@@ -18,7 +18,7 @@ export const PASSWORD = (role) => {
   return value;
 };
 
-/** Resuelve la contraseña por entorno según el correo (V5: una por rol). */
+/** Resuelve la contraseña por entorno según el correo (población operativa actual: una por rol). */
 export const passwordForEmail = (email) => {
   const e = String(email).toLowerCase();
   if (e.startsWith("prof")) return PASSWORD("profesor");

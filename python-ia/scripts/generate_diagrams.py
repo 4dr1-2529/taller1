@@ -1,6 +1,16 @@
 """
-Genera diagramas del módulo IA a partir de artefactos reales del proyecto.
-Uso (desde raíz del monorepo):
+LEGACY / NO USAR PARA EVIDENCIA V6.
+
+Genera los diagramas del módulo IA del pipeline ANTERIOR (pre-V6): lee
+``machine-learning/models/`` (hoy ``machine-learning/artifacts/synthetic/``) y usa
+``generate_synthetic_data(2500)`` con target multiclase 0/1/2 (bajo/medio/alto), que ya no
+existe en ``train.py`` V6. Sus imágenes son **históricas** (``python-ia/diagramas/``): no deben
+confundirse con evidencia de ``BLENKIR_V6_BIN_20260924``.
+
+Este script está **protegido**: si se ejecuta termina con ``exit 1`` antes de generar cualquier
+fichero. Evidencia V6: ``docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`` · ``npm run ml:test``.
+
+Uso histórico (inhabilitado):
   python python-ia/scripts/generate_diagrams.py
 Requiere: matplotlib, joblib, sklearn — mismas deps que machine-learning/
 """
@@ -9,6 +19,18 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+
+# --- Protección LEGACY: corta antes de importar deps pesadas o escribir imágenes -----------
+if __name__ == "__main__":
+    print(
+        "LEGACY / NO USAR PARA EVIDENCIA V6 — python-ia/scripts/generate_diagrams.py\n"
+        "Pipeline anterior: machine-learning/models + generate_synthetic_data(2500), target\n"
+        "multiclase 0/1/2. Pipeline vigente: BLENKIR V6 (binario, artifacts/synthetic).\n"
+        "Referencias: docs/ml/RESULTADOS_EXPERIMENTALES_V6.md · npm run ml:test",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+# -----------------------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch

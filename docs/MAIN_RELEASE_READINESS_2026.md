@@ -1,4 +1,9 @@
-# Main Release Readiness 2026 — cierre profesional pre-Data Seed
+# Main Release Readiness 2026 - cierre profesional pre-Data Seed
+
+> **HISTÓRICO / SUPERADO.** Reporte de preparación de `main` previo al Data Seed (commits `a23f547`
+> y `7f0b27c`). Describe una etapa anterior y **no** es la lista de verificación vigente;
+> los resultados internos se conservan sin cambios. Estado actual:
+> [ESTADO_ACTUAL_V6.md](ESTADO_ACTUAL_V6.md).
 
 ## Cierre de matrícula elegible — 2026-09-21
 - Commit funcional validado y promovido a `main`: `a23f547f6de01b6ceec4c0934ffcee80b4a4528a`.

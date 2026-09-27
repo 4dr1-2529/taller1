@@ -44,7 +44,7 @@ Compara métricas de rendimiento y SEO entre aplicaciones React CSR y Next.js, d
 
 ### Aplicación al proyecto
 
-El comando `next dev --turbopack -p 3029` en `package.json` y la estructura `src/app/(shell)/page.tsx` implementan el patrón que el artículo recomienda: framework React con optimizaciones de entrega. El shell único carga 14 secciones para `admin`, 10 para `docente` y 6 para `estudiante` sin navegación multipágina tradicional.
+El comando `next dev --turbopack -p 3029` en `package.json` y la estructura `src/app/(shell)/page.tsx` implementan el patrón que el artículo recomienda: framework React con optimizaciones de entrega. El shell único carga 20 secciones para `admin`, 15 para `docente` y 12 para `estudiante` (fuente unica `frontend/src/data/role-sections.ts`) sin navegación multipágina tradicional.
 
 ---
 
@@ -131,7 +131,7 @@ Revisa 66 LADs publicados; identifica KPIs, visualizaciones temporales y necesid
 |----------------------------|-------------------------|
 | KPIs agregados | `RoleDashboard`, `earlyAlertCount` |
 | Gráficos temporales | Recharts en `PredictionView` |
-| Rol del visualizador | `ROLE_SECTIONS` 14/10/6 secciones |
+| Rol del visualizador | `ROLE_SECTIONS` 20/15/12 secciones |
 
 ### Aplicación al proyecto
 

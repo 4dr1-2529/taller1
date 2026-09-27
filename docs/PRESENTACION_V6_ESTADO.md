@@ -3,6 +3,11 @@
 > **MODELO EXPERIMENTAL — DATOS SINTÉTICOS.** Todo el ciclo BLENKIR V6 se ejecutó en
 > **local** (`localhost`): sin commit, sin push, sin merge, sin deploy y sin tocar
 > Railway/Vercel.
+>
+> **ACTUALIZACIÓN 2026-09-26:** esa frase describía el estado *de este ciclo*, no el del repositorio.
+> Desde entonces el refresh UI/UX se fusionó a `main` (PR #5 → squash `d3c0b80`; CI, Vercel y Railway
+> en verde). Los resultados internos de este documento no cambian; el estado operativo verificado hoy
+> está en [ESTADO_ACTUAL_V6.md](ESTADO_ACTUAL_V6.md).
 
 Leyenda: **PASS** = verificado ejecutando; **NOTA** = limitación conocida documentada;
 **INFO** = decisión de diseño.

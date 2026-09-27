@@ -1,6 +1,6 @@
 /**
- * Seed estructura I.E.P. Blenkir — Primaria (51 tablas)
- * 6 grados · 22 secciones · 16 cursos · RBAC · ML features
+ * Seed estructura I.E.P. Blenkir — Primaria
+ * 6 grados · 22 secciones · 16 cursos · RBAC · 7 ML features
  * Ejecutar: npm run db:seed
  */
 import { PrismaClient, type RolCodigo } from "@prisma/client";
@@ -81,7 +81,7 @@ function seccionesPorGrado(numero: number): string[] {
 const CAPACIDAD_SALON = 30;
 
 async function main() {
-  console.log("Seed Blenkir v3 — estructura primaria (51 tablas)...");
+  console.log("Seed Blenkir — estructura primaria (6 grados · 22 secciones · 16 cursos · RBAC · 7 ML features)...");
 
   const institucion = await prisma.institucion.upsert({
     where: { codigo: "BLENKIR" },

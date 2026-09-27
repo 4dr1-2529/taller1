@@ -25,10 +25,30 @@ El modelo V6 se sirve con FastAPI y se despliega como servicio aparte del backen
 
 Backend → ML: la variable **`ML_SERVICE_URL` del servicio backend en Railway debe ser el dominio público real** del servicio ML anterior. El default `http://localhost:5000` es únicamente para desarrollo local; sin una URL pública real el endpoint `/predict` responde `503` de forma controlada (nunca convierte un fallo del ML en riesgo Bajo ni escribe predicciones ficticias).
 
-Estado de esta verificación: el Dockerfile y la integración Backend → ML fueron verificados localmente; **el servicio ML no está desplegado en Railway** (no existe evidencia de un dominio público), por lo que `ML_SERVICE_URL` de producción no puede fijarse todavía. Ese dato (URL real) y la creación del servicio en el dashboard de Railway son pasos externos al repositorio.
+Estado de esta verificación (**2026-09-26**, sin redespliegue ni cambio de variables):
 
-## Limpieza demo opcional
+- **El servicio ML sí está desplegado en Railway**: `https://ml-production-2a96.up.railway.app` responde
+  `GET /health` → HTTP 200 con `modelLoaded=true`, `model=stacking`, `n_features=7`,
+  `dataMode=synthetic_scientific`, `experimental=true`, `modelVersion=BLENKIR_V6_BIN_20260924` y
+  `datasetVersion=BLENKIR_V6_SYNTH_20260924`; `GET /metrics` responde HTTP 200. El historial de GitHub
+  confirma `TALLER1 - ml = success`.
+- **El backend también está desplegado** (`/health` y `/api/v1/health` → HTTP 200) y el frontend publica en Vercel.
+- **`ML_SERVICE_URL` no puede leerse desde este entorno**: su valor vive en las variables de entorno de Railway
+  (dato externo al repositorio y no debe versionarse). Por eso la conectividad efectiva Backend → ML
+  (`GET /api/v1/ml/metrics`, que exige JWT de admin/docente) queda registrada como
+  **NO VERIFICABLE DESDE EL ENTORNO**. La verificación indirecta disponible es que el servicio ML responda
+  V6 correctamente y que su dominio público sea el documentado arriba.
+- Si `ML_SERVICE_URL` no apuntara a ese dominio, `/predict` responde `503` controlado (nunca un riesgo
+  Bajo ficticio).
 
-db:reset:demo invoca reset-demo-safe.ts. Requiere ALLOW_DEMO_RESET=true, DATABASE_URL explícita y DEMO_RESET_MANIFEST con userIds y synthetic:true. Por defecto solo muestra el alcance; DEMO_RESET_EXECUTE=true habilita la limpieza. Rechaza NODE_ENV=production y profesores con alumnos fuera del manifiesto. Debe usarse únicamente en una copia de pruebas. Mantiene institución, roles, catálogos, periodos, correlativos, identidades desactivadas, mensajes y auditoría. No se ejecutó este reset durante la refactorización.
+## Limpieza demo (deshabilitada)
+
+Los scripts de limpieza y población legacy quedaron **deshabilitados** en el código: `db:reset:demo`,
+`db:reset:full`, `db:reset:academic`, `db:seed:demo` y `db:seed:prod` ejecutan todos
+`backend/scripts/legacy-population-disabled.mjs`, que aborta con
+`LEGACY: población y reparaciones antiguas deshabilitadas` (exit 1) **sin tocar la base de datos**.
+Comportamiento histórico del mecanismo (archivo `backend/scripts/reset-demo-safe.ts`, ya no invocado):
+requería `ALLOW_DEMO_RESET=true`, `DATABASE_URL` explícita y `DEMO_RESET_MANIFEST`, rechazaba
+`NODE_ENV=production` y solo operaba sobre una copia de pruebas. No se ejecutó ninguna limpieza en esta auditoría.
 
 No ejecutar scripts de población legacy. El Data Seed definitivo **V5** (275 usuarios) ya está importado en producción: no se ejecutan `db:seed`, `db:seed:demo`, `db:push`, migraciones de reset ni ninguna limpieza sobre esa base. Revisar las cuentas históricas antes de habilitarlas: la migración histórica de contraseñas comunes no constituye una política válida para cuentas nuevas.

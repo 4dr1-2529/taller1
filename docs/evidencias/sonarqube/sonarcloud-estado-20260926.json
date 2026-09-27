@@ -1,0 +1,84 @@
+{
+  "fecha": "2026-09-26",
+  "actualizado": "2026-09-27",
+  "repo": "4dr1-2529/taller1",
+  "nota": "Análisis SonarCloud ejecutado por CI en el PR #5 y en main (análisis real, no simulado). No se dispone de SONAR_TOKEN en este entorno, por lo que no se lanzó un análisis nuevo; se consulta únicamente el resultado del análisis ya ejecutado por GitHub Actions. No se modificó ninguna configuración de SonarQube/SonarCloud ni se marcó ningún issue. Revalidación 2026-09-27: se añaden las condiciones exactas del Quality Gate de main (D Reliability + D Security) y las del PR #5 (C Reliability).",
+  "http_check_runs": 200,
+  "check_runs": [
+    {
+      "name": "SonarCloud Code Analysis",
+      "status": "completed",
+      "conclusion": "failure",
+      "details_url": "https://sonarcloud.io/dashboard?id=4dr1-2529_taller1&branch=main",
+      "started_at": "2026-09-26T15:24:54Z",
+      "completed_at": "2026-09-26T15:26:12Z"
+    },
+    {
+      "name": "validate",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/4dr1-2529/taller1/actions/runs/36251837341/job/108431202253",
+      "started_at": "2026-09-26T15:24:43Z",
+      "completed_at": "2026-09-26T15:26:44Z"
+    }
+  ],
+  "total_check_runs": 2,
+  "http_combined_status": 200,
+  "combined_state": "success",
+  "statuses": [
+    {
+      "context": "TALLER1 - backend",
+      "state": "success",
+      "target_url": "https://railway.com/project/5838eaa5-848f-4118-95cc-e4e8d466660c/service/d7f79649-9dca-4b15-85db-166c35b71d41",
+      "description": "No deployment needed - watched paths not modified"
+    },
+    {
+      "context": "Vercel",
+      "state": "success",
+      "target_url": "https://vercel.com/carlosadrian252925-4428s-projects/taller1-frontend/A3YXPA1DWPTeRDSDVjrtDRsJy2Mx",
+      "description": "Deployment has completed"
+    },
+    {
+      "context": "TALLER1 - ml",
+      "state": "success",
+      "target_url": "https://railway.com/project/5838eaa5-848f-4118-95cc-e4e8d466660c/service/61617858-1faf-432b-aae0-8d30415f84b2?id=df852abc-a6f0-45ef-b016-cadd87662ed2&environmentId=324f73b5-b746-42d3-ba2d-49f6b4be4f8b",
+      "description": "Success - ml-production-2a96.up.railway.app"
+    }
+  ],
+  "sonarcloud_main": {
+    "head": "d3c0b803e6d30c24fc0d24bff3465e15267d506d",
+    "analisis": "2026-09-26T15:24:54Z → 2026-09-26T15:26:12Z",
+    "output_title": "Quality Gate failed",
+    "condiciones_fallidas": [
+      "D Reliability Rating on New Code (required >= A)",
+      "D Security Rating on New Code (required >= A)"
+    ],
+    "quality_gate_status_api": "ERROR",
+    "condiciones": [
+      { "metric": "new_reliability_rating", "status": "ERROR", "actual": "4", "threshold": "1" },
+      { "metric": "new_security_rating", "status": "ERROR", "actual": "4", "threshold": "1" },
+      { "metric": "new_maintainability_rating", "status": "OK", "actual": "1", "threshold": "1" },
+      { "metric": "new_duplicated_lines_density", "status": "OK", "actual": "1.2", "threshold": "3" },
+      { "metric": "new_security_hotspots_reviewed", "status": "OK", "actual": "100.0", "threshold": "100" }
+    ],
+    "detalle_issues": "sonarcloud-main-newcode-issues-20260927.json (27 issues de New Code: 20 BUG + 7 VULNERABILITY; 1 del PR #5 y 26 preexistentes)"
+  },
+  "sonarcloud_pr5_head": {
+    "head": "1c4f5ae981a070e55dc92eec264b1c67c44f1920",
+    "analisis": "2026-09-26T14:06:00Z → 2026-09-26T14:06:51Z",
+    "output_title": "Quality Gate failed",
+    "condiciones_fallidas": [
+      "C Reliability Rating on New Code (required >= A)"
+    ]
+  },
+  "pr5": {
+    "title": "feat: refresh BLENKIR UI UX",
+    "state": "closed",
+    "merged": true,
+    "merged_at": "2026-09-26T15:24:38Z",
+    "merge_commit_sha": "d3c0b803e6d30c24fc0d24bff3465e15267d506d",
+    "head": "feat/ui-ux-refresh-v6",
+    "base": "main",
+    "html_url": "https://github.com/4dr1-2529/taller1/pull/5"
+  }
+}

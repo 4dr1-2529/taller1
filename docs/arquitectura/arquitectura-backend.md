@@ -24,7 +24,7 @@ HTTP (routes) → Middleware (auth, RBAC) → Controllers → Services → Prism
 | Controladores | Request/response HTTP |
 | Servicios | Lógica reutilizable |
 | Prisma | ORM tipado |
-| MySQL | Persistencia 51 tablas |
+| MySQL | Persistencia 57 modelos Prisma (54 activos + 3 legacy `@@ignore`) |
 
 ---
 

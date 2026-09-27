@@ -1,0 +1,58 @@
+=== test-frontend ===
+fecha (local): 2026-09-26 11:34:41
+comando: npm run test --workspace=frontend
+exit code: 0
+duracion_ms: 8610
+------------------------------------------------------------------------
+
+> frontend@2.0.0 test
+> tsx --tsconfig tsconfig.test.json --test tests/*.test.ts
+
+Ô£ö selector excluye matriculas 2026 activas, retiradas y trasladadas (11.768ms)
+Ô£ö tras matricular B, B desaparece y el selector queda vacio (0.9781ms)
+Ô£ö acepta arreglo o nulo como conjunto de matriculados (1.2326ms)
+Ô£ö la UI de estado ML nunca expone textos t├®cnicos (10.9765ms)
+Ô£ö ninguna vista expone comandos internos ni puertos (4.8765ms)
+Ô£ö la consulta usa el borrador visible aunque 'applied' siga desactualizado (24.3321ms)
+Ô£ö buildHistoryQuery mapea exactamente grado, secci├│n, curso, riesgo y texto (1.7227ms)
+Ô£ö los filtros vac├¡os no emiten par├ímetro y el texto se recorta (1.1364ms)
+Ô£ö el snapshot copia el estado sin mutar el borrador original (1.9592ms)
+Ô£ö student registration accepts only identification and section, with optional contacts (28.7587ms)
+Ô£ö student form rejects invalid DNI, phone, email and missing section (2.4501ms)
+Ô£ö teacher registration requires no manual code or course assignment (2.0014ms)
+Ô£ö unpredicted students never receive a fabricated risk (4.2304ms)
+Ô£ö password rule matches backend: 8 + upper + lower + digit, no symbol required (2.5559ms)
+Ô£ö risk score is null without predictions, never zero-as-data (6.3023ms)
+Ô£ö low LMS list does not require predictions (2.4891ms)
+Ô£ö mapper distingue sin-datos de cero real (7.8342ms)
+Ô£ö prediction contribution is displayed as points without percentage scaling (1.5197ms)
+Ô£ö teacher report rows follow active course enrollment instead of section alone (4.4647ms)
+Ô£ö grade writes use periodoNumero and never the legacy periodo/bimestre payload (6.1497ms)
+Ô£ö s├│lo existen los 3 roles vigentes (no se crea un cuarto rol) (9.0052ms)
+Ô£ö todas las secciones declaradas son secciones reales de la app (1.6775ms)
+Ô£ö estudiante incluye Alertas (Mis alertas) (0.9111ms)
+Ô£ö estudiante ve s├│lo informaci├│n propia (2.5503ms)
+Ô£ö director administra matr├¡culas y asignaciones; profesor no (1.2439ms)
+Ô£ö profesor tiene su ├ímbito: cursos, estudiantes, notas, asistencia, predicci├│n y alertas (1.3649ms)
+Ô£ö Jose encuentra Jos├® (b├║squeda local sin tildes) (9.0777ms)
+Ô£ö Matematica encuentra Matem├ítica (1.1088ms)
+Ô£ö las may├║sculas y el espacio sobrante no afectan (1.5091ms)
+Ô£ö t├®rmino vac├¡o significa 'sin filtro' (0.6055ms)
+Ô£ö matchSearch (estudiantes) usa la misma normalizaci├│n (0.9801ms)
+Ô£ö ninguna vista convierte un fallo de API en estado vac├¡o (11.9809ms)
+Ô£ö StudentPredictionView distingue error de predicci├│n inexistente (1.4608ms)
+Ô£ö StudentAttendanceView limpia el resumen si la nueva consulta falla (1.1792ms)
+Ô£ö Mis alertas del estudiante es s├│lo lectura (1.914ms)
+Ô£ö Mis alertas del estudiante est├í montada en la secci├│n Alertas (2.7026ms)
+Ô£ö el historial del profesor consulta un snapshot de los filtros visibles (1.5761ms)
+Ô£ö la auditor├¡a no anida una tabla dentro de TableWrap (2.1372ms)
+Ô£ö el director consulta notas y asistencia; s├│lo el profesor registra (2.1988ms)
+Ô£ö las b├║squedas de servidor de alertas, matr├¡culas y asistencia est├ín debounced (2.7387ms)
+Ôä╣ tests 40
+Ôä╣ suites 0
+Ôä╣ pass 40
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 5605.1819

@@ -4,7 +4,7 @@
 
 ---
 
-## Checklist UAT (`ROLE_SECTIONS.estudiante` — 6 secciones)
+## Checklist UAT (`ROLE_SECTIONS.estudiante` — 12 secciones)
 
 | # | Módulo UI | Label estudiante | API | Caso | Evidencia |
 |---|-----------|------------------|-----|------|-----------|

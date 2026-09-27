@@ -135,7 +135,7 @@ async function run() {
     const teachers = await apiFetch("/teachers", { token: directorToken });
     const tCount = (teachers.json?.data ?? teachers.json)?.length ?? 0;
     record("TC-CN-04", "Caja negra", "Profesores", "Listado docentes", "GET /teachers",
-      "admin token", "23 profesores", `HTTP ${teachers.status} count≈${tCount} (${teachers.ms}ms)`,
+      "admin token", "listado docente", `HTTP ${teachers.status} count≈${tCount} (${teachers.ms}ms)`,
       teachers.ok ? "Aprobado" : "Fallido", "Alta", "evidencias-finales/api/teachers-list.json");
     writeFileSync(PATHS.evidenciasFinales + "/api/teachers-list.json", JSON.stringify(teachers, null, 2));
 

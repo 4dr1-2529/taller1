@@ -38,7 +38,7 @@ Capa `backend/src/services/` — lógica de negocio detrás de controladores.
 
 | Condición | Rama | TC |
 |-----------|------|-----|
-| 660 estudiantes activos | count total | TC-CN-02 smoke `byLevel` |
+| Estudiantes activos (población operativa) | count total | TC-CN-02 smoke `byLevel` |
 | Sin predicciones | KPI riesgo = 0 | edge case manual |
 
 ---

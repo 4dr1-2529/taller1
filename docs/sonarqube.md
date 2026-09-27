@@ -1,5 +1,28 @@
 # SonarQube
 
+## Estado real del Quality Gate (verificado 2026-09-27)
+
+Análisis ejecutado por CI (SonarQube Cloud, proyecto `4dr1-2529_taller1`). Hay **tres resultados
+distintos** que no deben confundirse:
+
+| Ámbito | Head | Resultado | Condiciones |
+|--------|------|-----------|-------------|
+| PR #5 (ya fusionado) | `1c4f5ae` | FAILED | `C Reliability Rating on New Code` (exigía ≥ A) |
+| `main` (tras el squash de PR #5) | `d3c0b80` | **FAILED** | `D Reliability Rating on New Code` **y** `D Security Rating on New Code` (ambos exigían ≥ A) |
+| PR #6 (documentación) | `0e59217` | PASSED | 7 issues nuevos, 0 Security Hotspots, 0,0 % cobertura y 0,0 % duplicación en código nuevo |
+
+- **Que el PR #6 pase el Quality Gate no significa que `main` esté en verde**: su diff es documentación,
+  QA, ISO, evidencias y branding, sin código funcional nuevo.
+- Los ratings D de `main` los sostienen **27 issues de New Code** (20 `BUG`: 14 MAJOR · 6 CRITICAL;
+  7 `VULNERABILITY`: 1 CRITICAL · 2 MAJOR · 4 MINOR). **1** fue introducido por el PR #5
+  (`frontend/src/components/views/LearningView.tsx:157`, `typescript:S9011`, confirmado con `git blame`)
+  y **26 son preexistentes** (el PR #5 solo tocó 58 ficheros, todos de `frontend/`).
+- Detalle completo: `docs/evidencias/sonarqube/sonarcloud-main-newcode-issues-20260927.json` ·
+  resumen: `docs/evidencias/sonarqube/README.md`.
+- No se modificó el Quality Gate, no se marcó ningún issue como falso positivo y no se relanzó ningún
+  análisis (no hay `SONAR_TOKEN` en este entorno). La corrección de esos issues queda pendiente en una
+  rama separada **`fix/sonar-main-quality-gate`**, a crear después de fusionar el PR #6.
+
 ## Instalaciones reproducibles y contenedor ML
 
 - CI usa `npm ci --ignore-scripts` y genera el cliente Prisma de forma explícita con `npm run prisma:generate`.

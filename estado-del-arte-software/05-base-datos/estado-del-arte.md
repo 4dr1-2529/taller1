@@ -45,7 +45,7 @@ Implementa SIAKAD institucional sobre **MySQL** con modelo entidad-relación par
 
 ### Aplicación al proyecto
 
-`schema.prisma` encabezado declara "51 tablas" para predicción de deserción primaria. Las relaciones estudiante–matrícula–sección soportan `EnrollmentsView` y agregados del dashboard — mismo patrón relacional que el SIAKAD del artículo.
+`schema.prisma` declara 57 modelos Prisma (54 activos + 3 `@@ignore`) para predicción de deserción primaria. Las relaciones estudiante–matrícula–sección soportan `EnrollmentsView` y agregados del dashboard — mismo patrón relacional que el SIAKAD del artículo.
 
 ---
 
@@ -91,7 +91,7 @@ Detalla modelado relacional con Prisma: cardinalidades, índices y seeds para en
 
 ### Aplicación al proyecto
 
-Scripts `db:seed:demo` y `db:reset:academic` en `package.json` replican el ciclo desarrollo→demo→validación del artículo. Evidencias QA del proyecto dependen de datos semilla reproducibles vía Prisma seed.
+Los scripts `db:seed:demo` y `db:reset:academic` siguen en `package.json` pero están deshabilitados (`legacy-population-disabled.mjs`); el ciclo desarrollo→demo→validación que describe el artículo queda documentado, no ejecutable. Evidencias QA del proyecto dependen de datos semilla reproducibles vía Prisma seed.
 
 ---
 
@@ -167,4 +167,4 @@ Enum `RolCodigo` en `schema.prisma` L17–21 sincroniza BD con JWT (`auth.ts` L1
 
 ## Conclusión
 
-**MySQL** se justifica por dominio académico relacional y ACID (10.35870/siskom.v3i2.796, 10.64643/ijirtv12i10-194282-459). **Prisma** reduce complejidad del esquema de 51 tablas y habilita migraciones/seeds reproducibles (10.51454/decode.v4i3.792, 10.46299/j.isjea.20260503.05). El modelado de predicciones, alertas y roles responde a infraestructura EWS confiable (10.3390/app11135781, 10.20533/icitst.2023.0027) implementada en `backend/prisma/schema.prisma`.
+**MySQL** se justifica por dominio académico relacional y ACID (10.35870/siskom.v3i2.796, 10.64643/ijirtv12i10-194282-459). **Prisma** reduce complejidad del esquema (57 modelos Prisma) y habilita migraciones/seeds reproducibles (10.51454/decode.v4i3.792, 10.46299/j.isjea.20260503.05). El modelado de predicciones, alertas y roles responde a infraestructura EWS confiable (10.3390/app11135781, 10.20533/icitst.2023.0027) implementada en `backend/prisma/schema.prisma`.

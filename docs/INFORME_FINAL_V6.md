@@ -3,6 +3,10 @@
 > **MODELO EXPERIMENTAL — DATOS SINTÉTICOS.** Todo se ejecutó en local.
 > Sin commit, sin push, sin merge, sin deploy; sin tocar Railway ni Vercel.
 > Ningún secreto se imprimió: solo booleanos y conteos.
+>
+> **ACTUALIZACIÓN 2026-09-26:** lo anterior es el estado *de este ciclo*. El repositorio sí avanzó:
+> refresh UI/UX fusionado a `main` (PR #5 → squash `d3c0b80`). Estado operativo verificado hoy:
+> [ESTADO_ACTUAL_V6.md](ESTADO_ACTUAL_V6.md).
 
 ## Informe numerado
 

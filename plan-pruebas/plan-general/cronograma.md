@@ -20,7 +20,7 @@
 
 | Orden | Día | Actividad | Dependencia |
 |-------|-----|-----------|-------------|
-| 1 | D1 | `npm run db:push` + `db:seed` + `db:seed:demo` | MySQL XAMPP activo |
+| 1 | D1 | `npm run db:seed` (estructura) sobre BD aislada; `db:seed:demo` deshabilitado | MySQL XAMPP activo |
 | 2 | D1 | `npm run ml:train` | Python 3.11+ |
 | 3 | D2 | `npm run type-check` + `npm run test:backend` + `npm run ml:test` | — |
 | 4 | D2 | `npm run lint` + `npm run build` | — |

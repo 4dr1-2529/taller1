@@ -24,11 +24,11 @@ flowchart TB
   end
 
   subgraph DATOS["Capa datos"]
-    DB[(MySQL 8<br/>Prisma ORM · 51 tablas)]
+    DB[(MySQL 8<br/>Prisma ORM · 57 modelos<br/>54 activos + 3 legacy @@ignore)]
   end
 
   subgraph IA["Capa inteligencia"]
-    ML[FastAPI + scikit-learn<br/>:5000 ensemble ML]
+    ML[FastAPI + scikit-learn<br/>Stacking V6 · Railway ml-production-2a96]
   end
 
   WEB -->|HTTPS JWT| BE
@@ -56,10 +56,12 @@ flowchart TB
 ```
 1. Profesor/Director registra notas, asistencia, LMS → MySQL
 2. Usuario solicita predicción → Frontend → Backend
-3. Backend extrae 9 features → ML Service → nivel riesgo
+3. Backend extrae 7 variables → ML Service → probabilidad → nivel de riesgo
 4. Backend persiste prediction + genera alert si aplica
 5. Dashboard muestra KPIs, gauge, alertas según rol
 ```
+
+El frontend nunca llama al servicio ML: solo `Next.js → Express → Prisma/MySQL` y `Express → FastAPI → Stacking V6`.
 
 ---
 
@@ -69,7 +71,10 @@ flowchart TB
 |------|------------|-----|
 | Frontend | Vercel | https://taller1-frontend.vercel.app |
 | Backend + BD | Railway | https://backend-production-fcb1.up.railway.app/api/v1 |
-| ML | Local / opcional Railway | http://localhost:5000 |
+| ML | Railway | https://ml-production-2a96.up.railway.app |
+
+Las tres URLs respondieron HTTP 200 el 2026-09-26 (sin redespliegue ni cambio de variables). La URL real de
+`ML_SERVICE_URL` vive en las variables de entorno de Railway y no se lee desde este repositorio.
 
 ---
 

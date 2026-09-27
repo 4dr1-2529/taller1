@@ -22,7 +22,7 @@
 
 - Código en rama `main` estable
 - `npm run type-check` sin errores
-- BD local con seed demo (`npm run db:seed:demo`)
+- BD local aislada de pruebas; `npm run db:seed:demo` está deshabilitado (legacy)
 - Modelo ML entrenado (`npm run ml:train`) para pruebas IA
 
 ---

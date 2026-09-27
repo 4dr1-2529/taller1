@@ -1,4 +1,9 @@
-# QA Final Blenkir 2026 — visual + funcional
+# QA Final Blenkir 2026 - visual + funcional
+
+> **HISTÓRICO.** Ejecución de QA del **2026-09-21** sobre commit `7f0b27c` (entorno local completo:
+> backend :4000, frontend :3029, MySQL aislada 33316, Chrome/Playwright). Las capturas y resultados que
+> siguen corresponden a esa fecha y **son anteriores al refresh UI/UX**; se conservan sin cambios.
+> La matriz de casos vigente (86) y su estado actual: [../plan-pruebas/README.md](../plan-pruebas/README.md).
 
 Fecha: 2026-09-21. Commit base: `7f0b27c` (CI run 39 completed/success).
 Entorno: backend local :4000 + frontend local :3029 + MySQL aislada 127.0.0.1:33316

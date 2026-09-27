@@ -29,4 +29,4 @@
 
 ## Roles post-login (`AuthUser.role`)
 
-Redirige a `(shell)/page.tsx` con secciones según `ROLE_SECTIONS[role]` — admin 14, docente 10, estudiante 6.
+Redirige a `(shell)/page.tsx` con secciones según `ROLE_SECTIONS[role]` (`frontend/src/data/role-sections.ts`) — admin **20**, docente **15**, estudiante **12**.

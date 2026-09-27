@@ -86,9 +86,9 @@ Valida prototipo RBAC con tres roles (estudiante, staff, administrador) en siste
 
 | Rol paper | Rol proyecto | Secciones UI |
 |-----------|--------------|--------------|
-| Student | `estudiante` | 6 secciones |
-| Staff | `docente` | 10 secciones |
-| Administrator | `admin` | 14 secciones |
+| Student | `estudiante` | 12 secciones |
+| Staff | `docente` | 15 secciones |
+| Administrator | `admin` | 20 secciones |
 
 ### Aplicación al proyecto
 

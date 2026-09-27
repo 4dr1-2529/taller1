@@ -24,7 +24,7 @@
 | ESLint | `npm run lint` | frontend |
 | Smoke integración | `npm run test:smoke` | `backend/scripts/smoke-tests.mjs` |
 | Playwright (Edge) | `npm run evidence:generate` | `scripts/evidence/` |
-| Prisma Studio | `npm run db:studio` | inspección BD 52 modelos |
+| Prisma Studio | `npm run db:studio` | inspección BD 57 modelos |
 
 ---
 
@@ -45,9 +45,9 @@
 
 | Entidad | Cantidad | Origen |
 |---------|----------|--------|
-| Estudiantes | 250 | Data Seed definitivo V5 (Railway) |
-| Profesores | 24 | Data Seed definitivo V5 (Railway) |
-| Salones | 22 | Data Seed definitivo V5 (estructura) |
+| Estudiantes | 250 | Población operativa (semilla importada originalmente como V5) — Railway |
+| Profesores | 24 | Población operativa (semilla importada originalmente como V5) — Railway |
+| Salones | 22 | Estructura del seed operativo (BLENKIR V6) |
 | Contraseñas | variables de entorno por rol | `DIRECTOR/TEACHER/STUDENT_INITIAL_PASSWORD` |
 
 ---
@@ -64,6 +64,6 @@
 
 ## Documentación de soporte
 
-- API rutas: `backend/src/routes/index.ts` (87 rutas registradas)
+- API rutas: `backend/src/routes/index.ts` (109 rutas registradas)
 - Postman: `docs/postman/tesis-dashboard.postman_collection.json`
 - Roles UI: `ROLE_SECTIONS` en `frontend/src/app/(shell)/page.tsx` líneas 54–91

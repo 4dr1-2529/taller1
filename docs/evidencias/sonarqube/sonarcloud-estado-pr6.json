@@ -1,0 +1,63 @@
+{
+  "fecha_captura": "2026-09-27T15:51:31.204Z",
+  "fuente": "API de GitHub (solo lectura) — checks del head del PR #6",
+  "pr": {
+    "number": 6,
+    "title": "chore: system audit V6 — documentación, plan de pruebas ISO y evidencias",
+    "state": "open",
+    "merged": false,
+    "mergeable_state": "clean",
+    "base": "main",
+    "head": "chore/system-audit-v6",
+    "sha": "91d3b0328fb68c93fca809c1330a3af3cac3ef8e",
+    "commits": 4,
+    "changed_files": 85,
+    "additions": 1663,
+    "deletions": 219,
+    "html_url": "https://github.com/4dr1-2529/taller1/pull/6"
+  },
+  "check_runs": [
+    {
+      "name": "SonarCloud Code Analysis",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://sonarcloud.io/dashboard?id=4dr1-2529_taller1&pullRequest=6",
+      "started_at": "2026-09-26T17:26:50Z",
+      "completed_at": "2026-09-26T17:27:39Z"
+    },
+    {
+      "name": "Vercel Preview Comments",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://vercel.com/github",
+      "started_at": "2026-09-26T17:27:03Z",
+      "completed_at": "2026-09-26T17:27:03Z"
+    },
+    {
+      "name": "validate",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/4dr1-2529/taller1/actions/runs/36259043613/job/108451212510",
+      "started_at": "2026-09-26T17:26:43Z",
+      "completed_at": "2026-09-26T17:28:48Z"
+    },
+    {
+      "name": "validate",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/4dr1-2529/taller1/actions/runs/36259008835/job/108451114160",
+      "started_at": "2026-09-26T17:26:08Z",
+      "completed_at": "2026-09-26T17:27:58Z"
+    }
+  ],
+  "combined_state": "success",
+  "statuses": [
+    {
+      "context": "Vercel",
+      "state": "success",
+      "target_url": "https://vercel.com/carlosadrian252925-4428s-projects/taller1-frontend/2cVat3TyzuMNDkuxo2qLsE7s76KG",
+      "description": "Deployment has completed"
+    }
+  ],
+  "nota": "Este PR contiene exclusivamente documentación, plan de pruebas, evidencias y branding: el análisis de SonarQube Cloud sobre su diff no introduce 'New Code' funcional, por lo que el check termina en success. El estado del Quality Gate del código de producción sigue siendo el de main/PR #5 (FAILED por 'C Reliability Rating on New Code', requerida >= A), registrado en sonarcloud-estado-20260926.json y sonarcloud-quality-gate-pr5-20260926.json."
+}

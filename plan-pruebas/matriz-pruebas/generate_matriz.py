@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Genera matriz-casos.md y matriz-casos.xlsx desde código real + resultados QA ejecutados."""
 import json
+import re
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parent
@@ -19,31 +20,31 @@ CASES = [
     ("TC-BE-05", "Seguridad", "RBAC", "Crear estudiante solo admin", "POST /students token docente", "token docente", "403 Permiso denegado", "HTTP 403", "Aprobado", "Alta", "pruebas-seguridad/evidencias/docente-post-students.json"),
     ("TC-BE-06", "Unitaria", "Backend", "Envelope respuesta", "Formato {success,data}", "response helper", "{success, message, data}", "response.test.mjs PASS", "Aprobado", "Media", "pruebas-unitarias/evidencias/backend-tests.log"),
     ("TC-BE-07", "Caja negra", "Dashboard", "KPIs director", "GET /dashboard/kpis admin", "Bearer admin", "kpis.byLevel", "200 byLevel", "Aprobado", "Alta", "evidencias-finales/api/dashboard-kpis.json"),
-    ("TC-BE-08", "Integración", "Admin", "Export cuentas acceso", "GET /admin/cuentas-acceso", "admin token", "JSON 660+23 cuentas", "accounts-export.controller", "Aprobado", "Media", "backend/src/controllers/accounts-export.controller.ts"),
-    ("TC-BE-09", "Integración", "Auth", "Refresh token", "POST /auth/refresh", "refresh válido", "Nuevo accessToken", "pendiente ejecución dedicada", "Observado", "Media", "backend/src/controllers/auth.controller.ts"),
+    ("TC-BE-08", "Integración", "Admin", "Export cuentas acceso", "GET /admin/cuentas-acceso", "admin token", "JSON con las cuentas vigentes (usuario + rol), sin hashes ni contraseñas", "sin reejecución en la auditoría V6; la cifra histórica de la población demo no aplica", "Observado", "Media", "backend/src/controllers/accounts-export.controller.ts"),
+    ("TC-BE-09", "Integración", "Auth", "Refresh token", "POST /auth/refresh", "refresh válido", "200 + accessToken nuevo; logout invalida el refresh (401)", "200 y refresh revocado · 39/39 integration tests (BD aislada, 2026-09-26)", "Aprobado", "Media", "evidencias-finales/terminal/integration-refactor-2026-20260926.log"),
     ("TC-BE-10", "Unitaria", "Auth", "Cambio contraseña débil", "changePasswordSchema", "newPassword: weak", "400 Zod", "schemas.test.ts PASS", "Aprobado", "Media", "pruebas-unitarias/evidencias/backend-tests.log"),
     ("TC-BE-11", "Caja negra", "Profesores", "Listar profesores", "GET /teachers JWT", "admin token", "200 lista", "HTTP 200", "Aprobado", "Media", "evidencias-finales/api/teachers-list.json"),
     ("TC-BE-12", "Seguridad", "RBAC", "Detalle profesor docente", "GET /teachers/:id/detail docente", "token docente", "403", "HTTP 403", "Aprobado", "Media", "pruebas-seguridad/evidencias/docente-teacher-detail.json"),
     ("TC-FE-01", "Caja negra", "Frontend", "Render login", "Navegar /login", "GET /login", "Formulario #login-email", "login-pantalla-inicial.png", "Aprobado", "Alta", "evidencias-finales/capturas/login-pantalla-inicial.png"),
     ("TC-FE-02", "Integración", "Frontend", "Login shell sin F5", "submitLogin director", "director creds", "URL sin /login", "capture-ui director", "Aprobado", "Alta", "evidencias-finales/capturas/login-director-ok.png"),
-    ("TC-FE-03", "Caja blanca", "Frontend", "Menú admin 14 secciones", "ROLE_SECTIONS.admin", "rol admin", "14 secciones", "page.tsx L54-70", "Aprobado", "Alta", "pruebas-caja-blanca/evidencias/auditoria-caja-blanca.json"),
-    ("TC-FE-04", "Caja blanca", "Frontend", "Menú docente 10 secciones", "ROLE_SECTIONS.docente", "rol docente", "10 secciones", "page.tsx L71-82", "Aprobado", "Alta", "evidencias-finales/capturas/dashboard-profesor-ok.png"),
-    ("TC-FE-05", "Caja blanca", "Frontend", "Menú estudiante 6 secciones", "ROLE_SECTIONS.estudiante", "rol estudiante", "6 secciones", "page.tsx L83-90", "Aprobado", "Alta", "evidencias-finales/capturas/dashboard-alumno-ok.png"),
+    ("TC-FE-03", "Caja blanca", "Frontend", "Menú admin 20 secciones", "ROLE_SECTIONS.admin", "rol admin", "20 secciones", "role-sections.test.ts PASS", "Aprobado", "Alta", "frontend/tests/role-sections.test.ts"),
+    ("TC-FE-04", "Caja blanca", "Frontend", "Menú docente 15 secciones", "ROLE_SECTIONS.docente", "rol docente", "15 secciones", "role-sections.test.ts PASS", "Aprobado", "Alta", "frontend/tests/role-sections.test.ts"),
+    ("TC-FE-05", "Caja blanca", "Frontend", "Menú estudiante 12 secciones", "ROLE_SECTIONS.estudiante", "rol estudiante", "12 secciones", "role-sections.test.ts PASS", "Aprobado", "Alta", "frontend/tests/role-sections.test.ts"),
     ("TC-FE-06", "Validación", "Frontend", "ESLint", "npm run lint", "frontend workspace", "exit 0", "ver terminal lint si ejecutado", "Aprobado", "Media", "evidencias-finales/terminal/"),
     ("TC-FE-07", "Validación", "Frontend", "Type-check", "npm run type-check", "monorepo", "0 errores TS", "evidencias-finales/terminal/type-check.log", "Aprobado", "Alta", "evidencias-finales/terminal/type-check.log"),
     ("TC-FE-08", "Validación", "Frontend", "Build producción", "npm run build", "monorepo", "compilación OK", "evidencias-finales/terminal/build.log", "Aprobado", "Alta", "evidencias-finales/terminal/build.log"),
     ("TC-FE-09", "Caja negra", "Frontend", "Toast error login", "password incorrecta", "wrongpass", "error visible", "manual / captura", "Aprobado", "Media", "evidencias-finales/capturas/"),
-    ("TC-DB-01", "Caja blanca", "Base de datos", "Schema Prisma", "schema.prisma", "52 modelos", "modelos definidos", "backend/prisma/schema.prisma", "Aprobado", "Media", "backend/prisma/schema.prisma"),
-    ("TC-DB-02", "Integración", "Base de datos", "Seed estructura", "npm run db:seed", "seed.ts", "Grados, niveles", "db:seed OK", "Aprobado", "Alta", "backend/prisma/seed.ts"),
-    ("TC-DB-03", "Integración", "Base de datos", "660 estudiantes demo", "db:seed:demo", "demo data", "count=660", "seed demo", "Aprobado", "Alta", "backend/scripts/check-db.mjs"),
-    ("TC-DB-04", "Integración", "Base de datos", "23 profesores", "query teacher", "activos", "count=23", "profesores demo", "Aprobado", "Media", "evidencias-finales/api/teachers-list.json"),
-    ("TC-DB-05", "Caja blanca", "Base de datos", "Bimestres III-IV vacíos", "validate-demo-data", "periodo 3-4", "0 notas", "seed-grades.ts", "Aprobado", "Media", "backend/prisma/seed-grades.ts"),
-    ("TC-DB-06", "Integración", "Base de datos", "Matrícula por sección", "POST /matriculas", "admin token", "201 matriculaId", "pendiente POST dedicado", "Observado", "Media", "backend/src/routes/index.ts"),
-    ("TC-IA-01", "Unitaria", "IA", "Entrenar ensemble", "npm run ml:train", "train.py", "best_model.joblib", "models/ generados", "Aprobado", "Alta", "machine-learning/models/metrics.json"),
-    ("TC-IA-02", "Unitaria", "IA", "pytest predict", "npm run ml:test", "test_predict.py", "6+ tests pass", "pruebas-unitarias/evidencias/ml-tests.log", "Aprobado", "Alta", "pruebas-unitarias/evidencias/ml-tests.log"),
-    ("TC-IA-03", "Unitaria", "IA", "Heurística riesgo bajo", "promedio 16 asist 95", "payload bajo", "level=bajo", "test_heuristic_low_risk", "Aprobado", "Alta", "machine-learning/tests/test_predict.py"),
-    ("TC-IA-04", "Unitaria", "IA", "Heurística riesgo alto", "promedio 8 retirado", "payload alto", "level medio|alto", "test_heuristic_high_risk", "Aprobado", "Alta", "machine-learning/tests/test_predict.py"),
-    ("TC-IA-05", "Unitaria", "IA", "Vector 9 features", "build_feature_vector", "FEATURE_NAMES", "shape (1,9)", "app/features.py", "Aprobado", "Alta", "machine-learning/app/features.py"),
+    ("TC-DB-01", "Caja blanca", "Base de datos", "Schema Prisma", "schema.prisma", "57 modelos (54 activos + 3 legacy con @@ignore)", "modelos contados por script", "npm run db:count-models → 57 (2026-09-26)", "Aprobado", "Media", "backend/scripts/count-prisma-models.mjs"),
+    ("TC-DB-02", "Integración", "Base de datos", "Seed estructura", "npm run db:seed (db:seed:structure)", "prisma/seed.ts", "Grados, niveles y catálogos", "db:seed → tsx prisma/seed.ts", "Aprobado", "Alta", "backend/prisma/seed.ts"),
+    ("TC-DB-03", "Integración", "Base de datos", "Población legacy deshabilitada", "npm run db:seed:demo", "scripts/legacy-population-disabled.mjs", "rechazo explícito sin escribir en la BD", "Error LEGACY + exit 1 (2026-09-26), BD intacta", "Aprobado", "Alta", "backend/scripts/legacy-population-disabled.mjs"),
+    ("TC-DB-04", "Integración", "Base de datos", "Listado docente", "GET /teachers", "admin token", "lista paginada de profesores activos", "captura histórica de la población demo anterior; revalidar en BD vigente", "Observado", "Media", "evidencias-finales/api/teachers-list.json"),
+    ("TC-DB-05", "Caja blanca", "Base de datos", "Períodos académicos 2026", "resolvePeriodoByParam", "BD aislada de pruebas", "periodo III 2026 activo y evidencia restringida al año 2026", "39/39 integration tests (2026-09-26)", "Aprobado", "Media", "evidencias-finales/terminal/integration-refactor-2026-20260926.log"),
+    ("TC-DB-06", "Integración", "Base de datos", "Matrícula por sección", "POST /matriculas", "admin token", "201 + matriculaId", "201 item.id=15 persistida en BD aislada (2026-09-26)", "Aprobado", "Media", "evidencias-finales/api/matricula-post-201-aislado-20260926.json"),
+    ("TC-IA-01", "Unitaria", "IA", "Artefactos del modelo V6", "artifacts/synthetic/", "entrenamiento 2026-09-24", "best_model.joblib + metadata.json + metrics.json", "model_version BLENKIR_V6_BIN_20260924", "Aprobado", "Alta", "machine-learning/artifacts/synthetic/metadata.json"),
+    ("TC-IA-02", "Unitaria", "IA", "Suite de pruebas ML", "npm run ml:test", "test_predict.py", "32 tests pass", "32/32 (2026-09-26)", "Aprobado", "Alta", "pruebas-unitarias/evidencias/ml-tests.log"),
+    ("TC-IA-03", "Unitaria", "IA", "Nivel bajo por umbral", "probabilidad 0.40", "payload válido", "level=bajo (p < 0.41)", "test_probability_to_level_matches_thresholds", "Aprobado", "Alta", "machine-learning/tests/test_predict.py"),
+    ("TC-IA-04", "Unitaria", "IA", "Nivel alto por umbral", "probabilidad 0.70", "payload válido", "level=alto (p >= 0.65)", "test_high_probability_maps_to_alto", "Aprobado", "Alta", "machine-learning/tests/test_predict.py"),
+    ("TC-IA-05", "Unitaria", "IA", "Vector de 7 features", "build_feature_vector", "FEATURE_NAMES", "shape (1,7) y orden del contrato", "test_exactly_seven_features + test_features_shape_and_order", "Aprobado", "Alta", "machine-learning/app/features.py"),
     ("TC-IA-06", "Unitaria", "IA", "Formato tesis español", "toThesisPrediction", "ML response", "nivel_riesgo, probabilidad_abandono", "prediction-format.test.mjs", "Aprobado", "Alta", "pruebas-unitarias/evidencias/backend-tests.log"),
     ("TC-IA-07", "Integración", "IA", "ML health", "GET :5000/health", "sin auth", "200", "smoke + performance", "Aprobado", "Media", "evidencias-finales/ia/health-ml.json"),
     ("TC-IA-08", "Integración", "IA", "POST ML predict 3 perfiles", "bajo/medio/alto", "3 payloads", "level válido", "smoke-tests.mjs", "Aprobado", "Alta", "pruebas-unitarias/evidencias/smoke-tests.log"),
@@ -54,7 +55,7 @@ CASES = [
     ("TC-SEC-04", "Seguridad", "RBAC", "Estudiante GET /students", "authorize admin,docente", "token estudiante", "403", "HTTP 403", "Aprobado", "Alta", "pruebas-seguridad/evidencias/estudiante-get-students.json"),
     ("TC-SEC-05", "Unitaria", "Seguridad", "studentId ajeno", "rejectClientStudentId", "999 vs 1", "AppError permiso", "estudiante-scope.test.ts", "Aprobado", "Alta", "pruebas-unitarias/evidencias/backend-tests.log"),
     ("TC-SEC-06", "Unitaria", "Seguridad", "Rol tutor inválido", "createUser Zod", "role: tutor", "Zod fail", "schemas.test.ts", "Aprobado", "Media", "pruebas-unitarias/evidencias/backend-tests.log"),
-    ("TC-SEC-07", "Seguridad", "RBAC", "DELETE attendance admin", "DELETE /attendance/:id docente", "token docente", "403", "routes L206", "Aprobado", "Media", "backend/src/routes/index.ts"),
+    ("TC-SEC-07", "Seguridad", "RBAC", "DELETE reportes solo admin", "DELETE /reports/:id token docente", "token docente", "403 Permiso denegado", "authorize(admin) en routes/index.ts; sin ejecución automatizada", "Observado", "Media", "backend/src/routes/index.ts"),
     ("TC-ROL-01", "Unitaria", "Roles", "Matriz 3 roles", "PERMISOS keys", "admin,docente,estudiante", "3 roles", "permissions.test.mjs", "Aprobado", "Alta", "pruebas-unitarias/evidencias/backend-tests.log"),
     ("TC-ROL-02", "Unitaria", "Roles", "Admin crea estudiante", "puede(admin, crearEstudiante)", "permiso", "true", "permissions.test.mjs", "Aprobado", "Alta", "pruebas-unitarias/evidencias/backend-tests.log"),
     ("TC-ROL-03", "Unitaria", "Roles", "Docente no crea profesor", "puede(docente, crearProfesor)", "permiso", "false", "permissions.test.mjs", "Aprobado", "Alta", "pruebas-unitarias/evidencias/backend-tests.log"),
@@ -69,9 +70,9 @@ CASES = [
     ("TC-INT-07", "Integración", "Frontend", "MlMetricsSection", "api.getMlMetrics", "admin UI", "métricas ML", "dashboard director", "Aprobado", "Media", "evidencias-finales/capturas/dashboard-director-ok.png"),
     ("TC-INT-08", "Integración", "Auth", "JWT en api.ts", "Authorization Bearer", "post-login", "hasToken true", "api.ts", "Aprobado", "Alta", "frontend/src/lib/api.ts"),
     ("TC-CN-01", "Caja negra", "Login", "Pantalla inicial", "GET /login", "sin auth", "branding + campos", "login-pantalla-inicial.png", "Aprobado", "Alta", "evidencias-finales/capturas/login-pantalla-inicial.png"),
-    ("TC-CN-02", "Caja negra", "Dashboard", "KPIs director", "dashboard director", "admin login", "660 estudiantes KPI", "dashboard-director-ok.png", "Aprobado", "Alta", "evidencias-finales/capturas/dashboard-director-ok.png"),
+    ("TC-CN-02", "Caja negra", "Dashboard", "KPIs director", "dashboard director", "admin login", "kpis.byLevel, riskTrend y modelComparison", "captura histórica de la población demo anterior", "Observado", "Alta", "evidencias-finales/capturas/dashboard-director-ok.png"),
     ("TC-CN-03", "Caja negra", "Estudiantes", "Listado director", "StudentsView", "admin", "tabla paginada", "estudiantes-listado-director.png", "Aprobado", "Alta", "evidencias-finales/capturas/estudiantes-listado-director.png"),
-    ("TC-CN-04", "Caja negra", "Profesores", "Listado 23 docentes", "TeachersView", "admin", "23 filas", "profesores-listado.png", "Aprobado", "Alta", "evidencias-finales/capturas/profesores-listado.png"),
+    ("TC-CN-04", "Caja negra", "Profesores", "Listado docente", "TeachersView", "admin", "tabla paginada con buscador por nombre, código, especialidad o correo", "captura previa al refresh V6; reejecución pendiente", "Observado", "Alta", "evidencias-finales/capturas/profesores-listado.png"),
     ("TC-CN-05", "Caja negra", "Cursos", "CoursesView", "GET /courses", "admin", "catálogo", "cursos-listado.png", "Aprobado", "Media", "evidencias-finales/capturas/cursos-listado.png"),
     ("TC-CN-06", "Caja negra", "Notas", "GradesView bimestre I", "Notas sección", "bimestre 1", "notas numéricas", "notas-bimestre-1-ok.png", "Aprobado", "Alta", "evidencias-finales/capturas/notas-bimestre-1-ok.png"),
     ("TC-CN-07", "Caja negra", "Predicción", "Ejecutar predicción", "PredictionView", "sección + ejecutar", "riesgo + %", "prediccion-riesgo-alto-ok.png", "Aprobado", "Alta", "evidencias-finales/capturas/prediccion-riesgo-alto-ok.png"),
@@ -90,7 +91,7 @@ CASES = [
     ("TC-PERF-03", "Rendimiento", "API", "Paginación estudiantes", "GET /students?limit=100", "admin", "paginado", "performance-report.json", "Aprobado", "Media", "pruebas-rendimiento/evidencias/performance-report.json"),
     ("TC-PERF-04", "Rendimiento", "API", "Predict IA < 5s", "POST /predict", "studentId", "< 5000ms", "performance-report.json", "Aprobado", "Media", "pruebas-rendimiento/evidencias/performance-report.json"),
     ("TC-PERF-05", "Rendimiento", "Auth", "Login < 2s", "POST /auth/login", "director", "< 2000ms", "performance-report.json", "Aprobado", "Media", "pruebas-rendimiento/evidencias/performance-report.json"),
-    ("TC-UAT-01", "Aceptación", "Director", "CRUD completo", "14 módulos director", "director@blenkir.edu.pe", "operativos", "capturas director", "Aprobado", "Alta", "pruebas-aceptacion/director.md"),
+    ("TC-UAT-01", "Aceptación", "Director", "CRUD completo", "20 secciones director", "director@blenkir.edu.pe", "operativos", "UAT histórico ejecutado con 14 secciones; reejecución pendiente tras el refresh V6", "Observado", "Alta", "pruebas-aceptacion/director.md"),
     ("TC-UAT-02", "Aceptación", "Profesor", "Ámbito salón", "profesor dashboard", "pro50000001@blenkir.edu.pe", "solo sus secciones", "dashboard-profesor-ok.png", "Aprobado", "Alta", "evidencias-finales/capturas/dashboard-profesor-ok.png"),
     ("TC-UAT-03", "Aceptación", "Estudiante", "Datos propios", "estudiante me", "mateo.quispe0001@blenkir.edu.pe", "sin CRUD global", "dashboard-alumno-ok.png", "Aprobado", "Alta", "evidencias-finales/capturas/dashboard-alumno-ok.png"),
     ("TC-UAT-04", "Aceptación", "Profesor", "Notas bimestre", "GET /profesor/notas", "docente token", "notas visibles", "notas-profesor-bimestre.png", "Aprobado", "Alta", "evidencias-finales/capturas/notas-profesor-bimestre.png"),
@@ -102,11 +103,21 @@ CASES = [
 
 
 def load_api_overrides():
+    """Resultados históricos del pipeline QA.
+
+    Solo se aplican cuando el `esperado` histórico coincide con el del caso vigente:
+    si cambió (caso reformulado en la auditoría V6), el resultado histórico ya no lo describe.
+    """
     overrides = {}
     if QA_API.exists():
         data = json.loads(QA_API.read_text(encoding="utf-8"))
         for r in data.get("results", []):
-            overrides[r["id"]] = (r.get("obtenido", ""), r.get("estado", ""), r.get("evidencia", ""))
+            overrides[r["id"]] = (
+                r.get("obtenido", ""),
+                r.get("estado", ""),
+                r.get("evidencia", ""),
+                r.get("esperado", ""),
+            )
     return overrides
 
 
@@ -131,19 +142,37 @@ def apply_perf(cases):
     return out
 
 
+def _esperado_obsoleto(esperado):
+    """Cifras/claims que la auditoría V6 declaró que ya no describen el sistema vigente."""
+    return bool(
+        re.search(
+            r"660|\b23\s+profesores|\b23\s+docentes|14\s+secciones|10\s+secciones|6\s+secciones|"
+            r"9\s+features|shape\s*\(\s*1\s*,\s*9\s*\)|52\s+modelos|heur[íi]stic",
+            esperado,
+            re.IGNORECASE,
+        )
+    )
+
+
 def merge_cases():
     overrides = load_api_overrides()
     merged = []
     for c in CASES:
         row = list(c)
         if c[0] in overrides:
-            ob, st, ev = overrides[c[0]]
-            if ob:
-                row[7] = ob
-            if st:
-                row[8] = st
-            if ev:
-                row[10] = ev
+            ob, st, ev, esperado_historico = overrides[c[0]]
+            if esperado_historico and _esperado_obsoleto(esperado_historico):
+                print(
+                    f"AVISO {c[0]}: override histórico descartado "
+                    f"(esperado '{esperado_historico}' corresponde a una etapa anterior)"
+                )
+            else:
+                if ob:
+                    row[7] = ob
+                if st:
+                    row[8] = st
+                if ev:
+                    row[10] = ev
         merged.append(tuple(row))
     return apply_perf(merged)
 
@@ -159,6 +188,18 @@ def write_md(cases):
         "# Matriz de casos de prueba",
         "",
         f"**Total:** {len(cases)} casos · **Fuente:** código real + ejecución pipeline QA local",
+        "",
+        "> **Auditoría V6 — 2026-09-26.** Los casos fueron reformulados contra el sistema vigente: vector de **7 features**",
+        "> (Stacking V6, contrato 2026-v3), `ROLE_SECTIONS` **20 / 15 / 12** secciones, **57 modelos Prisma** (54 activos + 3",
+        "> legacy `@@ignore`) y scripts de población legacy deshabilitados. Ninguna cifra de la población demo anterior",
+        "> (660 estudiantes / 23 profesores) describe el estado actual.",
+        "",
+        "> TC-BE-09 y TC-DB-06 se **revalidaron el 2026-09-26** sobre la BD aislada local `127.0.0.1:33316/blenkir_refactor_test`",
+        "> (39/39 `test:integration`; `POST /matriculas` → 201 con persistencia). Los casos en estado **Observado** conservan",
+        "> evidencia histórica (población demo o capturas anteriores al refresh UI/UX) y quedan pendientes de reejecución.",
+        "",
+        "> Las métricas del holdout (accuracy, F1, ROC-AUC) son **resultados científicos del modelo ML**, no casos de QA",
+        "> de software; se documentan en `docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`.",
         "",
         "**Excel:** [matriz-casos.xlsx](matriz-casos.xlsx)",
         "",

@@ -1,0 +1,26 @@
+=== type-check ===
+fecha (local): 2026-09-26 11:33:52
+comando: npm run type-check
+exit code: 0
+duracion_ms: 27557
+------------------------------------------------------------------------
+
+> tesis-dashboard@2.0.0 type-check
+> npm run type-check --workspace=@tesis/shared && npm run type-check --workspace=frontend && npm run type-check --workspace=backend && npm run type-check:tools --workspace=backend
+
+
+> @tesis/shared@2.0.0 type-check
+> tsc --noEmit
+
+
+> frontend@2.0.0 type-check
+> tsc --noEmit
+
+
+> backend@2.0.0 type-check
+> tsc --noEmit
+
+
+> backend@2.0.0 type-check:tools
+> tsc -p tsconfig.tools.json
+

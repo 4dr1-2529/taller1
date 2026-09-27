@@ -18,7 +18,7 @@
 
 | ID | Rol | Verificación | Evidencia |
 |----|-----|--------------|-----------|
-| TC-CN-02 | admin | KPIs 660 estudiantes, gráficos Recharts | dashboard-director.png |
+| TC-CN-02 | admin | KPIs de la población operativa, gráficos Recharts | dashboard-director.png |
 | TC-UAT-02 | docente | Solo ámbito salones asignados | dashboard-profesor.png |
 | TC-UAT-03 | estudiante | `RiskGauge` personal, sin totales globales | dashboard-alumno.png |
 | TC-BE-07 | admin | `kpis.byLevel` en JSON | smoke-tests.mjs L106 |

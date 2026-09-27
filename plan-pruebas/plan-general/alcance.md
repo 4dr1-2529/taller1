@@ -10,9 +10,9 @@
 |------|----------------|-----------------|
 | API | `backend/src/routes/index.ts` | 87 endpoints documentados en `pruebas-caja-blanca/api.md` |
 | Backend tests | `backend/tests/` | 11 suites — ver `pruebas-unitarias/backend.md` |
-| Frontend | `frontend/src/app/(shell)/page.tsx` | `ROLE_SECTIONS` 14/10/6 secciones |
-| BD | `backend/prisma/schema.prisma` | 52 modelos, seed 660+23 |
-| ML | `machine-learning/` | FastAPI :5000, 7 pytest, `best_model.joblib` |
+| Frontend | `frontend/src/data/role-sections.ts` | `ROLE_SECTIONS` 20/15/12 secciones |
+| BD | `backend/prisma/schema.prisma` | 57 modelos Prisma (54 activos + 3 legacy `@@ignore`); BD de pruebas aislada `127.0.0.1:33316` |
+| ML | `machine-learning/` | FastAPI :5000, 32 pruebas en `tests/test_predict.py`, artefactos V6 en `artifacts/synthetic/` |
 
 ---
 

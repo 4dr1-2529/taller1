@@ -1,5 +1,12 @@
 # Evidencias finales — QA local
 
+> **ESTADO (2026-09-26):** las capturas y reportes de esta carpeta son **HISTÓRICAS** — se generaron con el
+> stack local y la población demo **anteriores** al refresh UI/UX y al ciclo V6; se conservan sin modificar.
+> La evidencia **vigente** de esta auditoría está en
+> [`terminal/`](terminal/) (logs `type-check`, `lint`, `unit`, `frontend`, `backend`, `ml`, `build`,
+> `prisma`, `smoke`, `resumen-tests-v6-20260926`), [`api/matricula-post-201-aislado-20260926.json`](api/)
+> y en [`../../docs/evidencias/`](../../docs/evidencias/). Estado global: [../../docs/ESTADO_ACTUAL_V6.md](../../docs/ESTADO_ACTUAL_V6.md).
+
 Capturas **reales** generadas con Playwright (Microsoft Edge) contra el stack en ejecución.
 
 **Fecha de última generación:** ver `resultados/capturas-manifest.json`
@@ -53,7 +60,7 @@ Capturas **reales** generadas con Playwright (Microsoft Edge) contra el stack en
 ```bash
 # 1. MySQL XAMPP + datos demo
 $env:DATABASE_URL="mysql://root@localhost:3306/tesis_dashboard"
-cd backend && npx prisma db push && npm run db:seed && npm run db:seed:demo
+cd backend && npm run db:migrate:deploy && npm run db:seed   # db:seed:demo DESHABILITADO
 
 # 2. Servicios (3 terminales o npm run dev)
 npm run dev:ml    # :5000

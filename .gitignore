@@ -86,3 +86,7 @@ scripts/evidence/node_modules/
 *.sqlite
 
 .tmp/
+
+# Evidencias de la auditoría técnica V6 (excepción a *.log)
+!plan-pruebas/evidencias-finales/terminal/*.log
+!plan-pruebas/pruebas-unitarias/evidencias/*.log

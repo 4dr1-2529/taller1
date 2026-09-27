@@ -18,13 +18,13 @@ No hay suite Jest en frontend; la verificación es **estática + build + UAT cap
 
 ## Lógica de rol testeable en código
 
-### `ROLE_SECTIONS` (`page.tsx` L54–91)
+### `ROLE_SECTIONS` (`frontend/src/data/role-sections.ts`)
 
 | Rol API | Secciones UI | Count |
 |---------|--------------|-------|
-| `admin` | Dashboard … Reportes (14) | TC-FE-03 |
-| `docente` | Sin Profesores, Asignaciones, Matrículas, Reportes (10) | TC-FE-04 |
-| `estudiante` | Dashboard, Notas, Asistencia, LMS, Predicción, Mensajería (6) | TC-FE-05 |
+| `admin` | Dashboard … Reportes (incluye Auditoría, Configuración, Grados y secciones) | **20** · TC-FE-03 |
+| `docente` | Sin Profesores, Asignaciones ni Matrículas (incluye Reportes) | **15** · TC-FE-04 |
+| `estudiante` | Configuración, Dashboard, Cursos, Notas, Asistencia, LMS, Predicción, Alertas, Mensajería, Avisos, Materiales, Actividades | **12** · TC-FE-05 |
 
 ### `section-labels.ts`
 

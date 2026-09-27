@@ -16,7 +16,7 @@ El proyecto es un monorepo JavaScript/TypeScript con tres subsistemas principale
 2. **Backend API:** Node.js 20, Express 4, TypeScript y Prisma 6. Se publica en Railway.
 3. **Servicio de inteligencia artificial:** Python, FastAPI y modelos de aprendizaje automatico. En desarrollo funciona en el puerto 5000; la documentacion indica que no esta desplegado en Railway por defecto.
 
-La base de datos productiva es **MySQL 8**, administrada por el plugin MySQL de Railway. Prisma define el contrato actual con **52 modelos**, que se mapean a tablas con nombres en espanol. El sistema permite gestionar la estructura escolar, usuarios, docentes, estudiantes, cursos, matriculas, notas, asistencia, actividad LMS, predicciones de riesgo, alertas, mensajeria, reportes y auditoria.
+La base de datos productiva es **MySQL 8**, administrada por el plugin MySQL de Railway. Prisma define el contrato actual con **57 modelos Prisma** (54 activos + 3 con `@@ignore`; conteo verificado con `npm run db:count-models`), que se mapean a tablas con nombres en espanol. El sistema permite gestionar la estructura escolar, usuarios, docentes, estudiantes, cursos, matriculas, notas, asistencia, actividad LMS, predicciones de riesgo, alertas, mensajeria, reportes y auditoria.
 
 El acceso esta dividido en tres roles funcionales:
 
@@ -291,7 +291,7 @@ La fuente de verdad actual es [backend/prisma/schema.prisma](../backend/prisma/s
 - Motor previsto: MySQL 8.
 - IDs: `BigInt` autoincrementales.
 - Nombres de tablas: espanol mediante `@@map`.
-- Hay 52 modelos Prisma y, por tanto, 52 tablas de dominio definidas por el schema.
+- Hay **57 modelos Prisma** (54 activos + 3 `@@ignore`) declarados en el schema; los activos se mapean a tablas de dominio mediante `@@map`.
 - Las migraciones se encuentran en `backend/prisma/migrations/`.
 - Las semillas principales son `seed.ts`, `seed-demo.ts` y scripts de asignaciones.
 
@@ -574,18 +574,19 @@ Endpoints:
 
 ### 7.2 Variables de entrada
 
-El backend construye un payload con diez variables:
+El backend construye un payload con **7 variables** (vector vigente V6, `FEATURE_NAMES`):
 
 1. `promedio_general`.
 2. `cursos_desaprobados`.
 3. `asistencia_general`.
 4. `frecuencia_acceso_lms`.
-5. `tiempo_plataforma`.
-6. `tareas_ratio`.
-7. `participacion_actividades`.
-8. `uso_foros`.
-9. `disminucion_actividad`.
-10. `estado`.
+5. `tiempo_interaccion_lms`.
+6. `actividades_realizadas`.
+7. `recursos_consultados`.
+
+> El listado anterior de **diez variables** (`tiempo_plataforma`, `tareas_ratio`,
+> `participacion_actividades`, `uso_foros`, `disminucion_actividad`, `estado`) pertenece al
+> pipeline previo a V6 y se conserva solo en `legacy/documentation/` y `python-ia/`.
 
 ### 7.3 Modelos y respaldo
 
@@ -594,9 +595,12 @@ La documentacion describe un conjunto de modelos:
 - Random Forest.
 - XGBoost o HistGradientBoosting cuando hay incompatibilidad.
 - Stacking.
-- Seleccion del mejor modelo por F1.
+- Seleccion del mejor modelo por F1 — en V6: F1 de **desercion** sobre el split de
+  **validation** (`holdout_used_for_selection=false`); ganador **Stacking**.
 
-Los artefactos esperados son `best_model.joblib`, `features.joblib` y `metrics.json`. Si no hay artefacto cargado, el servicio usa una heuristica documentada para calcular el score.
+Los artefactos esperados son `best_model.joblib`, `features.joblib` y `metrics.json`. En V6, si no
+hay artefactos coherentes el servicio **no** inventa una prediccion: devuelve un error honesto (la
+heuristica ponderada era del pipeline anterior).
 
 ### 7.4 Flujo de una prediccion
 
@@ -704,7 +708,8 @@ npm run db:seed --workspace=backend
 npm run db:seed:demo --workspace=backend
 ```
 
-El Data Seed definitivo V5 (275 usuarios) ya esta importado en produccion. Las cuentas se
+El Data Seed definitivo (275 usuarios; importado originalmente como V5) ya esta importado en
+produccion, sobre el sistema tecnico vigente **BLENKIR V6**. Las cuentas se
 documentan en `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md` y las contraseñas viven solo en las variables
 de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD`.
 No se ejecutan `db:seed`, `db:seed:demo`, `db:push` ni resets sobre produccion.
@@ -839,7 +844,7 @@ El modelo de datos tiene `modeloId`, `periodoId` y `PrediccionFeatureSnapshot`, 
 
 - modelo utilizado;
 - periodo academico;
-- snapshot completo de las diez variables de entrada.
+- snapshot completo de las 7 variables de entrada.
 
 La API devuelve `inputData`, pero devolverlo no equivale a conservarlo en la base de datos. Esto reduce la reproducibilidad de una prediccion historica y debilita la auditoria cientifica de la tesis.
 
@@ -849,9 +854,9 @@ La API devuelve `inputData`, pero devolverlo no equivale a conservarlo en la bas
 
 #### D. Documentacion inconsistente sobre el numero de tablas
 
-El schema actual contiene 52 modelos, confirmado con el conteo de declaraciones `model` en `backend/prisma/schema.prisma`. Sin embargo, el propio schema, `seed.ts`, `README.md`, CHANGELOG, documentos de arquitectura y SQL legacy siguen diciendo 51 tablas.
+El schema actual contiene **57 modelos Prisma** (54 activos + 3 `@@ignore`), confirmado con `npm run db:count-models` (reconteo 2026‑09‑27) y con el conteo de declaraciones `model` en `backend/prisma/schema.prisma`. Las cifras anteriores —**52 modelos** y **51 tablas**— describen etapas anteriores del schema.
 
-Esto no rompe la ejecucion, pero puede producir errores en la memoria de tesis, diagramas ER, auditorias ISO y presentaciones. El informe actual usa 52 como cifra vigente y deja 51 como referencia historica.
+Esto no rompe la ejecucion, pero puede producir errores en la memoria de tesis, diagramas ER, auditorias ISO y presentaciones. Cifra vigente: **57 modelos Prisma**; **51 tablas** queda solo como referencia historica (diseño SQL de `database/blenkir-v3/`). En esta revision se corrigieron los comentarios del `seed.ts` y los documentos que todavía fijaban 51 tablas como estado actual.
 
 #### E. Scripts legacy mezclan nombres de schema antiguos
 

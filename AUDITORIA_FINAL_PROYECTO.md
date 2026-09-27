@@ -3,9 +3,13 @@
 ## 1. Resumen
 Se corrigieron los controles de reset demo, logout, recuperación P3009, configuración MySQL, contrato ML y documentación principal. La demo de **esa fase** quedó definida para 1 director, 3 profesores y 9 estudiantes ficticios.
 
-> ⚠️ **Histórico.** Esa población demo ya fue reemplazada por el **Data Seed definitivo V5**
-> (275 usuarios reales en producción). El estado vigente se documenta en
-> [`docs/CIERRE_INTEGRAL_BLENKIR_V5_2026.md`](docs/CIERRE_INTEGRAL_BLENKIR_V5_2026.md).
+> ⚠️ **HISTÓRICO — todo este documento describe una fase anterior (no es el estado vigente).**
+> La población demo de esa fase (660 estudiantes / 23 profesores, y antes 1 director · 3
+> profesores · 9 estudiantes) ya fue reemplazada por la **población operativa/demo persistida**
+> vigente: **275 usuarios (1 director · 24 profesores · 250 estudiantes)**, semilla importada
+> originalmente como **Data Seed V5** y ejecutándose sobre el sistema técnico **BLENKIR V6**.
+> Tampoco son «datos reales institucionales» (aún no disponibles).
+> El estado vigente se documenta en [`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md).
 
 ## 2. Problemas encontrados
 - Seed demo heredado para 660 estudiantes y 23 profesores.
@@ -32,7 +36,8 @@ Las contraseñas demo se leen exclusivamente desde `DEMO_PASSWORD`. `JWT_SECRET`
 Prisma declara `provider = "mysql"`; Docker usa `mysql:8`. El conteo ejecutado fue: `Modelos Prisma: 52`. No se ejecutó reset contra una base real.
 
 ## 7. Machine Learning
-El vector vigente tiene 9 variables y excluye `estado`. `ML_DATA_MODE=real` exige `DATASET_PATH` y detiene el entrenamiento si no existe. `ML_DATA_MODE=demo` es solo demostración técnica. No se inventó dataset real ni métrica científica.
+El vector de **esa fase** tenía 9 variables y excluía `estado` (hoy el vector vigente V6 tiene
+**7 variables** y target binario `permanece`/`deserta`). `ML_DATA_MODE=real` exige `DATASET_PATH` y detiene el entrenamiento si no existe. `ML_DATA_MODE=demo` es solo demostración técnica. No se inventó dataset real ni métrica científica.
 
 ## 8. Frontend
 Se añadió llamada de logout backend antes de limpiar almacenamiento local. `npm run lint` y el type-check pasaron.

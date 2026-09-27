@@ -1,5 +1,13 @@
 # BLENKIR — Cuentas de demo (Dataset Definitivo 2026 V5)
 
+> **ESTADO: VIGENTE — población operativa.** No es un documento superado y tampoco es "ciencia":
+> lista las cuentas reales con las que trabaja la aplicación (la única población visible en el panel).
+> **No confundir** con el dataset científico-sintético V6 de ML (`BLENKIR_V6_SYNTH_20260924`) ni con los
+> datos reales futuros autorizados. El "V5" del título identifica la versión del *seed*, no la del sistema.
+> Este listado proviene de la importación definitiva documentada en
+> [CIERRE_INTEGRAL_BLENKIR_V5_2026.md](CIERRE_INTEGRAL_BLENKIR_V5_2026.md) (2026-09-24); la auditoría V6
+> **no consultó** la base de datos productiva, por lo que el recuento no se re-verificó hoy.
+
 > **Este archivo no contiene contraseñas.** Cada cuenta usa la variable de entorno de Railway correspondiente a su rol:
 >
 > - **Director / admin** → usa `DIRECTOR_INITIAL_PASSWORD`
