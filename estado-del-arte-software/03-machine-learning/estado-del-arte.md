@@ -4,6 +4,14 @@
 
 **Evidencia:** `machine-learning/train.py`, `machine-learning/app/features.py`, `machine-learning/app/main.py`.
 
+> ⚠️ **Nota de vigencia (2026‑09‑27).** La descripción de este capítulo corresponde al **pipeline
+> anterior**: 10 variables en `FEATURE_NAMES` (hoy **7**), target multiclase `bajo/medio/alto` con
+> 3 clases (hoy **binario** `permanece`/`deserta`, `LEVEL_MAP` ya no existe y las bandas de riesgo
+> las deriva `app/thresholds.py`), `generate_synthetic_data()` en `train.py` (ya no existe: los datos
+> se leen del CSV sintético-científico V6) y «selección por F1-score ponderado» (hoy F1 de deserción
+> sobre **validation**, `holdout_used_for_selection=false`, ganador **Stacking**). La argumentación
+> con DOIs se conserva **sin modificar**; estado vigente: `docs/ml/PIPELINE_ML_V6.md`.
+
 ---
 
 ## Introducción

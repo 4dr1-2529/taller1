@@ -21,7 +21,9 @@ Verificar por rol:
 2. Estudiante no puede acceder a rutas `/students` (403)
 3. Profesor solo ve sus secciones en filtros
 
-Data Seed: ya está importado en producción (V5). **No ejecutar** `db:seed`, `db:seed:demo`,
+Data Seed: la **población operativa/demo** (1 director · 24 profesores · 250 estudiantes = 275
+cuentas) ya está importada en producción; ese seed se importó originalmente como **V5** y corre
+sobre el sistema técnico vigente **BLENKIR V6**. **No ejecutar** `db:seed`, `db:seed:demo`,
 `db:push` ni ningún reset sobre esa BD.
 
 Guía: [DEPLOY.md](DEPLOY.md)
@@ -34,13 +36,27 @@ Guía: [DEPLOY.md](DEPLOY.md)
 # Desde tesis-dashboard/
 npm run type-check        # TypeScript frontend + backend
 npm run test              # Unitarios backend + ML Python
-npm run test:backend      # Solo backend (58 tests aprox.)
+npm run test:backend      # Solo backend (81 pruebas)
 npm run test:smoke        # Requiere API :4000 y ML :5000 en ejecución
 npm run lint              # ESLint frontend
 
 cd backend && npm run test
 cd machine-learning && python tests/test_predict.py
 ```
+
+### Resultados verificados (revalidación 2026‑09‑27)
+
+| Suite | Resultado |
+|-------|-----------|
+| `npm run type-check` | ✅ 0 errores |
+| `npm run lint` | ✅ 0 errores |
+| `npm run test:unit` | ✅ 4/4 |
+| `npm run test:backend` | ✅ 81/81 |
+| `npm run test --workspace=frontend` | ✅ 40/40 |
+| `npm run ml:test` | ✅ 32/32 |
+| `npm run build` | ✅ 0 errores |
+| Integración (BD aislada) | ✅ 39/39 (ejecución registrada 2026‑09‑26) |
+| `npm run test:smoke` | ⛔ **NO DISPONIBLE**: requiere las tres `*_INITIAL_PASSWORD` de rol en el entorno |
 
 ## Cobertura unitaria backend
 

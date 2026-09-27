@@ -45,9 +45,9 @@
 
 | Entidad | Cantidad | Origen |
 |---------|----------|--------|
-| Estudiantes | 250 | Data Seed definitivo V5 (Railway) |
-| Profesores | 24 | Data Seed definitivo V5 (Railway) |
-| Salones | 22 | Data Seed definitivo V5 (estructura) |
+| Estudiantes | 250 | Población operativa (semilla importada originalmente como V5) — Railway |
+| Profesores | 24 | Población operativa (semilla importada originalmente como V5) — Railway |
+| Salones | 22 | Estructura del seed operativo (BLENKIR V6) |
 | Contraseñas | variables de entorno por rol | `DIRECTOR/TEACHER/STUDENT_INITIAL_PASSWORD` |
 
 ---

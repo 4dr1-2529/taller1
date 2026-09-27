@@ -1,4 +1,9 @@
-# API Blenkir 2026-v2
+# API BLENKIR 2026
+
+> **Nota de versión:** «2026‑v2» es la **versión de release del proyecto/backend**
+> (`backend/package.json` → `2.0.0`, `CHANGELOG.md` → `2026-v2`); **no** es la versión del dataset
+> ML (que es `BLENKIR_V6_SYNTH_20260924`, contrato `2026-v3`). Los contratos de esta tabla no
+> cambian con ese número.
 
 Base: /api/v1. JWT Bearer, respuestas {success,message,data} y errores con estado HTTP. Identificadores BigInt se transmiten como strings. La validación backend es definitiva.
 

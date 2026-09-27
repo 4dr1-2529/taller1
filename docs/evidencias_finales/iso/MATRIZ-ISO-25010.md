@@ -1,6 +1,11 @@
 # Matriz ISO 25010 — Evidencias visuales locales
 
-Generado: 2026-06-24T00:01:13.415Z · Entorno **local** (sin Railway/Vercel)
+Generado: 2026-09-27T19:01:36.397Z · Entorno **local** (sin Railway/Vercel)
+
+> **Notas de procedencia.** Los KPIs y listados de esta matriz se obtienen de la **BD del entorno
+> de prueba**: la matriz no fija cifras de población. Las filas marcadas **HISTÓRICA** corresponden
+> a capturas/métricas del pipeline previo a V6 (ver `docs/evidencias/README.md`); **no** describen
+> el modelo vigente `BLENKIR_V6_BIN_20260924`.
 
 | Archivo evidencia | Característica ISO 25010 | Qué demuestra |
 |-------------------|--------------------------|---------------|
@@ -10,10 +15,10 @@ Generado: 2026-06-24T00:01:13.415Z · Entorno **local** (sin Railway/Vercel)
 | capturas/01-login/login-profesor-sesion-activa.png | Funcionalidad | Autenticación Profesor con RBAC |
 | capturas/01-login/login-estudiante-sesion-activa.png | Funcionalidad | Autenticación Alumno con vista restringida |
 | capturas/14-qa/login-error-controlado.png | Seguridad | Error controlado ante credenciales inválidas |
-| capturas/02-dashboard/dashboard-director.png | Funcionalidad · Usabilidad | KPIs reales desde MySQL local (660 alumnos) |
+| capturas/02-dashboard/dashboard-director.png | Funcionalidad · Usabilidad | KPIs obtenidos de la BD del entorno de prueba |
 | capturas/02-dashboard/dashboard-profesor.png | Funcionalidad | Dashboard docente con ámbito de salones |
 | capturas/02-dashboard/dashboard-alumno.png | Usabilidad | Vista personal del estudiante |
-| capturas/03-profesores/profesores-listado.png | Funcionalidad | Listado 23 profesores reales |
+| capturas/03-profesores/profesores-listado.png | Funcionalidad | Listado de profesores del dataset operativo |
 | capturas/03-profesores/profesor-detalle.png | Funcionalidad | Detalle docente con datos de BD |
 | capturas/03-profesores/asignaciones-docentes.png | Funcionalidad | Asignaciones tutoría y polidocencia |
 | capturas/03-profesores/carga-academica-asignaciones.png | Funcionalidad | Carga académica por docente |
@@ -33,15 +38,15 @@ Generado: 2026-06-24T00:01:13.415Z · Entorno **local** (sin Railway/Vercel)
 | capturas/09-reportes/reportes-vista-completa.png | Funcionalidad | Módulo reportes académicos |
 | capturas/09-reportes/reporte-excel-estudiantes.png | Funcionalidad | Exportación Excel estudiantes |
 | capturas/09-reportes/reporte-pdf-riesgo-curso.png | Funcionalidad | Exportación PDF riesgo por curso |
-| ia/matriz-confusion.png | Funcionalidad | Matriz de confusión — modelo entrenado local |
-| ia/curva-roc.png | Funcionalidad | Curva ROC multiclase OvR |
-| ia/feature-importance.png | Mantenibilidad | Importancia de variables (explicabilidad) |
-| ia/metricas-best-model.png | Funcionalidad | Accuracy, Precision, Recall, F1 agregados |
-| ia/metricas-accuracy.png | Funcionalidad | Métrica Accuracy en test set |
-| ia/metricas-precision.png | Funcionalidad | Métrica Precision weighted |
-| ia/metricas-recall.png | Funcionalidad | Métrica Recall weighted |
-| ia/metricas-f1.png | Funcionalidad | Métrica F1-Score weighted |
-| ia/metricas-auc.png | Funcionalidad | AUC macro one-vs-rest |
+| ia/matriz-confusion.png | Funcionalidad | Matriz de confusión — evidencia HISTÓRICA (pipeline previo a V6) |
+| ia/curva-roc.png | Funcionalidad | Curva ROC — evidencia HISTÓRICA (pipeline multiclase previo a V6) |
+| ia/feature-importance.png | Mantenibilidad | Importancia de variables — evidencia HISTÓRICA |
+| ia/metricas-best-model.png | Funcionalidad | Accuracy, Precision, Recall, F1 — evidencia HISTÓRICA |
+| ia/metricas-accuracy.png | Funcionalidad | Accuracy en test set — evidencia HISTÓRICA |
+| ia/metricas-precision.png | Funcionalidad | Precision weighted — evidencia HISTÓRICA |
+| ia/metricas-recall.png | Funcionalidad | Recall weighted — evidencia HISTÓRICA |
+| ia/metricas-f1.png | Funcionalidad | F1-Score weighted — evidencia HISTÓRICA |
+| ia/metricas-auc.png | Funcionalidad | AUC macro one-vs-rest — evidencia HISTÓRICA |
 | base_datos/diagrama-er-blenkir.png | Mantenibilidad | ER actualizado desde schema.prisma |
 | arquitectura/arquitectura-general.png | Portabilidad | Capas del sistema en local |
 | arquitectura/arquitectura-modelo-ia.png | Mantenibilidad | Pipeline ensemble ML |

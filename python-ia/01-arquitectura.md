@@ -21,7 +21,7 @@ El módulo IA es un **servicio FastAPI independiente** (`machine-learning/`, pue
 
 1. Frontend → `POST /predict` (Express, JWT).
 2. `predict.controller.ts` lee estudiante, notas, LMS desde MySQL vía Prisma.
-3. `buildMlPayload()` arma JSON con las 10 variables.
+3. `buildMlPayload()` arma JSON con las 7 variables del vector V6.
 4. `fetch(ML_SERVICE_URL/predict)` → FastAPI.
 5. `build_feature_vector()` → `model.predict()` + `predict_proba()`.
 6. Respuesta con `score`, `level`, `factors`, `recommendation` (+ campos tesis en español).

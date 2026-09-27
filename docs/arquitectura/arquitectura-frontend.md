@@ -21,11 +21,16 @@ Capa de **presentación** con dashboards diferenciados por rol. Consume exclusiv
 
 ## 3. Patrón por rol
 
+Fuente de verdad: `frontend/src/data/role-sections.ts` (`ROLE_SECTIONS`) — **20 / 15 / 12 secciones**.
+
 | Rol | Dashboard | Servicio | Secciones |
 |-----|-----------|----------|-----------|
-| Director | `RoleDashboard` | `directorService` | 14 |
-| Profesor | `ProfessorDashboard` | `profesorService` | 10 |
-| Estudiante | `StudentDashboard` | `estudianteService` | 6 |
+| Director / administrador | `RoleDashboard` | `directorService` | **20** |
+| Profesor / docente | `ProfessorDashboard` | `profesorService` | **15** |
+| Estudiante | `StudentDashboard` | `estudianteService` | **12** |
+
+Los contadores de KPI, listados y gráficos **no están hardcodeados**: se obtienen de la API/BD en cada
+render.
 
 ---
 

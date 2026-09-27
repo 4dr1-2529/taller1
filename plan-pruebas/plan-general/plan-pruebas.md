@@ -31,7 +31,7 @@ Validar de forma **ejecutable y trazable** el sistema educativo predictivo (Next
 | Web | `http://localhost:3029` | `npm run dev:web` |
 | ML | `http://localhost:5000` | `npm run dev:ml` |
 
-**Datos:** Data Seed definitivo V5 en Railway (275 usuarios · 250 estudiantes · 24 profesores)
+**Datos:** población operativa/demo en Railway — 275 usuarios · 250 estudiantes · 24 profesores (semilla importada originalmente como V5; sistema técnico vigente **BLENKIR V6**)
 **Credenciales:** `director@blenkir.edu.pe` · `prof001@blenkir.edu.pe` · `est0002@alumnos.blenkir.edu.pe` — contraseñas en `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD` (variables de entorno, sin valores publicados)
 
 ## 4. Herramientas

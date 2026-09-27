@@ -16,13 +16,12 @@
 - `frontend/.env.local` → `NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1`
 - `backend/.env` → `DATABASE_URL` apuntando a MySQL local
 
-### Datos demo
+### Datos (BD local / aislada — nunca producción)
 
 ```bash
-npm run db:push
-npm run db:seed
+npm run db:push      # solo sobre la BD local recién creada (si no, usar db:migrate)
+npm run db:seed      # estructura + RBAC (db:seed:structure)
 # db:seed:demo DESHABILITADO (legacy-population-disabled.mjs): no puebla la BD
-npm run ml:train
 ```
 
 ---

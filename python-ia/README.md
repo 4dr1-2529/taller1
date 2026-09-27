@@ -21,12 +21,17 @@ Análisis del módulo `machine-learning/` de **Tesis Dashboard v2.0**. Todo el c
 | [06-metaaprendiz.md](./06-metaaprendiz.md) | Meta-estimador del ensemble |
 | [07-feature-engineering.md](./07-feature-engineering.md) | `build_feature_vector`, factores |
 | [08-preprocesamiento.md](./08-preprocesamiento.md) | Validación, normalización, split |
-| [09-variables.md](./09-variables.md) | 10 variables y rangos |
+| [09-variables.md](./09-variables.md) | 7 variables y rangos |
 | [10-metricas.md](./10-metricas.md) | Accuracy, F1, matriz, ROC/AUC |
 
 ## Diagramas
 
-Generados por `scripts/generate_diagrams.py` (11 diagramas, incl. ROC y AUC):
+Generados por `scripts/generate_diagrams.py` (11 diagramas, incl. ROC y AUC). Las imágenes se
+conservan como **historia** (`HISTÓRICO`, pre-V6):
+
+> ⛔ `python-ia/scripts/generate_diagrams.py` está marcado **LEGACY / NO USAR PARA EVIDENCIA V6**:
+> lee `machine-learning/models/` y usa `generate_synthetic_data(2500)` con target multiclase
+> 0/1/2, que ya no existe en el pipeline V6. Si se ejecuta, termina con `exit 1` sin generar nada.
 
 ![Arquitectura](./diagramas/01-arquitectura.png)
 
@@ -35,11 +40,10 @@ Generados por `scripts/generate_diagrams.py` (11 diagramas, incl. ROC y AUC):
 ```bash
 cd machine-learning
 pip install -r requirements.txt
-python train.py
 python -m uvicorn app.main:app --port 5000
 
-cd ..
-python python-ia/scripts/generate_diagrams.py
+# ⛔ LEGACY (histórico, pre-V6) — no genera evidencia V6:
+# python python-ia/scripts/generate_diagrams.py
 ```
 
 ## Artefactos del modelo

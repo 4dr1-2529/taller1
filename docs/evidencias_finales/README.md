@@ -12,6 +12,12 @@
 > re-consulta a la base de datos en esta auditoría**. URLs activas: backend
 > `https://backend-production-fcb1.up.railway.app/api/v1` y frontend
 > `https://taller1-frontend.vercel.app`. Ver [../ESTADO_ACTUAL_V6.md](../ESTADO_ACTUAL_V6.md).
+>
+> **2026‑09‑27 — excepción controlada:** se regeneraron **solo los diagramas** de esta carpeta
+> (`arquitectura/`, `diagramas/`, `api/`, `iso/`) con `generate-architecture-diagrams.py` corregido
+> (57 modelos Prisma, 86 casos, estados ISO en lugar de porcentajes, target binario) y
+> `iso/MATRIZ-ISO-25010.md`. **Capturas, JSON y logs no se tocaron**: siguen siendo evidencia
+> histórica de su ejecución.
 
 > Generado con datos reales del sistema en ejecución local (MySQL XAMPP + Backend :4000 + Frontend :3029 + ML :5000).  
 > **No se utilizó Railway ni Vercel.**
@@ -85,13 +91,18 @@ O paso a paso:
 ```bash
 node scripts/evidence/capture-ui.mjs
 node scripts/evidence/capture-supplement.mjs
-python scripts/evidence/generate-ml-charts.py
 python scripts/evidence/generate-er-diagram.py
 python scripts/evidence/generate-architecture-diagrams.py
 node scripts/evidence/run-qa.mjs
 node scripts/evidence/capture-qa-screens.mjs
 node scripts/evidence/generate-iso-matrix.mjs
 ```
+
+> ⛔ `python scripts/evidence/generate-ml-charts.py` es **LEGACY / DESHABILITADO**: generaba
+> gráficos del pipeline anterior (multiclase, 2500 muestras, `machine-learning/models`) y termina
+> con `exit 1` sin escribir nada. Las imágenes que ya produjo están clasificadas como
+> **HISTÓRICAS** en [`docs/evidencias/README.md`](../evidencias/README.md); las métricas V6 están
+> en [`docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`](../ml/RESULTADOS_EXPERIMENTALES_V6.md).
 
 ## Notas técnicas
 

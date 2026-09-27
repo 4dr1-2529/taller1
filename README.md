@@ -62,8 +62,12 @@ No existe un cuarto rol.
 
 ### Tres poblaciones distintas (no confundirlas)
 
-1. **Población operativa/demo**: los registros académicos reales que usa la aplicación en producción
-   (notas, asistencia, matrículas, actividad LMS). Es la única que el panel muestra como datos institucionales.
+1. **Población operativa/demo persistida**: los registros académicos con los que trabaja la aplicación
+   (notas, asistencia, matrículas, actividad LMS) — **250 estudiantes · 24 profesores · 1 director =
+   275 usuarios**. Es semilla operativa importada originalmente como **V5**, ejecutándose sobre el
+   sistema técnico vigente **BLENKIR V6**. Es la única población que el panel muestra, pero **no** se
+   la debe presentar como «datos reales institucionales»: la BD productiva no se consultó en esta
+   auditoría.
 2. **Dataset científico-sintético V6 de ML** (`BLENKIR_V6_SYNTH_20260924`, 225 estudiantes sintéticos /
    450 registros): solo alimenta el entrenamiento, la validación y el holdout del modelo. Nunca se presenta
    como prevalencia real de la institución.

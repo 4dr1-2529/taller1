@@ -22,7 +22,10 @@
 5. ALERTAS → listar y actualizar estado.
 6. ML → health y predict.
 
-## Cuentas (Data Seed V5)
+## Cuentas (población operativa/demo — semilla importada originalmente como V5)
+
+El sistema técnico vigente es **BLENKIR V6**; "V5" nombra únicamente la versión histórica de la
+semilla operativa (1 director · 24 profesores · 250 estudiantes = 275 cuentas).
 
 Las contraseñas **no se publican**: cada rol usa su variable de entorno en Railway
 (`DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`, `STUDENT_INITIAL_PASSWORD`).
