@@ -32,9 +32,9 @@ un archivo: exige una ejecución o un registro comprobable.
 | 2 | Eficiencia del rendimiento | 📋 PLANIFICADO | Plan documentado en `plan-pruebas/pruebas-rendimiento/` | No se ejecutó ninguna prueba de carga en esta auditoría |
 | 3 | Compatibilidad | 🔄 PARCIAL | `GET /health` de backend y ML → 200 (2026-09-26); CORS con whitelist | Conectividad efectiva Backend → `ML_SERVICE_URL`: **NO VERIFICABLE DESDE EL ENTORNO** (el endpoint exige JWT) |
 | 4 | Usabilidad | 🔄 PARCIAL | Capturas UAT históricas + `permissions.test.mjs` | TC-UAT-01 **Observado**: la ejecución registrada cubrió 14 secciones y hoy son 20 (reejecución pendiente) |
-| 5 | Fiabilidad | ⛔ BLOQUEADO | 39/39 pruebas de integración en BD aislada; `/health` de producción → 200 | `npm run test:smoke` NO DISPONIBLE (faltan `*_INITIAL_PASSWORD`); SonarCloud en PR #5: Quality Gate **FAILED** (Reliability Rating on New Code = C) |
+| 5 | Fiabilidad | ⛔ BLOQUEADO | 39/39 pruebas de integración en BD aislada; `/health` de producción → 200 | `npm run test:smoke` NO DISPONIBLE (faltan `*_INITIAL_PASSWORD`); SonarCloud: PR #5 **FAILED** (`C Reliability`) y `main` **FAILED** (`D Reliability` + `D Security`) |
 | 6 | Seguridad | ✅ VERIFICADO | `permissions`/`roles-*`/`estudiante-scope`/`teacher-scope` en verde e integración de autenticación (login, refresh, logout, cambio de clave) | Sin prueba de intrusión; smoke de producción no ejecutado |
-| 7 | Mantenibilidad | ✅ VERIFICADO | `npm run type-check` 0 errores · `lint` 0 avisos · `build` correcto · 153 pruebas automatizadas en verde | El gate de SonarCloud debe pasar a verde para cerrar Fiabilidad |
+| 7 | Mantenibilidad | ✅ VERIFICADO | `npm run type-check` 0 errores · `lint` 0 avisos · `build` correcto · 153 pruebas automatizadas en verde | El Quality Gate de `main` debe pasar a verde para cerrar Fiabilidad (hoy `D Reliability` + `D Security` en New Code) |
 | 8 | Portabilidad | 📋 PLANIFICADO | Workspaces npm; `machine-learning/Dockerfile` documentado en `docs/DEPLOY.md` | Build Docker **NO EJECUTADO** (Docker no instalado en este entorno) |
 
 ---
@@ -130,9 +130,9 @@ un archivo: exige una ejecución o un registro comprobable.
 |---------|----------------|
 | Modularidad | controllers / services / validators |
 | Reusabilidad | hooks, ui components, `@tesis/shared` |
-| Analizabilidad | ESLint 0 avisos + SonarCloud real (PR #5): Quality Gate **FAILED** por Reliability Rating on New Code = C |
+| Analizabilidad | ESLint 0 avisos + SonarCloud real: PR #5 **FAILED** (`C Reliability`), `main` **FAILED** (`D Reliability` + `D Security`), PR #6 (solo documentación) **PASSED** |
 | Modificabilidad | Prisma migrations versionadas |
-| Capacidad de prueba | 81 tests backend (`backend/tests/`) + 32 ML | `npm run test:backend`, `npm run ml:test` |
+| Capacidad de prueba | 81 tests backend (`backend/tests/`) + 32 ML · `npm run test:backend`, `npm run ml:test` |
 
 ### 3.7 Portabilidad
 

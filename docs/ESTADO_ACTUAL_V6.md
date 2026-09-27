@@ -5,6 +5,13 @@
 > explícitamente como **NO VERIFICABLE DESDE EL ENTORNO** o **NO EJECUTADO**. No contiene resultados de la
 > investigación ni datos de estudiantes reales.
 
+> **REVALIDACIÓN — 2026-09-27.** Se corrigieron dos hallazgos de la auditoría original: (1) el estado real
+> del Quality Gate de SonarCloud — `main` está en **FAILED por `D Reliability` *y* `D Security`** (no solo
+> «C Reliability», que fue el fallo del PR #5) — con el detalle de los 27 issues que lo sostienen; y (2) un
+> **falso positivo del barrido de secretos**: el `JWT_SECRET` de 53 caracteres es un placeholder de
+> documentación, no un secreto versionado. Las secciones afectadas quedan actualizadas y enlazan su
+> evidencia.
+
 > **ADVERTENCIA — MODELO EXPERIMENTAL · DATOS CIENTÍFICO-SINTÉTICOS.** No representan todavía evidencia
 > científica obtenida con estudiantes reales de la institución.
 
@@ -37,7 +44,7 @@ Checks de `main` en GitHub (2026-09-26):
 | `Vercel` | success |
 | `TALLER1 - backend` (Railway) | success |
 | `TALLER1 - ml` (Railway) | success |
-| `SonarCloud Code Analysis` | **failure** |
+| `SonarCloud Code Analysis` | **failure** — Quality Gate de `main`: `D Reliability Rating on New Code` y `D Security Rating on New Code` (ambos exigían ≥ A) |
 
 Evidencia: `docs/evidencias/sonarqube/sonarcloud-estado-20260926.json`.
 
@@ -132,17 +139,40 @@ Observados: TC-BE-08, TC-DB-04, TC-SEC-07, TC-CN-02, TC-CN-04, TC-UAT-01.
 | ISO/IEC 29119 | Plan enlazado a la matriz real (86 casos) y separación entre pruebas de software y métricas ML | `docs/iso-29119/plan-pruebas.md` |
 | ISO 9001 | Solo referencias técnicas obsoletas corregidas | `docs/iso-9001/macroproceso-academico.md` |
 
-### SonarQube / SonarCloud (FASE 15)
+### SonarQube / SonarCloud (FASE 15 · revalidado 2026-09-27)
 
-- **Análisis real ejecutado** por CI en el PR #5 y en `main` (no simulado).
-- Resultado: **Quality Gate FAILED** — `C Reliability Rating on New Code` (se requería ≥ A).
-- No hay `SONAR_TOKEN` en este entorno, por lo que no se lanzó un análisis nuevo ni se modificó configuración.
+- **Análisis real ejecutado** por CI (no simulado). Tres resultados distintos que **no deben
+  confundirse**:
+
+| Ámbito | Head | Resultado | Condiciones incumplidas |
+|--------|------|-----------|--------------------------|
+| PR #5 (ya fusionado) | `1c4f5ae` | **Quality Gate FAILED** | `C Reliability Rating on New Code` (se exigía ≥ A) |
+| `main` tras el squash de PR #5 | `d3c0b80` | **Quality Gate FAILED** (check `SonarCloud Code Analysis` = `failure`) | `D Reliability Rating on New Code` **y** `D Security Rating on New Code` (ambos exigían ≥ A) |
+| PR #6 (esta rama) | `0e59217` | **Quality Gate PASSED** | ninguna: 7 issues nuevos, 0 Security Hotspots, 0,0 % cobertura y 0,0 % duplicación en código nuevo |
+
+- **Que el PR #6 pase el Quality Gate NO significa que los problemas de `main` estén corregidos.** El
+  PR #6 es documentación/QA/branding y su diff no introduce código funcional: solo enmascara el estado
+  real, que sigue siendo **FAILED en `main`**. **No se declaró «Sonar resuelto».**
+- **Issues exactos que sostienen los ratings D de `main`** (API pública de SonarCloud, rama `main`,
+  `sinceLeakPeriod=true`): **27 issues abiertos de New Code** — 20 `BUG` (14 MAJOR, 6 CRITICAL) y
+  7 `VULNERABILITY` (1 CRITICAL, 2 MAJOR, 4 MINOR). Reparto por origen:
+  - **1 introducido por el PR #5**: `frontend/src/components/views/LearningView.tsx:157`
+    (`typescript:S9011`, MAJOR — botón sin `type`); verificado con `git blame` → la línea pertenece al
+    commit `d3c0b80` (el squash del PR #5).
+  - **26 preexistentes**: el PR #5 solo tocó **58 ficheros, todos en `frontend/`**; el resto están en
+    `backend/scripts` (16), `backend/tests` (6), `backend/prisma` (2),
+    `machine-learning/app/thresholds.py` (1) y `scripts/prepare-migration.cjs` (1).
+- El periodo de New Code de `main` arranca a principios de junio de 2026 (frontera deducida: issues con
+  primera detección ≤ 2026-06-05 **no** son New Code; ≥ 2026-06-09 sí) — **no equivale a «código del
+  PR #5»**.
+- No hay `SONAR_TOKEN` en este entorno: no se lanzó un análisis nuevo, no se modificó el Quality Gate y
+  no se reclasificó ningún issue.
 - Evidencia: `docs/evidencias/sonarqube/sonarcloud-estado-20260926.json`,
-  `docs/evidencias/sonarqube/sonarcloud-quality-gate-pr5-20260926.json`.
-- **PR #6 (esta rama):** el check `SonarCloud Code Analysis` terminó en **`success`**
-  (2026-09-26T17:27:39Z), junto con `validate` y `Vercel`; su diff es solo documentación, sin «New Code»
-  funcional. **No** significa que el proyecto esté en verde: el Quality Gate de `main` y del PR #5 sigue
-  fallando. Evidencia: `docs/evidencias/sonarqube/sonarcloud-estado-pr6.json`.
+  `docs/evidencias/sonarqube/sonarcloud-quality-gate-pr5-20260926.json`,
+  `docs/evidencias/sonarqube/sonarcloud-main-newcode-issues-20260927.json` (27 issues con regla,
+  severidad, fichero, línea, mensaje y origen) y `docs/evidencias/sonarqube/sonarcloud-estado-pr6.json`.
+- **Pendiente declarado**: corregir esos 27 issues (26 de ellos previos al PR #5) en una rama
+  **`fix/sonar-main-quality-gate`, a crear después de fusionar el PR #6** — fuera del alcance de este PR.
 
 ### Docker (FASE 16)
 
@@ -166,17 +196,29 @@ Verificado en código y por ejecución:
 | Auditoría | `audit_log` / `GET /admin/audit-logs` |
 | Pruebas | 39/39 de integración (login, refresh, logout, cambio de clave) en BD aislada |
 
-Barrido de secretos (4431 ficheros, solo ficheros y conteos): **sin** tokens GitHub, AWS, Sonar, claves PEM
-ni claves Stripe. Hallazgos:
+Barrido de secretos (**4508** ficheros del árbol de trabajo, de los cuales **943** están versionados por
+git; solo ficheros, conteos y si están trackeados — re-ejecutado con clasificación corregida el
+2026-09-27): **sin** tokens GitHub, AWS, Sonar, claves PEM ni claves Stripe. Hallazgos:
 
-1. **`backend/.env.example` (trackeado) contiene un `JWT_SECRET` de 53 caracteres**, que se repite en tres
-   documentos históricos (`legacy/documentation/README.md`, `legacy/documentation/backend/README.md`,
-   `legacy/documentation/docs/DEPLOY.md`). No es posible determinar desde aquí si coincide con el de
-   producción (las variables de Railway no son legibles) → **se recomienda rotarlo**.
+1. **`JWT_SECRET`: placeholder confirmado — cero secretos reales versionados.** `backend/.env.example`
+   (idéntico en `origin/main` y en `chore/system-audit-v6`) contiene
+   `JWT_SECRET=<GENERAR_SECRETO_ALEATORIO_DE_AL_MENOS_64_CARACTERES>`: es un **placeholder de
+   documentación**, no un secreto; sus 53 caracteres son los del propio texto. El mismo texto se repite en
+   tres documentos históricos (`legacy/documentation/README.md`,
+   `legacy/documentation/backend/README.md`, `legacy/documentation/docs/DEPLOY.md`). Los dos únicos usos
+   restantes **generan el valor en ejecución** (`.github/workflows/ci.yml` y
+   `backend/tests/fixtures/definitive-domain-equivalence.mjs`). **Resultado del barrido:
+   `jwt_secret_real_versionado = 0`.** El barrido original clasificó ese placeholder como «valor»
+   (falso positivo) y la lógica se corrigió; por ello **la rotación del secreto de producción NO puede
+   recomendarse como obligatoria basándose en este hallazgo**. El **valor productivo no fue
+   inspeccionado** (las variables de entorno de Railway no son legibles desde este entorno).
 2. Contraseñas demo históricas (`DEMO_PASSWORD`) documentadas en `legacy/documentation/README.md`,
    `AUDITORIA_FINAL_PROYECTO.md` y `database/blenkir-v3/README.md`: son credenciales de la población demo
    antigua, ya deshabilitada.
-3. `DATABASE_URL` hallados en docs = URL local sin contraseña (`mysql://root@localhost:3306/…`).
+3. `DATABASE_URL` en docs: **7 sin password** (`mysql://root@localhost:3306/…`), **1 con password
+   placeholder** (`SU_CLAVE`) y **0 con una clave real**.
+4. 71 coincidencias del patrón heurístico `password_literal` (pruebas, validadores, scripts y docs). Los
+   ficheros de código productivo revisados no contienen una credencial de producción en claro.
 
 Evidencia: `docs/evidencias/seguridad/barrido-secretos-20260926.json`,
 `docs/evidencias/seguridad/difusion-secretos-documentados-20260926.json`.
@@ -193,7 +235,7 @@ Evidencia: `docs/evidencias/seguridad/barrido-secretos-20260926.json`,
 | Pruebas de carga / rendimiento | **NO EJECUTADAS** |
 | Build y despliegue de imagen Docker | **NO EJECUTADO** — Docker no instalado |
 | Prueba de intrusión y rotación real de secretos | **NO EJECUTADAS** — requieren acceso al proveedor |
-| Detalle de incidencias abiertas de SonarCloud | Solo se leyó el comentario público del Quality Gate del PR #5 |
+| Detalle de incidencias abiertas de SonarCloud | **Obtenido el 2026-09-27** vía API pública: los 27 issues de New Code de `main` con regla, severidad, fichero, línea y origen (`docs/evidencias/sonarqube/sonarcloud-main-newcode-issues-20260927.json`). Queda sin verificar qué líneas se ejecutan en producción |
 
 ---
 

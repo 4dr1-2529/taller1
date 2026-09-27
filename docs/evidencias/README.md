@@ -7,11 +7,11 @@
 
 ---
 
-## Estado de las evidencias (2026-09-26)
+## Estado de las evidencias (2026-09-26 · revalidado 2026-09-27)
 
 | Conjunto | Significado | Dónde |
 |----------|-------------|-------|
-| **Vigente — V6** | Auditoría técnica del 2026-09-26: estado de checks, SonarCloud, barrido de secretos, logs de pruebas | [`sonarqube/`](sonarqube/), [`seguridad/`](seguridad/), [`../../plan-pruebas/evidencias-finales/terminal/`](../../plan-pruebas/evidencias-finales/terminal/) |
+| **Vigente — V6** | Auditoría técnica del 2026-09-26 y revalidación del 2026-09-27 (estado de checks, SonarCloud con los 27 issues de `main`, barrido de secretos con clasificación de placeholders corregida, logs de pruebas) | [`sonarqube/`](sonarqube/), [`seguridad/`](seguridad/), [`../../plan-pruebas/evidencias-finales/terminal/`](../../plan-pruebas/evidencias-finales/terminal/) |
 | **Histórica — V5 / QA local** | Capturas y ejecuciones anteriores al refresh UI/UX y a los datos definitivos; conservadas sin modificar | `capturas/`, `dashboard/`, `ia/`, `qa/`, `metricas/`, `arquitectura/`, [`../../plan-pruebas/evidencias-finales/`](../../plan-pruebas/evidencias-finales/) |
 | **Legacy** | Ejecución anterior al Data Seed definitivo (población demo antigua) | [`../../legacy/`](../../legacy/), [`../evidencias_finales/`](../evidencias_finales/) |
 

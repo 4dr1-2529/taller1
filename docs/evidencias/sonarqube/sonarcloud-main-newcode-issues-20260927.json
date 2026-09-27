@@ -1,0 +1,433 @@
+{
+  "fecha": "2026-09-27",
+  "alcance": "issues abiertos de SonarCloud en New Code (leak period) de la rama main que sostienen los ratings D de Reliability y Security; solo lectura vía API pública",
+  "fuentes": [
+    "GET https://sonarcloud.io/api/qualitygates/project_status?projectKey=4dr1-2529_taller1&branch=main",
+    "GET https://sonarcloud.io/api/issues/search?...&branch=main&sinceLeakPeriod=true&types=BUG|VULNERABILITY",
+    "GET check-runs de GitHub: main=d3c0b803e6d30c24fc0d24bff3465e15267d506d, PR#5=1c4f5ae981a070e55dc92eec264b1c67c44f1920",
+    "git show --pretty=format: --name-only d3c0b803e6d30c24fc0d24bff3465e15267d506d (58 ficheros cambiados por el squash del PR #5)"
+  ],
+  "quality_gate_main": {
+    "estado": "ERROR",
+    "condiciones": [
+      {
+        "metric": "new_reliability_rating",
+        "status": "ERROR",
+        "actual": "4",
+        "threshold": "1"
+      },
+      {
+        "metric": "new_security_rating",
+        "status": "ERROR",
+        "actual": "4",
+        "threshold": "1"
+      },
+      {
+        "metric": "new_maintainability_rating",
+        "status": "OK",
+        "actual": "1",
+        "threshold": "1"
+      },
+      {
+        "metric": "new_duplicated_lines_density",
+        "status": "OK",
+        "actual": "1.2",
+        "threshold": "3"
+      },
+      {
+        "metric": "new_security_hotspots_reviewed",
+        "status": "OK",
+        "actual": "100.0",
+        "threshold": "100"
+      }
+    ]
+  },
+  "frontera_new_code": {
+    "nota": "deducida comparando la API con y sin sinceLeakPeriod=true (la API no expone la fecha del periodo)",
+    "min_creacion_en_new_code": "2026-06-09T22:20:24+0000",
+    "max_creacion_fuera_de_new_code": "2026-06-05T21:36:46+0000",
+    "issues_abiertos_total": 637,
+    "issues_abiertos_en_new_code": 429
+  },
+  "archivos_tocados_por_pr5": 58,
+  "resumen": {
+    "total_new_code_bug_vulnerability": 27,
+    "por_origen": {
+      "introducido por PR #5 (la línea pertenece al commit d3c0b80)": 1,
+      "preexistente al PR #5 (el PR #5 no tocó este fichero)": 26
+    },
+    "por_severidad": {
+      "BUG/MAJOR": 14,
+      "BUG/CRITICAL": 6,
+      "VULNERABILITY/MINOR": 4,
+      "VULNERABILITY/CRITICAL": 1,
+      "VULNERABILITY/MAJOR": 2
+    },
+    "por_directorio": {
+      "frontend/src": 1,
+      "machine-learning/app": 1,
+      "backend/scripts": 16,
+      "backend/tests": 6,
+      "backend/prisma": 2,
+      "scripts/prepare-migration.cjs": 1
+    }
+  },
+  "limitaciones": [
+    "El Quality Gate no fue modificado ni relanzado; no hay SONAR_TOKEN en este entorno.",
+    "El estado productivo del código (qué líneas se ejecutan) no fue evaluado: son hallazgos de análisis estático.",
+    "'New Code' es el periodo de fuga configurado en SonarCloud, no equivale a 'código del PR #5'."
+  ],
+  "issues": [
+    {
+      "tipo": "BUG",
+      "regla": "typescript:S9011",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "frontend/src/components/views/LearningView.tsx",
+      "linea": 157,
+      "mensaje": "Add an explicit \"type\" attribute to this button.",
+      "primera_deteccion": "2026-09-26T15:24:38+0000",
+      "archivo_tocado_por_pr5": true,
+      "blame_linea": "d3c0b803e6d30c24fc0d24bff3465e15267d506d",
+      "origen": "introducido por PR #5 (la línea pertenece al commit d3c0b80)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "python:S1764",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "machine-learning/app/thresholds.py",
+      "linea": 32,
+      "mensaje": "Correct one of the identical sub-expressions on both sides of operator \"==\".",
+      "primera_deteccion": "2026-09-24T23:20:37+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S2871",
+      "severidad": "CRITICAL",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/lib/definitive-production-readonly.mjs",
+      "linea": 75,
+      "mensaje": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "primera_deteccion": "2026-09-23T23:15:41+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S2871",
+      "severidad": "CRITICAL",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/lib/definitive-dataset-import.mjs",
+      "linea": 53,
+      "mensaje": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "primera_deteccion": "2026-09-23T22:44:47+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S2871",
+      "severidad": "CRITICAL",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/lib/definitive-operational-generator.mjs",
+      "linea": 99,
+      "mensaje": "Provide a compare function to avoid sorting elements alphabetically.",
+      "primera_deteccion": "2026-09-23T22:44:47+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S2871",
+      "severidad": "CRITICAL",
+      "estado": "OPEN",
+      "archivo": "backend/tests/fixtures/definitive-domain-equivalence.mjs",
+      "linea": 23,
+      "mensaje": "Provide a compare function to avoid sorting elements alphabetically.",
+      "primera_deteccion": "2026-09-23T22:44:47+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S2259",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/tests/fixtures/definitive-domain-equivalence.mjs",
+      "linea": 34,
+      "mensaje": "TypeError can be thrown as \"actual\" might be null or undefined here.",
+      "primera_deteccion": "2026-09-23T22:44:47+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S2259",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/tests/fixtures/definitive-domain-equivalence.mjs",
+      "linea": 50,
+      "mensaje": "TypeError can be thrown as \"c\" might be null or undefined here.",
+      "primera_deteccion": "2026-09-23T22:44:47+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S2871",
+      "severidad": "CRITICAL",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/preseed-cleanup-v2.mjs",
+      "linea": 657,
+      "mensaje": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "primera_deteccion": "2026-09-23T01:07:34+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S2871",
+      "severidad": "CRITICAL",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/validate-preseed-zero.mjs",
+      "linea": 29,
+      "mensaje": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "primera_deteccion": "2026-09-22T20:27:17+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "typescript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/reset-demo-safe.ts",
+      "linea": 3,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-09-20T01:21:05+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "typescript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/reset-demo-safe.ts",
+      "linea": 40,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-09-20T01:21:05+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/railway-seed-demo.mjs",
+      "linea": 30,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-09-09T18:09:21+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/railway-seed-demo.mjs",
+      "linea": 9,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-06-30T08:11:40+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "typescript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/repair-institutional-data.ts",
+      "linea": 6,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-06-30T08:03:00+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "javascript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/update-all-passwords.mjs",
+      "linea": 3,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-06-30T08:03:00+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "typescript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/upsert-legacy-users.ts",
+      "linea": 2,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-06-30T08:03:00+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "typescript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/repair-institutional-data.ts",
+      "linea": 116,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-06-23T20:59:06+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "typescript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/prisma/seed-assignments.ts",
+      "linea": 7,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-06-23T20:33:17+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "BUG",
+      "regla": "typescript:S1763",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/prisma/seed-assignments.ts",
+      "linea": 130,
+      "mensaje": "Unreachable code.",
+      "primera_deteccion": "2026-06-23T20:33:17+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "VULNERABILITY",
+      "regla": "jssecurity:S5145",
+      "severidad": "MINOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/smoke-tests.mjs",
+      "linea": 46,
+      "mensaje": "Log Injection via unsanitized user input",
+      "primera_deteccion": "2026-09-24T14:31:07+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "VULNERABILITY",
+      "regla": "jssecurity:S5145",
+      "severidad": "MINOR",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/smoke-tests.mjs",
+      "linea": 211,
+      "mensaje": "Log Injection via unsanitized user input",
+      "primera_deteccion": "2026-09-24T14:31:07+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "VULNERABILITY",
+      "regla": "javascript:S5443",
+      "severidad": "CRITICAL",
+      "estado": "OPEN",
+      "archivo": "backend/scripts/preseed-cleanup-v2.mjs",
+      "linea": 7,
+      "mensaje": "Make sure publicly writable directories are used safely here.",
+      "primera_deteccion": "2026-09-23T01:07:34+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "VULNERABILITY",
+      "regla": "typescript:S2068",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/tests/refactor-2026.integration.ts",
+      "linea": 540,
+      "mensaje": "Review this potentially hard-coded password.",
+      "primera_deteccion": "2026-09-21T07:37:55+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "VULNERABILITY",
+      "regla": "typescript:S2068",
+      "severidad": "MAJOR",
+      "estado": "OPEN",
+      "archivo": "backend/tests/refactor-2026.integration.ts",
+      "linea": 541,
+      "mensaje": "Review this potentially hard-coded password.",
+      "primera_deteccion": "2026-09-21T07:37:55+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "VULNERABILITY",
+      "regla": "typescript:S5689",
+      "severidad": "MINOR",
+      "estado": "OPEN",
+      "archivo": "backend/tests/refactor-2026.integration.ts",
+      "linea": 20,
+      "mensaje": "This framework implicitly discloses version information by default. Make sure it is safe here.",
+      "primera_deteccion": "2026-09-20T01:21:05+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    },
+    {
+      "tipo": "VULNERABILITY",
+      "regla": "javascript:S4036",
+      "severidad": "MINOR",
+      "estado": "OPEN",
+      "archivo": "scripts/prepare-migration.cjs",
+      "linea": 3,
+      "mensaje": "Make sure the \"PATH\" variable only contains fixed, unwriteable directories.",
+      "primera_deteccion": "2026-09-20T01:21:05+0000",
+      "archivo_tocado_por_pr5": false,
+      "blame_linea": null,
+      "origen": "preexistente al PR #5 (el PR #5 no tocó este fichero)"
+    }
+  ]
+}
