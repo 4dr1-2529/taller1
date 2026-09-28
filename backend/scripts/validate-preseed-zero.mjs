@@ -25,8 +25,8 @@ async function main() {
   if (features.map(({ codigo }) => codigo).join() !== codes.join() || features.some(({ orden }, index) => orden !== index + 1)) failures.push("MlFeatureDef: codigos/orden incorrectos");
   for (const model of empty) expect(model, await prisma[model].count(), 0);
   expect("Salas directas", await prisma.mensajeSala.count({ where: { alcance: "directo" } }), 0);
-  const rooms = (await prisma.mensajeSala.findMany({ select: { roomId: true } })).map(({ roomId }) => roomId).sort();
-  if (rooms.join() !== ["global-institucion", "profesores-interno"].sort().join()) failures.push(`MensajeSala inesperada: ${rooms.join(",")}`);
+  const rooms = (await prisma.mensajeSala.findMany({ select: { roomId: true } })).map(({ roomId }) => roomId).sort((a, b) => a.localeCompare(b));
+  if (rooms.join() !== ["global-institucion", "profesores-interno"].sort((a, b) => a.localeCompare(b)).join()) failures.push(`MensajeSala inesperada: ${rooms.join(",")}`);
   const residue = await Promise.all([prisma.user.count({ where: { email: { contains: ".demo@" } } }), prisma.student.count({ where: { OR: [{ codigo: { startsWith: "DEMO-" } }, { email: { contains: ".demo@" } }] } }), prisma.teacher.count({ where: { OR: [{ codigo: { startsWith: "DEMO-" } }, { email: { contains: ".demo@" } }] } })]);
   if (residue.some(Boolean)) failures.push(`Residuos QA=${residue.join("/")}`);
   for (const entidad of ["estudiante", "profesor", "matricula"]) { const row = await prisma.correlativo.findUnique({ where: { entidad } }); if (!row || row.ultimoNumero !== 0) failures.push(`Correlativo ${entidad}=${row?.ultimoNumero ?? "ausente"}`); }

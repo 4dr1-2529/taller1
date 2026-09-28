@@ -50,7 +50,7 @@ export async function verifyPreseed(tx, source) {
   for (let grade = 1; grade <= 6; grade++) for (const c of source.CatalogoCursos.filter(c => c.desde_grado <= grade)) check(coverage.has(key(grade, c.curso_codigo)), "course/grade structure");
   const roles = await tx.role.findMany({ include: { permisos: { include: { permiso: true } } } });
   const required = { admin: ["admin.full", "estudiantes.read", "estudiantes.write", "notas.write", "asistencia.write", "alertas.manage", "ia.predict", "reportes.export", "mensajes.send"], docente: ["estudiantes.read", "notas.write", "asistencia.write", "alertas.manage", "ia.predict", "reportes.export", "mensajes.send"], estudiante: ["estudiantes.read", "mensajes.send"] };
-  for (const [role, permissions] of Object.entries(required)) check(roles.find(r => r.codigo === role)?.permisos.map(p => p.permiso.codigo).sort().join() === permissions.sort().join(), "RBAC structure");
+  for (const [role, permissions] of Object.entries(required)) check(roles.find(r => r.codigo === role)?.permisos.map(p => p.permiso.codigo).sort((a, b) => a.localeCompare(b)).join() === permissions.slice().sort((a, b) => a.localeCompare(b)).join(), "RBAC structure");
   const features = await tx.mlFeatureDef.findMany({ orderBy: { orden: "asc" } });
   check(features.map(f => f.codigo).join() === FEATURES.join(), "ML feature structure");
   for (const [i, f] of features.entries()) {

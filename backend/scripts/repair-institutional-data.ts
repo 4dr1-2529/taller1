@@ -1,4 +1,8 @@
-throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+/** Guardia de arranque: el script legacy de población se detiene antes de ejecutar su cuerpo. */
+function assertLegacyDemoPopulationDisabled(): void {
+  throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+}
+assertLegacyDemoPopulationDisabled();
 /**
  * Repara cuentas de acceso y notas I–II sin borrar toda la base.
  * Uso: tsx scripts/repair-institutional-data.ts

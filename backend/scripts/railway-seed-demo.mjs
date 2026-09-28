@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+/** Guardia de arranque: el script legacy de población se detiene antes de ejecutar su cuerpo. */
+function assertLegacyDemoPopulationDisabled() {
+  throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+}
+assertLegacyDemoPopulationDisabled();
 /**
  * Poblar demo en Railway (consola del servicio backend, raíz del monorepo):
  *   npm run railway:seed:demo

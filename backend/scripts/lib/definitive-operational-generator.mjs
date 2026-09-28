@@ -96,7 +96,7 @@ export function generateDataset(source) {
   for (const s of result.student) {
     const grades = result.grade.filter(g => g.student === s.codigo);
     const attendance = result.attendance.filter(a => a.student === s.codigo);
-    const courses = [...new Set(grades.map(g => g.course))].sort();
+    const courses = [...new Set(grades.map(g => g.course))].sort((a, b) => a.localeCompare(b));
     s.promedioGeneral = round(mean(courses.map(c => mean(grades.filter(g => g.course === c).map(g => g.nota)))));
     s.asistenciaGeneral = round(attendancePct(attendance));
     for (const [period, start, end] of PERIODS.slice(0, 3)) {
