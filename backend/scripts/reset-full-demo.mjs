@@ -1,4 +1,8 @@
-throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+/** Guardia de arranque: el script legacy de reset demo se detiene antes de ejecutar su cuerpo. */
+function assertLegacyDemoPopulationDisabled() {
+  throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+}
+assertLegacyDemoPopulationDisabled();
 /**
  * Limpia datos operativos/demo y deja solo la estructura institucional (seed.ts).
  * Uso: npm run db:reset:full
