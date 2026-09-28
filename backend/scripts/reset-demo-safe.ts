@@ -1,4 +1,8 @@
-throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+/** Guardia de arranque: el script legacy de población se detiene antes de ejecutar su cuerpo. */
+function assertLegacyDemoPopulationDisabled(): void {
+  throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+}
+assertLegacyDemoPopulationDisabled();
 /** Explicit, scoped demo cleanup. Never invoked by migrations or deployment. */
 import { readFileSync } from "node:fs";
 import { PrismaClient } from "@prisma/client";

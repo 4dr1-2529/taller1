@@ -1,10 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { createHash } from "node:crypto";
-import { writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
 
 const prisma = new PrismaClient();
 
-const BACKUP_PATH = process.env.PRESEED_BACKUP_PATH || "/tmp/blenkir-preseed-backup.json";
+// Directorio propio del repositorio (gitignore): nunca un directorio público como /tmp.
+const BACKUP_PATH = process.env.PRESEED_BACKUP_PATH || path.join(process.cwd(), ".tmp", "blenkir-preseed-backup.json");
 const EXECUTE =
   process.env.ALLOW_PRESEED_CLEANUP === "true" &&
   process.env.PRESEED_CLEANUP_EXECUTE === "true" &&
@@ -481,6 +483,7 @@ function buildBackup(state, fingerprint) {
 
 function writeBackup(backup) {
   const json = JSON.stringify(backup, replacer, 2);
+  mkdirSync(path.dirname(BACKUP_PATH), { recursive: true });
   writeFileSync(BACKUP_PATH, json, { encoding: "utf8", mode: 0o600 });
   const bytes = Buffer.byteLength(json, "utf8");
   const sha256 = createHash("sha256").update(json, "utf8").digest("hex");
@@ -653,8 +656,8 @@ async function assertZero(client) {
   }
 
   if (await client.mensajeSala.count({ where: { alcance: "directo" } }) !== 0) fail("POSTCHECK_FAILED direct rooms");
-  const rooms = (await client.mensajeSala.findMany({ select: { roomId: true } })).map((row) => row.roomId).sort();
-  if (rooms.join("|") !== ["global-institucion", "profesores-interno"].sort().join("|")) fail(`POSTCHECK_FAILED rooms=${rooms.join(",")}`);
+  const rooms = (await client.mensajeSala.findMany({ select: { roomId: true } })).map((row) => row.roomId).sort((a, b) => a.localeCompare(b));
+  if (rooms.join("|") !== ["global-institucion", "profesores-interno"].sort((a, b) => a.localeCompare(b)).join("|")) fail(`POSTCHECK_FAILED rooms=${rooms.join(",")}`);
   if (await client.apoderado.count() !== 0 || await client.studentApoderado.count() !== 0) fail("POSTCHECK_FAILED guardians");
 
   const structure = await assertStructure(client);

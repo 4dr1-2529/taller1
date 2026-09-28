@@ -1,4 +1,8 @@
-throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+/** Guardia de arranque: el seed legacy de asignaciones se detiene antes de ejecutar su cuerpo. */
+function assertLegacyDemoPopulationDisabled(): void {
+  throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+}
+assertLegacyDemoPopulationDisabled();
 /**
  * Seed demo — asignación docente institucional
  * 1°–2°: un tutor exclusivo por salón (dicta todos los cursos de ese aula)

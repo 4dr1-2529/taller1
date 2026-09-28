@@ -20,7 +20,7 @@ const { tables: t } = generateDataset(source);
 let lastUpdate;
 for (const s of t.student) {
   const notes = t.grade.filter(g => g.student === s.codigo);
-  const courseMeans = [...new Set(notes.map(g => g.course))].sort().map(c => {
+  const courseMeans = [...new Set(notes.map(g => g.course))].sort((a, b) => a.localeCompare(b)).map(c => {
     const rows = notes.filter(g => g.course === c);
     return { cursoOfertaId: c, _avg: { nota: rows.reduce((sum, r) => sum + r.nota, 0) / rows.length } };
   });
@@ -29,6 +29,7 @@ for (const s of t.student) {
   db.student = { update: async ({ data }) => { lastUpdate = data; } };
   await refreshAcademicSummary(db, 1n);
   const actual = lastUpdate;
+  if (!actual) throw new Error(`refreshAcademicSummary no registró la actualización del estudiante ${s.codigo}`);
   await refreshImportedSummary(db, 1n);
   assert.deepEqual(lastUpdate, actual);
   assert.equal(actual.promedioGeneral, s.promedioGeneral);
@@ -43,6 +44,7 @@ for (const s of t.student) {
 }
 for (const [i, a] of t.teacherCourseAssignment.entries()) {
   const c = t.course.find(c => c.key === a.course);
+  if (!c) throw new Error(`Curso no encontrado en el dataset generado: ${a.course}`);
   const assignment = { id: BigInt(i + 1), profesorId: 1n, cursoId: 2n, seccionId: 3n, anioLectivoId: 4n, activo: true };
   const sec = { id: 3n, nombre: a.section.slice(1), grado: { numero: a.grade, nivel: { codigo: "primaria" } } };
   const tx = {

@@ -31,6 +31,18 @@ let failed = 0;
 const mlNotes = [];
 const warnings = [];
 
+// Los valores que se imprimen en el log llegan de respuestas HTTP: se sustituyen
+// los caracteres de control (CR/LF incluidos) para evitar que un dato externo
+// pueda fabricar entradas falsas en el log (log forging).
+const logSafe = (value) => {
+  let out = "";
+  for (const ch of String(value ?? "")) {
+    const code = ch.codePointAt(0);
+    out += code < 32 || code === 127 ? " " : ch;
+  }
+  return out;
+};
+
 function noteWarn(name, detail) {
   warnings.push(`${name}: ${detail}`);
   console.warn(`⚠ ${name}: ${detail}`);
@@ -43,7 +55,7 @@ async function test(name, fn) {
     console.log(`✓ ${name}`);
   } catch (e) {
     failed++;
-    console.error(`✗ ${name}:`, e.message);
+    console.error(`✗ ${logSafe(name)}:`, logSafe(e.message));
   }
 }
 
@@ -209,9 +221,9 @@ async function main() {
     const { body } = await get("/dashboard/kpis", roles.director);
     const k = body?.data?.kpis ?? body?.kpis ?? {};
     console.log(
-      `• KPIs V6: estudiantes=${k.totalStudents} profesores=${k.totalTeachers} ` +
-        `salones=${k.totalSalones} alertasAbiertas=${k.openAlerts} ` +
-        `riesgoPromedio=${k.avgRisk ?? "null"} nivelAlto=${k.byLevel?.alto ?? "?"}`,
+      `• KPIs V6: estudiantes=${logSafe(k.totalStudents)} profesores=${logSafe(k.totalTeachers)} ` +
+        `salones=${logSafe(k.totalSalones)} alertasAbiertas=${logSafe(k.openAlerts)} ` +
+        `riesgoPromedio=${logSafe(k.avgRisk ?? "null")} nivelAlto=${logSafe(k.byLevel?.alto ?? "?")}`,
     );
   }
 

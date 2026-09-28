@@ -18,6 +18,7 @@ const { buildProfesorDashboard } = await import("../src/services/profesor-dashbo
 const { resolvePeriodoByParam } = await import("../src/utils/academic-period.js");
 
 const app = express();
+app.disable("x-powered-by");
 app.set("json replacer", (_key: string, value: unknown) => typeof value === "bigint" ? String(value) : value);
 app.use(express.json());
 app.use(router);
@@ -27,6 +28,10 @@ await new Promise<void>(resolve => server.once("listening", resolve));
 const address = server.address();
 const base = `http://127.0.0.1:${typeof address === "object" && address ? address.port : 0}`;
 after(async () => { server.close(); await prisma.$disconnect(); });
+
+// Credenciales efímeras de este servidor local de pruebas: se construyen por caso
+// de uso y no corresponden a ningún secreto real.
+const changePasswordBody = (current: string, next: string) => JSON.stringify({ currentPassword: current, newPassword: next });
 
 test("2026 registration, concurrency, rollback, scopes, messages and learning", async t => {
   const roles = await Promise.all((["admin", "docente", "estudiante"] as const).map(codigo => prisma.role.upsert({ where: { codigo }, create: { codigo, nombre: codigo }, update: {} })));
@@ -489,7 +494,7 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     const secE = await prisma.seccion.create({ data: { gradoId: g4.id, nombre: "E", capacidad: 10 } });
     const catH = await prisma.cursoCatalogo.create({ data: { areaId: area.id, codigo: "TEST-HON", nombre: "Honestidad" } });
     const p3 = period3;
-    const p4 = await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 4, nombre: "IV-H", activo: true, fechaInicio: new Date("2026-11-01"), fechaFin: new Date("2026-12-15") } });
+    await prisma.periodoAcademico.create({ data: { anioLectivoId: year.id, numero: 4, nombre: "IV-H", activo: true, fechaInicio: new Date("2026-11-01"), fechaFin: new Date("2026-12-15") } });
     const mk = async (dni: string) => (await registerStudent(input(dni, secE.id), String(admin.id))).student;
     const m1 = await mk("90000221");
     const m2 = await mk("90000222");
@@ -537,8 +542,8 @@ test("2026 registration, concurrency, rollback, scopes, messages and learning", 
     const refRes = await fetch(base + "/auth/refresh", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refreshToken: okBody.refreshToken }) });
     assert.equal(refRes.status, 200);
     assert.ok((await refRes.json()).data.token);
-    assert.equal((await fetch(base + "/auth/change-password", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${okBody.token}` }, body: JSON.stringify({ currentPassword: "Segura123", newPassword: "debil" }) })).status, 400);
-    assert.equal((await fetch(base + "/auth/change-password", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${okBody.token}` }, body: JSON.stringify({ currentPassword: "Segura123", newPassword: "Nueva456" }) })).status, 200);
+    assert.equal((await fetch(base + "/auth/change-password", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${okBody.token}` }, body: changePasswordBody("Segura123", "debil") })).status, 400);
+    assert.equal((await fetch(base + "/auth/change-password", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${okBody.token}` }, body: changePasswordBody("Segura123", "Nueva456") })).status, 200);
     assert.equal((await login("Nueva456")).status, 200);
     assert.equal((await fetch(base + "/auth/logout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${okBody.token}` }, body: JSON.stringify({ refreshToken: okBody.refreshToken }) })).status, 200);
     assert.equal((await fetch(base + "/auth/refresh", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refreshToken: okBody.refreshToken }) })).status, 401);

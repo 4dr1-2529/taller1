@@ -154,7 +154,7 @@ export function LearningView({ mode }: { mode: "materials" | "activities" | "cou
                   />
                 </label>
               )}
-              <button className="btn-primary" disabled={saving}>
+              <button type="submit" className="btn-primary" disabled={saving}>
                 {saving ? "Publicando…" : "Publicar"}
               </button>
             </form>

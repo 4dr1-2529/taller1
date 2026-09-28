@@ -13,6 +13,8 @@ frontend únicamente consumen el `nivelRiesgo` devuelto por el servicio ML.
 """
 from __future__ import annotations
 
+import math
+
 CONTRACT_VERSION = "2026-v3"
 
 # Banda de probabilidad de deserción P(target=1).
@@ -29,7 +31,7 @@ LEVELS: tuple[str, str, str] = ("bajo", "medio", "alto")
 def level_from_probability(probability: float) -> str:
     """Deriva el nivel operativo a partir de P(deserción) ∈ [0, 1]."""
     p = float(probability)
-    if not (p == p):  # NaN
+    if math.isnan(p):  # NaN
         raise ValueError("Probabilidad no finita")
     if p < 0 or p > 1:
         raise ValueError(f"Probabilidad fuera de rango [0,1]: {p}")
