@@ -1,6 +1,6 @@
 # Pruebas unitarias — Backend
 
-**Comando:** `npm run test:backend` · **Ubicación:** `backend/tests/` (11 archivos)
+**Comando:** `npm run test:backend` · **Ubicación:** `backend/tests/` (13 archivos unitarios; la carpeta contiene 14 en total: `refactor-2026.integration.ts` es de integración y se ejecuta con `npm run test:integration`, separado de este comando)
 
 ---
 
@@ -19,6 +19,8 @@
 | `response.test.mjs` | node:test | `sendSuccess` / `sendCreated` envelope |
 | `prediction-format.test.mjs` | node:test | Formato tesis: `nivel_riesgo`, `probabilidad_abandono`, `factores_riesgo` |
 | `validators.test.mjs` | node:test | Validadores auxiliares |
+| `definitive-dataset.test.mjs` | node:test | Data Seed V6: lector del XLSX, generador operativo, validador de contrato e importador contra una BD en memoria (`tests/fixtures/`) |
+| `definitive-production-readonly.test.mjs` | node:test | Preflight de solo-lectura para producción y presencia de credenciales por rol (sin tocar BD) |
 
 ---
 

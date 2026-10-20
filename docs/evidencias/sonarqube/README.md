@@ -7,6 +7,20 @@ ejecutado por CI; el Quality Gate de `main` sigue en FAIL (D Reliability + D Sec
 > descritos aquí fueron corregidos en `main` el 2026-09-28 (commits `40d066e` y `b0d5cf5`); el Quality
 > Gate de `main` está hoy en **OK** (API pública de SonarCloud, `alert_status=OK`, `reliability_rating=A`,
 > `security_rating=A`). El detalle se conserva como evidencia histórica de ese análisis.
+>
+> **Estado actual verificado por API pública el 2026-10-20** (proyecto `4dr1-2529_taller1`):
+>
+> | Métrica | Valor |
+> |---------|-------|
+> | Quality Gate (`alert_status`) | **OK** |
+> | Fiabilidad (`reliability_rating`) | A (1.0) |
+> | Seguridad (`security_rating`) | A (1.0) |
+> | Mantenimiento (`sqale_rating`) | A (1.0) |
+> | Duplicación (`duplicated_lines_density`) | 1,2 % |
+>
+> No hay reporte JSON de esta verificación versionado en la carpeta: queda registrado su valor y fecha en
+> este README. Para el Anexo 07 conviene generar una evidencia nueva (captura del dashboard o export JSON
+> con token) que acompañe a los snapshots históricos de abajo.
 
 ## Estado verificado (2026-09-27)
 

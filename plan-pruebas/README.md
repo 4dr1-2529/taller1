@@ -43,7 +43,7 @@ Scripts: `plan-pruebas/scripts/` (`run-api-tests.mjs`, `run-unit.mjs`, `run-perf
 
 ```bash
 npm run type-check      # shared + frontend + backend
-npm run test:backend    # 14 archivos backend/tests/ (81 pruebas: 49 .mjs + 32 .ts)
+npm run test:backend    # 13 archivos unitarios de backend/tests/ (81 pruebas: 49 .mjs + 32 .ts; el 14.º archivo, refactor-2026.integration.ts, se ejecuta con test:integration)
 npm run test:unit       # prediction-format.test.mjs
 npm run ml:test         # test_predict.py (32 pruebas)
 npm run test            # los tres anteriores
