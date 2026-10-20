@@ -338,7 +338,7 @@ def train_models() -> dict:
         "stacking": validation_results["stacking"],
         "best_model": best_key,
         "best_f1_score": validation_results[best_key]["f1_score"],
-        // Etiqueta descriptiva del modelo servido (coincide con best_model y con /health).
+        # Etiqueta descriptiva del modelo servido (coincide con best_model y con /health).
         "model_used": best_key,
         "model_version": model_version,
         "contract_version": CONTRACT_VERSION,
