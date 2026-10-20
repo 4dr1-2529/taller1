@@ -1,22 +1,58 @@
-# BLENKIR · Panel de riesgo de deserción estudiantil — 2026
+# BLENKIR · Panel de riesgo de deserción estudiantil
 
-BLENKIR es el sistema de tesis que predice el **riesgo de deserción estudiantil** combinando datos académicos
-(notas, asistencia, matrículas) y actividad observada en el LMS. Expone tres roles:
-**Director**, **Profesor** y **Estudiante**.
+BLENKIR es un sistema web de la tesis que **predice el riesgo de deserción estudiantil** combinando datos
+académicos (notas, asistencia, matrículas) y actividad observada en el LMS. Expone tres roles —
+**Director**, **Profesor** y **Estudiante** — cada uno con su propio panel.
 
-## Stack y despliegue
+## Problema y propósito
 
-| Capa | Tecnología | Despliegue verificado (2026-09-26) |
-|------|------------|------------------------------------|
-| Frontend | Next.js 16 · React 19 · TypeScript | Vercel — https://taller1-frontend.vercel.app |
-| API | Express · TypeScript · JWT + refresh | Railway — https://backend-production-fcb1.up.railway.app/api/v1 |
-| Datos | Prisma ORM · MySQL (57 modelos: 54 activos + 3 legacy con `@@ignore`) | Railway |
-| Modelo ML | FastAPI · Python · scikit-learn + XGBoost | Railway — https://ml-production-2a96.up.railway.app |
+La deserción estudiantil suele detectarse tarde, cuando el daño ya es difícil de revertir. BLENKIR busca
+**señalar tempranamente** a los estudiantes con mayor riesgo para que directivos y docentes puedan actuar
+a tiempo, a partir de indicadores que ya se registran en el sistema académico y el LMS.
 
-Flujo: `Next.js → Express → Prisma/MySQL` y `Express → FastAPI → Stacking V6`.
-**El frontend nunca llama al servicio ML directamente.**
+> **Modelo experimental con datos científico-sintéticos.** El modelo vigente (V6) está entrenado con datos
+> sintéticos (`synthetic_scientific`) y aún **no** representa evidencia científica obtenida con estudiantes
+> reales de la institución. Los resultados no deben presentarse como prevalencia real del riesgo.
 
-## Roles y secciones
+## Enlaces oficiales
+
+| Recurso | Enlace |
+|---------|--------|
+| Repositorio | https://github.com/4dr1-2529/taller1 |
+| Frontend (Vercel) | https://taller1-frontend.vercel.app |
+| API (Railway) | https://backend-production-fcb1.up.railway.app/api/v1 |
+| Servicio ML (Railway) | https://ml-production-2a96.up.railway.app |
+| Calidad de código (SonarCloud) | https://sonarcloud.io/dashboard?id=4dr1-2529_taller1 |
+
+## Stack tecnológico
+
+| Capa | Tecnología |
+|------|------------|
+| Frontend | Next.js 16 · React 19 · TypeScript |
+| API | Express · TypeScript · JWT con refresh token |
+| Datos | Prisma ORM · MySQL 8 |
+| Modelo ML | FastAPI · Python · scikit-learn + XGBoost |
+
+## Arquitectura
+
+```
+Next.js (Vercel) → Express (Railway) → Prisma / MySQL
+                          └────→ FastAPI (Railway) → Modelo Stacking V6
+```
+
+**El frontend nunca llama al servicio ML directamente**: toda predicción pasa por la API, que aplica
+autenticación, autorización por rol y validación antes de consultar el modelo. Si el modelo no está
+disponible, la API responde `503` sin generar riesgos ficticios.
+
+### Modelo ML vigente (V6)
+
+- Algoritmo: **Stacking** (meta-estimador Random Forest sobre Random Forest + HistGradientBoosting).
+- 7 variables predictoras: `promedio_general`, `cursos_desaprobados`, `asistencia_general`,
+  `frecuencia_acceso_lms`, `tiempo_interaccion_lms`, `actividades_realizadas`, `recursos_consultados`.
+- Umbrales operativos: bajo `p < 0.41`, medio `0.41 ≤ p < 0.65`, alto `p ≥ 0.65`.
+- El modelo se sirve solo si coincide exactamente el contrato de 7 variables; no se imputan valores faltantes.
+
+### Roles
 
 | Rol visible | Rol interno | Secciones del menú |
 |-------------|-------------|--------------------|
@@ -24,101 +60,73 @@ Flujo: `Next.js → Express → Prisma/MySQL` y `Express → FastAPI → Stackin
 | Profesor | `docente` | 15 |
 | Estudiante | `estudiante` | 12 |
 
-Fuente única (la única autorizada): [`frontend/src/data/role-sections.ts`](frontend/src/data/role-sections.ts).
-No existe un cuarto rol.
+La autorización se verifica siempre en el backend; no existe un cuarto rol.
 
-## Modelo ML vigente (V6)
+## Estructura del repositorio
 
-- Algoritmo: **Stacking** (meta-estimador Random Forest sobre RF + XGBoost).
-- `modelVersion`: `BLENKIR_V6_BIN_20260924`
-- `datasetVersion`: `BLENKIR_V6_SYNTH_20260924`
-- `dataMode`: `synthetic_scientific`
-- `contractVersion`: `2026-v3`
-- `experimental`: `true`
-- Selección del modelo **únicamente por validación** (`selection=validation_f1_desercion`,
-  `holdout_used_for_selection=false`). El holdout se reserva para la evaluación final.
-
-### Las 7 variables (en este orden)
-
-1. `promedio_general`
-2. `cursos_desaprobados`
-3. `asistencia_general`
-4. `frecuencia_acceso_lms`
-5. `tiempo_interaccion_lms`
-6. `actividades_realizadas`
-7. `recursos_consultados`
-
-### Umbrales de riesgo
-
-| Nivel | Regla sobre la probabilidad `p` |
-|-------|---------------------------------|
-| Bajo | `p < 0.41` |
-| Medio | `0.41 <= p < 0.65` |
-| Alto | `p >= 0.65` |
-
-> **ADVERTENCIA — MODELO EXPERIMENTAL · DATOS CIENTÍFICO-SINTÉTICOS.**
-> **No representan todavía evidencia científica obtenida con estudiantes reales de la institución.**
-> Los umbrales son operativos/experimentales y no están validados científicamente.
-
-### Tres poblaciones distintas (no confundirlas)
-
-1. **Población operativa/demo persistida**: los registros académicos con los que trabaja la aplicación
-   (notas, asistencia, matrículas, actividad LMS) — **250 estudiantes · 24 profesores · 1 director =
-   275 usuarios**. Es semilla operativa importada originalmente como **V5**, ejecutándose sobre el
-   sistema técnico vigente **BLENKIR V6**. Es la única población que el panel muestra, pero **no** se
-   la debe presentar como «datos reales institucionales»: la BD productiva no se consultó en esta
-   auditoría.
-2. **Dataset científico-sintético V6 de ML** (`BLENKIR_V6_SYNTH_20260924`, 225 estudiantes sintéticos /
-   450 registros): solo alimenta el entrenamiento, la validación y el holdout del modelo. Nunca se presenta
-   como prevalencia real de la institución.
-3. **Datos reales futuros autorizados**: conjunto aún no obtenido; su captura requiere autorización expresa
-   y es la condición para hablar de evidencia científica con estudiantes reales.
-
-Un resultado sintético **no** demuestra la prevalencia real del riesgo en la institución.
+```
+backend/            API Express + esquema Prisma y migraciones (MySQL)
+frontend/           Aplicación Next.js (SPA con vistas por rol)
+machine-learning/   Pipeline FastAPI: entrenamiento, inferencia y tests del modelo
+packages/shared/    Tipos y utilidades compartidas
+docs/               Documentación técnica del sistema
+plan-pruebas/       Plan y evidencias de pruebas
+database/           Esquemas y utilidades SQL
+legacy/             Material histórico, fuera del sistema vigente
+```
 
 ## Desarrollo local
+
+**Requisitos:** Node.js 20+, Python 3.9+ con pip, MySQL 8 (o `docker compose up mysql`).
 
 ```bash
 npm ci
 npm run build --workspace=@tesis/shared
 npm run db:generate
-npm run type-check
-npm run lint
-npm run test --workspace=frontend
-npm run test:backend
-npm run ml:test
-npm run build
+pip install -r machine-learning/requirements.txt
 ```
 
-- Frontend (dev): `npm run dev:web` → http://localhost:3029
-- API (dev): `npm run dev:api` → http://localhost:4000
-- ML (dev): `npm run dev:ml` → http://localhost:5000
-- Prisma: `npm run db:generate`, `npm run db:migrate`, `npm run db:count-models`
-- QA: `npm run test:unit`, `npm run test:smoke` (requiere backend y MySQL locales activos),
-  `npm run qa:pipeline`
-- Variables de entorno: copie `.env.example`; **nunca** suba secretos a Git.
+1. Copie `.env.example` y configure las variables (nunca suba secretos a Git).
+2. Levante los servicios con `npm run dev` (o por separado: `npm run dev:web` → :3029,
+   `npm run dev:api` → :4000, `npm run dev:ml` → :5000).
 
-## Datos y seguridad
+Verificaciones: `npm run type-check`, `npm run lint`, `npm run test` (unitarios, backend y ML),
+`npm run build`.
 
-- Los scripts de población legacy (`db:seed:demo`, `db:reset:demo`, `db:reset:full`, `db:seed:prod`)
-  están **deshabilitados**: responden `LEGACY: población y reparaciones antiguas deshabilitadas` y no tocan la BD.
-- Sobre producción **no** se ejecutan `db:seed`, `db:push`, migraciones de reset ni limpiezas.
-- El Excel antiguo es legacy y no define la arquitectura.
-- Cuentas documentadas: [docs/BLENKIR_LOGIN_ACCOUNTS_2026.md](docs/BLENKIR_LOGIN_ACCOUNTS_2026.md).
+## Datos de demostración
 
-## Documentación vigente
+La aplicación trabaja sobre una **población operativa de demostración** sembrada en la base de datos
+(275 usuarios: 1 director, 24 profesores y 250 estudiantes), generada de forma sintética. Es distinta del
+**dataset de entrenamiento del modelo** (225 estudiantes sintéticos) y de los **datos institucionales
+reales**, que aún no se han capturado. Al presentar resultados hay que distinguir siempre estas tres
+poblaciones: un dato sintético **no** demuestra la prevalencia real del riesgo en la institución.
+
+Los scripts de población antigua (`db:seed:demo`, `db:reset:full`, `db:seed:prod`, entre otros) están
+**deshabilitados** y responden con error `LEGACY`; sobre producción no se ejecutan semillas ni
+migraciones de reset.
+
+## Estado y limitaciones verificadas (2026-10-20)
+
+- Frontend, API y servicio ML desplegados y respondiendo correctamente.
+- SonarCloud activo sobre `main`, con Quality Gate en estado **OK**.
+- El modelo es **experimental** (`experimental: true`), entrenado solo con datos sintéticos y **sin
+  validación científica con estudiantes reales**: es la limitación principal del proyecto.
+- No se han ejecutado pruebas de carga, pentest ni verificación del contenido de la base de datos
+  productiva.
+
+## Documentación técnica
+
+La documentación extensa — arquitectura, contratos de API, metodología e indicadores del modelo, pruebas,
+capturas y trazabilidad — se mantiene en [`docs/`](docs/):
 
 | Documento | Contenido |
 |-----------|-----------|
-| [docs/ESTADO_ACTUAL_V6.md](docs/ESTADO_ACTUAL_V6.md) | Estado verificado del sistema (fuente de verdad operativa) |
-| [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Arquitectura canónica (7 variables, permisos) |
+| [docs/ESTADO_ACTUAL_V6.md](docs/ESTADO_ACTUAL_V6.md) | Estado verificado del sistema |
+| [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Arquitectura canónica y permisos |
 | [docs/API.md](docs/API.md) | Contratos de la API |
-| [docs/roles-permisos.md](docs/roles-permisos.md) | Roles y permisos |
-| [docs/DEPLOY.md](docs/DEPLOY.md) | Despliegue Vercel / Railway / ML |
-| [docs/machine-learning.md](docs/machine-learning.md) | Pipeline ML |
-| [docs/ml/](docs/ml/) | Metodología y resultados experimentales V6 |
-| [plan-pruebas/README.md](plan-pruebas/README.md) | Plan y matriz de pruebas (86 casos ISO/IEC 29119) |
+| [docs/machine-learning.md](docs/machine-learning.md) | Pipeline del modelo |
+| [docs/BLENKIR_LOGIN_ACCOUNTS_2026.md](docs/BLENKIR_LOGIN_ACCOUNTS_2026.md) | Cuentas de acceso (sin contraseñas) |
+| [plan-pruebas/README.md](plan-pruebas/README.md) | Plan y matriz de pruebas |
 
-Los documentos históricos (`docs/CIERRE_INTEGRAL_BLENKIR_V5_2026.md`, `docs/DATASET_DEFINITIVO_2026_V5_LOCAL.md`,
-`AUDITORIA_FINAL_PROYECTO.md`, `legacy/`) conservan sus resultados originales y están marcados como
-**HISTÓRICOS / SUPERADOS**: describen etapas anteriores, no el estado vigente V6.
+Los documentos históricos (`legacy/`, `AUDITORIA_FINAL_PROYECTO.md` y los cierres de V5) están marcados
+como **HISTÓRICOS / SUPERADOS**: describen etapas anteriores, no el estado vigente.
