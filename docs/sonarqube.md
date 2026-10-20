@@ -1,5 +1,12 @@
 # SonarQube
 
+> **Actualización (2026-10-20):** los problemas de New Code descritos en esta página fueron corregidos en
+> `main` por los commits `40d066e` (2026-09-28, corrección de los hallazgos del Quality Gate) y `b0d5cf5`
+> (2026-09-28, corrección de fiabilidad histórica). El estado actual de `main` es **Quality Gate OK**
+> (verificado por API pública el 2026-10-20: `alert_status=OK`, `reliability_rating=A`,
+> `security_rating=A`). La rama `fix/sonar-main-quality-gate` ya existe y sus cambios están fusionados.
+> El detalle de esta página se conserva como registro histórico del estado del 2026-09-27.
+
 ## Estado real del Quality Gate (verificado 2026-09-27)
 
 Análisis ejecutado por CI (SonarQube Cloud, proyecto `4dr1-2529_taller1`). Hay **tres resultados

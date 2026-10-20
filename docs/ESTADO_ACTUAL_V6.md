@@ -12,6 +12,12 @@
 > documentación, no un secreto versionado. Las secciones afectadas quedan actualizadas y enlazan su
 > evidencia.
 
+> **ACTUALIZACIÓN POSTERIOR — 2026-10-20.** Después de la auditoría y revalidación anteriores se fusionaron
+> en `main` los commits `40d066e` y `b0d5cf5` (ambos 2026-09-28), que corrigen los hallazgos de SonarCloud.
+> El estado actual de `main` es **Quality Gate OK** (verificado por API pública el 2026-10-20:
+> `alert_status=OK`, `reliability_rating=A`, `security_rating=A`). Donde este documento dice «FAILED» o
+> «27 issues abiertos» se refiere al estado del 2026-09-26/27, que se conserva como registro histórico.
+
 > **ADVERTENCIA — MODELO EXPERIMENTAL · DATOS CIENTÍFICO-SINTÉTICOS.** No representan todavía evidencia
 > científica obtenida con estudiantes reales de la institución.
 
@@ -46,6 +52,9 @@ Checks de `main` en GitHub (2026-09-26):
 | `TALLER1 - ml` (Railway) | success |
 | `SonarCloud Code Analysis` | **failure** — Quality Gate de `main`: `D Reliability Rating on New Code` y `D Security Rating on New Code` (ambos exigían ≥ A) |
 
+> *(Actualización 2026-10-20: este check pasó a éxito tras la fusión de las correcciones del 2026-09-28;
+> el Quality Gate de `main` está hoy en OK.)*
+
 Evidencia: `docs/evidencias/sonarqube/sonarcloud-estado-20260926.json`.
 
 ---
@@ -54,7 +63,7 @@ Evidencia: `docs/evidencias/sonarqube/sonarcloud-estado-20260926.json`.
 
 | Campo | Valor verificado |
 |-------|------------------|
-| Arquitectura | **Stacking** (bases Random Forest + XGBoost, meta-estimador Random Forest) |
+| Arquitectura | **Stacking** (bases Random Forest + HistGradientBoosting, meta-estimador Random Forest; XGBoost compite como candidato independiente) |
 | `modelVersion` | `BLENKIR_V6_BIN_20260924` |
 | `datasetVersion` | `BLENKIR_V6_SYNTH_20260924` |
 | `dataMode` | `synthetic_scientific` |
@@ -173,6 +182,14 @@ Observados: TC-BE-08, TC-DB-04, TC-SEC-07, TC-CN-02, TC-CN-04, TC-UAT-01.
   severidad, fichero, línea, mensaje y origen) y `docs/evidencias/sonarqube/sonarcloud-estado-pr6.json`.
 - **Pendiente declarado**: corregir esos 27 issues (26 de ellos previos al PR #5) en una rama
   **`fix/sonar-main-quality-gate`, a crear después de fusionar el PR #6** — fuera del alcance de este PR.
+  *(Actualización 2026-10-20: la rama `fix/sonar-main-quality-gate` fue creada y sus correcciones se
+  fusionaron en `main` el 2026-09-28 mediante los commits `40d066e` y `b0d5cf5`.)*
+
+> **Actualización (2026-10-20):** los 27 issues de New Code descritos en esta sección ya **no están
+> abiertos**. Tras la fusión de las correcciones (commits `40d066e` y `b0d5cf5`, ambos 2026-09-28), el
+> estado de `main` es **Quality Gate OK** (API pública de SonarCloud el 2026-10-20:
+> `alert_status=OK`, `reliability_rating=A`, `security_rating=A`). El detalle de la tabla anterior se
+> conserva como registro histórico del estado auditado el 2026-09-27.
 
 ### Docker (FASE 16)
 

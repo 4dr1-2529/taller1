@@ -15,7 +15,7 @@ mediante los umbrales `0.41` y `0.65`.
 ## 2. Pipeline IA
 
 ```
-MySQL (vía backend) → 7 variables → RF + XGBoost → Stacking → Meta-RF
+MySQL (vía backend) → 7 variables → RF + HistGradientBoosting → Stacking → Meta-RF
     → best_model.joblib → /predict → Backend → Dashboard + Alertas
 ```
 

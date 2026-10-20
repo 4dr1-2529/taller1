@@ -32,9 +32,9 @@ un archivo: exige una ejecución o un registro comprobable.
 | 2 | Eficiencia del rendimiento | 📋 PLANIFICADO | Plan documentado en `plan-pruebas/pruebas-rendimiento/` | No se ejecutó ninguna prueba de carga en esta auditoría |
 | 3 | Compatibilidad | 🔄 PARCIAL | `GET /health` de backend y ML → 200 (2026-09-26); CORS con whitelist | Conectividad efectiva Backend → `ML_SERVICE_URL`: **NO VERIFICABLE DESDE EL ENTORNO** (el endpoint exige JWT) |
 | 4 | Usabilidad | 🔄 PARCIAL | Capturas UAT históricas + `permissions.test.mjs` | TC-UAT-01 **Observado**: la ejecución registrada cubrió 14 secciones y hoy son 20 (reejecución pendiente) |
-| 5 | Fiabilidad | ⛔ BLOQUEADO | 39/39 pruebas de integración en BD aislada; `/health` de producción → 200 | `npm run test:smoke` NO DISPONIBLE (faltan `*_INITIAL_PASSWORD`); SonarCloud: PR #5 **FAILED** (`C Reliability`) y `main` **FAILED** (`D Reliability` + `D Security`) |
+| 5 | Fiabilidad | ⛔ BLOQUEADO | 39/39 pruebas de integración en BD aislada; `/health` de producción → 200 | `npm run test:smoke` NO DISPONIBLE (faltan `*_INITIAL_PASSWORD`); SonarCloud: PR #5 **FAILED** (`C Reliability`) y `main` **FAILED** (`D Reliability` + `D Security`) *(estado del 2026-09-27; hoy `main` está en Quality Gate OK, verificado 2026-10-20)* |
 | 6 | Seguridad | ✅ VERIFICADO | `permissions`/`roles-*`/`estudiante-scope`/`teacher-scope` en verde e integración de autenticación (login, refresh, logout, cambio de clave) | Sin prueba de intrusión; smoke de producción no ejecutado |
-| 7 | Mantenibilidad | ✅ VERIFICADO | `npm run type-check` 0 errores · `lint` 0 avisos · `build` correcto · 153 pruebas automatizadas en verde | El Quality Gate de `main` debe pasar a verde para cerrar Fiabilidad (hoy `D Reliability` + `D Security` en New Code) |
+| 7 | Mantenibilidad | ✅ VERIFICADO | `npm run type-check` 0 errores · `lint` 0 avisos · `build` correcto · 153 pruebas automatizadas en verde | El Quality Gate de `main` debe pasar a verde para cerrar Fiabilidad (hoy `D Reliability` + `D Security` en New Code) *(condición cumplida: `main` en Quality Gate OK desde 2026-10-20)* |
 | 8 | Portabilidad | 📋 PLANIFICADO | Workspaces npm; `machine-learning/Dockerfile` documentado en `docs/DEPLOY.md` | Build Docker **NO EJECUTADO** (Docker no instalado en este entorno) |
 
 ---

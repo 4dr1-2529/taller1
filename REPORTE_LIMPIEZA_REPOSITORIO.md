@@ -1,5 +1,11 @@
 # Reporte de limpieza del repositorio
 
+> **Informe histórico (2026-09-09).** Describe el estado puntual del repositorio en esa fecha. Después,
+> la auditoría V6 (2026-09-26) volvió a versionar logs de terminal bajo
+> `plan-pruebas/evidencias-finales/terminal/` con excepción explícita en `.gitignore`, y las contraseñas
+> demo pasaron a un esquema de variables de entorno por rol (`*_INITIAL_PASSWORD`); el uso de
+> `DEMO_PASSWORD` quedó deprecado. Este registro se conserva sin modificar por su valor de trazabilidad.
+
 ## Archivos eliminados
 
 Se eliminaron los logs generados bajo `plan-pruebas/evidencias-finales/logs/`, `plan-pruebas/evidencias-finales/terminal/` y `plan-pruebas/pruebas-unitarias/evidencias/`. Los CSV/JSON de cuentas demo ya no estaban rastreados al iniciar la revisión.

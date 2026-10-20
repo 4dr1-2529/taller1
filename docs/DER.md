@@ -1,5 +1,15 @@
 # Diagrama Entidad-Relación (DER)
 
+> **Modelo conceptual simplificado (mayo 2026).** Este DER es una abreviatura didáctica del modelo
+> educativo, no el esquema completo del sistema. El **esquema autoritativo** es
+> `backend/prisma/schema.prisma`: **57 modelos Prisma** (54 activos y 3 legacy con `@@ignore`), con
+> roles reales `admin`, `docente` y `estudiante` (3 roles, no 6). Correcciones aplicadas el 2026-10-20:
+> el rol «apoderado» no existe en el RBAC (`Apoderado` es una entidad de persona, no un rol), la tabla de
+> predicciones se llama `prediccion` (más `prediccion_feature_snapshot` y `prediccion_factor`), y la
+> entidad `ACTIVIDAD_LMS` del diagrama corresponde a los modelos legacy con `@@ignore`
+> (`LmsActivity`): el LMS vigente usa `CourseResource`, `AcademicActivity`, `ActivityProgress` y
+> `LmsEvent`.
+
 ## Modelo conceptual
 
 ```mermaid
@@ -24,7 +34,7 @@ erDiagram
 
 **Modelo educativo peruano:** Primaria (1°–6°) y Secundaria (1°–5°), secciones A/B/C por grado.
 
-**DBML (dbdiagram.io):** `database/dbml/schema.dbml`
+**DBML (dbdiagram.io):** `database/dbml/schema.dbml` *(artefacto legacy de la fase anterior; el esquema vigente es `backend/prisma/schema.prisma`)*
 
 ## Entidades fuertes
 
@@ -45,9 +55,11 @@ erDiagram
 | Sin BD (solo seed en memoria) | 18+ tablas normalizadas |
 | Sin auditoría | Bitácora + triggers |
 | Sin historial | Historial académico y riesgo por periodo |
-| Sin roles | RBAC con 6 roles (incl. apoderado) |
+| Sin roles | RBAC con 3 roles (`admin`, `docente`, `estudiante`; «apoderado» es entidad de persona, no rol) |
 | Sin niveles/grado/sección | Estructura Primaria/Secundaria Huancayo |
-| Predicción efímera | Tabla `predicciones_ia` con trazabilidad |
+| Predicción efímera | Tabla `prediccion` con trazabilidad |
 | Sin alertas persistentes | Alertas con estados y workflow |
 
-El esquema PostgreSQL completo está en `database/postgresql/schema.sql`.
+El esquema PostgreSQL completo está en `database/postgresql/schema.sql` *(artefacto legacy de la fase
+anterior; contiene tablas que ya no existen en el sistema vigente y omite la mayoría de los 57 modelos
+actuales — use `backend/prisma/schema.prisma`)*.

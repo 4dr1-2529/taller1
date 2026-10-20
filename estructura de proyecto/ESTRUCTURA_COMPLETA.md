@@ -78,7 +78,7 @@ El `package.json` raiz declara workspaces para `backend`, `frontend` y `packages
 | `npm run test` | Ejecuta pruebas unitarias, backend y ML. |
 | `npm run db:migrate:deploy` | Aplica migraciones Prisma. |
 | `npm run db:seed` | Carga estructura institucional. |
-| `npm run db:seed:demo` | Carga datos de demostracion. |
+| `npm run db:seed:demo` | *(Deshabilitado: responde error `LEGACY`; la población demo ya no se siembra con este comando.)* |
 | `npm run ml:train` | Entrena los modelos Python. |
 | `npm run qa:pipeline` | Ejecuta el pipeline de pruebas documentado. |
 
@@ -688,9 +688,16 @@ La documentacion actual indica que FastAPI no se despliega en Railway por defect
 
 - En desarrollo local, API y ML pueden comunicarse si ambos procesos estan levantados.
 - En produccion, el servicio ML debe desplegarse separadamente y asignar una URL accesible desde Railway para que el backend use el modelo real.
-- Mientras no exista esa URL, el backend puede devolver resultados de respaldo/heuristica segun la implementacion activa.
+- Mientras no exista esa URL, el backend responde `503` en `/predict` sin generar riesgo ficticio
+  (verificado en `backend/src/services/ml-client.ts`: si el servicio ML falla o no está configurado,
+  la API no inventa predicciones).
 
 ### 8.5 Datos demo
+
+> **Nota (2026-10-20):** las semillas de población descritas aquí están **deshabilitadas** en el sistema
+> vigente (`db:seed:demo`, `db:reset:*` y similares responden error `LEGACY`). La población de
+> demostración actual se importa con el Data Seed V6 (`db:dataset:import --workspace=backend`), descrito
+> más abajo. El listado siguiente se conserva como descripción del escenario de demostración histórico.
 
 Las semillas documentadas generan una instalacion demo con:
 
@@ -708,7 +715,8 @@ npm run db:seed --workspace=backend
 npm run db:seed:demo --workspace=backend
 ```
 
-El Data Seed definitivo (275 usuarios; importado originalmente como V5) ya esta importado en
+El Data Seed definitivo (275 usuarios; versión vigente **V6**, que sustituyó al V5 auditado, excluido
+explícitamente por el importador) ya esta importado en
 produccion, sobre el sistema tecnico vigente **BLENKIR V6**. Las cuentas se
 documentan en `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md` y las contraseñas viven solo en las variables
 de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD`.

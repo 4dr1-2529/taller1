@@ -8,7 +8,8 @@
 
 ## Modelo seleccionado
 
-El modelo elegido es **Stacking** (base Random Forest + XGBoost, meta-estimador Random Forest) y ya existe
+El modelo elegido es **Stacking** (base Random Forest + HistGradientBoosting, meta-estimador Random Forest;
+XGBoost entrena como candidato independiente) y ya existe
 como artefacto entrenado en `machine-learning/artifacts/synthetic/`:
 
 - `modelVersion`: `BLENKIR_V6_BIN_20260924`

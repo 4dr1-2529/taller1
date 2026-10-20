@@ -3,6 +3,11 @@
 Análisis estático de calidad de código. **Estado verificado 2026-09-27: el análisis es REAL y fue
 ejecutado por CI; el Quality Gate de `main` sigue en FAIL (D Reliability + D Security).**
 
+> **Actualización (2026-10-20):** este documento es un **snapshot fechado del 2026-09-27**. Los 27 issues
+> descritos aquí fueron corregidos en `main` el 2026-09-28 (commits `40d066e` y `b0d5cf5`); el Quality
+> Gate de `main` está hoy en **OK** (API pública de SonarCloud, `alert_status=OK`, `reliability_rating=A`,
+> `security_rating=A`). El detalle se conserva como evidencia histórica de ese análisis.
+
 ## Estado verificado (2026-09-27)
 
 | Ámbito | Head | Análisis | Resultado | Condiciones |
