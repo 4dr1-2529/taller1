@@ -54,7 +54,9 @@
     "lint": "npm run lint --workspace=frontend",
     "type-check": "npm run type-check --workspace=@tesis/shared && npm run type-check --workspace=frontend && npm run type-check --workspace=backend && npm run type-check:tools --workspace=backend",
     "evidence:generate": "node scripts/evidence/run-all.mjs",
-    "qa:pipeline": "node plan-pruebas/scripts/run-qa-pipeline.mjs"
+    "qa:pipeline": "node plan-pruebas/scripts/run-qa-pipeline.mjs",
+    "test:e2e": "tsx --test --test-concurrency=1 e2e/specs/*.e2e.ts",
+    "e2e:seed": "tsx e2e/support/seed-accounts.ts"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
