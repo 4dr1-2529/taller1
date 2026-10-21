@@ -189,10 +189,14 @@ export default function Home() {
       .catch(() => setAlertCount(earlyAlertCount(students)));
   }, [useApi, students, loading, isDocente, isEstudiante, user, authLoading]);
 
-  async function handleAddStudent(event: FormEvent<HTMLFormElement>) {
+  async function handleAddStudent(event: FormEvent<HTMLFormElement>): Promise<boolean> {
     event.preventDefault();
-    if (!newStudent.nombres || !newStudent.apellidos || !newStudent.seccionId) return;
-    if (await addStudent(newStudent)) setNewStudent(defaultStudentForm);
+    if (!newStudent.nombres || !newStudent.apellidos || !newStudent.seccionId) return false;
+    // H-3 (Sprint 4): el resultado del alta se propaga a la vista para que
+    // el contador/filas se resincronicen con el servidor solo en éxito.
+    const ok = await addStudent(newStudent);
+    if (ok) setNewStudent(defaultStudentForm);
+    return ok;
   }
 
   async function handleAddMatricula(event: FormEvent<HTMLFormElement>) {

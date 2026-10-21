@@ -55,7 +55,7 @@ type StudentsViewProps = {
   secciones: SeccionOption[];
   newStudent: NewStudentForm;
   setNewStudent: (v: NewStudentForm | ((p: NewStudentForm) => NewStudentForm)) => void;
-  onAddStudent: (e: FormEvent<HTMLFormElement>) => void | Promise<void>;
+  onAddStudent: (e: FormEvent<HTMLFormElement>) => boolean | void | Promise<boolean | void>;
   canEdit?: boolean;
   onRefresh?: () => void;
 };
@@ -214,7 +214,16 @@ export function StudentsView({
                   return;
                 }
                 setBusy("create");
-                void Promise.resolve(onAddStudent(e)).catch(() => undefined).finally(() => setBusy(null));
+                // H-3 (Sprint 4): tras un alta confirmada por el backend se
+                // fuerza el refetch del listado (filas + contador "Estudiantes
+                // (N)"), que antes quedaban obsoletos porque el alta solo
+                // hacía append client-side y el fetch del servidor no se
+                // re-disparaba. Un resultado false (error de creación) no
+                // incrementa nada.
+                void Promise.resolve(onAddStudent(e))
+                  .then((ok) => { if (ok !== false) setReloadKey((k) => k + 1); })
+                  .catch(() => undefined)
+                  .finally(() => setBusy(null));
               }}
             >
               <FormField label="Código automático"><input className={INPUT_CLASS} value="EST-… (asignado al registrar)" readOnly /></FormField>
