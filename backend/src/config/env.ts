@@ -22,6 +22,21 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default("http://localhost:3029"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   ML_SERVICE_URL: z.string().url().default("http://localhost:5000"),
+  /** Rate limiting (H-1, Sprint 4): ventana compartida por los limitadores. */
+  RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
+  /**
+   * Backstop global por IP. Default amplio a propósito: el uso normal
+   * intensivo mide ~350 req/ventana (E2E Sprint 3) y una IP de plantel
+   * (NAT) agrupa a muchos usuarios; 12000/15 min ≈ 13 req/s por IP sigue
+   * acotando inundaciones sin penalizar sesiones legítimas.
+   */
+  RATE_LIMIT_MAX: z.coerce.number().int().positive().default(12000),
+  /**
+   * Login/refresh/change-password por IP: defensa en profundidad junto al
+   * bloqueo de 5 intentos fallidos de auth.controller. Generoso para no
+   * penalizar la oleada matinal de un plantel detrás de una misma IP.
+   */
+  AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
 });
 
 const parsed = envSchema.safeParse(process.env);

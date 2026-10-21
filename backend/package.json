@@ -51,7 +51,9 @@
     "ml:v6:predict-all": "tsx scripts/predict-all-v6.ts",
     "type-check": "tsc --noEmit",
     "type-check:tools": "tsc -p tsconfig.tools.json",
-    "test:integration": "tsx --test tests/refactor-2026.integration.ts"
+    "test:integration": "tsx --test tests/refactor-2026.integration.ts",
+    "test:integration:roles": "tsx --test tests/roles-login.integration.ts",
+    "test:integration:ratelimit": "tsx --test tests/rate-limit.integration.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
