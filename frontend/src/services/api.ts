@@ -264,6 +264,26 @@ export type ApiEnvelope<T> = {
 
 export type ApiResponse<T> = T;
 
+/** Error HTTP con código — permite distinguir 401/403/5xx en la UI (CONF-13). */
+export class ApiError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
+/** Handler registrado por el AuthProvider: renueva la sesión (true) o la cierra (false). */
+type UnauthorizedHandler = () => Promise<boolean>;
+let unauthorizedHandler: UnauthorizedHandler | null = null;
+let refreshInFlight: Promise<boolean> | null = null;
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null) {
+  unauthorizedHandler = handler;
+}
+
+/** Rutas de sesión que NUNCA disparan la renovación (evita bucles de refresh). */
+const NO_REFRESH_PATHS = ["/auth/login", "/auth/refresh", "/auth/logout"];
+
 class ApiClient {
   private token: string | null = null;
 
@@ -280,7 +300,22 @@ class ApiClient {
     return this.request<T>(path, options);
   }
 
-  private async request<T>(path: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+  /**
+   * Renueva la sesión vía el handler del AuthProvider con single-flight:
+   * varias peticiones concurrentes que reciban 401 comparten UNA sola
+   * renovación en lugar de disparar N refresh simultáneos.
+   */
+  private async renewSession(): Promise<boolean> {
+    if (!unauthorizedHandler) return false;
+    if (!refreshInFlight) {
+      refreshInFlight = unauthorizedHandler().finally(() => {
+        refreshInFlight = null;
+      });
+    }
+    return refreshInFlight;
+  }
+
+  private async request<T>(path: string, options: RequestInit = {}, retried = false): Promise<ApiResponse<T>> {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       ...(options.headers as Record<string, string>),
@@ -311,6 +346,19 @@ class ApiClient {
       options.signal?.removeEventListener("abort", onExternalAbort);
     }
 
+    // CONF-13 — 401: renueva la sesión UNA vez (single-flight) y reintenta la
+    // petición original; si no hay renovación posible se propaga el error con
+    // su status para que el AuthProvider cierre la sesión y se redirija a
+    // /login. Los reintegros máximos por petición son 1 (sin bucles).
+    if (
+      res.status === 401 &&
+      !retried &&
+      !NO_REFRESH_PATHS.some((p) => path.startsWith(p))
+    ) {
+      const renewed = await this.renewSession();
+      if (renewed) return this.request<T>(path, options, true);
+    }
+
     // Un 502 del proxy devuelve HTML: sin esta guarda `res.json()` lanza un
     // SyntaxError críptico que llega tal cual a la UI.
     if (!(res.headers.get("content-type") ?? "").includes("application/json")) {
@@ -327,7 +375,7 @@ class ApiClient {
       const detail = errs
         .map((e) => (typeof e === "string" ? e : `${e.field}: ${e.message}`))
         .join("; ");
-      throw new Error(detail ? `${msg}: ${detail}` : msg);
+      throw new ApiError(detail ? `${msg}: ${detail}` : msg, res.status);
     }
 
     if (body.success === true && body.data !== undefined) {

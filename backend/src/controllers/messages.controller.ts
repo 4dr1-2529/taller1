@@ -352,6 +352,11 @@ async function createCommunication(req: Request, res: Response, next: NextFuncti
     } else {
       if (data.parentMessageId) throw new AppError(403, "Los avisos no admiten respuestas");
       if (scope === "curso" && user.role !== "docente") throw new AppError(403, "Solo profesores publican avisos académicos");
+      // H-1: escritura en salas institucionales solo por el director, aunque el
+      // cliente intente llegar con scope "curso" + roomId arbitrario.
+      if ((roomId === "global:institucional" || roomId === "canal:profesores") && user.role !== "admin") {
+        throw new AppError(403, "Solo el director puede publicar en esta sala");
+      }
       await assertRoomAccess(user, roomId);
       recipientUserId = null;
     }

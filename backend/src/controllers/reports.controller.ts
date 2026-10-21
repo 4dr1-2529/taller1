@@ -43,9 +43,28 @@ export async function createReport(req: Request, res: Response, next: NextFuncti
   }
 }
 
+/**
+ * FASE 4 (CONF-03) — Regla de eliminación de reportes:
+ * - Director (admin): cualquier reporte.
+ * - Otros roles: solo reportes propios (generadoPor = usuario actual).
+ * La ruta DELETE /reports/:id está además restringida a admin (defensa en
+ * profundidad si la ruta se ampliara en el futuro).
+ */
+export function canDeleteReport(role: string, userSub: string, reportOwner: bigint | string | null): boolean {
+  if (role === "admin") return true;
+  if (reportOwner == null) return false;
+  return String(reportOwner) === String(userSub);
+}
+
 export async function deleteReport(req: Request, res: Response, next: NextFunction) {
   try {
-    await prisma.report.delete({ where: { id: paramBigIntId(req) } });
+    const id = paramBigIntId(req);
+    const report = await prisma.report.findUnique({ where: { id } });
+    if (!report) throw new AppError(404, "Reporte no encontrado");
+    if (!canDeleteReport(req.user!.role, req.user!.sub, report.generadoPor)) {
+      throw new AppError(403, "No tiene permiso para eliminar este reporte.", "FORBIDDEN");
+    }
+    await prisma.report.delete({ where: { id } });
     sendSuccess(res, {}, "Reporte eliminado");
   } catch (e) {
     next(e);

@@ -10,7 +10,8 @@ import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { toDbId, idToString } from "../utils/ids.js";
 import { mapUserWithRole } from "../utils/rol.js";
-import { hashToken, truncate } from "../utils/tokens.js";
+import { hashToken, signAccessToken, truncate } from "../utils/tokens.js";
+import { resolveLogoutScope, resolvePasswordChangeScope } from "../utils/session-policy.js";
 
 const loginAttempts = new Map<string, { count: number; lastAttempt: number }>();
 const MAX_ATTEMPTS = 5;
@@ -52,11 +53,6 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
     const role = user.rol.codigo;
     const signOpts: SignOptions = { expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"] };
-    const token = jwt.sign(
-      { sub: idToString(user.id), email: user.email, role },
-      env.JWT_SECRET,
-      signOpts,
-    );
 
     const refreshToken = jwt.sign(
       { sub: idToString(user.id), type: "refresh" },
@@ -64,7 +60,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       { expiresIn: "7d" },
     );
 
-    await prisma.session.create({
+    // La sesión se crea ANTES del access token para poder vincularlo (sid) y
+    // que logout/cambio de contraseña invaliden el access token de inmediato.
+    const session = await prisma.session.create({
       data: {
         usuarioId: user.id,
         tokenHash: hashToken(refreshToken),
@@ -73,6 +71,12 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       },
     });
+
+    const token = signAccessToken(
+      { sub: idToString(user.id), email: user.email, role, sid: idToString(session.id) },
+      env.JWT_SECRET,
+      signOpts.expiresIn,
+    );
 
     await logAudit({
       entidad: "User",
@@ -123,10 +127,11 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
     if (!user || !user.activo) throw new AppError(401, "Usuario no encontrado");
 
     const signOpts: SignOptions = { expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"] };
-    const newToken = jwt.sign(
-      { sub: idToString(user.id), email: user.email, role: user.rol.codigo },
+    // El nuevo access token mantiene la vinculación a la misma sesión (sid).
+    const newToken = signAccessToken(
+      { sub: idToString(user.id), email: user.email, role: user.rol.codigo, sid: idToString(session.id) },
       env.JWT_SECRET,
-      signOpts,
+      signOpts.expiresIn,
     );
 
     sendSuccess(res, { token: newToken });
@@ -138,12 +143,11 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
 export async function logout(req: Request, res: Response, next: NextFunction) {
   try {
     const { refreshToken } = req.body ?? {};
+    // Revoca solo la sesión actual (sid del access token) o la indicada; sin
+    // indicación explícita mantiene el comportamiento legado (todas del MISMO
+    // usuario — nunca toca sesiones de otros usuarios).
     await prisma.session.updateMany({
-      where: {
-        usuarioId: toDbId(req.user!.sub),
-        ...(refreshToken ? { tokenHash: hashToken(refreshToken) } : {}),
-        revocada: false,
-      },
+      where: resolveLogoutScope(req.user!.sub, req.user!.sid, refreshToken),
       data: { revocada: true },
     });
     await logAudit({ entidad: "User", entidadId: toDbId(req.user!.sub), accion: "LOGOUT", usuarioId: toDbId(req.user!.sub) });
@@ -192,6 +196,13 @@ export async function changePassword(req: Request, res: Response, next: NextFunc
 
     const hash = await bcrypt.hash(newPassword, 12);
     await prisma.user.update({ where: { id: user.id }, data: { passwordHash: hash } });
+
+    // FASE 2: cambiar la contraseña revoca las demás sesiones (otros dispositivos
+    // quedan fuera); la sesión actual (sid) se conserva para no expulsar al usuario.
+    await prisma.session.updateMany({
+      where: resolvePasswordChangeScope(idToString(user.id), req.user!.sid),
+      data: { revocada: true },
+    });
 
     await logAudit({ entidad: "User", entidadId: user.id, accion: "CHANGE_PASSWORD", usuarioId: user.id });
     sendSuccess(res, {}, "Contraseña actualizada");

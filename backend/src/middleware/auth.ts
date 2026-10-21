@@ -4,11 +4,14 @@ import { prisma } from "../utils/prisma.js";
 import type { RolCodigo } from "@prisma/client";
 import { env } from "../config/env.js";
 import { AppError } from "./errorHandler.js";
+import { toDbId } from "../utils/ids.js";
 
 export type AuthPayload = {
   sub: string;
   email: string;
   role: RolCodigo;
+  /** Session.id vinculada al access token (tokens legados sin sid no lo llevan). */
+  sid?: string;
 };
 
 export async function authenticate(req: Request, _res: Response, next: NextFunction) {
@@ -22,6 +25,21 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
     if (decoded.sub && decoded.role) {
       const active = await prisma.user.findFirst({ where: { id: BigInt(decoded.sub), activo: true, rol: { codigo: decoded.role } } });
       if (!active) return next(new AppError(401, "Cuenta inactiva"));
+      // FASE 2: revocación efectiva — el access token deja de valer en cuanto se
+      // revoca su sesión (logout o cambio de contraseña). Los tokens legados sin
+      // sid conservan el comportamiento anterior hasta su expiración (≤ 8 h).
+      if (decoded.sid) {
+        const session = await prisma.session.findFirst({
+          where: {
+            id: toDbId(decoded.sid),
+            usuarioId: BigInt(decoded.sub),
+            revocada: false,
+            expiresAt: { gt: new Date() },
+          },
+          select: { id: true },
+        });
+        if (!session) return next(new AppError(401, "Sesión revocada o expirada", "INVALID_TOKEN"));
+      }
       req.user = decoded;
       next();
     } else {

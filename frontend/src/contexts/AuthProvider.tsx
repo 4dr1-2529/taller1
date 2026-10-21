@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { api, type AuthUser } from "@/services/api";
+import { api, setUnauthorizedHandler, type AuthUser } from "@/services/api";
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -116,6 +116,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout();
     }
   }, [refreshToken, logout]);
+
+  // CONF-13: el cliente HTTP avisa cuando una petición recibe 401. Se intenta
+  // UNA renovación con el refresh token (single-flight en el cliente, sin
+  // bucles) y, si falla, se cierra la sesión → page.tsx redirige a /login.
+  useEffect(() => {
+    setUnauthorizedHandler(async () => {
+      const rt = localStorage.getItem("tesis-refresh-token");
+      if (!rt) return false;
+      try {
+        const res = await api.refreshToken(rt);
+        setToken(res.token);
+        api.setToken(res.token);
+        localStorage.setItem("tesis-token", res.token);
+        return true;
+      } catch {
+        logout();
+        return false;
+      }
+    });
+    return () => setUnauthorizedHandler(null);
+  }, [logout]);
 
   const hasRole = useCallback((roles: string[]) => {
     if (!user) return false;
