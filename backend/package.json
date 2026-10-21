@@ -38,7 +38,7 @@
     "export:accounts:prod": "node scripts/legacy-population-disabled.mjs",
     "export:accounts:web": "node scripts/legacy-population-disabled.mjs",
     "db:legacy-users": "node scripts/legacy-population-disabled.mjs",
-    "test": "node --test tests/*.test.mjs && tsx --test tests/schemas.test.ts tests/teacher-scope.test.ts tests/validation-fields.test.ts tests/estudiante-scope.test.ts",
+    "test": "node --test tests/*.test.mjs && tsx --test tests/schemas.test.ts tests/teacher-scope.test.ts tests/validation-fields.test.ts tests/estudiante-scope.test.ts tests/trust-proxy.test.ts",
     "db:bootstrap": "npm run db:bootstrap:admin",
     "db:bootstrap:admin": "tsx prisma/bootstrap-admin.ts",
     "db:validate:preseed": "node scripts/validate-preseed-zero.mjs",
@@ -66,8 +66,8 @@
     "morgan": "^1.10.0",
     "prisma": "^6.3.1",
     "typescript": "^5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "xss": "^1.0.15",
-    "xlsx": "^0.18.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {

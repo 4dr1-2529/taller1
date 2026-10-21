@@ -13,8 +13,17 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import { sanitizeBody } from "./middleware/sanitize.js";
 import apiRoutes from "./routes/index.js";
 import { gracefulShutdown } from "./utils/prisma.js";
+import { resolveTrustProxyHops, trustedClientIp } from "./middleware/trustProxy.js";
 
 const app = express();
+
+// CONF-02: confianza mínima en el proxy según la topología verificada (Railway,
+// 1 salto, X-Real-IP definido por el edge). Ver middleware/trustProxy.ts.
+const trustProxyHops = resolveTrustProxyHops(process.env.NODE_ENV);
+app.set("trust proxy", trustProxyHops);
+if (trustProxyHops) {
+  app.use(trustedClientIp());
+}
 
 app.use(helmet({
   contentSecurityPolicy: process.env.NODE_ENV === "production",
