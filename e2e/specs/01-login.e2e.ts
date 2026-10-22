@@ -94,4 +94,5 @@ test("F5.5 estado de carga: botón deshabilitado mientras la petición está en 
   await page.waitForFunction(() => document.location.pathname === "/", null, {
     timeout: TIMEOUT,
   });
+  assert.equal(new URL(page.url()).pathname, "/", "tras login con carga lenta debe llegar al panel");
 });

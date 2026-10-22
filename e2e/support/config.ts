@@ -27,27 +27,41 @@ if (!LOCAL_HOSTS.has(parsedBase.hostname)) {
 
 export const BASE_URL = parsedBase.origin;
 
-/** Cuentas ficticias locales. Las contraseñas se fija seed-accounts.ts. */
+/**
+ * Lee una variable de entorno obligatoria para credenciales de prueba E2E.
+ * Nunca se admiten contraseñas hard-codeadas como fallback.
+ */
+function requireE2EEnv(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) {
+    throw new Error(
+      `Falta variable de entorno E2E "${name}". Defínala antes de ejecutar las pruebas E2E (never hard-codear contraseñas de prueba).`,
+    );
+  }
+  return value;
+}
+
+/** Cuentas ficticias locales. Las contraseñas deben venir de variables de entorno (E2E_*_PASSWORD). */
 export const ACCOUNTS = {
   director: {
     email: "f4-director@example.test",
-    password: process.env.E2E_DIRECTOR_PASSWORD ?? "F4-Direct0r",
+    password: requireE2EEnv("E2E_DIRECTOR_PASSWORD"),
   },
   profesorA: {
     email: "f4-prof-a@example.test",
-    password: process.env.E2E_PROFA_PASSWORD ?? "F4-Profa123",
+    password: requireE2EEnv("E2E_PROFA_PASSWORD"),
   },
   profesorB: {
     email: "f4-prof-b@example.test",
-    password: process.env.E2E_PROFB_PASSWORD ?? "F4-Profb123",
+    password: requireE2EEnv("E2E_PROFB_PASSWORD"),
   },
   estudianteA: {
     email: "f4-est-a@example.test",
-    password: process.env.E2E_ESTA_PASSWORD ?? "F4-Esta1234",
+    password: requireE2EEnv("E2E_ESTA_PASSWORD"),
   },
   estudianteB: {
     email: "f4-est-b@example.test",
-    password: process.env.E2E_ESTB_PASSWORD ?? "F4-Estb1234",
+    password: requireE2EEnv("E2E_ESTB_PASSWORD"),
   },
 } as const;
 

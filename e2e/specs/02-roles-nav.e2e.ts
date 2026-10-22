@@ -122,8 +122,10 @@ test("F5.11 cierre de sesión: vuelve a /login y el panel exige sesión", async 
   await expectVisible(logout);
   await logout.click();
   await page.waitForURL((url) => url.pathname === "/login", { timeout: 20000 });
+  assert.equal(new URL(page.url()).pathname, "/login", "tras logout debe volver a /login");
 
   // Con la sesión cerrada, "/" debe redirigir a /login.
   await page.goto(`${BASE_URL}/`);
   await page.waitForURL((url) => url.pathname === "/login", { timeout: 20000 });
+  assert.equal(new URL(page.url()).pathname, "/login", "desde / sin sesión debe redirigir a /login");
 });

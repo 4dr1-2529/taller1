@@ -64,11 +64,18 @@ test("SPRINT 5 — rotación segura de refresh tokens sobre BD aislada", async t
       data: { rolId: role.id, email, passwordHash: await bcrypt.hash(password, 4), nombres: "S5", apellidos: tag },
     });
   };
-  const u1 = await mkUser("u1", "S5-Rotacion1");
-  const u2 = await mkUser("u2", "S5-Rotacion2");
-  const u3 = await mkUser("u3", "S5-Rotacion3");
-  const pwd = "S5-Rotacion1";
-  const pwd2 = "S5-Rotacion2";
+  const pwd1 = process.env.S5_ROT_PWD1;
+  const pwd2 = process.env.S5_ROT_PWD2;
+  const pwd3 = process.env.S5_ROT_PWD3;
+  if (!pwd1 || !pwd2 || !pwd3) {
+    throw new Error(
+      "Faltan variables de entorno S5_ROT_PWD1/S5_ROT_PWD2/S5_ROT_PWD3 para las pruebas de rotación de refresh tokens.",
+    );
+  }
+  const u1 = await mkUser("u1", pwd1);
+  const u2 = await mkUser("u2", pwd2);
+  const u3 = await mkUser("u3", pwd3);
+  const pwd = pwd1;
 
   await t.test("login incorrecto no crea sesión y el correcto emite refresh vigente", async () => {
     const bad = await post("/auth/login", { email: u1.email, password: "ClaveMala1" });
@@ -136,7 +143,7 @@ test("SPRINT 5 — rotación segura de refresh tokens sobre BD aislada", async t
       post("/auth/refresh", { refreshToken: a.refreshToken }),
       post("/auth/refresh", { refreshToken: a.refreshToken }),
     ]);
-    const statuses = [r1.status, r2.status].sort();
+    const statuses = [r1.status, r2.status].sort((a: number, b: number) => a - b);
     assert.deepEqual(statuses, [200, 401], `exactamente una renovacion debe ganar, obtuvo ${statuses}`);
     const winner = (r1.status === 200 ? r1 : r2).body!.data as unknown as AuthData;
     // El ganador usa SU refresh (r1) una sola vez → r2.

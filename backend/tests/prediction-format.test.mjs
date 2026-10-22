@@ -2,11 +2,8 @@
  * Prueba unitaria del formato de respuesta tesis.
  * node backend/tests/prediction-format.test.mjs
  */
-import { createRequire } from "module";
+import assert from "node:assert/strict";
 
-const require = createRequire(import.meta.url);
-
-// Compilar TS en runtime no disponible — replicamos lógica mínima
 function toThesisPrediction(p) {
   const NIVEL = { bajo: "Bajo", medio: "Medio", alto: "Alto" };
   return {
@@ -20,19 +17,6 @@ function toThesisPrediction(p) {
   };
 }
 
-let ok = 0;
-let fail = 0;
-
-function assert(name, cond) {
-  if (cond) {
-    ok++;
-    console.log(`✓ ${name}`);
-  } else {
-    fail++;
-    console.error(`✗ ${name}`);
-  }
-}
-
 const sample = {
   score: 85.2,
   level: "alto",
@@ -44,10 +28,13 @@ const sample = {
 };
 
 const tesis = toThesisPrediction(sample);
-assert("nivel_riesgo en español", tesis.nivel_riesgo === "Alto");
-assert("score_predictivo numérico", tesis.score_predictivo === 85.2);
-assert("probabilidad_abandono", tesis.probabilidad_abandono === 0.852);
-assert("factores_riesgo array", Array.isArray(tesis.factores_riesgo) && tesis.factores_riesgo.length === 1);
 
-console.log(`\n${ok} ok, ${fail} fallos`);
-process.exit(fail > 0 ? 1 : 0);
+assert.strictEqual(tesis.nivel_riesgo, "Alto", "nivel_riesgo en español");
+assert.strictEqual(tesis.score_predictivo, 85.2, "score_predictivo numérico");
+assert.strictEqual(tesis.probabilidad_abandono, 0.852, "probabilidad_abandono");
+assert.ok(
+  Array.isArray(tesis.factores_riesgo) && tesis.factores_riesgo.length === 1,
+  "factores_riesgo array",
+);
+
+console.log("prediction-format.test.mjs: todas las aserciones pasaron");
