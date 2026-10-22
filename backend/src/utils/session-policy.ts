@@ -10,14 +10,18 @@ import { hashToken } from "./tokens.js";
 /**
  * Alcance del logout:
  * - Con `sid` (access token actual): revoca SOLO la sesión actual del dispositivo.
- * - Con `refreshToken` explícito (token legado sin `sid`): revoca esa sesión.
+ * - Con `refreshToken` explícito (token legado sin `sid`): revoca esa sesión
+ *   (acepta el vigente o el recién rotado — SPRINT 5).
  * - Sin ninguno (cliente legado): revoca todas las sesiones del MISMO usuario
  *   (nunca las de otros usuarios: el filtro es siempre por usuarioId).
  */
 export function resolveLogoutScope(userSub: string, sid?: string, refreshToken?: string): Prisma.SessionWhereInput {
   const base: Prisma.SessionWhereInput = { usuarioId: toDbId(userSub), revocada: false };
   if (sid) return { ...base, id: toDbId(sid) };
-  if (refreshToken) return { ...base, tokenHash: hashToken(refreshToken) };
+  if (refreshToken) {
+    const hash = hashToken(refreshToken);
+    return { ...base, OR: [{ tokenHash: hash }, { refreshHash: hash }] };
+  }
   return base;
 }
 

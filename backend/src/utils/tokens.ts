@@ -27,6 +27,25 @@ export function signAccessToken(
   );
 }
 
+/**
+ * SPRINT 5 — Refresh token con `jti` único por emisión. La sesión en BD guarda
+ * solo el hash del token vigente (`token_hash`) y del anterior (`refresh_hash`),
+ * de modo que cada renovación invalida criptográficamente la anterior.
+ */
+export function signRefreshToken(sub: string, secret: string, expiresIn: SignOptions["expiresIn"]): string {
+  return jwt.sign({ sub, type: "refresh", jti: crypto.randomUUID() }, secret, { expiresIn });
+}
+
+/**
+ * SPRINT 5 — Expiración real (claim `exp`) de un JWT firmado; alinea las
+ * columnas `expires_at` / `refresh_expires` de la sesión con el propio token.
+ */
+export function refreshExpiryDate(token: string): Date {
+  const decoded = jwt.decode(token) as { exp?: number } | null;
+  const exp = decoded?.exp;
+  return new Date((exp ?? Math.floor(Date.now() / 1000) + 7 * 24 * 3600) * 1000);
+}
+
 export function truncate(value: string | null | undefined, max: number): string | null {
   if (value == null) return null;
   return value.length <= max ? value : value.slice(0, max);

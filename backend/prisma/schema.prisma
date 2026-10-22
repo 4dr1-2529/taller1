@@ -305,16 +305,18 @@ model User {
 }
 
 model Session {
-  id              BigInt    @id @default(autoincrement())
-  usuarioId       BigInt    @map("usuario_id")
-  tokenHash       String    @map("token_hash") @db.VarChar(128)
-  refreshHash     String?   @map("refresh_hash") @db.VarChar(128)
-  ipAddress       String?   @map("ip_address") @db.VarChar(45)
-  userAgent       String?   @map("user_agent") @db.VarChar(255)
-  expiresAt       DateTime  @map("expires_at")
-  refreshExpires  DateTime? @map("refresh_expires")
-  revocada        Boolean   @default(false)
-  createdAt       DateTime  @default(now()) @map("created_at")
+  id                BigInt    @id @default(autoincrement())
+  usuarioId         BigInt    @map("usuario_id")
+  tokenHash         String    @map("token_hash") @db.VarChar(128)
+  refreshHash       String?   @map("refresh_hash") @db.VarChar(128)
+  ipAddress         String?   @map("ip_address") @db.VarChar(45)
+  userAgent         String?   @map("user_agent") @db.VarChar(255)
+  expiresAt         DateTime  @map("expires_at")
+  refreshExpires    DateTime? @map("refresh_expires")
+  /** SPRINT 5 — instante de la ultima rotacion del refresh token (ventana de gracia anti-falsa-alarma). */
+  refreshRotatedAt  DateTime? @map("refresh_rotated_at")
+  revocada          Boolean   @default(false)
+  createdAt         DateTime  @default(now()) @map("created_at")
 
   usuario User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 

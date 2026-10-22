@@ -10,7 +10,7 @@ import { AppError } from "../middleware/errorHandler.js";
 import { logAudit } from "../utils/audit.js";
 import { toDbId, idToString } from "../utils/ids.js";
 import { mapUserWithRole } from "../utils/rol.js";
-import { hashToken, signAccessToken, truncate } from "../utils/tokens.js";
+import { hashToken, refreshExpiryDate, signAccessToken, signRefreshToken, truncate } from "../utils/tokens.js";
 import { resolveLogoutScope, resolvePasswordChangeScope } from "../utils/session-policy.js";
 
 const loginAttempts = new Map<string, { count: number; lastAttempt: number }>();
@@ -54,11 +54,13 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     const role = user.rol.codigo;
     const signOpts: SignOptions = { expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"] };
 
-    const refreshToken = jwt.sign(
-      { sub: idToString(user.id), type: "refresh" },
+    // SPRINT 5 — Refresh con jti único; la sesión guarda el hash del vigente.
+    const refreshToken = signRefreshToken(
+      idToString(user.id),
       env.JWT_SECRET,
-      { expiresIn: "7d" },
+      env.REFRESH_TOKEN_EXPIRES_IN as SignOptions["expiresIn"],
     );
+    const refreshExpiresAt = refreshExpiryDate(refreshToken);
 
     // La sesión se crea ANTES del access token para poder vincularlo (sid) y
     // que logout/cambio de contraseña invaliden el access token de inmediato.
@@ -68,7 +70,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         tokenHash: hashToken(refreshToken),
         ipAddress: truncate(ip, 45),
         userAgent: truncate(req.headers["user-agent"], 255),
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt: refreshExpiresAt,
+        refreshExpires: refreshExpiresAt,
       },
     });
 
@@ -110,21 +113,69 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
     const decoded = jwt.verify(refreshToken, env.JWT_SECRET) as { sub: string; type: string };
     if (decoded.type !== "refresh") throw new AppError(401, "Token inválido");
 
+    // SPRINT 5 — Rotación segura: la sesión se localiza por el hash del token
+    // vigente (token_hash) o del recién rotado (refresh_hash).
+    const presentedHash = hashToken(refreshToken);
     const session = await prisma.session.findFirst({
       where: {
         usuarioId: toDbId(decoded.sub),
-        tokenHash: hashToken(refreshToken),
+        OR: [{ tokenHash: presentedHash }, { refreshHash: presentedHash }],
         expiresAt: { gt: new Date() },
         revocada: false,
       },
     });
     if (!session) throw new AppError(401, "Sesión inválida o expirada");
 
+    // Detección de reutilización: el token presentado YA fue rotado.
+    if (session.refreshHash === presentedHash) {
+      const rotatedAt = session.refreshRotatedAt?.getTime() ?? 0;
+      if (Date.now() - rotatedAt <= env.REFRESH_REUSE_GRACE_MS) {
+        // Renovación concurrente legítima (otra pestaña/proceso llegó primero):
+        // 401 SIN revocar; el cliente reintenta con el token vigente que ya
+        // guardó quien ganó la carrera.
+        throw new AppError(401, "Refresh token ya renovado; use el token vigente");
+      }
+      // Reutilización fuera de la ventana de gracia = posible robo: se revoca
+      // ESA sesión (familia = sesión); las demás sesiones del mismo usuario y
+      // las de otros usuarios quedan intactas.
+      await prisma.session.updateMany({ where: { id: session.id, revocada: false }, data: { revocada: true } });
+      await logAudit({
+        entidad: "Session",
+        entidadId: session.id,
+        accion: "REFRESH_REUSE_DETECTED",
+        usuarioId: toDbId(decoded.sub),
+        ipAddress: req.ip ?? req.socket.remoteAddress ?? undefined,
+        detalle: "Reutilización de refresh token rotado fuera de la ventana de gracia; sesión revocada",
+      });
+      throw new AppError(401, "Reutilización de refresh token detectada; sesión revocada");
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: toDbId(decoded.sub) },
       include: { rol: { select: { codigo: true } } },
     });
     if (!user || !user.activo) throw new AppError(401, "Usuario no encontrado");
+
+    // Rotación atómica (compare-and-swap por hash vigente): de dos
+    // renovaciones concurrentes con el mismo token solo una gana; la otra
+    // recibe 401 sin revocar la sesión.
+    const newRefreshToken = signRefreshToken(
+      idToString(user.id),
+      env.JWT_SECRET,
+      env.REFRESH_TOKEN_EXPIRES_IN as SignOptions["expiresIn"],
+    );
+    const rotated = await prisma.session.updateMany({
+      where: { id: session.id, tokenHash: presentedHash, revocada: false },
+      data: {
+        tokenHash: hashToken(newRefreshToken),
+        refreshHash: presentedHash,
+        refreshExpires: refreshExpiryDate(newRefreshToken),
+        refreshRotatedAt: new Date(),
+      },
+    });
+    if (rotated.count === 0) {
+      throw new AppError(401, "Refresh token ya renovado; use el token vigente");
+    }
 
     const signOpts: SignOptions = { expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"] };
     // El nuevo access token mantiene la vinculación a la misma sesión (sid).
@@ -134,7 +185,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
       signOpts.expiresIn,
     );
 
-    sendSuccess(res, { token: newToken });
+    sendSuccess(res, { token: newToken, refreshToken: newRefreshToken });
   } catch (e) {
     next(e);
   }

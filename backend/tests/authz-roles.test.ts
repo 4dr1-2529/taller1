@@ -134,10 +134,16 @@ describe("resolveLogoutScope — alcance de revocación", () => {
     assert.equal("tokenHash" in w, false);
   });
 
-  it("con refresh token (legado sin sid): revoca esa sesión", () => {
+  it("con refresh token (legado sin sid): revoca esa sesión — vigente o ya rotado", () => {
     const w = resolveLogoutScope("5", undefined, "rt-abc");
     assert.equal(w.usuarioId, toDbId("5"));
-    assert.ok(typeof w.tokenHash === "string" && w.tokenHash.length === 64);
+    // SPRINT 5: el alcance acepta el refresh vigente (token_hash) y el
+    // recién rotado (refresh_hash) — mismo token presentado en ambas ramas.
+    assert.ok(Array.isArray(w.OR) && w.OR.length === 2);
+    const [current, previous] = w.OR as { tokenHash?: string; refreshHash?: string }[];
+    assert.ok(typeof current.tokenHash === "string" && current.tokenHash.length === 64);
+    assert.ok(typeof previous.refreshHash === "string" && previous.refreshHash.length === 64);
+    assert.equal(current.tokenHash, previous.refreshHash);
     assert.equal("id" in w, false);
   });
 

@@ -53,7 +53,8 @@
     "type-check:tools": "tsc -p tsconfig.tools.json",
     "test:integration": "tsx --test tests/refactor-2026.integration.ts",
     "test:integration:roles": "tsx --test tests/roles-login.integration.ts",
-    "test:integration:ratelimit": "tsx --test tests/rate-limit.integration.ts"
+    "test:integration:ratelimit": "tsx --test tests/rate-limit.integration.ts",
+    "test:integration:refresh": "tsx --test tests/refresh-rotation.integration.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",

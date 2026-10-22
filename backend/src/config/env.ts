@@ -37,6 +37,18 @@ const envSchema = z.object({
    * penalizar la oleada matinal de un plantel detrás de una misma IP.
    */
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
+  /**
+   * SPRINT 5 — Rotación de refresh tokens. TTL del refresh (antes hardcodeado
+   * "7d" en dos sitios de auth.controller).
+   */
+  REFRESH_TOKEN_EXPIRES_IN: z.string().default("7d"),
+  /**
+   * SPRINT 5 — Ventana de gracia tras una rotación: una renovación concurrente
+   * legítima (otra pestaña/proceso con el mismo token) recibe 401 sin revocar
+   * la sesión; la reutilización de un token ya rotado FUERA de esta ventana se
+   * trata como compromiso y revoca la sesión. 0 en tests para exigir el peor caso.
+   */
+  REFRESH_REUSE_GRACE_MS: z.coerce.number().int().nonnegative().default(30_000),
 });
 
 const parsed = envSchema.safeParse(process.env);
