@@ -32,6 +32,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // SPRINT 5 — Rotación de refresh tokens: además del access token, el backend
+  // devuelve un refresh token nuevo; hay que persistirlo (estado + localStorage)
+  // porque el anterior queda invalidado en la rotación.
+  const persistRefresh = useCallback((res: { token: string; refreshToken?: string }) => {
+    setToken(res.token);
+    api.setToken(res.token);
+    localStorage.setItem("tesis-token", res.token);
+    if (res.refreshToken) {
+      setRefreshToken(res.refreshToken);
+      localStorage.setItem("tesis-refresh-token", res.refreshToken);
+    }
+  }, []);
+
   const logout = useCallback(() => {
     const currentToken = localStorage.getItem("tesis-token");
     const currentRefreshToken = localStorage.getItem("tesis-refresh-token");
@@ -75,9 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (rt) {
           try {
             const res = await api.refreshToken(rt);
-            setToken(res.token);
-            api.setToken(res.token);
-            localStorage.setItem("tesis-token", res.token);
+            persistRefresh(res);
             const me = await api.getMe();
             setUser(me.user);
             localStorage.setItem("tesis-user", JSON.stringify(me.user));
@@ -92,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     void restoreSession();
-  }, [logout]);
+  }, [logout, persistRefresh]);
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await api.login(email, password);
@@ -109,13 +120,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!refreshToken) return;
     try {
       const res = await api.refreshToken(refreshToken);
-      setToken(res.token);
-      api.setToken(res.token);
-      localStorage.setItem("tesis-token", res.token);
+      persistRefresh(res);
     } catch {
+      // Otra pestaña pudo haber renovado primero (rotación): si el almacén ya
+      // tiene un token distinto, se reintenta con él antes de cerrar sesión.
+      const current = localStorage.getItem("tesis-refresh-token");
+      if (current && current !== refreshToken) {
+        try {
+          const res = await api.refreshToken(current);
+          persistRefresh(res);
+          return;
+        } catch {
+          logout();
+          return;
+        }
+      }
       logout();
     }
-  }, [refreshToken, logout]);
+  }, [refreshToken, persistRefresh, logout]);
 
   // CONF-13: el cliente HTTP avisa cuando una petición recibe 401. Se intenta
   // UNA renovación con el refresh token (single-flight en el cliente, sin
@@ -126,17 +148,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!rt) return false;
       try {
         const res = await api.refreshToken(rt);
-        setToken(res.token);
-        api.setToken(res.token);
-        localStorage.setItem("tesis-token", res.token);
+        persistRefresh(res);
         return true;
       } catch {
+        // SPRINT 5 — Renovación concurrente entre pestañas: si otra pestaña ya
+        // guardó el refresh token vigente, se reintenta con él; solo se cierra
+        // la sesión cuando también ese intento falla.
+        const current = localStorage.getItem("tesis-refresh-token");
+        if (current && current !== rt) {
+          try {
+            const res = await api.refreshToken(current);
+            persistRefresh(res);
+            return true;
+          } catch {
+            logout();
+            return false;
+          }
+        }
         logout();
         return false;
       }
     });
     return () => setUnauthorizedHandler(null);
-  }, [logout]);
+  }, [persistRefresh, logout]);
 
   const hasRole = useCallback((roles: string[]) => {
     if (!user) return false;

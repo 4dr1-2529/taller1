@@ -403,7 +403,9 @@ class ApiClient {
   }
 
   async refreshToken(refreshToken: string) {
-    return this.request<{ token: string }>("/auth/refresh", {
+    // SPRINT 5 — Rotación: además del access token nuevo devuelve el refresh
+    // token nuevo; el cliente debe persistirlo, el anterior queda invalidado.
+    return this.request<{ token: string; refreshToken?: string }>("/auth/refresh", {
       method: "POST",
       body: JSON.stringify({ refreshToken }),
     });
