@@ -61,5 +61,11 @@
   "devDependencies": {
     "concurrently": "^9.1.2",
     "playwright": "^1.61.1"
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2"
+  },
+  "comments": {
+    "overrides.deepmerge-ts": "SPRINT 5 (CVE-2026-40345, GHSA-ggr8-5vv4-36mx): deepmerge-ts 7.1.5 es fijado en exclusivo por @prisma/config (CLI prisma, dependencia de produccion); sin parche en la linea 6.x (6.19.3 es la ultima) y la version corregida upstream es prisma 7.10.1 (mayor). El override documenta la remediacion y se aplica en la proxima regeneracion completa del lockfile (npm 11.12.1 NO lo aplica contra un lockfile existente -bug conocido-; el arbol instalado sigue en 7.1.5 hasta entonces). Impacto en BLENKIR: solo el CLI en arranque/despliegue, entradas de config del repo, sin superficie de red. Eliminar este override al migrar a Prisma >=7.10.1."
   }
 }
