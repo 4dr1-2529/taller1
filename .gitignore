@@ -90,3 +90,11 @@ scripts/evidence/node_modules/
 # Evidencias de la auditoría técnica V6 (excepción a *.log)
 !plan-pruebas/evidencias-finales/terminal/*.log
 !plan-pruebas/pruebas-unitarias/evidencias/*.log
+
+# Local analysis outputs
+.scannerwork/
+.sonar-*/
+**/.coverage
+**/.pytest_cache/
+**/.pytest-tmp*/
+machine-learning/coverage.xml

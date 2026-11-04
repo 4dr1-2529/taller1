@@ -44,23 +44,31 @@
     "db:validate:preseed": "npm run db:validate:preseed --workspace=backend",
     "db:studio": "npm run db:studio --workspace=backend",
     "ml:train": "cd machine-learning && python train.py",
-    "ml:test": "cd machine-learning && python tests/test_predict.py",
+    "ml:test": "cd machine-learning && python -m pytest tests",
     "test:unit": "node backend/tests/prediction-format.test.mjs",
     "test:backend": "npm run test --workspace=backend",
     "ml:evaluate": "cd machine-learning && python evaluate.py",
     "ml:v6:predict-all": "npm run ml:v6:predict-all --workspace=backend",
     "test:smoke": "node backend/scripts/smoke-tests.mjs",
-    "test": "npm run test:unit && npm run test:backend && npm run ml:test",
+    "test": "npm run test:unit && npm run test:backend && npm run test:frontend && npm run ml:test",
     "lint": "npm run lint --workspace=frontend",
     "type-check": "npm run type-check --workspace=@tesis/shared && npm run type-check --workspace=frontend && npm run type-check --workspace=backend && npm run type-check:tools --workspace=backend",
     "evidence:generate": "node scripts/evidence/run-all.mjs",
     "qa:pipeline": "node plan-pruebas/scripts/run-qa-pipeline.mjs",
     "test:e2e": "tsx --test --test-concurrency=1 e2e/specs/*.e2e.ts",
-    "e2e:seed": "tsx e2e/support/seed-accounts.ts"
+    "e2e:seed": "tsx e2e/support/seed-accounts.ts",
+    "test:frontend": "npm run test --workspace=frontend",
+    "coverage:backend": "c8 --all --include=\"backend/src/**\" --reporter=lcov --reporter=text-summary --reports-dir=coverage/backend npm run test:backend",
+    "coverage:frontend": "c8 --all --include=\"frontend/src/**\" --exclude=\"frontend/src/types/academic.ts\" --reporter=lcov --reporter=text-summary --reports-dir=coverage/frontend npm run test:frontend",
+    "coverage:ml": "cd machine-learning && python -m coverage run --branch --source=app,train -m pytest tests && python -m coverage xml -o coverage.xml",
+    "coverage": "npm run coverage:backend && npm run coverage:frontend && npm run coverage:ml",
+    "sonar:local": "node --env-file=.env.local node_modules/sonarqube-scanner/bin/sonar-scanner.js"
   },
   "devDependencies": {
+    "c8": "^12.0.0",
     "concurrently": "^9.1.2",
-    "playwright": "^1.61.1"
+    "playwright": "^1.61.1",
+    "sonarqube-scanner": "^5.0.2"
   },
   "overrides": {
     "deepmerge-ts": "8.0.2"

@@ -1,6 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mapStudentFromApi, mapTeacherFromApi, mapCourseFromApi, mapEnrollmentFromApi } from "../src/lib/api-mappers.js";
+import {
+  formatSeccionLabel,
+  mapStudentFromApi,
+  mapTeacherFromApi,
+  mapCourseFromApi,
+  mapEnrollmentFromApi,
+} from "../src/lib/api-mappers.js";
 
 test("mapStudentFromApi mapea campos básicos", () => {
   const row = {
@@ -109,4 +115,47 @@ test("mapEnrollmentFromApi mapea matrícula", () => {
   assert.strictEqual(e.promedio, 15.5);
   assert.strictEqual(e.asistenciaPct, 90.5);
   assert.strictEqual(e.periodo, "2026");
+});
+
+test("mappers cubren relaciones ausentes, fallback legado y números no finitos", () => {
+  assert.equal(formatSeccionLabel(null), "Sin sección");
+  assert.equal(formatSeccionLabel(null, "Nivel legado"), "Nivel legado");
+  assert.equal(formatSeccionLabel({ id: "s1", nombre: "A", grado: { numero: 2, nombre: "Segundo", nivel: { codigo: "primaria", nombre: "Primaria" } } }), "Primaria · Segundo A");
+  assert.equal(formatSeccionLabel({ id: "s1", nombre: "B", grado: { numero: 3 } }), "3° B");
+
+  const noIndicators = mapStudentFromApi({
+    id: "s2", codigo: "E002", nombres: "Eva", apellidos: "Paz", correo: null, telefono: null,
+    estado: "retirado", promedioGeneral: Number.NaN, asistenciaGeneral: "n/a", nivel: "Secundaria",
+  } as any);
+  assert.equal(noIndicators.dni, "");
+  assert.equal(noIndicators.estado, "retirado");
+  assert.equal(noIndicators.metrics.promedioGeneral, 0);
+  assert.equal(noIndicators.metrics.lms.engagement, "bajo");
+  assert.equal(noIndicators.storedPrediction, undefined);
+
+  const prediction = mapStudentFromApi({
+    id: "s3", codigo: "E003", nombres: "Sol", apellidos: "Mar", correo: "", telefono: "",
+    estado: "activo", promedioGeneral: "12", asistenciaGeneral: 80, seccionId: "s1",
+    indicators: { dias_activos: 18, actividades_realizadas: 3, recursos_consultados: 4, tiempo_interaccion_lms: 8, promedio_general: 12, asistencia_general: 80 },
+    predictions: [{ score: 77, nivelRiesgo: "alto", probabilidad: 0.77, factorsJson: "[]" }],
+  } as any);
+  assert.equal(prediction.nivel, "Sin sección");
+  assert.equal(prediction.seccionId, "s1");
+  assert.equal(prediction.metrics.lms.engagement, "alto");
+  assert.equal(prediction.storedPrediction?.level, "alto");
+  assert.equal(prediction.storedPrediction?.probability, 0.77);
+
+  const teacher = mapTeacherFromApi({
+    id: "t2", codigo: "T002", nombres: "Leo", apellidos: "Sol", especialidad: "Ciencias",
+    correo: "leo@example.test", telefono: null, user: { id: "u2", email: "leo@example.test", activo: true },
+    courses: [{ id: "c1", codigo: "MAT", nombre: "Matemática", seccionId: null, cursoCatalogo: null }],
+  } as any);
+  assert.equal(teacher.userId, "u2");
+  assert.equal(teacher.telefono, "");
+  assert.equal(teacher.courseCount, 1);
+  assert.equal(teacher.courses[0].seccionId, undefined);
+
+  assert.equal(mapCourseFromApi({ id: "c2", codigo: "HIS", nombre: "Historia", profesorId: "t1", nivel: "Primaria" } as any).nivel, "Primaria");
+  assert.equal(mapCourseFromApi({ id: "c3", codigo: "BIO", nombre: "Biología", profesorId: "t1" } as any).nivel, "Sin sección");
+  assert.equal(mapEnrollmentFromApi({ id: "m2", studentId: "s1", courseId: "c1", promedio: "bad", asistenciaPct: null } as any).promedio, 0);
 });

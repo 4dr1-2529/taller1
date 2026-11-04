@@ -8,7 +8,7 @@
     "start": "next start -p 3029",
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
-    "test": "tsx --tsconfig tsconfig.test.json --test tests/*.test.ts"
+    "test": "tsx --tsconfig tsconfig.test.json --test --test-concurrency=1 tests/*.test.ts"
   },
   "dependencies": {
     "@tesis/shared": "*",

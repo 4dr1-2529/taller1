@@ -459,9 +459,13 @@ def train_models() -> dict:
     return payload
 
 
-if __name__ == "__main__":
+def main():
     try:
         train_models()
     except DatasetError as exc:
         print(f"DATASET_ERROR={exc}")
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

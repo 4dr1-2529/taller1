@@ -6,6 +6,7 @@ carga del dataset V6, umbrales de riesgo y respuesta del servicio FastAPI.
 import json
 import os
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -15,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import numpy as np
 from fastapi import HTTPException
 from pydantic import ValidationError as PydanticValidationError
+from app import dataset as dataset_module
 
 from app.dataset import (
     SYNTHETIC_DATASET_VERSION,
@@ -91,10 +93,19 @@ class TestSyntheticDatasetV6(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         os.environ["ML_DATA_MODE"] = SYNTHETIC_MODE
+        cls._quality_report_temp = tempfile.TemporaryDirectory()
+        cls._quality_report_patch = patch.object(
+            dataset_module,
+            "_default_quality_report_path",
+            side_effect=lambda mode: Path(cls._quality_report_temp.name) / f"{mode}-quality.json",
+        )
+        cls._quality_report_patch.start()
         cls.X, cls.y, cls.meta = load_dataset()
 
     @classmethod
     def tearDownClass(cls):
+        cls._quality_report_patch.stop()
+        cls._quality_report_temp.cleanup()
         os.environ.pop("ML_DATA_MODE", None)
 
     def test_mode_resolves_to_synthetic(self):

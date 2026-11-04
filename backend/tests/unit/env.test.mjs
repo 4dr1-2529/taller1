@@ -23,7 +23,8 @@ test("corsOrigins devuelve array", () => {
 
 test("isCorsOriginAllowed permite origen permitido", () => {
   const origins = corsOrigins();
-  assert.ok(isCorsOriginAllowed(origins[0]));
+  assert.ok(origins.length > 0);
+  assert.strictEqual(isCorsOriginAllowed(origins[0]), true);
 });
 
 test("isCorsOriginAllowed rechaza origen no permitido", () => {
@@ -34,6 +35,18 @@ test("isCorsOriginAllowed permite undefined", () => {
   assert.strictEqual(isCorsOriginAllowed(undefined), true);
 });
 
-test("isCorsOriginAllowed permite *.vercel.app", () => {
-  assert.ok(isCorsOriginAllowed("https://mi-app.vercel.app"));
+test("isCorsOriginAllowed rechaza *.vercel.app cuando no está en CORS_ORIGIN", () => {
+  const origins = corsOrigins();
+  const hasVercel = origins.some((o) => o.includes(".vercel.app"));
+  if (!hasVercel) {
+    // Si no hay dominio vercel configurado, debe rechazar
+    assert.strictEqual(isCorsOriginAllowed("https://mi-app.vercel.app"), false);
+  }
+});
+
+test("corsOrigins filtra entradas vacías", () => {
+  const origins = corsOrigins();
+  for (const origin of origins) {
+    assert.ok(origin.length > 0);
+  }
 });

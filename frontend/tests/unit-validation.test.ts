@@ -21,6 +21,14 @@ import {
   parseGrade,
   parsePercent,
   clearFieldError,
+  validatePassword,
+  validateStudentForm,
+  validateTeacherForm,
+  validateTeacherProfileFields,
+  validateGradeForm,
+  validateCourseForm,
+  validateMatriculaForm,
+  firstError,
 } from "../src/lib/validation.js";
 
 test("onlyDigits extrae solo dígitos", () => {
@@ -176,4 +184,47 @@ test("clearFieldError elimina clave", () => {
   const result = clearFieldError(errors, "email");
   assert.deepStrictEqual(result, { dni: "corto" });
   assert.ok(!("email" in result));
+});
+
+test("validation cubre campos opcionales, formularios completos y límites válidos", () => {
+  assert.equal(validatePersonName("  ", "Segundo nombre", false), undefined);
+  assert.equal(validateCodigo("  ", false), undefined);
+  assert.equal(validateDni("", false), undefined);
+  assert.equal(validatePhone("", false), undefined);
+  assert.equal(validateEmail("", false), undefined);
+  assert.equal(validateGradeString("", false), undefined);
+  assert.equal(validatePercentString("", false), undefined);
+  assert.equal(validateObservacion("", false), undefined);
+  assert.equal(validateObservacion("", true), "Este campo es obligatorio.");
+  assert.equal(validateGradeString("0"), undefined);
+  assert.equal(validateGradeString("20,0"), undefined);
+  assert.equal(validatePercentString("0"), undefined);
+  assert.equal(validatePercentString("100,0"), undefined);
+  assert.equal(validatePassword("ValidPass1"), undefined);
+
+  assert.deepEqual(validateStudentForm({
+    nombres: "Ana", apellidos: "Paz", seccionId: "sec1", dni: "12345678", correo: "", telefono: "",
+  }), {});
+  assert.ok(Object.keys(validateStudentForm({
+    nombres: "", apellidos: "1", seccionId: " ", dni: "bad", correo: "bad", telefono: "bad",
+  })).length >= 5);
+
+  assert.deepEqual(validateTeacherProfileFields({
+    nombres: "Ana", apellidos: "Paz", especialidad: "Ciencias", correo: "ana@example.test", telefono: "",
+  }), {});
+  assert.deepEqual(validateTeacherForm({
+    dni: "12345678", nombres: "Ana", apellidos: "Paz", especialidad: "Ciencias",
+    correo: "ana@example.test", telefono: "", crearCuenta: false, password: "",
+  }), {});
+  assert.ok(validateTeacherForm({
+    dni: "12345678", nombres: "Ana", apellidos: "Paz", especialidad: "Ciencias",
+    correo: "ana@example.test", telefono: "", crearCuenta: true, password: "weak",
+  }).password);
+
+  assert.deepEqual(validateGradeForm({ studentId: "s1", courseId: "c1", nota: "20", observacion: "" }), {});
+  assert.deepEqual(validateGradeForm({ studentId: "", courseId: "", nota: "-1", observacion: "nota 2" }).studentId, "Este campo es obligatorio.");
+  assert.deepEqual(validateCourseForm({ codigo: "MAT-1", nombre: "Matemática", profesorId: "t1", gradoId: "g1", seccionId: "s1" }), {});
+  assert.deepEqual(validateMatriculaForm({ estudianteId: "s1", seccionId: "s1", anioLectivoId: "2026" }), {});
+  assert.equal(firstError({}), undefined);
+  assert.equal(firstError({ correo: "inválido", dni: "corto" }), "inválido");
 });

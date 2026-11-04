@@ -259,7 +259,7 @@ export async function buildDashboardAnalytics(scope: Scope) {
   // Estado del modelo experimental (V6) para el dashboard del director.
   const evaluatedRows = studentsWithSection.filter((st) => st.predicciones[0]);
   const probabilities = evaluatedRows
-    .map((st) => Number(st.predicciones[0]?.probabilidadAbandono ?? NaN))
+    .map((st) => Number(st.predicciones[0]?.probabilidadAbandono ?? Number.NaN))
     .filter((value) => Number.isFinite(value));
   const avgProbability = probabilities.length
     ? Math.round((probabilities.reduce((a, b) => a + b, 0) / probabilities.length) * 1000) / 1000

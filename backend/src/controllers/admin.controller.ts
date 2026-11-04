@@ -39,7 +39,7 @@ export async function createUser(req: Request, res: Response, next: NextFunction
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) throw new AppError(409, "Email ya registrado");
 
-    const bcrypt = await import("bcryptjs");
+    const bcrypt = (await import("bcryptjs")).default;
     const hash = await bcrypt.hash(password, 12);
     const rolId = await getRolId((role ?? "estudiante") as RolCodigo);
     const user = await prisma.user.create({

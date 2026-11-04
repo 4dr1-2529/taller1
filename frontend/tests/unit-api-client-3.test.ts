@@ -3,20 +3,20 @@ import assert from "node:assert/strict";
 
 process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api/v1";
 
+// Mock de fetch que responde basado en la URL completa
 const mockFetchResponses: Record<string, { status: number; body: any }> = {};
 globalThis.fetch = async (url: string | Request, _init?: RequestInit) => {
-  const urlStr = typeof url === "string" ? url : url.url;
+  const urlStr = typeof url === "string" ? url : (url as any).url || "";
   const sortedKeys = Object.keys(mockFetchResponses).sort((a, b) => b.length - a.length);
   const key = sortedKeys.find((k) => urlStr.includes(k));
   if (key) {
     const resp = mockFetchResponses[key];
-    const body = { ...resp.body, total: resp.body.total ?? 0 };
     return {
       status: resp.status,
       ok: resp.status >= 200 && resp.status < 300,
       headers: new Headers({ "content-type": "application/json" }),
-      json: async () => body,
-      text: async () => JSON.stringify(body),
+      json: async () => ({ ...resp.body }),
+      text: async () => JSON.stringify(resp.body),
     } as Response;
   }
   return {
@@ -24,115 +24,116 @@ globalThis.fetch = async (url: string | Request, _init?: RequestInit) => {
     ok: false,
     headers: new Headers({ "content-type": "application/json" }),
     json: async () => ({ error: "not found" }),
+    text: async () => JSON.stringify({ error: "not found" }),
   } as Response;
 };
 
 import { api } from "../src/services/api.js";
 
 test("api.getStudents returns list", async () => {
-  mockFetchResponses["/students"] = { status: 200, body: { items: [{ id: "1", codigo: "E1", nombres: "A", apellidos: "B", codigo: "E1", estado: "activo", promedioGeneral: 15, asistenciaGeneral: 90, lmsEngagement: "alto", activo: true, createdAt: "2026-01-01", updatedAt: "2026-01-01", lmsActividades: [], predictions: [], alerts: [] }], total: 1, page: 1, pages: 1 } };
+  mockFetchResponses["/students"] = { status: 200, body: { items: [{ id: "1", codigo: "E1", nombres: "Juan", apellidos: "Pérez", estado: "activo", promedioGeneral: 15, asistenciaGeneral: 90, lmsEngagement: "alto", activo: true, createdAt: "2026-01-01", updatedAt: "2026-01-01", lmsActividades: [], predictions: [], alerts: [] }], total: 1 } };
   const res = await api.getStudents();
   assert.strictEqual(res.total, 1);
 });
 
 test("api.updateStudent updates student", async () => {
-  mockFetchResponses["/students/1"] = { status: 200, body: { student: { id: "1", nombres: "Ana M", apellidos: "G", estado: "activo", promedioGeneral: 15, asistenciaGeneral: 90, lmsEngagement: "alto", activo: true, fechaIngreso: "2026-01-01", createdAt: "2026-01-01", updatedAt: "2026-01-01", lmsActividades: [], predictions: [], alerts: [] } } };
+  mockFetchResponses["students/1"] = { status: 200, body: { student: { id: "1", nombres: "Ana M", apellidos: "G", estado: "activo", promedioGeneral: 15, asistenciaGeneral: 90, lmsEngagement: "alto", activo: true, fechaIngreso: "2026-01-01", createdAt: "2026-01-01", updatedAt: "2026-01-01", lmsActividades: [], predictions: [], alerts: [] } } };
   const res = await api.updateStudent("1", { nombres: "Ana M" });
   assert.strictEqual(res.student.nombres, "Ana M");
 });
 
 test("api.deleteStudent deletes student", async () => {
-  mockFetchResponses["/students/1"] = { status: 200, body: { ok: true } };
+  mockFetchResponses["students/1"] = { status: 200, body: { success: true, data: { ok: true } } };
   const res = await api.deleteStudent("1");
   assert.strictEqual(res.ok, true);
 });
 
 test("api.createTeacher creates teacher", async () => {
-  mockFetchResponses["/teachers"] = { status: 201, body: { teacher: { id: "t1", codigo: "T1", nombres: "Ana", apellidos: "G", especialidad: "Mat", correo: "ana@t.com", telefono: null, activo: true } } };
+  mockFetchResponses["teachers"] = { status: 201, body: { teacher: { id: "t1", codigo: "T1", nombres: "Ana", apellidos: "G", especialidad: "Mat", correo: "ana@t.com", telefono: null, activo: true } } };
   const res = await api.createTeacher({ nombres: "Ana", apellidos: "G", especialidad: "Mat", correo: "ana@t.com", telefono: "123456789", crearCuenta: false });
   assert.strictEqual(res.teacher.id, "t1");
 });
 
 test("api.updateTeacher updates teacher", async () => {
-  mockFetchResponses["/teachers/t1"] = { status: 200, body: { teacher: { id: "t1", nombres: "Ana M", apellidos: "G", especialidad: "Mat", correo: "ana@t.com", telefono: null, activo: true } } };
+  mockFetchResponses["teachers/t1"] = { status: 200, body: { teacher: { id: "t1", nombres: "Ana M", apellidos: "G", especialidad: "Mat", correo: "ana@t.com", telefono: null, activo: true } } };
   const res = await api.updateTeacher("t1", { nombres: "Ana M" });
   assert.strictEqual(res.teacher.nombres, "Ana M");
 });
 
 test("api.deleteTeacher deletes teacher", async () => {
-  mockFetchResponses["/teachers/t1"] = { status: 200, body: { ok: true } };
+  mockFetchResponses["teachers/t1"] = { status: 200, body: { success: true, data: { ok: true } } };
   const res = await api.deleteTeacher("t1");
   assert.strictEqual(res.ok, true);
 });
 
 test("api.createTeacherAccount creates account", async () => {
-  mockFetchResponses["/teachers/t1/account"] = { status: 201, body: { teacher: { id: "t1", correo: "ana@t.com", activo: true } } };
+  mockFetchResponses["teachers/t1/account"] = { status: 201, body: { teacher: { id: "t1", correo: "ana@t.com", activo: true } } };
   const res = await api.createTeacherAccount("t1", "Pass123");
   assert.strictEqual(res.teacher.correo, "ana@t.com");
 });
 
 test("api.getTeacherDetail returns detail", async () => {
-  mockFetchResponses["/teachers/t1/detail"] = { status: 200, body: { teacher: { id: "t1", nombres: "Ana", apellidos: "G", especialidad: "Mat", correo: "ana@t.com", telefono: null }, workload: { tipoAsignacion: "docente", cursos: [], grados: [], secciones: [], cargaAcademica: 0, totalAlumnos: 0, asignaciones: [] } } };
+  mockFetchResponses["teachers/t1/detail"] = { status: 200, body: { teacher: { id: "t1", nombres: "Ana", apellidos: "G", especialidad: "Mat", correo: "ana@t.com", telefono: null }, workload: { tipoAsignacion: "docente", cursos: [], grados: [], secciones: [], cargaAcademica: 0, totalAlumnos: 0, asignaciones: [] } } };
   const res = await api.getTeacherDetail("t1");
   assert.strictEqual(res.teacher.nombres, "Ana");
 });
 
 test("api.getTeacherAssignments returns assignments", async () => {
-  mockFetchResponses["/teacher-assignments"] = { status: 200, body: { items: [{ id: "a1", profesorId: "t1", cursoId: "c1", seccionId: "s1", anioLectivoId: "y1", esTutor: true }], total: 1 } };
+  mockFetchResponses["teacher-assignments"] = { status: 200, body: { items: [{ id: "a1", profesorId: "t1", cursoId: "c1", seccionId: "s1", anioLectivoId: "y1", esTutor: true }], total: 1 } };
   const res = await api.getTeacherAssignments();
   assert.strictEqual(res.total, 1);
 });
 
 test("api.createTeacherAssignment creates assignment", async () => {
-  mockFetchResponses["/teacher-assignments"] = { status: 201, body: { item: { id: "a1", profesorId: "t1", cursoId: "c1", seccionId: "s1" } } };
+  mockFetchResponses["teacher-assignments"] = { status: 201, body: { item: { id: "a1", profesorId: "t1", cursoId: "c1", seccionId: "s1" } } };
   const res = await api.createTeacherAssignment({ profesorId: "t1", cursoId: "c1", seccionId: "s1" });
   assert.strictEqual(res.item.id, "a1");
 });
 
 test("api.createTutorAssignment creates tutorship", async () => {
-  mockFetchResponses["/teacher-assignments/tutor"] = { status: 201, body: { tutor: true, totalCursos: 1, seccionId: "s1" } };
+  mockFetchResponses["teacher-assignments/tutor"] = { status: 201, body: { tutor: true, totalCursos: 1, seccionId: "s1" } };
   const res = await api.createTutorAssignment({ profesorId: "t1", seccionId: "s1" });
   assert.strictEqual(res.tutor, true);
 });
 
 test("api.deactivateTeacherAssignment deactivates", async () => {
-  mockFetchResponses["/teacher-assignments/a1/deactivate"] = { status: 200, body: { id: "a1", activo: false } };
+  mockFetchResponses["teacher-assignments/a1/deactivate"] = { status: 200, body: { id: "a1", activo: false } };
   const res = await api.deactivateTeacherAssignment("a1");
   assert.strictEqual(res.activo, false);
 });
 
 test("api.getNiveles returns levels", async () => {
-  mockFetchResponses["/academic/niveles"] = { status: 200, body: { items: [{ id: 1, numero: 1, nombre: "Primero", label: "1ro" }] } };
+  mockFetchResponses["academic/niveles"] = { status: 200, body: { items: [{ id: 1, numero: 1, nombre: "Primero", label: "1ro" }] } };
   const res = await api.getNiveles();
   assert.strictEqual(res.items[0].numero, 1);
 });
 
 test("api.getSecciones returns sections", async () => {
-  mockFetchResponses["/academic/secciones"] = { status: 200, body: { items: [{ id: "s1", nombre: "A", capacidad: 30 }] } };
+  mockFetchResponses["academic/secciones"] = { status: 200, body: { items: [{ id: "s1", nombre: "A", capacidad: 30 }] } };
   const res = await api.getSecciones();
   assert.strictEqual(res.items[0].nombre, "A");
 });
 
 test("api.getCursosCatalogo returns catalog", async () => {
-  mockFetchResponses["/academic/cursos-catalogo"] = { status: 200, body: { items: [{ id: "cat1", codigo: "MAT", nombre: "Matemáticas", area: "Ciencias" }] } };
+  mockFetchResponses["academic/cursos-catalogo"] = { status: 200, body: { items: [{ id: "cat1", codigo: "MAT", nombre: "Matemáticas", area: "Ciencias" }] } };
   const res = await api.getCursosCatalogo();
   assert.strictEqual(res.items[0].nombre, "Matemáticas");
 });
 
 test("api.getProfesorCursos returns courses", async () => {
-  mockFetchResponses["/profesor/cursos"] = { status: 200, body: { items: [{ id: "c1", codigo: "M1", nombre: "Matemáticas" }], total: 1 } };
+  mockFetchResponses["/profesor/mis-cursos"] = { status: 200, body: { items: [{ id: "c1", codigo: "M1", nombre: "Matemáticas" }] } };
   const res = await api.getProfesorCursos();
-  assert.strictEqual(res.total, 1);
+  assert.strictEqual(res.items.length, 1);
 });
 
 test("api.getProfesorSecciones returns sections", async () => {
-  mockFetchResponses["/profesor/secciones"] = { status: 200, body: { items: [{ id: "s1", nombre: "A" }] } };
+  mockFetchResponses["/profesor/mis-secciones"] = { status: 200, body: { items: [{ id: "s1", nombre: "A" }] } };
   const res = await api.getProfesorSecciones();
   assert.strictEqual(res.items[0].nombre, "A");
 });
 
 test("api.getProfesorEstudiantes returns students", async () => {
-  mockFetchResponses["/profesor/estudiantes"] = { status: 200, body: { items: [{ id: "s1", nombres: "Juan", apellidos: "P", codigo: "E1", estado: "activo", promedioGeneral: 15, asistenciaGeneral: 90, lmsEngagement: "alto", activo: true, createdAt: "2026-01-01", updatedAt: "2026-01-01", lmsActividades: [], predictions: [], alerts: [] }], total: 1 } };
+  mockFetchResponses["/profesor/mis-estudiantes"] = { status: 200, body: { items: [{ id: "s1", nombres: "Juan", apellidos: "P", codigo: "E1", estado: "activo", promedioGeneral: 15, asistenciaGeneral: 90, lmsEngagement: "alto", activo: true, createdAt: "2026-01-01", updatedAt: "2026-01-01", lmsActividades: [], predictions: [], alerts: [] }], total: 1 } };
   const res = await api.getProfesorEstudiantes();
   assert.strictEqual(res.total, 1);
 });
@@ -162,7 +163,7 @@ test("api.updateCourse updates course", async () => {
 });
 
 test("api.deleteCourse deletes course", async () => {
-  mockFetchResponses["/courses/c1"] = { status: 200, body: { ok: true } };
+  mockFetchResponses["/courses/c1"] = { status: 200, body: { success: true, data: { ok: true } } };
   const res = await api.deleteCourse("c1");
   assert.strictEqual(res.ok, true);
 });
@@ -209,10 +210,10 @@ test("api.createGrade creates grade", async () => {
   assert.strictEqual(res.item.nota, 15);
 });
 
-test("api.deleteGrade deletes grade", async () => {
-  mockFetchResponses["/grades/g1"] = { status: 200, body: { ok: true } };
-  const res = await api.deleteGrade("g1");
-  assert.strictEqual(res.ok, true);
+test("api.getGrades forwards student, course and period filters", async () => {
+  mockFetchResponses["/grades?studentId=s1&courseId=c1&periodoNumero=2"] = { status: 200, body: { items: [{ id: "g1", nota: 15 }] } };
+  const res = await api.getGrades("s1", "c1", 2);
+  assert.strictEqual(res.items[0].nota, 15);
 });
 
 test("api.bulkAttendance saves attendance", async () => {
@@ -221,16 +222,10 @@ test("api.bulkAttendance saves attendance", async () => {
   assert.strictEqual(res.upserted, 5);
 });
 
-test("api.updateAttendance updates attendance", async () => {
-  mockFetchResponses["/attendance/a1"] = { status: 200, body: { estado: "presente" } };
-  const res = await api.updateAttendance("a1", { presente: false });
-  assert.strictEqual(res.estado, "presente");
-});
-
-test("api.deleteAttendance deletes attendance", async () => {
-  mockFetchResponses["/attendance/a1"] = { status: 200, body: { ok: true } };
-  const res = await api.deleteAttendance("a1");
-  assert.strictEqual(res.ok, true);
+test("api.createAttendance creates attendance", async () => {
+  mockFetchResponses["/attendance"] = { status: 201, body: { record: { id: "a1", presente: true } } };
+  const res = await api.createAttendance({ studentId: "s1", presente: true });
+  assert.strictEqual(res.record.id, "a1");
 });
 
 test("api.updateAlertStatus updates status", async () => {
@@ -264,7 +259,7 @@ test("api.getMessages returns messages", async () => {
 });
 
 test("api.sendMessage sends message", async () => {
-  mockFetchResponses["/messages"] = { status: 201, body: { message: { id: "m2", salaId: "r1", remitenteId: "u1", contenido: "Mundo", createdAt: "2026-01-01" } } };
+  mockFetchResponses["/messages"] = { status: 201, body: { success: true, data: { message: { id: "m2", salaId: "r1", remitenteId: "u1", contenido: "Mundo", createdAt: "2026-01-01" } } } };
   const res = await api.sendMessage({ roomId: "r1", contenido: "Mundo" });
   assert.strictEqual(res.message.contenido, "Mundo");
 });
@@ -306,7 +301,7 @@ test("api.updateUser updates user", async () => {
 });
 
 test("api.deleteUser deletes user", async () => {
-  mockFetchResponses["/admin/users/u1"] = { status: 200, body: { ok: true } };
+  mockFetchResponses["/admin/users/u1"] = { status: 200, body: { success: true, data: { ok: true } } };
   const res = await api.deleteUser("u1");
   assert.strictEqual(res.ok, true);
 });

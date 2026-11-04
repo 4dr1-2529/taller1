@@ -4,18 +4,10 @@
  */
 import assert from "node:assert/strict";
 
-function toThesisPrediction(p) {
-  const NIVEL = { bajo: "Bajo", medio: "Medio", alto: "Alto" };
-  return {
-    probabilidad_abandono: Math.round(p.probabilityAbandono * 1000) / 1000,
-    score_predictivo: Math.round(p.score * 10) / 10,
-    nivel_riesgo: NIVEL[p.level] ?? p.level,
-    factores_riesgo: p.factors,
-    recomendacion: p.recommendation,
-    modelo_usado: p.modelName,
-    fecha_prediccion: p.predictedAt,
-  };
-}
+import test from "node:test";
+import { tsImport } from "tsx/esm/api";
+
+const { toThesisPrediction } = await tsImport("../src/utils/prediction-format.ts", import.meta.url);
 
 const sample = {
   score: 85.2,
@@ -27,14 +19,19 @@ const sample = {
   predictedAt: "2026-06-02T12:00:00.000Z",
 };
 
-const tesis = toThesisPrediction(sample);
+test("el formato de tesis usa el contrato productivo y conserva trazabilidad", () => {
+  const tesis = toThesisPrediction(sample);
 
-assert.strictEqual(tesis.nivel_riesgo, "Alto", "nivel_riesgo en español");
-assert.strictEqual(tesis.score_predictivo, 85.2, "score_predictivo numérico");
-assert.strictEqual(tesis.probabilidad_abandono, 0.852, "probabilidad_abandono");
-assert.ok(
-  Array.isArray(tesis.factores_riesgo) && tesis.factores_riesgo.length === 1,
-  "factores_riesgo array",
-);
+  assert.strictEqual(tesis.nivel_riesgo, "Alto", "nivel_riesgo en español");
+  assert.strictEqual(tesis.score_predictivo, 85.2, "score_predictivo numérico");
+  assert.strictEqual(tesis.probabilidad_abandono, 0.852, "probabilidad_abandono");
+  assert.ok(
+    Array.isArray(tesis.factores_riesgo) && tesis.factores_riesgo.length === 1,
+    "factores_riesgo array",
+  );
 
-console.log("prediction-format.test.mjs: todas las aserciones pasaron");
+  assert.equal(tesis.modelo_usado, sample.modelName);
+  assert.equal(tesis.recomendacion, sample.recommendation);
+  assert.equal(tesis.fecha_prediccion, sample.predictedAt);
+  assert.equal(tesis.fecha, sample.predictedAt);
+});

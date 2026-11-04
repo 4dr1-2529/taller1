@@ -2,12 +2,8 @@
 
 import type { Student } from "@/types/academic";
 
-export async function exportStudentsToExcel(
-  rows: Student[],
-  filename = "reporte_estudiantes_riesgo.xlsx",
-): Promise<void> {
-  const XLSX = await import("xlsx");
-  const data = rows.map((s) => ({
+export function buildStudentExcelRows(rows: Student[]) {
+  return rows.map((s) => ({
     Codigo: s.codigo,
     Estudiante: `${s.nombres} ${s.apellidos}`,
     Nivel: s.nivel,
@@ -20,6 +16,40 @@ export async function exportStudentsToExcel(
       s.metrics.lms.actividadSemanalPct.reduce((a, b) => a + b, 0) /
       (s.metrics.lms.actividadSemanalPct.length || 1),
   }));
+}
+
+export function buildLowLmsExcelRows(students: Student[]) {
+  return students.map((s) => ({
+    Codigo: s.codigo,
+    Estudiante: `${s.nombres} ${s.apellidos}`,
+    Compromiso_LMS: s.metrics.lms.engagement,
+    Horas_plataforma_sem: s.metrics.lms.horasPlataformaSemana,
+    Actividades: s.metrics.lms.actividadesRealizadas,
+    Recursos: s.metrics.lms.recursosConsultados,
+    Riesgo: s.storedPrediction?.level ?? "Sin predicción",
+  }));
+}
+
+export function buildCourseRiskPdfRows(
+  rows: { nombre: string; riesgoPromedio: number | null; estudiantes: number }[],
+) {
+  return rows.map((r) => [
+    r.nombre,
+    r.riesgoPromedio == null ? "Sin predicción" : String(r.riesgoPromedio),
+    String(r.estudiantes),
+  ]);
+}
+
+export function buildFailsByCoursePdfRows(rows: { nombre: string; desaprobados: number }[]) {
+  return rows.map((r) => [r.nombre, String(r.desaprobados)]);
+}
+
+export async function exportStudentsToExcel(
+  rows: Student[],
+  filename = "reporte_estudiantes_riesgo.xlsx",
+): Promise<void> {
+  const XLSX = await import("xlsx");
+  const data = buildStudentExcelRows(rows);
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Estudiantes");
@@ -39,11 +69,7 @@ export async function exportCourseRiskPdf(
   autoTable(doc, {
     startY: 22,
     head: [["Curso", "Riesgo promedio", "Matriculados"]],
-    body: rows.map((r) => [
-      r.nombre,
-      r.riesgoPromedio == null ? "Sin predicción" : String(r.riesgoPromedio),
-      String(r.estudiantes),
-    ]),
+    body: buildCourseRiskPdfRows(rows),
   });
   doc.save(filename);
 }
@@ -53,15 +79,7 @@ export async function exportLowLmsExcel(
   filename = "reporte_baja_actividad_lms.xlsx",
 ): Promise<void> {
   const XLSX = await import("xlsx");
-  const data = students.map((s) => ({
-    Codigo: s.codigo,
-    Estudiante: `${s.nombres} ${s.apellidos}`,
-    Compromiso_LMS: s.metrics.lms.engagement,
-    Horas_plataforma_sem: s.metrics.lms.horasPlataformaSemana,
-    Actividades: s.metrics.lms.actividadesRealizadas,
-    Recursos: s.metrics.lms.recursosConsultados,
-    Riesgo: s.storedPrediction?.level ?? "Sin predicción",
-  }));
+  const data = buildLowLmsExcelRows(students);
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Baja_LMS");
@@ -80,7 +98,7 @@ export async function exportFailsByCoursePdf(
   autoTable(doc, {
     startY: 22,
     head: [["Curso", "Cantidad desaprobados"]],
-    body: rows.map((r) => [r.nombre, String(r.desaprobados)]),
+    body: buildFailsByCoursePdfRows(rows),
   });
   doc.save(filename);
 }
