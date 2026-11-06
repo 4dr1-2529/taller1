@@ -18,6 +18,7 @@ import { ProfessorAlertsView } from "../src/components/views/ProfessorAlertsView
 import { ProfessorGradesView } from "../src/components/views/ProfessorGradesView.js";
 import { ObservedProgressView } from "../src/components/views/ObservedProgressView.js";
 import { AuditView } from "../src/components/views/AuditView.js";
+import { CoursesView } from "../src/components/views/CoursesView.js";
 import { ProfessorPredictionView } from "../src/components/views/ProfessorPredictionView.js";
 import { SettingsView } from "../src/components/views/SettingsView.js";
 import { LearningView } from "../src/components/views/LearningView.js";
@@ -116,6 +117,64 @@ test("main route selects each available page for director, teacher and student",
       assert.ok((shell as React.ReactElement<{ children?: React.ReactNode }>).props.children, `${role}/${section} should select a page`);
     }
   }
+});
+
+test("course catalog covers search, assignment, deactivation and reassignment guards", () => {
+  const catalog = [
+    { id: "c1", codigo: "MAT1", nombre: "Matemática", nivel: "Primaria", profesorId: "t1" },
+    { id: "c2", codigo: "HIS1", nombre: "Historia", nivel: "Secundaria", profesorId: "missing" },
+  ] as any[];
+  const teachers = [
+    { id: "t1", nombres: "Ana", apellidos: "Paz", especialidad: "Matemática" },
+    { id: "t2", nombres: "Luis", apellidos: "Sol", especialidad: "Historia" },
+  ] as any[];
+  const reassignments: string[][] = [];
+  const deactivations: string[][] = [];
+  const props = {
+    courses: catalog,
+    teachers,
+    canReassign: true,
+    onReassignProfesor: (courseId: string, teacherId: string) => reassignments.push([courseId, teacherId]),
+    onDeactivate: (courseId: string, name: string) => deactivations.push([courseId, name]),
+  };
+
+  const tree = withHookHarness(authFor("admin"), undefined, () => CoursesView(props));
+  const search = findElement(tree, el => typeof (el.props as { onSearch?: unknown }).onSearch === "function");
+  assert.ok(search);
+  (search!.props as { onSearch: (query: string) => void }).onSearch("mat");
+  const reassign = findElement(tree, el => el.type === "button" && (el.props as { children?: unknown }).children === "Reasignar");
+  const deactivate = findElement(tree, el => el.type === "button" && (el.props as { children?: unknown }).children === "Desactivar");
+  assert.ok(reassign);
+  assert.ok(deactivate);
+  (reassign!.props as { onClick: () => void }).onClick();
+  (deactivate!.props as { onClick: () => void }).onClick();
+  assert.deepEqual(deactivations, [["c1", "Matemática"]]);
+
+  const selectedTree = withHookHarness(authFor("admin"), undefined, () => CoursesView(props), ["", catalog[0], "t2"]);
+  const dialog = findElement(selectedTree, el => typeof (el.props as { onConfirm?: unknown }).onConfirm === "function"
+    && typeof (el.props as { confirmLabel?: unknown }).confirmLabel === "string"
+    && (el.props as { confirmLabel: string }).confirmLabel === "Confirmar reasignación");
+  assert.ok(dialog);
+  (dialog!.props as { onConfirm: () => void }).onConfirm();
+  assert.deepEqual(reassignments, [["c1", "t2"]]);
+
+  const emptySelection = withHookHarness(authFor("admin"), undefined, () => CoursesView({ ...props, onReassignProfesor: undefined }), ["", catalog[0], ""]);
+  const guardedDialog = findElement(emptySelection, el => (el.props as { confirmLabel?: string }).confirmLabel === "Confirmar reasignación");
+  assert.ok(guardedDialog);
+  (guardedDialog!.props as { onConfirm: () => void }).onConfirm();
+  assert.deepEqual(reassignments, [["c1", "t2"]]);
+
+  const teacherTree = withHookHarness(authFor("docente"), undefined, () => CoursesView({
+    courses: catalog,
+    teachers,
+    canReassign: false,
+  }), ["Luis"]);
+  assert.ok(findElement(teacherTree, el => el.type === "p" && (el.props as { children?: unknown }).children === "Cursos asignados a usted por grado y sección"));
+  const unknownTeacherTree = withHookHarness(authFor("docente"), undefined, () => CoursesView({
+    courses: [catalog[0]],
+    teachers: [],
+  }));
+  assert.ok(findElement(unknownTeacherTree, el => el.type === "span" && (el.props as { children?: unknown }).children === "Usted"));
 });
 
 test("login screen renders its full sign-in experience and authenticated loading states", () => {

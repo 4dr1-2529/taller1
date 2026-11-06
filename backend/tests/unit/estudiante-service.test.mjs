@@ -158,3 +158,92 @@ test("alertas y mensajes solo incluyen salas accesibles y traducen estados", asy
   } finally { restore(); }
 });
 
+test("el dashboard y las notas toleran un estudiante sin perfil ni registros", async () => {
+  const restore = setup({
+    "student.findUnique": null,
+    "student.findFirst": null,
+    "periodoAcademico.findFirst": null,
+    "grade.findFirst": null,
+    "grade.findMany": [],
+    "attendance.findFirst": null,
+    "prediction.findFirst": null,
+    "alert.findMany": [],
+    "lmsEvent.findMany": [],
+    "aiRecommendation.findFirst": null,
+    "course.findMany": [],
+  });
+  try {
+    assert.equal(await loadStudentProfile(sid), null);
+    const dashboard = await buildEstudianteDashboard(sid);
+    assert.equal(dashboard.profile, null);
+    assert.equal(dashboard.kpis.grado, "—");
+    assert.equal(dashboard.kpis.salon, "—");
+    assert.equal(dashboard.kpis.nivelRiesgo, "Sin datos");
+    assert.equal(dashboard.resumen.ultimaNota, null);
+    assert.equal(dashboard.resumen.ultimaAsistencia, null);
+    assert.equal(dashboard.resumen.ultimaActividadLms, null);
+    assert.equal(dashboard.resumen.ultimaPrediccion, null);
+    assert.equal(dashboard.resumen.recomendacion, null);
+    const notas = await buildEstudianteNotas(sid);
+    assert.deepEqual(notas.filas, []);
+    assert.equal(notas.resumen.totalCursos, 0);
+  } finally { restore(); }
+});
+
+test("asistencia aplica rangos y bimestre, contempla alumno sin sección y estados desconocidos", async () => {
+  const restore = setup({
+    "student.findUnique": null,
+    "student.findFirst": null,
+    "periodoAcademico.findFirst": {
+      id: 6n, nombre: "IV Bimestre", numero: 4,
+      fechaInicio: new Date("2026-10-01"), fechaFin: new Date("2026-12-20"),
+    },
+    "attendance.findMany": [],
+  });
+  try {
+    const result = await buildEstudianteAsistencia(sid, {
+      desde: "2026-02-01", hasta: "2026-03-01", mes: "2026-02", bimestre: "4", estado: "sin coincidencia",
+    });
+    assert.equal(result.profile, null);
+    assert.deepEqual(result.items, []);
+    assert.deepEqual(result.resumen, {
+      asistencias: 0, tardanzas: 0, faltas: 0, justificadas: 0, porcentaje: null, total: 0,
+    });
+  } finally { restore(); }
+});
+
+test("predicción sin registro y mensajes sin salas accesibles devuelven resultados vacíos", async () => {
+  const restore = setup({
+    "student.findUnique": null,
+    "prediction.findFirst": null,
+    "student.findFirst": null,
+    "mensajeSala.findMany": [],
+  });
+  try {
+    const prediction = await buildEstudiantePrediccion(sid);
+    assert.equal(prediction.profile, null);
+    assert.equal(prediction.prediction, null);
+    assert.deepEqual(await buildEstudianteMensajes(sid), { items: [], total: 0 });
+  } finally { restore(); }
+});
+
+test("predicción usa sus valores de respaldo cuando no hay modelo ni recomendación", async () => {
+  const restore = setup({
+    "student.findUnique": null,
+    "prediction.findFirst": {
+      id: 44n, score: 42, probabilidad: 0.42, probabilidadAbandono: 0.42, nivelRiesgo: "personalizado",
+      modelName: null, createdAt: now, inputData: {}, modelo: null, factores: [], recomendaciones: [],
+    },
+  });
+  try {
+    const { prediction } = await buildEstudiantePrediccion(sid);
+    assert.equal(prediction.nivelRiesgo, "personalizado");
+    assert.equal(prediction.modelo, "Modelo registrado");
+    assert.equal(prediction.modeloVersion, null);
+    assert.equal(prediction.dataMode, null);
+    assert.equal(prediction.datasetVersion, null);
+    assert.deepEqual(prediction.factores, []);
+    assert.equal(prediction.recomendacion, "Mantenga seguimiento de sus indicadores académicos y participación LMS.");
+  } finally { restore(); }
+});
+

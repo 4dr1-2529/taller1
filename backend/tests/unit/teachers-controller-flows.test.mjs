@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { prisma } from '../../src/utils/prisma.js';
-import { listTeachers, updateTeacher, deleteTeacher, createTeacherAccount, getTeacherDetail } from '../../src/controllers/teachers.controller.js';
+import { listTeachers, createTeacher, updateTeacher, deleteTeacher, createTeacherAccount, getTeacherDetail } from '../../src/controllers/teachers.controller.js';
 function replace(t, target, key, implementation) {
   const original = target[key];
   const mock = t.mock.fn(implementation);
@@ -40,6 +40,47 @@ test('listTeachers propaga errores de consulta', async t => {
   assert.equal((await invoke(listTeachers)).error, failure);
 });
 
+test('createTeacher registra un perfil y serializa cursos y usuario opcional', async t => {
+  const registered = { ...teacher, usuarioId: null, cursosOferta: [
+    { id: 4n, codigo: 'MAT-2B', seccionId: 9n, cursoCatalogo: { nombre: 'Matemática', codigo: 'MAT' } },
+    { id: 5n, codigo: 'HIS-2B', seccionId: 9n, cursoCatalogo: null },
+  ] };
+  replace(t, prisma, '$transaction', async callback => callback({
+    user: { findFirst: async () => null },
+    teacher: {
+      findFirst: async () => null,
+      findMany: async () => [{ codigo: 'PROF-004' }],
+      create: async () => registered,
+    },
+    student: { findFirst: async () => null },
+    role: { findUniqueOrThrow: async () => ({ id: 2n }) },
+    correlativo: {
+      upsert: async () => undefined,
+      updateMany: async () => undefined,
+      update: async () => ({ ultimoNumero: 5 }),
+    },
+    auditLog: { create: async () => undefined },
+  }));
+  const result = await invoke(createTeacher, {
+    dni: '12345678', nombres: 'Ana', apellidos: 'Paz', especialidad: 'Ciencias', correo: 'ana@example.test', telefono: '', crearCuenta: false,
+  });
+  assert.ifError(result.error);
+  assert.equal(result.statusCode, 201);
+  assert.equal(result.body.data.teacher.id, '7');
+  assert.equal(result.body.data.teacher.userId, null);
+  assert.deepEqual(result.body.data.teacher.courses, [
+    { id: '4', codigo: 'MAT-2B', nombre: 'Matemática', seccionId: '9' },
+    { id: '5', codigo: 'HIS-2B', nombre: 'HIS-2B', seccionId: '9' },
+  ]);
+});
+
+test('createTeacher propaga validación inválida sin abrir transacción', async t => {
+  const transaction = replace(t, prisma, '$transaction', async () => { throw new Error('no debe iniciar transacción'); });
+  const result = await invoke(createTeacher, { dni: '123', nombres: 'A', correo: 'correo inválido' });
+  assert.ok(result.error);
+  assert.equal(transaction.mock.callCount(), 0);
+});
+
 for (const scenario of ['missing', 'linked', 'email-taken']) {
   test(`createTeacherAccount rechaza ${scenario} antes de crear usuario`, async t => {
     replace(t, prisma.teacher, 'findUnique', async () => scenario === 'missing' ? null : { ...teacher, usuarioId: scenario === 'linked' ? 12n : null });
@@ -51,6 +92,24 @@ for (const scenario of ['missing', 'linked', 'email-taken']) {
   });
 }
 function userFixture() { return { id: 12n }; }
+
+test('createTeacherAccount vincula la cuenta nueva y devuelve el perfil serializado', async t => {
+  const updated = { ...teacher, usuarioId: 12n, cursosOferta: [], usuario: { id: 12n, email: teacher.email, activo: true } };
+  replace(t, prisma.teacher, 'findUnique', async () => ({ ...teacher, usuarioId: null }));
+  replace(t, prisma.user, 'findUnique', async () => null);
+  replace(t, prisma.role, 'findUnique', async () => ({ id: 3n }));
+  replace(t, prisma, '$transaction', async callback => callback({
+    user: { create: async () => ({ id: 12n }) },
+    teacher: { update: async () => updated },
+  }));
+  replace(t, prisma.auditLog, 'create', async () => undefined);
+  const result = await invoke(createTeacherAccount, { password: 'StrongPass1' });
+  assert.ifError(result.error);
+  assert.equal(result.statusCode, 201);
+  assert.equal(result.body.data.teacher.userId, '12');
+  assert.equal(result.body.data.teacher.id, '7');
+  assert.deepEqual(result.body.data.teacher.courses, []);
+});
 
 test('updateTeacher impide desactivar un docente con asignaciones activas', async t => {
   const tx = { teacher: { findUniqueOrThrow: async () => teacher, update: t.mock.fn() }, teacherCourseAssignment: { count: async () => 1 } };
@@ -101,4 +160,15 @@ for (const linked of [true, false]) {
 test('getTeacherDetail devuelve 404 para un profesor inexistente', async t => {
   replace(t, prisma.teacher, 'findFirst', async () => null);
   assert.equal((await invoke(getTeacherDetail)).error.statusCode, 404);
+});
+
+test('getTeacherDetail devuelve el perfil y carga vacía de un profesor activo', async t => {
+  replace(t, prisma.teacher, 'findFirst', async () => teacher);
+  replace(t, prisma.teacherCourseAssignment, 'findMany', async () => []);
+  const result = await invoke(getTeacherDetail);
+  assert.ifError(result.error);
+  assert.equal(result.body.data.teacher.id, '7');
+  assert.equal(result.body.data.teacher.correo, teacher.email);
+  assert.equal(result.body.data.workload.cargaAcademica, 0);
+  assert.deepEqual(result.body.data.workload.asignaciones, []);
 });

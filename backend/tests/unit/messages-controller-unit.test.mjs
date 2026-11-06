@@ -80,6 +80,41 @@ test("markRoomRead actualiza cada mensaje y devuelve cero para sala inexistente"
   } finally { restoreMissing(); }
 });
 
+test("markRoomRead aplica reglas para salas de curso, directas, institucionales y de profesores", async (t) => {
+  const restore = [];
+  const noRoom = replace(prisma.mensajeSala, "findUnique", async () => null);
+  const activeCourse = replace(prisma.course, "findFirst", async () => ({ activo: true, anioLectivoId: 2026n, seccionId: 40n }), restore);
+  const directPeers = replace(prisma.user, "findMany", async () => [
+    { id: 2n, activo: true, rol: { codigo: "admin" } },
+    { id: 3n, activo: true, rol: { codigo: "docente" } },
+  ], restore);
+  try {
+    for (const [roomId, role, sub] of [
+      ["curso:90", "admin", "2"],
+      ["direct:2:3", "admin", "2"],
+      ["global:institucional", "estudiante", "12"],
+    ]) {
+      await t.test(`${role} puede revisar ${roomId}`, async () => {
+        const res = mockRes(); let error;
+        await markRoomRead(req({ sub, role }, "/messages", roomId), res, (e) => { error = e; });
+        assert.ifError(error);
+        assert.equal(res.body.data.marked, 0);
+      });
+    }
+    for (const [roomId, role] of [
+      ["canal:profesores", "estudiante"],
+      ["privada:90", "estudiante"],
+      ["direct:3:4", "estudiante"],
+    ]) {
+      await t.test(`${role} no puede revisar ${roomId}`, async () => {
+        const res = mockRes(); let error;
+        await markRoomRead(req({ sub: "12", role }, "/messages", roomId), res, (e) => { error = e; });
+        assert.equal(error.statusCode, 403);
+      });
+    }
+  } finally { directPeers(); activeCourse(); noRoom(); restore.reverse().forEach((fn) => fn()); }
+});
+
 test("listMessageRooms cubre docente sin perfil y estudiante sin matrícula activa", async () => {
   const restoreTeacher = replace(prisma.teacher, "findFirst", async () => null);
   const restoreStudent = replace(prisma.student, "findFirst", async () => null);
@@ -102,4 +137,45 @@ test("listMessageRooms cubre docente sin perfil y estudiante sin matrícula acti
     assert.ifError(error);
     assert.deepStrictEqual(studentRooms.body.data.rooms, []);
   } finally { restorePeers(); restoreStudent(); restoreTeacher(); }
+});
+
+test("listMessageRooms estudiante ve cursos inscritos y un directo único por docente", async () => {
+  const restore = replace(prisma.student, "findFirst", async () => ({
+    inscripciones: [
+      {
+        cursoOfertaId: 90n,
+        course: {
+          cursoCatalogo: { nombre: "Matemática" },
+          profesor: { usuario: { id: 8n }, nombres: "Luis", apellidos: "Sol" },
+        },
+      },
+      {
+        cursoOfertaId: 91n,
+        course: {
+          cursoCatalogo: { nombre: "Comunicación" },
+          profesor: { usuario: { id: 8n }, nombres: "Luis", apellidos: "Sol" },
+        },
+      },
+      {
+        cursoOfertaId: 92n,
+        course: { cursoCatalogo: { nombre: "Ciencias" }, profesor: null },
+      },
+    ],
+  }));
+  try {
+    const messages = mockRes(); let error;
+    await listMessageRooms(req({ sub: "12", role: "estudiante" }), messages, (e) => { error = e; });
+    assert.ifError(error);
+    assert.deepEqual(messages.body.data.rooms, [{ roomId: "direct:12:8", label: "Prof. Luis Sol", scope: "directo" }]);
+
+    const announcements = mockRes();
+    await listMessageRooms(req({ sub: "12", role: "estudiante" }, "/announcements/rooms"), announcements, (e) => { error = e; });
+    assert.ifError(error);
+    assert.deepEqual(announcements.body.data.rooms, [
+      { roomId: "global:institucional", label: "Comunicados institucionales", scope: "global" },
+      { roomId: "curso:90", label: "Avisos — Matemática", scope: "curso" },
+      { roomId: "curso:91", label: "Avisos — Comunicación", scope: "curso" },
+      { roomId: "curso:92", label: "Avisos — Ciencias", scope: "curso" },
+    ]);
+  } finally { restore(); }
 });

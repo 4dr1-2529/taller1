@@ -871,3 +871,24 @@ test("tutor assignment synchronizes the classroom tutor and protects teacher-cou
     assert.equal(noCourses.statusCode, 404);
   });
 });
+
+test("teacher course access accepts an active assignment and rejects inactive assignments", async () => {
+  let relationQuery;
+  const course = { cursoId: 9n, seccionId: 4n, anioLectivoId: 2026n, activo: true };
+  await withStubs([
+    [prisma.course, "findUnique", async () => course],
+    [prisma.teacherCourseAssignment, "findUnique", async (args) => { relationQuery = args; return { activo: true }; }],
+  ], async () => {
+    await assert.doesNotReject(assertTeacherAssignmentAccess(5n, 90n));
+  });
+  assert.deepEqual(relationQuery.where.profesorId_cursoId_seccionId_anioLectivoId, {
+    profesorId: 5n, cursoId: 9n, seccionId: 4n, anioLectivoId: 2026n,
+  });
+
+  await withStubs([
+    [prisma.course, "findUnique", async () => course],
+    [prisma.teacherCourseAssignment, "findUnique", async () => ({ activo: false })],
+  ], async () => {
+    await assert.rejects(assertTeacherAssignmentAccess(5n, 90n), (error) => error.statusCode === 403);
+  });
+});

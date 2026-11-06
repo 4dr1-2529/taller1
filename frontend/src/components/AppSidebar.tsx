@@ -64,6 +64,50 @@ type AppSidebarProps = {
   alertCount: number;
 };
 
+const COLLAPSED_STORAGE_KEY = "tesis-sidebar-collapsed";
+
+export function readSidebarCollapsed(storage: Pick<Storage, "getItem">): boolean {
+  return storage.getItem(COLLAPSED_STORAGE_KEY) === "1";
+}
+
+export function toggleSidebarCollapsed(current: boolean, storage: Pick<Storage, "setItem">): boolean {
+  const next = !current;
+  storage.setItem(COLLAPSED_STORAGE_KEY, next ? "1" : "0");
+  return next;
+}
+
+export function getSidebarInitials(nombres: string, apellidos: string): string {
+  const first = nombres?.charAt(0)?.toUpperCase() ?? "";
+  const last = apellidos?.charAt(0)?.toUpperCase() ?? "";
+  return first + last;
+}
+
+export function installMobileNavigationBehavior(
+  doc: Document,
+  trigger: HTMLButtonElement | null,
+  drawer: HTMLElement | null,
+  setMobileOpen: (open: boolean) => void,
+): () => void {
+  const main = doc.querySelector<HTMLElement>(".app-main");
+  const wasInert = main?.inert ?? false;
+  if (main) main.inert = true;
+  drawer?.querySelector<HTMLButtonElement>("button")?.focus();
+  const handleKey = (event: KeyboardEvent) => {
+    if (event.key === "Escape") { event.preventDefault(); setMobileOpen(false); }
+    if (event.key !== "Tab" || !drawer) return;
+    const targets = Array.from(drawer.querySelectorAll<HTMLElement>("button:not(:disabled), a[href], [tabindex='0']")).filter(el => el.getClientRects().length);
+    const first = targets[0], last = targets[targets.length - 1];
+    if (event.shiftKey && doc.activeElement === first) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && doc.activeElement === last) { event.preventDefault(); first?.focus(); }
+  };
+  doc.addEventListener("keydown", handleKey);
+  return () => {
+    doc.removeEventListener("keydown", handleKey);
+    if (main) main.inert = wasInert;
+    trigger?.focus();
+  };
+}
+
 export function AppSidebar({ sections, activeSection, onSelect, alertCount }: AppSidebarProps) {
   const reduced = useReducedMotion();
   const { user, logout, isAuthenticated } = useAuth();
@@ -75,46 +119,16 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
 
   useEffect(() => {
     if (!mobileOpen) return;
-    const trigger = triggerRef.current;
-    const drawer = drawerRef.current;
-    const main = document.querySelector<HTMLElement>(".app-main");
-    const wasInert = main?.inert ?? false;
-    if (main) main.inert = true;
-    drawer?.querySelector<HTMLButtonElement>("button")?.focus();
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") { event.preventDefault(); setMobileOpen(false); }
-      if (event.key !== "Tab" || !drawer) return;
-      const targets = Array.from(drawer.querySelectorAll<HTMLElement>("button:not(:disabled), a[href], [tabindex='0']")).filter(el => el.getClientRects().length);
-      const first = targets[0], last = targets[targets.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("keydown", handleKey);
-      if (main) main.inert = wasInert;
-      trigger?.focus();
-    };
+    return installMobileNavigationBehavior(document, triggerRef.current, drawerRef.current, setMobileOpen);
   }, [mobileOpen]);
 
   useEffect(() => {
-    const stored = localStorage.getItem("tesis-sidebar-collapsed");
-    if (stored === "1") setCollapsed(true);
+    if (readSidebarCollapsed(localStorage)) setCollapsed(true);
   }, []);
 
   function toggleCollapsed() {
-    setCollapsed((c) => {
-      const next = !c;
-      localStorage.setItem("tesis-sidebar-collapsed", next ? "1" : "0");
-      return next;
-    });
+    setCollapsed((current) => toggleSidebarCollapsed(current, localStorage));
   }
-
-  const getInitials = (nombres: string, apellidos: string) => {
-    const first = nombres?.charAt(0)?.toUpperCase() ?? "";
-    const last = apellidos?.charAt(0)?.toUpperCase() ?? "";
-    return first + last;
-  };
 
   const compact = collapsed && !mobileOpen;
   const sidebarContent = (
@@ -322,7 +336,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
             >
               <div className="flex items-center gap-3">
                 <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--brand-orange)] text-[12px] font-bold text-white shadow-sm ring-1 ring-white/10">
-                  {getInitials(user.nombres, user.apellidos)}
+                  {getSidebarInitials(user.nombres, user.apellidos)}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="break-words text-[13px] font-semibold text-[var(--sidebar-text)]">

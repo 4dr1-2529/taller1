@@ -134,6 +134,7 @@ export async function createTeacherAccount(req: Request, res: Response, next: Ne
         id: idToString(updated.id),
         correo: updated.email,
         courses: mapTeacherCourses(updated.cursosOferta),
+        userId: updated.usuarioId ? idToString(updated.usuarioId) : null,
       }, });
   } catch (e) {
     next(e);

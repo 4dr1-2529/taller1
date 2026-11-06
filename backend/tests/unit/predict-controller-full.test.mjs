@@ -38,3 +38,24 @@ test("predict: rechaza body vacío con error de validación", async () => {
   } catch (e) { error = e; }
   assert.ok(error);
 });
+
+test("predict: valida el identificador y devuelve 404 cuando no existe el estudiante", async () => {
+  const invalidRes = makeRes();
+  let validationError;
+  try {
+    await predict(makeReq({ body: { studentId: "0" }, user: { sub: "1", role: "admin" } }), invalidRes, nextFn);
+  } catch (error) { validationError = error; }
+  assert.ok(validationError);
+
+  const original = mockPrisma(prisma.student, "findUnique", async () => null);
+  try {
+    const res = makeRes();
+    let error;
+    try {
+      await predict(makeReq({ body: { studentId: "42" }, user: { sub: "1", role: "admin" } }), res, (value) => { error = value; });
+    } catch (value) { error = value; }
+    assert.equal(error?.statusCode, 404);
+  } finally {
+    prisma.student.findUnique = original;
+  }
+});
