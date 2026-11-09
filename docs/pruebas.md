@@ -21,9 +21,9 @@ Verificar por rol:
 2. Estudiante no puede acceder a rutas `/students` (403)
 3. Profesor solo ve sus secciones en filtros
 
-Data Seed: la **población operativa/demo** (1 director · 24 profesores · 250 estudiantes = 275
-cuentas) ya está importada en producción; ese seed se importó originalmente como **V5** y corre
-sobre el sistema técnico vigente **BLENKIR V6**. **No ejecutar** `db:seed`, `db:seed:demo`,
+Data Seed V6: la **población operativa/demo** define 1 director · 24 profesores · 250 estudiantes = 275
+cuentas. El dataset científico-sintético de ML es independiente (225 estudiantes, 450 observaciones).
+El estado de la BD productiva requiere verificación directa. **No ejecutar** `db:seed`, `db:seed:demo`,
 `db:push` ni ningún reset sobre esa BD.
 
 Guía: [DEPLOY.md](DEPLOY.md)

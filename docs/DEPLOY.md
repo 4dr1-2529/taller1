@@ -51,4 +51,4 @@ Comportamiento histórico del mecanismo (archivo `backend/scripts/reset-demo-saf
 requería `ALLOW_DEMO_RESET=true`, `DATABASE_URL` explícita y `DEMO_RESET_MANIFEST`, rechazaba
 `NODE_ENV=production` y solo operaba sobre una copia de pruebas. No se ejecutó ninguna limpieza en esta auditoría.
 
-No ejecutar scripts de población legacy. El Data Seed definitivo **V5** (275 usuarios) ya está importado en producción: no se ejecutan `db:seed`, `db:seed:demo`, `db:push`, migraciones de reset ni ninguna limpieza sobre esa base. Revisar las cuentas históricas antes de habilitarlas: la migración histórica de contraseñas comunes no constituye una política válida para cuentas nuevas.
+La fuente canónica del proyecto es el Data Seed V6 (275 cuentas: 1 director, 24 docentes y 250 estudiantes). No ejecutar `db:seed`, `db:seed:demo`, `db:push`, migraciones de reset ni limpieza en producción. El estado de producción debe consultarse y aprobarse por separado antes de cualquier importación; esta documentación no afirma que el V6 ya esté cargado en Railway. Las contraseñas se configuran por rol mediante variables de entorno.
