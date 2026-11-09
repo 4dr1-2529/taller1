@@ -6,8 +6,8 @@ Se corrigieron los controles de reset demo, logout, recuperación P3009, configu
 > ⚠️ **HISTÓRICO — todo este documento describe una fase anterior (no es el estado vigente).**
 > La población demo de esa fase (660 estudiantes / 23 profesores, y antes 1 director · 3
 > profesores · 9 estudiantes) ya fue reemplazada por la **población operativa/demo persistida**
-> vigente: **275 usuarios (1 director · 24 profesores · 250 estudiantes)**, semilla importada
-> originalmente como **Data Seed V5** y ejecutándose sobre el sistema técnico **BLENKIR V6**.
+> definida por el Data Seed V6: **275 usuarios (1 director · 24 profesores · 250 estudiantes)**.
+> El archivo de datos es sintético y su presencia en el repositorio no acredita el estado de producción.
 > Tampoco son «datos reales institucionales» (aún no disponibles).
 > El estado vigente se documenta en [`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md).
 

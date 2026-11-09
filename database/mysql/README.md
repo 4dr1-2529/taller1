@@ -39,8 +39,9 @@ En una **BD local recién creada** puede usarse `npm run db:push` en lugar de `d
 
 > ⛔ **Prohibido** ejecutar `db:push`, `db:migrate`, `db:seed`, `db:seed:demo` o cualquier
 > `db:reset:*` sobre la BD de **producción**. La población operativa/demo (1 director ·
-> 24 profesores · 250 estudiantes = 275 usuarios) ya está importada allí; ese seed se importó
-> originalmente como **V5** y opera sobre el sistema técnico vigente **BLENKIR V6**.
-> La BD aislada de pruebas (`:33316`) se usa solo para la suite de integración.
+> 24 profesores · 250 estudiantes = 275 usuarios) es la composición definida por Data Seed V6.
+> La fuente del proyecto es el Data Seed V6. Esto no confirma que la base productiva esté sincronizada:
+> verifique sus conteos directamente antes de afirmar qué dataset contiene. La BD aislada de pruebas
+> (`:33316`) se usa solo para la suite de integración.
 
 El esquema lo genera **Prisma** (`backend/prisma/schema.prisma`). El archivo `database/postgresql/schema.sql` es referencia histórica; para MySQL use `db:push`.

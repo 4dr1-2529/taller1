@@ -715,9 +715,8 @@ npm run db:seed --workspace=backend
 npm run db:seed:demo --workspace=backend
 ```
 
-El Data Seed definitivo (275 usuarios; versión vigente **V6**, que sustituyó al V5 auditado, excluido
-explícitamente por el importador) ya esta importado en
-produccion, sobre el sistema tecnico vigente **BLENKIR V6**. Las cuentas se
+El Data Seed V6 define 275 usuarios (1 director, 24 docentes y 250 estudiantes). Esta fuente local
+no confirma el estado actual de la base productiva; consulta sus conteos antes de afirmarlo. Las cuentas se
 documentan en `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md` y las contraseñas viven solo en las variables
 de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD`.
 No se ejecutan `db:seed`, `db:seed:demo`, `db:push` ni resets sobre produccion.
