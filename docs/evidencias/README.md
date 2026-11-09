@@ -7,24 +7,47 @@
 
 ---
 
+## Estado de las evidencias (2026-09-26 · revalidado 2026-09-27)
+
+| Conjunto | Significado | Dónde |
+|----------|-------------|-------|
+| **Vigente — V6** | Auditoría técnica del 2026-09-26 y revalidación del 2026-09-27 (estado de checks, SonarCloud con los 27 issues de `main` — estado de esa fecha; hoy `main` está en Quality Gate OK, verificado 2026-10-20 —, barrido de secretos con clasificación de placeholders corregida, logs de pruebas) | [`sonarqube/`](sonarqube/), [`seguridad/`](seguridad/), [`../../plan-pruebas/evidencias-finales/terminal/`](../../plan-pruebas/evidencias-finales/terminal/) |
+| **Histórica — QA local anterior** | Capturas y ejecuciones de una etapa anterior al refresh UI/UX y al Data Seed V6; conservadas como evidencia histórica, no describen la aplicación ni la población vigentes | `capturas/`, `dashboard/`, `ia/`, `qa/`, `metricas/`, `arquitectura/`, [`../../plan-pruebas/evidencias-finales/`](../../plan-pruebas/evidencias-finales/) |
+| **Legacy** | Ejecución anterior al Data Seed definitivo (población demo antigua) | [`../../legacy/`](../../legacy/), [`../evidencias_finales/`](../evidencias_finales/) |
+
+Lectura de estado general: [`../ESTADO_ACTUAL_V6.md`](../ESTADO_ACTUAL_V6.md).
+
+---
+
 ## Estructura de carpetas
 
 ```
 docs/evidencias/
 ├── README.md           ← Este archivo
-├── capturas/           ← Pantallas del sistema web
+├── api/                ← Diagrama del flujo completo de la API (PNG/SVG)
+├── arquitectura/       ← Diagramas backend, base de datos y frontend (PNG/SVG)
 ├── backend/            ← Tests API, health, logs Railway
-├── frontend/           ← Lint, build, consola sin 401
+├── base_datos/         ← DER de Blenkir (PNG/SVG) y README-ER
+├── capturas/           ← Pantallas del sistema web
 ├── dashboard/          ← KPIs y gráficos por rol
-├── ia/                 ← metrics.json, matrices, ml:test
-├── railway/            ← Despliegue backend + MySQL
-├── vercel/             ← Despliegue frontend
+├── frontend/           ← Lint, build, consola sin 401
 ├── github/             ← Repo, commits, releases
+├── ia/                 ← metrics.json, matrices, ml:test
+├── iso/                ← Diagramas aplicados ISO 25010, ISO 29119 e ISO 9001 (PNG/SVG)
+├── metricas/           ← Gráficos ML: curva ROC, matriz de confusión, importancia de variables
 ├── postman/            ← Colección ejecutada
-└── sonarqube/          ← Análisis estático calidad código
+├── qa/                 ← Salidas de lint, type-check, tests backend/ML y resumen visual
+├── railway/            ← Despliegue backend + MySQL
+├── seguridad/          ← Barridos de secretos (JSON) y su clasificación
+├── sonarqube/          ← Análisis estático calidad código
+└── vercel/             ← Despliegue frontend
 ```
 
-Cada subcarpeta tiene su **README.md** con instrucciones específicas.
+*(Reconteo de carpetas el 2026-10-20: 17 subcarpetas.)*
+
+Varias subcarpetas incluyen su **README.md** con instrucciones específicas (verificado 2026-10-20:
+`api/`, `arquitectura/`, `iso/`, `metricas/` y `qa/` no tienen README propio; `base_datos/` usa
+`README-ER.md`).
 
 ---
 

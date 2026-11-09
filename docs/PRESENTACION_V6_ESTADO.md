@@ -3,13 +3,18 @@
 > **MODELO EXPERIMENTAL — DATOS SINTÉTICOS.** Todo el ciclo BLENKIR V6 se ejecutó en
 > **local** (`localhost`): sin commit, sin push, sin merge, sin deploy y sin tocar
 > Railway/Vercel.
+>
+> **ACTUALIZACIÓN 2026-09-26:** esa frase describía el estado *de este ciclo*, no el del repositorio.
+> Desde entonces el refresh UI/UX se fusionó a `main` (PR #5 → squash `d3c0b80`; CI, Vercel y Railway
+> en verde). Los resultados internos de este documento no cambian; el estado operativo verificado hoy
+> está en [ESTADO_ACTUAL_V6.md](ESTADO_ACTUAL_V6.md).
 
 Leyenda: **PASS** = verificado ejecutando; **NOTA** = limitación conocida documentada;
 **INFO** = decisión de diseño.
 
 | # | Componente | Estado | Evidencia |
 | --- | --- | --- | --- |
-| 1 | Data Seed V6 como fuente única del importador | **PASS** | `definitive-dataset-reader.mjs`: `SOURCE`…`_CIENTIFICO_SINTETICO_V6.xlsx`, `SOURCE_HASH=0bb7dd70…`, `DATASET_ID=BLENKIR_DATA_SEED_V6_250`, `DATASET_VERSION=6.0-synthetic-scientific-twin`; unicidad excluye `AUDITADO_V5` |
+| 1 | Data Seed V6 como fuente única del importador | **PASS** | `definitive-dataset-reader.mjs`: `SOURCE`…`_CIENTIFICO_SINTETICO_V6.xlsx`, `SOURCE_HASH=0bb7dd70…`, `DATASET_ID=BLENKIR_DATA_SEED_V6_250`, `DATASET_VERSION=6.0-synthetic-scientific-twin`; la carpeta solo admite un XLSX |
 | 2 | Validación del dataset sin BD | **PASS** | `db:dataset:validate` → `DEFINITIVE_DATASET_VALID=true`, `LOGICAL_SHA256=9eb428bd…`, conteos idénticos al import |
 | 3 | Reconstrucción de BD desde cero | **PASS** | `prisma migrate reset --force` (5 migraciones) → `db:seed:structure` (`PRESEED_ZERO_OK`, 0 usuarios) → `db:dataset:import --execute` → `DEFINITIVE_DATASET_IMPORTED=true` |
 | 4 | Conteos de población | **PASS** | SQL directo: 275 usuarios (1/24/250), 250 estudiantes (225/15/10), 250 matrículas, 3724 inscripciones, 10209 calificaciones, 34950 asistencias, 725 históricos, 4610 eventos LMS, correlativos 250/24/250 |

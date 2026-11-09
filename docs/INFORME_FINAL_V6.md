@@ -3,6 +3,10 @@
 > **MODELO EXPERIMENTAL — DATOS SINTÉTICOS.** Todo se ejecutó en local.
 > Sin commit, sin push, sin merge, sin deploy; sin tocar Railway ni Vercel.
 > Ningún secreto se imprimió: solo booleanos y conteos.
+>
+> **ACTUALIZACIÓN 2026-09-26:** lo anterior es el estado *de este ciclo*. El repositorio sí avanzó:
+> refresh UI/UX fusionado a `main` (PR #5 → squash `d3c0b80`). Estado operativo verificado hoy:
+> [ESTADO_ACTUAL_V6.md](ESTADO_ACTUAL_V6.md).
 
 ## Informe numerado
 
@@ -14,9 +18,8 @@
    SHA-256 `0bb7dd701ddc1dd9d14386d7b908ba7238e733e67b522e649da2cab74fcd0a0c`,
    `dataset_id=BLENKIR_DATA_SEED_V6_250`, `dataset_version=6.0-synthetic-scientific-twin`,
    semilla `20260921`, corte `2026-09-21`, bcrypt cost 12.
-3. **Composición verificada celda a celda** del workbook (25 hojas): 15 hojas idénticas al
-   V5 auditado, 3 distintas (`README`, `Resumen`, `ImportConfig`) y 7 nuevas `ML_V6_*`
-   (documentación, no consumidas por el importador).
+3. **Composición del workbook V6** (25 hojas): 18 hojas de población/configuración leídas por
+   el importador y 7 hojas `ML_V6_*` de documentación experimental que no consume.
 4. **Validación de solo lectura** (`db:dataset:validate`): `DEFINITIVE_DATASET_VALID=true`,
    `LOGICAL_SHA256=9eb428bd0612a1f6c19040219bea939429dcaaf410b376a0211d13418fb09c50`,
    conteos idénticos a los del import.
@@ -124,8 +127,8 @@
     `ml:test` **32/32** · `npm run build` 0 (shared + tsc + next build) · `git diff --check` 0.
 33. **Documentación nueva/actualizada**: `docs/ml/DATA_SEED_V6_METODOLOGIA.md`,
     `docs/ml/PIPELINE_ML_V6.md`, `docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`,
-    `docs/PRESENTACION_V6_ESTADO.md`, `docs/DATASET_DEFINITIVO_2026_V6_LOCAL.md` (y aviso
-    de superseded en el doc V5), `machine-learning/README.md`, `machine-learning/data/README.md`.
+    `docs/PRESENTACION_V6_ESTADO.md`, `docs/DATASET_DEFINITIVO_2026_V6_LOCAL.md`,
+    `machine-learning/README.md`, `machine-learning/data/README.md`.
 34. **Pruebas del importador ajustadas al V6**: digesto anclado en
     `definitive-production-readonly.test.mjs` actualizado al valor real `9eb428bd…`
     (incluye el hash del XLSX fuente) → tests en verde.

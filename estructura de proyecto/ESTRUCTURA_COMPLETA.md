@@ -16,7 +16,7 @@ El proyecto es un monorepo JavaScript/TypeScript con tres subsistemas principale
 2. **Backend API:** Node.js 20, Express 4, TypeScript y Prisma 6. Se publica en Railway.
 3. **Servicio de inteligencia artificial:** Python, FastAPI y modelos de aprendizaje automatico. En desarrollo funciona en el puerto 5000; la documentacion indica que no esta desplegado en Railway por defecto.
 
-La base de datos productiva es **MySQL 8**, administrada por el plugin MySQL de Railway. Prisma define el contrato actual con **52 modelos**, que se mapean a tablas con nombres en espanol. El sistema permite gestionar la estructura escolar, usuarios, docentes, estudiantes, cursos, matriculas, notas, asistencia, actividad LMS, predicciones de riesgo, alertas, mensajeria, reportes y auditoria.
+La base de datos productiva es **MySQL 8**, administrada por el plugin MySQL de Railway. Prisma define el contrato actual con **57 modelos Prisma** (54 activos + 3 con `@@ignore`; conteo verificado con `npm run db:count-models`), que se mapean a tablas con nombres en espanol. El sistema permite gestionar la estructura escolar, usuarios, docentes, estudiantes, cursos, matriculas, notas, asistencia, actividad LMS, predicciones de riesgo, alertas, mensajeria, reportes y auditoria.
 
 El acceso esta dividido en tres roles funcionales:
 
@@ -78,7 +78,7 @@ El `package.json` raiz declara workspaces para `backend`, `frontend` y `packages
 | `npm run test` | Ejecuta pruebas unitarias, backend y ML. |
 | `npm run db:migrate:deploy` | Aplica migraciones Prisma. |
 | `npm run db:seed` | Carga estructura institucional. |
-| `npm run db:seed:demo` | Carga datos de demostracion. |
+| `npm run db:seed:demo` | *(Deshabilitado: responde error `LEGACY`; la población demo ya no se siembra con este comando.)* |
 | `npm run ml:train` | Entrena los modelos Python. |
 | `npm run qa:pipeline` | Ejecuta el pipeline de pruebas documentado. |
 
@@ -291,7 +291,7 @@ La fuente de verdad actual es [backend/prisma/schema.prisma](../backend/prisma/s
 - Motor previsto: MySQL 8.
 - IDs: `BigInt` autoincrementales.
 - Nombres de tablas: espanol mediante `@@map`.
-- Hay 52 modelos Prisma y, por tanto, 52 tablas de dominio definidas por el schema.
+- Hay **57 modelos Prisma** (54 activos + 3 `@@ignore`) declarados en el schema; los activos se mapean a tablas de dominio mediante `@@map`.
 - Las migraciones se encuentran en `backend/prisma/migrations/`.
 - Las semillas principales son `seed.ts`, `seed-demo.ts` y scripts de asignaciones.
 
@@ -574,18 +574,19 @@ Endpoints:
 
 ### 7.2 Variables de entrada
 
-El backend construye un payload con diez variables:
+El backend construye un payload con **7 variables** (vector vigente V6, `FEATURE_NAMES`):
 
 1. `promedio_general`.
 2. `cursos_desaprobados`.
 3. `asistencia_general`.
 4. `frecuencia_acceso_lms`.
-5. `tiempo_plataforma`.
-6. `tareas_ratio`.
-7. `participacion_actividades`.
-8. `uso_foros`.
-9. `disminucion_actividad`.
-10. `estado`.
+5. `tiempo_interaccion_lms`.
+6. `actividades_realizadas`.
+7. `recursos_consultados`.
+
+> El listado anterior de **diez variables** (`tiempo_plataforma`, `tareas_ratio`,
+> `participacion_actividades`, `uso_foros`, `disminucion_actividad`, `estado`) pertenece al
+> pipeline previo a V6 y se conserva solo en `legacy/documentation/` y `python-ia/`.
 
 ### 7.3 Modelos y respaldo
 
@@ -594,9 +595,12 @@ La documentacion describe un conjunto de modelos:
 - Random Forest.
 - XGBoost o HistGradientBoosting cuando hay incompatibilidad.
 - Stacking.
-- Seleccion del mejor modelo por F1.
+- Seleccion del mejor modelo por F1 — en V6: F1 de **desercion** sobre el split de
+  **validation** (`holdout_used_for_selection=false`); ganador **Stacking**.
 
-Los artefactos esperados son `best_model.joblib`, `features.joblib` y `metrics.json`. Si no hay artefacto cargado, el servicio usa una heuristica documentada para calcular el score.
+Los artefactos esperados son `best_model.joblib`, `features.joblib` y `metrics.json`. En V6, si no
+hay artefactos coherentes el servicio **no** inventa una prediccion: devuelve un error honesto (la
+heuristica ponderada era del pipeline anterior).
 
 ### 7.4 Flujo de una prediccion
 
@@ -684,9 +688,16 @@ La documentacion actual indica que FastAPI no se despliega en Railway por defect
 
 - En desarrollo local, API y ML pueden comunicarse si ambos procesos estan levantados.
 - En produccion, el servicio ML debe desplegarse separadamente y asignar una URL accesible desde Railway para que el backend use el modelo real.
-- Mientras no exista esa URL, el backend puede devolver resultados de respaldo/heuristica segun la implementacion activa.
+- Mientras no exista esa URL, el backend responde `503` en `/predict` sin generar riesgo ficticio
+  (verificado en `backend/src/services/ml-client.ts`: si el servicio ML falla o no está configurado,
+  la API no inventa predicciones).
 
 ### 8.5 Datos demo
+
+> **Nota (2026-10-20):** las semillas de población descritas aquí están **deshabilitadas** en el sistema
+> vigente (`db:seed:demo`, `db:reset:*` y similares responden error `LEGACY`). La población de
+> demostración actual se importa con el Data Seed V6 (`db:dataset:import --workspace=backend`), descrito
+> más abajo. El listado siguiente se conserva como descripción del escenario de demostración histórico.
 
 Las semillas documentadas generan una instalacion demo con:
 
@@ -704,7 +715,8 @@ npm run db:seed --workspace=backend
 npm run db:seed:demo --workspace=backend
 ```
 
-El Data Seed definitivo V5 (275 usuarios) ya esta importado en produccion. Las cuentas se
+El Data Seed V6 define 275 usuarios (1 director, 24 docentes y 250 estudiantes). Esta fuente local
+no confirma el estado actual de la base productiva; consulta sus conteos antes de afirmarlo. Las cuentas se
 documentan en `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md` y las contraseñas viven solo en las variables
 de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD`.
 No se ejecutan `db:seed`, `db:seed:demo`, `db:push` ni resets sobre produccion.
@@ -769,7 +781,7 @@ Referencias:
 2. **El ML no esta integrado como servicio productivo completo por defecto.** Para usar el modelo real en produccion hay que desplegar FastAPI o configurar un proveedor externo y actualizar `ML_SERVICE_URL`.
 3. **El control de estudiante esta aplicado en backend.** No depende solamente del menu oculto del frontend.
 4. **La asignacion docente es la base del alcance del profesor.** `TeacherCourseAssignment`, `TutorSeccion` y `Course` relacionan profesor, curso, grado, seccion y ano lectivo.
-5. **El sistema tiene soporte de trazabilidad, pero el flujo de predicción está incompleto.** El schema contempla variables, modelo y periodo; el controlador actual persiste principalmente score, probabilidades y factores. Las alertas guardan factores e historial y las acciones sensibles se auditan.
+5. **El sistema tiene soporte de trazabilidad, pero el enlace formal modelo/periodo de la predicción está incompleto.** El controlador de predicción persiste, en una sola transacción: estudiante, score, nivel, probabilidades, `modelName`, `contractVersion`, `recommendation`, el JSON `input_data` con las 7 variables y la metadata del modelo (`modelVersion`, `datasetVersion`, `dataMode`, `decisionThreshold`), 7 filas de `prediccion_feature_snapshot` por predicción y sus `prediccion_factor`, más alerta, historial de alerta, notificación, recomendación IA y registro de auditoría (verificado en `backend/src/services/prediction-persistence.service.ts`, 2026-10-20). Lo que **no** se persiste son las claves foráneas `modeloId` y `periodoId` (quedan NULL), por lo que la predicción no queda enlazada a `ml_modelo` ni al periodo académico: la versión del modelo solo queda como texto en `input_data`. Las tablas `ml_dataset`, `ml_entrenamiento`, `ml_modelo` y `ml_metrica` no tienen flujo de escritura en la aplicación activa (solo se poblaron por SQL histórico). Las alertas guardan factores e historial y las acciones sensibles se auditan.
 6. **El frontend y el backend tienen URLs separadas.** Vercel sirve la interfaz; Railway sirve API y BD mediante servicios independientes.
 7. **Las variables de entorno son parte critica del despliegue.** Un `JWT_SECRET` corto, un `CORS_ORIGIN` incorrecto, una `DATABASE_URL` ausente o un `NEXT_PUBLIC_API_URL` faltante impiden el funcionamiento completo.
 8. **Los numeros de datos demo son datos de semilla.** 660 estudiantes, 23 profesores y 22 secciones describen el escenario de demostracion, no necesariamente datos reales de produccion.
@@ -831,15 +843,30 @@ Aunque los comentarios advierten que debe usarse solo con una BD vacia o de prue
 
 La configuracion documentada deja `ML_SERVICE_URL=http://localhost:5000` en Railway, donde normalmente no existe un FastAPI dentro del mismo proceso. Por tanto, el resultado productivo puede ser heuristico aunque la interfaz muestre una prediccion valida.
 
+> *(Corrección 2026-10-20: el backend vigente **no tiene heurística ni respaldo**. Si `ML_SERVICE_URL`
+> no está configurado o el servicio ML falla, `POST /predict` responde `503` y no se genera ninguna
+> predicción ficticia — verificado en `backend/src/services/ml-client.ts` y `predict.controller.ts`.
+> La frase de arriba describe la percepción de una fase anterior del proyecto.)*
+
 **Recomendacion:** desplegar ML como servicio separado, configurar una URL privada o publica segura, añadir healthcheck dependiente de ML y mostrar claramente el origen del modelo en el dashboard.
 
 #### C. Trazabilidad de prediccion incompleta en persistencia
+
+> **Actualización (2026-10-20):** hallazgo parcialmente superado. Verificado en el código actual
+> (`backend/src/services/prediction-persistence.service.ts`), la predicción **sí** conserva en BD el JSON
+> `input_data` (columna persistida con las 7 variables + `modelVersion`/`datasetVersion`/`dataMode`/
+> `decisionThreshold`), el snapshot de las 7 variables en `prediccion_feature_snapshot` (7 filas por
+> predicción; evidencia: 251 predicciones → 1757 filas en `docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`),
+> `modelName` y `contractVersion`. **Siguen sin persistirse** `modeloId` y `periodoId` (quedan NULL), por
+> lo que el enlace formal de la predicción a `ml_modelo` y al periodo académico sigue sin existir, y las
+> tablas `ml_dataset`/`ml_entrenamiento`/`ml_modelo`/`ml_metrica` no se escriben desde la aplicación. El
+> texto original se conserva abajo como registro del hallazgo en su fecha.
 
 El modelo de datos tiene `modeloId`, `periodoId` y `PrediccionFeatureSnapshot`, pero `backend/src/controllers/predict.controller.ts` al crear `Prediction` solo persiste estudiante, score, niveles, probabilidades y factores. En ese flujo no se observa el guardado de:
 
 - modelo utilizado;
 - periodo academico;
-- snapshot completo de las diez variables de entrada.
+- snapshot completo de las 7 variables de entrada.
 
 La API devuelve `inputData`, pero devolverlo no equivale a conservarlo en la base de datos. Esto reduce la reproducibilidad de una prediccion historica y debilita la auditoria cientifica de la tesis.
 
@@ -849,9 +876,9 @@ La API devuelve `inputData`, pero devolverlo no equivale a conservarlo en la bas
 
 #### D. Documentacion inconsistente sobre el numero de tablas
 
-El schema actual contiene 52 modelos, confirmado con el conteo de declaraciones `model` en `backend/prisma/schema.prisma`. Sin embargo, el propio schema, `seed.ts`, `README.md`, CHANGELOG, documentos de arquitectura y SQL legacy siguen diciendo 51 tablas.
+El schema actual contiene **57 modelos Prisma** (54 activos + 3 `@@ignore`), confirmado con `npm run db:count-models` (reconteo 2026‑09‑27) y con el conteo de declaraciones `model` en `backend/prisma/schema.prisma`. Las cifras anteriores —**52 modelos** y **51 tablas**— describen etapas anteriores del schema.
 
-Esto no rompe la ejecucion, pero puede producir errores en la memoria de tesis, diagramas ER, auditorias ISO y presentaciones. El informe actual usa 52 como cifra vigente y deja 51 como referencia historica.
+Esto no rompe la ejecucion, pero puede producir errores en la memoria de tesis, diagramas ER, auditorias ISO y presentaciones. Cifra vigente: **57 modelos Prisma**; **51 tablas** queda solo como referencia historica (diseño SQL de `database/blenkir-v3/`). En esta revision se corrigieron los comentarios del `seed.ts` y los documentos que todavía fijaban 51 tablas como estado actual.
 
 #### E. Scripts legacy mezclan nombres de schema antiguos
 
