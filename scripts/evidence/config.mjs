@@ -6,7 +6,7 @@ const ROOT = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 export const BASE_URL = "http://localhost:3029";
 export const API_URL = "http://localhost:4000/api/v1";
 
-// Data Seed V5: cada rol usa su propia variable de entorno. Nunca un valor literal.
+// Data Seed V6: cada rol usa su propia variable de entorno. Nunca un valor literal.
 const PASSWORD_BY_ROLE = {
   director: process.env.DIRECTOR_INITIAL_PASSWORD?.trim(),
   profesor: process.env.TEACHER_INITIAL_PASSWORD?.trim(),
