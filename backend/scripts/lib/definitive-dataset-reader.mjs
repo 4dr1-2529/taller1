@@ -32,10 +32,8 @@ const HEADERS = {
 };
 
 export function readDataset(path = SOURCE) {
-  // El directorio debe tener un único XLSX activo de datos institucionales (V6).
-  // Las versiones legadas (V5 auditado) se conservan solo como referencia histórica
-  // y se excluyen explícitamente de esta validación de unicidad.
-  const siblings = readdirSync(dirname(path)).filter(n => /\.xlsx$/i.test(n) && !/AUDITADO_V5/i.test(n));
+  // La carpeta de fuentes debe contener exclusivamente el workbook V6 autorizado.
+  const siblings = readdirSync(dirname(path)).filter(n => /\.xlsx$/i.test(n));
   check(siblings.length === 1, "ambiguous XLSX source directory");
   const bytes = readFileSync(path);
   check(createHash("sha256").update(bytes).digest("hex") === SOURCE_HASH, "DATASET_HASH_MISMATCH");
