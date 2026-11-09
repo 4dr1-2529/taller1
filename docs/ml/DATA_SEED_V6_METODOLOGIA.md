@@ -20,17 +20,17 @@
 | `predictions` / `legacy_lms` | `DO_NOT_POPULATE` (el importador nunca crea predicciones ni métricas ML) |
 
 La integridad está anclada en `backend/scripts/lib/definitive-dataset-reader.mjs`:
-`SOURCE` + `SOURCE_HASH` + `DATASET_ID`/`DATASET_VERSION` verificados en cada lectura.
-La unicidad del XLSX activo excluye la versión legada `AUDITADO_V5`.
+`SOURCE` + `SOURCE_HASH` + `DATASET_ID`/`DATASET_VERSION` se verifican en cada lectura. La carpeta
+de fuentes debe contener únicamente el workbook V6 autorizado.
 
-El workbook V6 tiene **25 hojas** (el V5 auditado tenía 18). Comparación celda a celda:
+El workbook V6 tiene **25 hojas**:
 
-- **15 hojas idénticas** al V5: Director, Profesores, Estudiantes250, Secciones,
-  CatalogoCursos, OfertaPlan, AsignacionesPlan, TutoresPlan, GeneracionRelacional,
-  MLFeatures, MapeoPrisma, Fuentes, Usuarios, CorrelativosFinales y AuditoriaCorrecciones.
-- **3 hojas distintas**: `README`, `Resumen` e `ImportConfig` (metadato V6:
-  `dataset_id`, `dataset_version`).
-- **7 hojas nuevas, solo V6**: `ML_V6_Dataset`, `ML_V6_Outcome`, `ML_V6_Splits`,
+- 18 hojas de población/configuración leídas por el importador: `README`, `Resumen` y 16 hojas con
+  encabezado fijo (`Director`, `Profesores`, `Estudiantes250`, `Secciones`, `CatalogoCursos`,
+  `OfertaPlan`, `AsignacionesPlan`, `TutoresPlan`, `GeneracionRelacional`, `MLFeatures`,
+  `ImportConfig`, `MapeoPrisma`, `Fuentes`, `Usuarios`, `CorrelativosFinales` y
+  `AuditoriaCorrecciones`).
+- **7 hojas propias del experimento V6**: `ML_V6_Dataset`, `ML_V6_Outcome`, `ML_V6_Splits`,
   `ML_V6_Inferencia`, `ML_V6_Parametros`, `ML_V6_Diccionario`, `ML_V6_Calidad`
   (documentación de referencia del experimento de aprendizaje; **no las consume el
   importador**).

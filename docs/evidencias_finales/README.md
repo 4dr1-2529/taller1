@@ -1,11 +1,11 @@
-# Evidencias finales — ejecución 100% local
+# Evidencias finales — ejecución histórica local
 
-> ⚠️ **LEGACY / DEPRECATED.** Estas evidencias corresponden a una ejecución **anterior** al Data
-> Seed definitivo V5 (población demo de 660 estudiantes · 23 profesores, contraseñas vía
-> `DEMO_PASSWORD`). Se conservan **sin modificar** como registro histórico: **no describen el sistema
-> actual**.
+> **HISTÓRICO / SUPERADO — NO DESCRIBE EL DATA SEED V6 VIGENTE.** Este paquete registra una ejecución
+> anterior con una población demo de 660 estudiantes y 23 profesores y credenciales de esa época.
+> Las capturas, JSON y logs se conservan como evidencia histórica; no describen el sistema ni los datos
+> operativos actuales.
 >
-> **Estado vigente (2026-09-26):** sistema **V6** — modelo Stacking `BLENKIR_V6_BIN_20260924`
+> **Contexto documentado el 2026-09-26 (no re-verificado en esta evidencia):** sistema **V6** — modelo Stacking `BLENKIR_V6_BIN_20260924`
 > (7 variables, `dataMode=synthetic_scientific`, `experimental=true`) desplegado en Railway y refresh
 > UI/UX fusionado a `main` (PR #5 → `d3c0b80`). La población operativa documentada en producción es la
 > del Data Seed definitivo (275 usuarios: 1 director · 24 profesores · 250 estudiantes), **sin
@@ -22,7 +22,7 @@
 > Generado con datos reales del sistema en ejecución local (MySQL XAMPP + Backend :4000 + Frontend :3029 + ML :5000).  
 > **No se utilizó Railway ni Vercel.**
 
-## Entorno verificado
+## Entorno de la ejecución histórica
 
 | Servicio | URL | Estado |
 |----------|-----|--------|

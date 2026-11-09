@@ -12,7 +12,7 @@ const BASE = process.env.WEB_URL ?? "http://localhost:3029";
 const EVIDENCE = join(ROOT, "plan-pruebas/evidencias-finales");
 
 const EMAIL = process.env.QA_EMAIL ?? "director@blenkir.edu.pe";
-// Data Seed V5: contraseña por rol desde variables de entorno; nunca un literal.
+// Data Seed V6: contraseña por rol desde variables de entorno; nunca un literal.
 const PASSWORD = process.env.QA_PASSWORD?.trim() || process.env.DIRECTOR_INITIAL_PASSWORD?.trim();
 if (!PASSWORD) throw new Error("Defina QA_PASSWORD o DIRECTOR_INITIAL_PASSWORD en el entorno.");
 

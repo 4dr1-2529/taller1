@@ -10,30 +10,30 @@ import { memoryDatabase } from "./fixtures/definitive-memory-database.mjs";
 
 const source = readDataset();
 const dataset = generateDataset(source);
-test("V5: full counts, scopes, period histories and evidence aggregates", () => {
+test("V6: full counts, scopes, period histories and evidence aggregates", () => {
   const report = validateDataset(source, dataset);
   assert.equal(report.counts.academicHistory, 725);
   assert.equal(report.counts.resumenAsistencia, 750);
   assert.deepEqual([1, 2, 3].map(p => dataset.tables.academicHistory.filter(r => r.period === p).length), [250, 250, 225]);
 });
-test("V5: deterministic logical dataset", () => assert.equal(digest(generateDataset(readDataset())), digest(dataset)));
-test("V5: reject source flags, counter, duplicate identity and bad references", () => {
+test("V6: deterministic logical dataset", () => assert.equal(digest(generateDataset(readDataset())), digest(dataset)));
+test("V6: reject source flags, counter, duplicate identity and bad references", () => {
   for (const mutate of [d => { d.AsignacionesPlan[0].es_tutor = false; }, d => { d.CorrelativosFinales[0].ultimo_numero = 0; }, d => { d.Usuarios[1].dni_sintetico = d.Usuarios[0].dni_sintetico; }, d => { d.OfertaPlan[0].profesor_codigo = "UNKNOWN"; }]) {
     const d = structuredClone(source); mutate(d);
     assert.throws(() => validateSource(d), /DATASET_INVALID/);
   }
 });
-test("V5: reject fabricated history, altered aggregates, future events, scope bypass", () => {
+test("V6: reject fabricated history, altered aggregates, future events, scope bypass", () => {
   for (const mutate of [d => { d.tables.academicHistory[0].promedio = -1; }, d => { d.tables.lmsEvent[0].createdAt = "2027-01-01"; }, d => { d.tables.enrollment[0].estado = "activa"; }, d => { d.tables.grade[0].nota = 21; }, d => { d.tables.prediction.push({}); }]) {
     const d = structuredClone(dataset); mutate(d);
     assert.throws(() => validateDataset(source, d), /DATASET_INVALID/);
   }
 });
-test("V5: justified-only intervals remain no-data, tardiness counts", () => {
+test("V6: justified-only intervals remain no-data, tardiness counts", () => {
   assert.equal(attendancePct([{ justificado: true, presente: false, tardanza: false }]), null);
   assert.equal(attendancePct([{ justificado: false, presente: false, tardanza: true }]), 100);
 });
-test("V5: default mode and every missing execution guard prevent mutation", () => {
+test("V6: default mode and every missing execution guard prevent mutation", () => {
   const env = { NODE_ENV: "production", ALLOW_DEFINITIVE_DATASET_IMPORT: "true", DEFINITIVE_DATASET_EXECUTE: "true", ALLOW_PRODUCTION_DATASET_IMPORT: "true" };
   assert.equal(executionMode([], env), "DRY_RUN");
   assert.equal(executionMode(["--dry-run"], env), "DRY_RUN");
@@ -41,7 +41,7 @@ test("V5: default mode and every missing execution guard prevent mutation", () =
   assert.throws(() => executionMode(["--execute"], env), /PASSWORD/);
   assert.throws(() => executionMode(["--execute", "--dry-run"], env), /conflicting/);
 });
-test("V5: preseed populated database aborts transaction before any insert", async () => {
+test("V6: preseed populated database aborts transaction before any insert", async () => {
   let writes = 0;
   const prisma = { $transaction: async (fn, options) => {
     assert.equal(options.isolationLevel, "Serializable");
@@ -50,7 +50,7 @@ test("V5: preseed populated database aborts transaction before any insert", asyn
   await assert.rejects(importDataset(prisma, source, dataset, new Map()), /PRESEED_ZERO/);
   assert.equal(writes, 0);
 });
-test("V5: dry run child process succeeds without a database or passwords", () => {
+test("V6: dry run child process succeeds without a database or passwords", () => {
   const env = { ...process.env };
   for (const key of ["DATABASE_URL", "DIRECTOR_INITIAL_PASSWORD", "TEACHER_INITIAL_PASSWORD", "STUDENT_INITIAL_PASSWORD", "ALLOW_DEFINITIVE_DATASET_IMPORT", "DEFINITIVE_DATASET_EXECUTE", "ALLOW_PRODUCTION_DATASET_IMPORT"]) delete env[key];
   const child = spawnSync(process.execPath, [fileURLToPath(new URL("../scripts/import-definitive-dataset-2026.mjs", import.meta.url)), "--dry-run"], { env, encoding: "utf8", timeout: 60000 });
@@ -58,12 +58,12 @@ test("V5: dry run child process succeeds without a database or passwords", () =>
   assert.match(child.stdout, /DATABASE_CONNECTIONS=0/);
   assert.match(child.stdout, /DRY_RUN_OK/);
 });
-test("V5: equivalence with real backend services using injected database doubles", () => {
+test("V6: equivalence with real backend services using injected database doubles", () => {
   const child = spawnSync(process.execPath, ["--import", "tsx", fileURLToPath(new URL("./fixtures/definitive-domain-equivalence.mjs", import.meta.url))], { encoding: "utf8", timeout: 60000 });
   assert.equal(child.status, 0, child.stderr);
   assert.match(child.stdout, /DOMAIN_EQUIVALENCE_OK/);
 });
-test("V5: complete importer payloads match Prisma fields and FK order in memory", async () => {
+test("V6: complete importer payloads match Prisma fields and FK order in memory", async () => {
   const db = memoryDatabase(source);
   const hashes = new Map(source.Usuarios.map(u => [u.email, "test-double-hash-not-a-login-credential"]));
   await importDataset(db, source, dataset, hashes);
@@ -77,7 +77,7 @@ test("V5: complete importer payloads match Prisma fields and FK order in memory"
   assert.equal(rollback.committed, false);
   assert.equal(rollback.rows.user.length, 0);
 });
-test("V5: transaction budget covers the measured round-trip cost (P2028 regression)", async () => {
+test("V6: transaction budget covers the measured round-trip cost (P2028 regression)", async () => {
   // Production runs through a tunnel measuring ~205 ms per sequential round-trip. The original
   // importer issued ~3.500 sequential creates inside a 180 s transaction, which always exceeded
   // the budget (~719 s) and aborted with P2028 before touching any data.

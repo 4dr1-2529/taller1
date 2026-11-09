@@ -78,7 +78,7 @@ El `package.json` raiz declara workspaces para `backend`, `frontend` y `packages
 | `npm run test` | Ejecuta pruebas unitarias, backend y ML. |
 | `npm run db:migrate:deploy` | Aplica migraciones Prisma. |
 | `npm run db:seed` | Carga estructura institucional. |
-| `npm run db:seed:demo` | Carga datos de demostracion. |
+| `npm run db:seed:demo` | *(Deshabilitado: responde error `LEGACY`; la población demo ya no se siembra con este comando.)* |
 | `npm run ml:train` | Entrena los modelos Python. |
 | `npm run qa:pipeline` | Ejecuta el pipeline de pruebas documentado. |
 
@@ -688,9 +688,16 @@ La documentacion actual indica que FastAPI no se despliega en Railway por defect
 
 - En desarrollo local, API y ML pueden comunicarse si ambos procesos estan levantados.
 - En produccion, el servicio ML debe desplegarse separadamente y asignar una URL accesible desde Railway para que el backend use el modelo real.
-- Mientras no exista esa URL, el backend puede devolver resultados de respaldo/heuristica segun la implementacion activa.
+- Mientras no exista esa URL, el backend responde `503` en `/predict` sin generar riesgo ficticio
+  (verificado en `backend/src/services/ml-client.ts`: si el servicio ML falla o no está configurado,
+  la API no inventa predicciones).
 
 ### 8.5 Datos demo
+
+> **Nota (2026-10-20):** las semillas de población descritas aquí están **deshabilitadas** en el sistema
+> vigente (`db:seed:demo`, `db:reset:*` y similares responden error `LEGACY`). La población de
+> demostración actual se importa con el Data Seed V6 (`db:dataset:import --workspace=backend`), descrito
+> más abajo. El listado siguiente se conserva como descripción del escenario de demostración histórico.
 
 Las semillas documentadas generan una instalacion demo con:
 
@@ -708,8 +715,8 @@ npm run db:seed --workspace=backend
 npm run db:seed:demo --workspace=backend
 ```
 
-El Data Seed definitivo (275 usuarios; importado originalmente como V5) ya esta importado en
-produccion, sobre el sistema tecnico vigente **BLENKIR V6**. Las cuentas se
+El Data Seed V6 define 275 usuarios (1 director, 24 docentes y 250 estudiantes). Esta fuente local
+no confirma el estado actual de la base productiva; consulta sus conteos antes de afirmarlo. Las cuentas se
 documentan en `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md` y las contraseñas viven solo en las variables
 de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD`.
 No se ejecutan `db:seed`, `db:seed:demo`, `db:push` ni resets sobre produccion.
@@ -774,7 +781,7 @@ Referencias:
 2. **El ML no esta integrado como servicio productivo completo por defecto.** Para usar el modelo real en produccion hay que desplegar FastAPI o configurar un proveedor externo y actualizar `ML_SERVICE_URL`.
 3. **El control de estudiante esta aplicado en backend.** No depende solamente del menu oculto del frontend.
 4. **La asignacion docente es la base del alcance del profesor.** `TeacherCourseAssignment`, `TutorSeccion` y `Course` relacionan profesor, curso, grado, seccion y ano lectivo.
-5. **El sistema tiene soporte de trazabilidad, pero el flujo de predicción está incompleto.** El schema contempla variables, modelo y periodo; el controlador actual persiste principalmente score, probabilidades y factores. Las alertas guardan factores e historial y las acciones sensibles se auditan.
+5. **El sistema tiene soporte de trazabilidad, pero el enlace formal modelo/periodo de la predicción está incompleto.** El controlador de predicción persiste, en una sola transacción: estudiante, score, nivel, probabilidades, `modelName`, `contractVersion`, `recommendation`, el JSON `input_data` con las 7 variables y la metadata del modelo (`modelVersion`, `datasetVersion`, `dataMode`, `decisionThreshold`), 7 filas de `prediccion_feature_snapshot` por predicción y sus `prediccion_factor`, más alerta, historial de alerta, notificación, recomendación IA y registro de auditoría (verificado en `backend/src/services/prediction-persistence.service.ts`, 2026-10-20). Lo que **no** se persiste son las claves foráneas `modeloId` y `periodoId` (quedan NULL), por lo que la predicción no queda enlazada a `ml_modelo` ni al periodo académico: la versión del modelo solo queda como texto en `input_data`. Las tablas `ml_dataset`, `ml_entrenamiento`, `ml_modelo` y `ml_metrica` no tienen flujo de escritura en la aplicación activa (solo se poblaron por SQL histórico). Las alertas guardan factores e historial y las acciones sensibles se auditan.
 6. **El frontend y el backend tienen URLs separadas.** Vercel sirve la interfaz; Railway sirve API y BD mediante servicios independientes.
 7. **Las variables de entorno son parte critica del despliegue.** Un `JWT_SECRET` corto, un `CORS_ORIGIN` incorrecto, una `DATABASE_URL` ausente o un `NEXT_PUBLIC_API_URL` faltante impiden el funcionamiento completo.
 8. **Los numeros de datos demo son datos de semilla.** 660 estudiantes, 23 profesores y 22 secciones describen el escenario de demostracion, no necesariamente datos reales de produccion.
@@ -836,9 +843,24 @@ Aunque los comentarios advierten que debe usarse solo con una BD vacia o de prue
 
 La configuracion documentada deja `ML_SERVICE_URL=http://localhost:5000` en Railway, donde normalmente no existe un FastAPI dentro del mismo proceso. Por tanto, el resultado productivo puede ser heuristico aunque la interfaz muestre una prediccion valida.
 
+> *(Corrección 2026-10-20: el backend vigente **no tiene heurística ni respaldo**. Si `ML_SERVICE_URL`
+> no está configurado o el servicio ML falla, `POST /predict` responde `503` y no se genera ninguna
+> predicción ficticia — verificado en `backend/src/services/ml-client.ts` y `predict.controller.ts`.
+> La frase de arriba describe la percepción de una fase anterior del proyecto.)*
+
 **Recomendacion:** desplegar ML como servicio separado, configurar una URL privada o publica segura, añadir healthcheck dependiente de ML y mostrar claramente el origen del modelo en el dashboard.
 
 #### C. Trazabilidad de prediccion incompleta en persistencia
+
+> **Actualización (2026-10-20):** hallazgo parcialmente superado. Verificado en el código actual
+> (`backend/src/services/prediction-persistence.service.ts`), la predicción **sí** conserva en BD el JSON
+> `input_data` (columna persistida con las 7 variables + `modelVersion`/`datasetVersion`/`dataMode`/
+> `decisionThreshold`), el snapshot de las 7 variables en `prediccion_feature_snapshot` (7 filas por
+> predicción; evidencia: 251 predicciones → 1757 filas en `docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`),
+> `modelName` y `contractVersion`. **Siguen sin persistirse** `modeloId` y `periodoId` (quedan NULL), por
+> lo que el enlace formal de la predicción a `ml_modelo` y al periodo académico sigue sin existir, y las
+> tablas `ml_dataset`/`ml_entrenamiento`/`ml_modelo`/`ml_metrica` no se escriben desde la aplicación. El
+> texto original se conserva abajo como registro del hallazgo en su fecha.
 
 El modelo de datos tiene `modeloId`, `periodoId` y `PrediccionFeatureSnapshot`, pero `backend/src/controllers/predict.controller.ts` al crear `Prediction` solo persiste estudiante, score, niveles, probabilidades y factores. En ese flujo no se observa el guardado de:
 

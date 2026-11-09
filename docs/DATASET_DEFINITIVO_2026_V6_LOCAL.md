@@ -3,8 +3,7 @@
 > **DATOS 100% SINTÉTICOS — USO EXCLUSIVO PARA PRUEBAS TECNOLÓGICAS, QA Y DEMOSTRACIÓN.**
 > NO REPRESENTAN LA POBLACIÓN REAL DE LA I.E.P. BLENKIR NI CONSTITUYEN EVIDENCIA CIENTÍFICA.
 
-Este documento sustituye a `DATASET_DEFINITIVO_2026_V5_LOCAL.md` (referencia histórica).
-El lector y el importador ahora apuntan al Data Seed V6.
+El lector y el importador apuntan exclusivamente al Data Seed V6.
 
 ## Fuente inmutable
 
@@ -16,8 +15,8 @@ El lector y el importador ahora apuntan al Data Seed V6.
 - SHA256 lógico generado: `9eb428bd0612a1f6c19040219bea939429dcaaf410b376a0211d13418fb09c50`.
 - 25 hojas en el workbook; el importador lee 18 (`README`, `Resumen` + 16 con encabezado
   fijo) y las 7 `ML_V6_*` son documentación de referencia que no consume.
-- La carpeta debe contener **un solo XLSX activo**: el legado `..._AUDITADO_V5.xlsx` queda
-  excluido de la validación de unicidad. Cualquier otro XLSX ⇒ `ambiguous XLSX source directory`.
+- La carpeta debe contener **un solo XLSX**, que es la fuente V6 autorizada. Cualquier otro XLSX
+  ⇒ `ambiguous XLSX source directory`.
 - Sin fórmulas, encabezados exactos, sin duplicados, sin referencias inválidas.
 
 ## Validación sin base de datos
