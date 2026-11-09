@@ -14,7 +14,7 @@ Leyenda: **PASS** = verificado ejecutando; **NOTA** = limitación conocida docum
 
 | # | Componente | Estado | Evidencia |
 | --- | --- | --- | --- |
-| 1 | Data Seed V6 como fuente única del importador | **PASS** | `definitive-dataset-reader.mjs`: `SOURCE`…`_CIENTIFICO_SINTETICO_V6.xlsx`, `SOURCE_HASH=0bb7dd70…`, `DATASET_ID=BLENKIR_DATA_SEED_V6_250`, `DATASET_VERSION=6.0-synthetic-scientific-twin`; unicidad excluye `AUDITADO_V5` |
+| 1 | Data Seed V6 como fuente única del importador | **PASS** | `definitive-dataset-reader.mjs`: `SOURCE`…`_CIENTIFICO_SINTETICO_V6.xlsx`, `SOURCE_HASH=0bb7dd70…`, `DATASET_ID=BLENKIR_DATA_SEED_V6_250`, `DATASET_VERSION=6.0-synthetic-scientific-twin`; la carpeta solo admite un XLSX |
 | 2 | Validación del dataset sin BD | **PASS** | `db:dataset:validate` → `DEFINITIVE_DATASET_VALID=true`, `LOGICAL_SHA256=9eb428bd…`, conteos idénticos al import |
 | 3 | Reconstrucción de BD desde cero | **PASS** | `prisma migrate reset --force` (5 migraciones) → `db:seed:structure` (`PRESEED_ZERO_OK`, 0 usuarios) → `db:dataset:import --execute` → `DEFINITIVE_DATASET_IMPORTED=true` |
 | 4 | Conteos de población | **PASS** | SQL directo: 275 usuarios (1/24/250), 250 estudiantes (225/15/10), 250 matrículas, 3724 inscripciones, 10209 calificaciones, 34950 asistencias, 725 históricos, 4610 eventos LMS, correlativos 250/24/250 |

@@ -95,11 +95,10 @@ Verificaciones: `npm run type-check`, `npm run lint`, `npm run test` (unitarios,
 
 ## Datos de demostración
 
-La aplicación trabaja sobre una **población operativa de demostración** sembrada en la base de datos
-(275 usuarios: 1 director, 24 profesores y 250 estudiantes), generada de forma sintética. Es distinta del
-**dataset de entrenamiento del modelo** (225 estudiantes sintéticos) y de los **datos institucionales
-reales**, que aún no se han capturado. Al presentar resultados hay que distinguir siempre estas tres
-poblaciones: un dato sintético **no** demuestra la prevalencia real del riesgo en la institución.
+La única fuente operativa de demostración del proyecto es el **Data Seed V6**: 275 cuentas (1 director,
+24 docentes y 250 estudiantes), generadas sintéticamente. El experimento de ML usa un dataset V6 separado
+de 225 estudiantes con dos observaciones por estudiante (450 registros). Ninguno de los dos conjuntos
+contiene datos institucionales reales ni demuestra la prevalencia real del riesgo en la institución.
 
 Los scripts de población antigua (`db:seed:demo`, `db:reset:full`, `db:seed:prod`, entre otros) están
 **deshabilitados** y responden con error `LEGACY`; sobre producción no se ejecutan semillas ni
@@ -128,5 +127,6 @@ capturas y trazabilidad — se mantiene en [`docs/`](docs/):
 | [docs/BLENKIR_LOGIN_ACCOUNTS_2026.md](docs/BLENKIR_LOGIN_ACCOUNTS_2026.md) | Cuentas de acceso (sin contraseñas) |
 | [plan-pruebas/README.md](plan-pruebas/README.md) | Plan y matriz de pruebas |
 
-Los documentos históricos (`legacy/`, `AUDITORIA_FINAL_PROYECTO.md` y los cierres de V5) están marcados
-como **HISTÓRICOS / SUPERADOS**: describen etapas anteriores, no el estado vigente.
+Los documentos históricos (`legacy/` y `AUDITORIA_FINAL_PROYECTO.md`) están marcados como
+**HISTÓRICOS / SUPERADOS**: describen etapas anteriores, no el estado vigente. El dataset vigente y único
+es V6.

@@ -29,7 +29,7 @@ más rama `audit/full-functional-review` (solo documentación hasta ahora).
 1. Barrido visual interactivo por rol × viewport — requiere navegador con sesión (este entorno
    no tiene browser conectado). Hacerlo antes de la exposición, no del seed.
    **Estado 2026-09-24:** sustituido provisionalmente por un **smoke por API** contra producción
-   (67/67: 3 logins V5, 42 endpoints permitidos y 15 denegados, 0 predicciones fabricadas).
+   (67/67: 3 logins de la población anterior, 42 endpoints permitidos y 15 denegados, 0 predicciones fabricadas; evidencia histórica).
    El barrido visual en navegador real sigue **PENDIENTE** (navegador de escritorio desconectado;
    no se ejecutó porque las contraseñas por rol no estaban en variables de entorno locales).
 2. Servicio ML en producción — requiere dataset autorizado; PROHIBIDO entrenar con sintéticos.

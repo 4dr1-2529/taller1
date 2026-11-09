@@ -36,7 +36,7 @@
 
 ## Pruebas manuales por rol
 
-## Población operativa/demo (semilla importada originalmente como V5)
+## Población operativa/demo (Data Seed V6)
 
 Sistema técnico vigente: **BLENKIR V6**. Población: 1 director · 24 profesores · 250 estudiantes.
 
