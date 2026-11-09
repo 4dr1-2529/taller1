@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.resolve(__dirname, "../../docs/cuentas-demo");
 const API_URL = (process.env.API_URL ?? "https://backend-production-fcb1.up.railway.app/api/v1").replace(/\/$/, "");
 
-// En el Data Seed V5 cada rol tiene su propia contraseña de entorno: no existe
+// En el Data Seed V6 cada rol tiene su propia contraseña de entorno: no existe
 // una única clave compartida, por lo que se resuelve por rol en cada intento.
 const PASSWORD_BY_ROLE = {
   director: process.env.DIRECTOR_INITIAL_PASSWORD?.trim(),

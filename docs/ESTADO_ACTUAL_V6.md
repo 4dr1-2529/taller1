@@ -92,7 +92,7 @@ Documentación canónica del modelo: `machine-learning/README.md`, `docs/ml/PIPE
 
 | Población | Qué es | Estado |
 |-----------|--------|--------|
-| **Operativa / demo** | **Población operativa/demo persistida** — única que ve el panel. Semilla importada originalmente como **V5**, ejecutándose sobre el sistema técnico vigente **BLENKIR V6**. Documentada tras la importación definitiva: 275 usuarios (1 director · 24 profesores · 250 estudiantes) | Documentada; **no se consultó la BD productiva** en esta auditoría → recuento no re-verificado. **No** es «dato real institucional» |
+| **Operativa / demo** | Data Seed V6 define la población que consume la aplicación: 275 cuentas (1 director · 24 profesores · 250 estudiantes) | La fuente local está verificada; **no se consultó la BD productiva** en esta auditoría, por lo que no se afirma que esté sincronizada. **No** es «dato real institucional» |
 | **Dataset V6 de ML** | 225 estudiantes / 450 registros **científico-sintéticos** (`dataMode=synthetic_scientific`) | Vigente; base del modelo `BLENKIR_V6_BIN_20260924` |
 | **Datos reales futuros** | Registros que se obtendrán con estudiantes de la institución previa autorización | No existen todavía; el software no los genera ni los certifica |
 
@@ -270,7 +270,7 @@ Evidencia: `docs/evidencias/seguridad/barrido-secretos-20260926.json`,
 
 **Históricos / superados (conservados sin modificar sus resultados):**
 
-- `docs/CIERRE_INTEGRAL_BLENKIR_V5_2026.md`, `docs/DATASET_DEFINITIVO_2026_V5_LOCAL.md`,
+- Informes y evidencias de etapas anteriores, conservados solo en sus ubicaciones históricas.
   `docs/PENDIENTES_PRE_DATA_SEED_200.md`, `docs/MAIN_RELEASE_READINESS_2026.md`,
   `docs/QA_FINAL_BLENKIR_2026.md`, `plan-pruebas/REPORTE-FINAL-PRUEBAS.md`,
   `plan-pruebas/evidencias-finales/` y `docs/evidencias_finales/`.
@@ -289,7 +289,7 @@ borrado**.
 ## 11. Barrido de coherencia de población (2026‑09‑27)
 
 Se barrió el repositorio completo en busca de la población antigua
-**660 / 23 profesores / V5 / 9‑features / 51 tablas / 14‑10‑6** y de flujos obsoletos.
+**660 / 23 profesores / 9‑features / 51 tablas / 14‑10‑6** y de flujos obsoletos.
 Ningún reemplazo global: cada coincidencia restante está clasificada abajo.
 
 ### 11.1 Corregido en esta pasada (era CURRENT incorrecto)
@@ -298,18 +298,18 @@ Ningún reemplazo global: cada coincidencia restante está clasificada abajo.
 |---------|-----------|
 | `docs/arquitectura/arquitectura-frontend.md` | Secciones por rol 14/10/6 → **20/15/12** (fuente `frontend/src/data/role-sections.ts`) + nota de KPIs no hardcodeados |
 | `docs/machine-learning.md` | Reescrito como **resumen V6** (2026‑v3, Stacking, target binario, 450 snapshots / 225 estudiantes, umbrales 0.41/0.65); tabla de afirmaciones SUPERADAS |
-| `README.md`, `docs/ESTADO_ACTUAL_V6.md` | «datos institucionales / población real» → **población operativa/demo persistida** (250/24/1 = 275), semilla importada como V5 sobre BLENKIR V6 |
-| `docs/pruebas.md`, `docs/pruebas-funcionales.md`, `docs/postman.md`, `docs/cuentas-demo/README.md` | «Data Seed V5 vigente» → población operativa (procedencia V5); 58 tests → **81**; workflow local seguro (sin `db:seed:demo`/`db:push` en producción); tabla de resultados 2026‑09‑27 |
+| `README.md`, `docs/ESTADO_ACTUAL_V6.md` | Población operativa definida por Data Seed V6 (250 estudiantes, 24 docentes y 1 director); no confundir con el dataset ML V6 de 225 estudiantes / 450 observaciones |
+| `docs/pruebas.md`, `docs/pruebas-funcionales.md`, `docs/postman.md`, `docs/cuentas-demo/README.md` | Data Seed V6 como fuente operativa definida; workflow local seguro (sin `db:seed:demo`/`db:push` en producción) |
 | `database/mysql/README.md` | Workflow seguro de BD local/aislada; `db:seed:demo`/`db:reset:*` marcados deshabilitados; prohibido `db:push` en producción |
 | `database/blenkir-v3/README.md` | Cabecera **LEGACY / NO EJECUTAR PARA BLENKIR V6**; retirada la recomendación de `db:reset:full` y el «seed vigente crea 9 estudiantes»; 660 y 51 tablas conservados **como historia** |
 | `backend/prisma/seed.ts` | **Solo comentarios/logs**: «(51 tablas)» → «6 grados · 22 secciones · 16 cursos · RBAC · 7 ML features». Lógica intacta |
 | `plan-pruebas/pruebas-caja-negra/login.md` | admin 14 / docente 10 / estudiante 6 → **20 / 15 / 12** |
 | `plan-pruebas/pruebas-caja-negra/profesores.md` | `GET /teachers` «23 activos seed» → **24 activos de la población operativa** |
 | `plan-pruebas/pruebas-unitarias/frontend.md` | Tabla `ROLE_SECTIONS` → **20/15/12** y referencia a `role-sections.ts` |
-| `plan-pruebas/plan-general/{recursos,plan-pruebas,ambiente-pruebas}.md` | «Data Seed definitivo V5» → población operativa (procedencia V5); `db:push` acotado a BD local |
+| `plan-pruebas/plan-general/{recursos,plan-pruebas,ambiente-pruebas}.md` | Población operativa alineada al Data Seed V6 (250 estudiantes, 24 docentes y 1 director); `db:push` acotado a BD local |
 | `estructura de proyecto/ESTRUCTURA_COMPLETA.md` | «52 modelos / 52 tablas» → **57 modelos Prisma (54 + 3 `@@ignore`)**, verificado con `npm run db:count-models`; hallazgo D actualizado |
 | `AUDITORIA_FINAL_PROYECTO.md` | Banner **HISTÓRICO** que cubre todo el documento; «vector vigente 9 variables» → vector de esa fase (V6: **7 variables**) |
-| `docs/INDICE-ISO.md` | `cuentas-demo` unificado: población operativa actual 1+24+250, procedencia V5, sistema BLENKIR V6 |
+| `docs/INDICE-ISO.md` | `cuentas-demo` unificado: población definida por Data Seed V6 (1+24+250) |
 | `docs/API.md` | Título «API Blenkir 2026-v2» → **API BLENKIR 2026** + nota: «v2» es el release `2.0.0`, no el dataset ML |
 | `estado-del-arte-software/README.md`, `estado-del-arte-software/03-machine-learning/estado-del-arte.md` | Banner **HISTÓRICO / PARCIALMENTE SUPERADO** (literatura DOI intacta); «51+ modelos» → **57 modelos Prisma**; 10 variables / multiclase / `generate_synthetic_data()` / selección por F1 ponderado marcados como pipeline previo a V6 |
 | `estructura de proyecto/ESTRUCTURA_COMPLETA.md` (§7.2/§7.3), `python-ia/README.md` (índice), `python-ia/01-arquitectura.md` | Payload «diez variables» → **7 variables V6** (lista actualizada + nota de las 5 retiradas); «selección por F1» → F1 de deserción sobre validation; «heurística si no hay artefacto» → **error honesto**; índice «10 variables» → 7 |
@@ -322,7 +322,7 @@ Ningún reemplazo global: cada coincidencia restante está clasificada abajo.
 | `scripts/evidence/generate-architecture-diagrams.py` | ✅ Corregido: 57 modelos Prisma, dataset CSV V6 + `features.py`, pipelines RF/XGB/Stacking con target binario (300 árboles/estimators, meta‑RF 150, `cv=3`), ISO 29119 con **86 casos (80/6/0)** y gráfico ISO 25010 por **estados** (VERIFICADO/PARCIAL/BLOQUEADO/PLANIFICADO desde `docs/iso-25010/calidad-software.md`) — sin porcentajes inventados. `py_compile` ✅; diagramas regenerados |
 | `scripts/evidence/generate-ml-charts.py` | ⛔ **LEGACY / DESHABILITADO**: reescrito como stub que termina con `exit 1` sin escribir nada (antes intentaba `generate_synthetic_data(2500)` y target multiclase; además no compilaba). No lo invoca `evidence:generate` |
 | `python-ia/scripts/generate_diagrams.py` | ⛔ **LEGACY / NO USAR PARA EVIDENCIA V6**: guard al inicio → `exit 1` antes de importar dependencias; imágenes conservadas como históricas |
-| `scripts/evidence/config.mjs` | ✅ Comentarios «Data Seed V5» → «población operativa actual» (lógica de credenciales intacta) |
+| `scripts/evidence/config.mjs` | ✅ Comentarios alineados a la población operativa definida por Data Seed V6 (lógica de credenciales intacta) |
 
 ### 11.3 Coincidencias restantes y clasificación (barrido final)
 
@@ -338,8 +338,7 @@ Ningún reemplazo global: cada coincidencia restante está clasificada abajo.
 | `10 variables`, `diez variables`, multiclase como target, `generate_synthetic_data()` como código actual | `estado-del-arte-software/**` (README + cap. 03/04), `estructura de proyecto/ESTRUCTURA_COMPLETA.md` (§7.2 corregida a 7) | **HISTORICAL** (banner añadido) / **corregido** | La literatura con DOI se conserva; las referencias al código anterior quedan bajo el banner HISTÓRICO y §7.2 lista hoy las 7 variables V6 |
 | `51 tablas` | `database/blenkir-v3/*`, `legacy/documentation/CHANGELOG.md` | **HISTORICAL** | Esquema SQL de tesis; vigente = 57 modelos Prisma |
 | `52 modelos` | `legacy/documentation/*` | **LEGACY** | Recuento de una etapa anterior; vigente = 57 |
-| `V5` | `docs/cuentas-demo/README.md`, `docs/pruebas*.md`, `docs/postman.md`, `plan-pruebas/*`, `README.md`, `docs/ESTADO_ACTUAL_V6.md` | **CURRENT con procedencia explícita** | Siempre como «semilla importada originalmente como V5 sobre el sistema vigente BLENKIR V6» |
-| `V5` | `docs/CIERRE_INTEGRAL_BLENKIR_V5_2026.md`, `docs/DATASET_DEFINITIVO_2026_V5_LOCAL.md` | **HISTORICAL** | Documentos de cierre de esa etapa (listados en §10) |
+| Dataset vigente | README, documentación del dataset, pruebas y configuración | **CURRENT: V6 únicamente** | Población operativa 1 director + 24 docentes + 250 estudiantes; experimento ML independiente con 225 estudiantes / 450 observaciones |
 | `db:seed:demo`, `db:reset:full`, `db:push` | `README.md`, `docs/DEPLOY.md`, `docs/pruebas*.md`, `database/mysql/README.md`, `plan-pruebas/**`, `docs/INFORME_FINAL_V6.md`, `docs/PRESENTACION_V6_ESTADO.md`, `docs/ml/DATA_SEED_V6_METODOLOGIA.md` | **SUPERSEDED (solo como «deshabilitado/prohibido»)** | Todas las apariciones documentan que el comando aborta (`legacy-population-disabled.mjs`) o que está prohibido en producción |
 | `db:seed:demo`, `db:reset:*` | `legacy/documentation/*`, `estado-del-arte-software/*` | **LEGACY / HISTORICAL** | Descripción de la etapa en que existían (el artículo indica además que hoy están deshabilitados) |
 | `generate_synthetic_data`, `2500` | `python-ia/*.md`, `python-ia/scripts/generate_diagrams.py`, `legacy/ml-v1/*`, `docs/evidencias*/ia/*`, `plan-pruebas/**/metricas-ml.json` | **LEGACY / HISTORICAL** | Pipeline previo; ambos scripts generadores ahora terminan con `exit 1` |

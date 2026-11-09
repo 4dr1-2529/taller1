@@ -1,12 +1,9 @@
-# BLENKIR — Cuentas de demo (Dataset Definitivo 2026 V5)
+# BLENKIR — Cuentas de demo (Data Seed V6)
 
-> **ESTADO: VIGENTE — población operativa.** No es un documento superado y tampoco es "ciencia":
-> lista las cuentas reales con las que trabaja la aplicación (la única población visible en el panel).
-> **No confundir** con el dataset científico-sintético V6 de ML (`BLENKIR_V6_SYNTH_20260924`) ni con los
-> datos reales futuros autorizados. El "V5" del título identifica la versión del *seed*, no la del sistema.
-> Este listado proviene de la importación definitiva documentada en
-> [CIERRE_INTEGRAL_BLENKIR_V5_2026.md](CIERRE_INTEGRAL_BLENKIR_V5_2026.md) (2026-09-24); la auditoría V6
-> **no consultó** la base de datos productiva, por lo que el recuento no se re-verificó hoy.
+> **ESTADO: REFERENCIA DEL DATA SEED V6.** Lista las 275 cuentas sintéticas definidas por la fuente
+> operativa V6: 1 director, 24 docentes y 250 estudiantes. No son cuentas de una población institucional
+> real ni se debe inferir que la base productiva contiene actualmente estos datos sin una consulta vigente.
+> El dataset científico-sintético de ML es independiente: 225 estudiantes y 450 observaciones.
 
 > **Este archivo no contiene contraseñas.** Cada cuenta usa la variable de entorno de Railway correspondiente a su rol:
 >
@@ -16,7 +13,7 @@
 >
 > Los valores viven en Railway (project `TALLER1`, environment `production`, service `backend`) y no se reproducen aquí.
 
-Generado desde la base de producción tras la importación definitiva. Usuarios totales: **275**.
+Derivado de la fuente operativa V6. Usuarios definidos: **275**.
 
 ## Director
 

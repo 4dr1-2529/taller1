@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const PP = join(ROOT, "plan-pruebas");
 
-// Data Seed V5: cada rol usa su propia variable de entorno; nunca un valor literal.
+// Data Seed V6: cada rol usa su propia variable de entorno; nunca un valor literal.
 const ENV_BY_ROLE = {
   admin: "DIRECTOR_INITIAL_PASSWORD",
   docente: "TEACHER_INITIAL_PASSWORD",
