@@ -2,7 +2,7 @@
  * Pruebas smoke del API — requiere backend en :4000 (o API_URL).
  * Ejecutar: node scripts/smoke-tests.mjs
  *
- * Data Seed V5: cada rol usa su propia variable de entorno.
+ * Data Seed V6: cada rol usa su propia variable de entorno.
  *   director  → DIRECTOR_INITIAL_PASSWORD
  *   docente   → TEACHER_INITIAL_PASSWORD
  *   estudiante→ STUDENT_INITIAL_PASSWORD
