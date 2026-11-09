@@ -8,7 +8,7 @@ TEACHER_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
 STUDENT_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
 ```
 
-## Data Seed V5 (vigente en producción)
+## Población operativa/demo actual
 
 | Rol | Cantidad |
 |-----|----------|
@@ -17,11 +17,17 @@ STUDENT_INITIAL_PASSWORD=<CONFIGURAR_EN_ENTORNO>
 | Estudiantes | 250 |
 | **Total** | **275** |
 
+**Fuente operativa vigente:** **Data Seed V6**.
+
+> Esta población es **operativa/demo persistida**: no es un dataset de datos reales
+> institucionales (aún no disponibles). Tampoco confundir con el dataset ML V6 de 225 estudiantes
+> / 450 snapshots, que es científico-sintético y solo entrena al modelo.
+
 Listado completo (códigos, emails, grado/sección y estado de matrícula):
 [BLENKIR_LOGIN_ACCOUNTS_2026.md](../BLENKIR_LOGIN_ACCOUNTS_2026.md).
 
 > **Deprecated:** `DEMO_PASSWORD` / `INSTITUTION_DEFAULT_PASSWORD` corresponden a la población
-> demo anterior, ya reemplazada por el Data Seed V5. Los scripts antiguos de exportación apuntaban
+> demo anterior, ya reemplazada por el Data Seed V6. Los scripts antiguos de exportación apuntaban
 > al dominio obsoleto `taller1-production.up.railway.app` y ya no se usan.
 
 ## Exportar desde producción

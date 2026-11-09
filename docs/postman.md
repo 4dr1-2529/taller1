@@ -22,7 +22,9 @@
 5. ALERTAS → listar y actualizar estado.
 6. ML → health y predict.
 
-## Cuentas (Data Seed V5)
+## Cuentas (población operativa/demo — Data Seed V6)
+
+La población operativa V6 define 1 director · 24 profesores · 250 estudiantes = 275 cuentas.
 
 Las contraseñas **no se publican**: cada rol usa su variable de entorno en Railway
 (`DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`, `STUDENT_INITIAL_PASSWORD`).
