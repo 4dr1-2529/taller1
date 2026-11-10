@@ -1,142 +1,228 @@
-# BLENKIR · Panel de riesgo de deserción estudiantil
+# BLENKIR — Sistema de alerta temprana de riesgo de deserción
 
-BLENKIR es un sistema web de la tesis que **predice el riesgo de deserción estudiantil** combinando datos
-académicos (notas, asistencia, matrículas) y actividad observada en el LMS. Expone tres roles —
-**Director**, **Profesor** y **Estudiante** — cada uno con su propio panel.
+BLENKIR es un sistema web de tesis para explorar señales académicas y actividad observada en un LMS, y
+presentar alertas de riesgo a directivos y docentes. Incluye paneles para **Director**, **Profesor** y
+**Estudiante**, una API y un servicio experimental de Machine Learning (ML).
 
-## Problema y propósito
+> **Alcance científico:** la población operativa V6 y el dataset experimental V6 son sintéticos. El
+> modelo demuestra el funcionamiento técnico del flujo; no representa evidencia clínica, causal ni
+> institucional sobre estudiantes reales. Sus métricas no deben describirse como prevalencia real ni como
+> prueba de eficacia en una institución.
 
-La deserción estudiantil suele detectarse tarde, cuando el daño ya es difícil de revertir. BLENKIR busca
-**señalar tempranamente** a los estudiantes con mayor riesgo para que directivos y docentes puedan actuar
-a tiempo, a partir de indicadores que ya se registran en el sistema académico y el LMS.
+## Navegación
 
-> **Modelo experimental con datos científico-sintéticos.** El modelo vigente (V6) está entrenado con datos
-> sintéticos (`synthetic_scientific`) y aún **no** representa evidencia científica obtenida con estudiantes
-> reales de la institución. Los resultados no deben presentarse como prevalencia real del riesgo.
+- [Arquitectura y responsabilidades](#arquitectura-y-responsabilidades)
+- [Datos V6: fuentes, ubicaciones y conteos](#datos-v6-fuentes-ubicaciones-y-conteos)
+- [Modelo y resultados experimentales](#modelo-y-resultados-experimentales)
+- [Estructura del repositorio](#estructura-del-repositorio)
+- [Preparar y ejecutar localmente](#preparar-y-ejecutar-localmente)
+- [Pruebas, cobertura y estado auditado](#pruebas-cobertura-y-estado-auditado)
+- [Documentación para elaborar el informe](#documentación-para-elaborar-el-informe)
 
-## Enlaces oficiales
+## Enlaces del proyecto
 
 | Recurso | Enlace |
-|---------|--------|
-| Repositorio | https://github.com/4dr1-2529/taller1 |
-| Frontend (Vercel) | https://taller1-frontend.vercel.app |
-| API (Railway) | https://backend-production-fcb1.up.railway.app/api/v1 |
-| Servicio ML (Railway) | https://ml-production-2a96.up.railway.app |
-| Calidad de código (SonarCloud) | https://sonarcloud.io/dashboard?id=4dr1-2529_taller1 |
+|---|---|
+| Repositorio | [4dr1-2529/taller1](https://github.com/4dr1-2529/taller1) |
+| Frontend configurado | [Vercel](https://taller1-frontend.vercel.app) |
+| API configurada | [Railway](https://backend-production-fcb1.up.railway.app/api/v1) |
+| Servicio ML configurado | [Railway](https://ml-production-2a96.up.railway.app) |
+| Tablero de calidad | [SonarCloud](https://sonarcloud.io/dashboard?id=4dr1-2529_taller1) |
 
-## Stack tecnológico
+Los enlaces identifican los recursos configurados; la última auditoría descrita en este README fue local y
+no certifica que los despliegues o la base de datos remota sigan disponibles.
 
-| Capa | Tecnología |
-|------|------------|
-| Frontend | Next.js 16 · React 19 · TypeScript |
-| API | Express · TypeScript · JWT con refresh token |
-| Datos | Prisma ORM · MySQL 8 |
-| Modelo ML | FastAPI · Python · scikit-learn + XGBoost |
+## Arquitectura y responsabilidades
 
-## Arquitectura
-
-```
-Next.js (Vercel) → Express (Railway) → Prisma / MySQL
-                          └────→ FastAPI (Railway) → Modelo Stacking V6
-```
-
-**El frontend nunca llama al servicio ML directamente**: toda predicción pasa por la API, que aplica
-autenticación, autorización por rol y validación antes de consultar el modelo. Si el modelo no está
-disponible, la API responde `503` sin generar riesgos ficticios.
-
-### Modelo ML vigente (V6)
-
-- Algoritmo: **Stacking** (meta-estimador Random Forest sobre Random Forest + HistGradientBoosting).
-- 7 variables predictoras: `promedio_general`, `cursos_desaprobados`, `asistencia_general`,
-  `frecuencia_acceso_lms`, `tiempo_interaccion_lms`, `actividades_realizadas`, `recursos_consultados`.
-- Umbrales operativos: bajo `p < 0.41`, medio `0.41 ≤ p < 0.65`, alto `p ≥ 0.65`.
-- El modelo se sirve solo si coincide exactamente el contrato de 7 variables; no se imputan valores faltantes.
-
-### Roles
-
-| Rol visible | Rol interno | Secciones del menú |
-|-------------|-------------|--------------------|
-| Director | `admin` | 20 |
-| Profesor | `docente` | 15 |
-| Estudiante | `estudiante` | 12 |
-
-La autorización se verifica siempre en el backend; no existe un cuarto rol.
-
-## Estructura del repositorio
-
-```
-backend/            API Express + esquema Prisma y migraciones (MySQL)
-frontend/           Aplicación Next.js (SPA con vistas por rol)
-machine-learning/   Pipeline FastAPI: entrenamiento, inferencia y tests del modelo
-packages/shared/    Tipos y utilidades compartidas
-docs/               Documentación técnica del sistema
-plan-pruebas/       Plan y evidencias de pruebas
-database/           Esquemas y utilidades SQL
-legacy/             Material histórico, fuera del sistema vigente
+```text
+Navegador
+   │ HTTPS / API autenticada
+   ▼
+Frontend Next.js + React + TypeScript (:3029)
+   │ REST /api/v1
+   ▼
+Backend Express + TypeScript (:4000) ───────► Prisma ───────► MySQL 8
+   │ cliente ML autenticado/validado
+   ▼
+Servicio FastAPI + Python (:5000) ─────────► Stacking V6 experimental
 ```
 
-## Desarrollo local
+El **frontend** presenta dashboards y vistas según el rol, recopila acciones del usuario y consume la API;
+no accede directamente a MySQL ni llama directamente al servicio ML. La **API** centraliza autenticación,
+autorización, validación, reglas de negocio, persistencia y trazabilidad. El **servicio ML** valida el
+contrato de siete variables y devuelve la predicción y metadatos del modelo. Si el modelo compatible no
+está disponible, el sistema informa el error (503); no crea un riesgo ficticio.
 
-**Requisitos:** Node.js 20+, Python 3.9+ con pip, MySQL 8 (o `docker compose up mysql`).
+| Rol | Alcance principal |
+|---|---|
+| Director (`admin`) | Supervisión y gestión global de la institución, usuarios, actividad, predicciones y alertas. |
+| Profesor (`docente`) | Trabajo con estudiantes y cursos asignados, notas, asistencia, actividades y alertas de su alcance. |
+| Estudiante (`estudiante`) | Consulta de información y actividad propias, cursos, asistencia, notas y predicciones propias. |
 
-```bash
-npm ci
-npm run build --workspace=@tesis/shared
-npm run db:generate
-pip install -r machine-learning/requirements.txt
-```
+La autorización se aplica en el backend además de ocultar/mostrar secciones en la interfaz. El código define
+20 secciones únicas: 20 para director, 15 para profesor y 12 para estudiante. Las bajas normales son lógicas;
+la matrícula y el registro académico aplican reglas transaccionales del año lectivo 2026.
 
-1. Copie `.env.example` y configure las variables (nunca suba secretos a Git).
-2. Levante los servicios con `npm run dev` (o por separado: `npm run dev:web` → :3029,
-   `npm run dev:api` → :4000, `npm run dev:ml` → :5000).
+### Tecnologías
 
-Verificaciones: `npm run type-check`, `npm run lint`, `npm run test` (unitarios, backend, frontend y ML),
-`npm run coverage` (reportes por backend, frontend y ML), `npm run build`.
+| Área | Tecnologías y responsabilidad |
+|---|---|
+| Web | Next.js 16, React 19, TypeScript; vistas, formularios, dashboards y experiencia por rol. |
+| API | Node.js 20+, Express, TypeScript, JWT/refresh tokens, validación y servicios de dominio. |
+| Persistencia | Prisma ORM y MySQL 8; esquema, migraciones, catálogos y datos de operación. |
+| ML | Python, FastAPI, scikit-learn, XGBoost/HistGradientBoosting; entrenamiento, evaluación e inferencia. |
+| Código compartido | `packages/shared`; tipos/utilidades usados por los workspaces web y API. |
 
-## Dataset vigente: V6
+## Datos V6: fuentes, ubicaciones y conteos
 
-La aplicación usa exclusivamente el **Data Seed V6**: 275 cuentas sintéticas (1 director, 24 docentes y
-250 estudiantes). El experimento de ML usa un dataset V6 independiente, con 225 estudiantes y 450
-observaciones. No son datos institucionales reales y no demuestran la prevalencia del riesgo en la
-institución. El seed estructural de Prisma prepara roles y catálogos; la importación de datos V6 es un
-procedimiento separado.
+Hay **dos fuentes V6 distintas**. Para preparar el informe, identificá cuál estás describiendo y citá el
+archivo que corresponde; sus filas no son intercambiables.
 
-Para comprobar los archivos fuente sin conectarse a una base de datos:
+| Fuente | Archivo vigente | Qué representa | Conteo/identificador |
+|---|---|---|---|
+| Data Seed V6 operativo | [`backend/prisma/data/definitive-2026/BLENKIR_DATASET_DEFINITIVO_2026_CIENTIFICO_SINTETICO_V6.xlsx`](backend/prisma/data/definitive-2026/BLENKIR_DATASET_DEFINITIVO_2026_CIENTIFICO_SINTETICO_V6.xlsx) | Población sintética que se puede importar en una BD local para probar la aplicación: usuarios, matrícula, notas, asistencia, cursos y eventos LMS. | 275 cuentas: 250 estudiantes, 24 docentes y 1 director. `BLENKIR_DATA_SEED_V6_250`, versión `6.0-synthetic-scientific-twin`. SHA-256 del archivo: `0bb7dd701ddc1dd9d14386d7b908ba7238e733e67b522e649da2cab74fcd0a0c`. |
+| Dataset experimental ML V6 | [`machine-learning/data/synthetic-scientific-v6/BLENKIR_ML_DATASET_V6_SYNTHETIC.csv`](machine-learning/data/synthetic-scientific-v6/BLENKIR_ML_DATASET_V6_SYNTHETIC.csv) | Observaciones temporales y etiqueta objetivo usadas en los splits de entrenamiento, validación y holdout. | 450 filas de 225 estudiantes, dos cortes por estudiante; `BLENKIR_V6_SYNTH_20260924`. |
+| Artefactos y métricas del experimento | [`machine-learning/artifacts/synthetic/`](machine-learning/artifacts/synthetic/) | Modelo serializado, metadatos, métricas, comparación de modelos y previsualización de predicciones del flujo de ML. | Modelo servido: Stacking; `BLENKIR_V6_BIN_20260924`; contrato `2026-v3`. |
+
+El libro XLSX contiene hojas de referencia de ML, pero **el CSV anterior es la fuente de entrenamiento**.
+El importador operativo lee las hojas de datos del XLSX y sus catálogos; no importa las hojas `ML_V6_*` como
+población. La documentación del importador incluye inventario y huella SHA-256. Para la población persistida
+en una base, consultá el estado de esa base: el conteo de archivos fuente no demuestra que producción esté
+sincronizada.
+
+La fuente operativa se valida y se puede simular en memoria, sin conexión a MySQL ni escrituras:
 
 ```bash
 npm run db:dataset:validate --workspace=backend
 npm run db:dataset:dry-run --workspace=backend
 ```
 
-La importación exige configuración explícita; no debe ejecutarse contra producción sin el procedimiento
-aprobado. El estado y los límites de la verificación están en
-[`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md).
+Se espera `DEFINITIVE_DATASET_VALID=true`, identificador/versión V6 y los conteos descritos en
+[`docs/DATASET_DEFINITIVO_2026_V6_LOCAL.md`](docs/DATASET_DEFINITIVO_2026_V6_LOCAL.md). La importación con
+`--execute` requiere una BD local preparada, variables y guardas explícitas; **no ejecutar contra producción**
+como parte de una verificación ordinaria. No hay seed automático de población al iniciar o desplegar.
 
-## Estado verificado localmente (2026-11-10)
+## Modelo y resultados experimentales
 
-- La suite local pasó: backend 603/603, frontend 558/558 y ML 104/104 pruebas.
-- También pasaron `npm run type-check`, `npm run lint` y `npm run build`.
-- En SonarQube local, la cobertura general medida fue **90.0%** (líneas 93.6%, condiciones 77.3%,
-  duplicación 0.7%). El Quality Gate está **OK para código nuevo**; la cobertura global todavía no es 100%.
-- El modelo es **experimental** (`experimental: true`), entrenado solo con datos sintéticos y **sin
-  validación científica con estudiantes reales**: es la limitación principal del proyecto.
-- La verificación anterior fue local: no confirma el estado actual de los despliegues ni la sincronización
-  de la base de datos productiva. No se han ejecutado pruebas de carga o pentest.
+La versión activa es un **Stacking**: meta-estimador Random Forest con Random Forest y
+HistGradientBoosting como estimadores base (XGBoost se evalúa como candidato cuando el entorno es compatible).
+Usa, en orden fijo, siete variables: `promedio_general`, `cursos_desaprobados`, `asistencia_general`,
+`frecuencia_acceso_lms`, `tiempo_interaccion_lms`, `actividades_realizadas` y `recursos_consultados`.
 
-## Documentación técnica
+La selección de modelo/umbral se realiza con validation; el holdout se evalúa una sola vez y no se utiliza
+para seleccionar. Resultados del artefacto V6 documentado:
 
-La documentación extensa — arquitectura, contratos de API, metodología e indicadores del modelo, pruebas,
-capturas y trazabilidad — se mantiene en [`docs/`](docs/):
+| Evaluación | Modelo seleccionado/servido | Accuracy | Precision | Recall | F1 | ROC-AUC | PR-AUC | Brier |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Validation (68 observaciones) | Stacking; umbral 0.41 | 0.5000 | 0.2826 | 0.9286 | 0.4333 | 0.5913 | 0.2486 | 0.2378 |
+| Holdout final (66 observaciones) | Stacking; umbral 0.41 | 0.6364 | 0.3214 | 0.6429 | 0.4286 | 0.6277 | 0.3081 | 0.2011 |
 
-| Documento | Contenido |
-|-----------|-----------|
-| [docs/ESTADO_ACTUAL_V6.md](docs/ESTADO_ACTUAL_V6.md) | Estado verificado del sistema |
-| [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Arquitectura canónica y permisos |
-| [docs/API.md](docs/API.md) | Contratos de la API |
-| [docs/machine-learning.md](docs/machine-learning.md) | Pipeline del modelo |
-| [docs/BLENKIR_LOGIN_ACCOUNTS_2026.md](docs/BLENKIR_LOGIN_ACCOUNTS_2026.md) | Cuentas de acceso (sin contraseñas) |
-| [plan-pruebas/README.md](plan-pruebas/README.md) | Plan y matriz de pruebas |
+Bandas operativas: **bajo** `p < 0.41`, **medio** `0.41 ≤ p < 0.65`, **alto** `p ≥ 0.65`. En holdout,
+Random Forest obtuvo F1 0.4898, superior al F1 0.4286 del Stacking; no se cambió el ganador usando el
+holdout porque eso contaminaría la selección. Con 66 observaciones (14 positivas), la comparación no es
+concluyente estadísticamente. La precisión baja y falsos positivos son limitaciones relevantes; umbrales y
+factores son operativos/experimentales, no validados científicamente. Los “factores” son señales descriptivas,
+no SHAP ni causalidad.
 
-Los documentos históricos (`legacy/` y `AUDITORIA_FINAL_PROYECTO.md`) están marcados como
-**HISTÓRICOS / SUPERADOS**: describen etapas anteriores, no el estado vigente. El dataset vigente y único
-es V6.
+Resultados completos y procedencia en [`docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`](docs/ml/RESULTADOS_EXPERIMENTALES_V6.md);
+metodología de generación en [`docs/ml/DATA_SEED_V6_METODOLOGIA.md`](docs/ml/DATA_SEED_V6_METODOLOGIA.md);
+contrato y pipeline en [`docs/ml/PIPELINE_ML_V6.md`](docs/ml/PIPELINE_ML_V6.md). La fuente reproducible de
+las métricas tabulares es `machine-learning/artifacts/synthetic/metrics.json`.
+
+## Estructura del repositorio
+
+```text
+backend/
+  prisma/                 Esquema, migraciones, seed estructural y XLSX Data Seed V6
+  scripts/                Validador, dry-run/importador y utilidades de la API/ML
+  src/                    Rutas, controladores, servicios, middleware y validadores
+  tests/                  Pruebas backend
+frontend/
+  src/app/                Rutas y composición Next.js
+  src/components/         Shell, dashboards y vistas de cada rol
+  src/services/, hooks/   Acceso a API y lógica de interfaz
+  tests/                  Pruebas frontend
+machine-learning/
+  app/                    API FastAPI, features, contrato, umbrales e inferencia
+  data/synthetic-scientific-v6/ CSV experimental ML V6
+  artifacts/synthetic/    Modelo, metadatos y métricas experimentales generadas
+  tests/, train.py        Pruebas y pipeline de entrenamiento
+packages/shared/          Código y tipos compartidos entre workspaces
+docs/                     Estado, arquitectura, dataset, metodología y resultados auditados
+plan-pruebas/, e2e/       Matriz/evidencias y pruebas end-to-end
+database/                 Recursos SQL auxiliares
+legacy/                   Material histórico; no es fuente operativa vigente
+```
+
+Los datos históricos de `legacy/` no se cargan en el flujo vigente. La única población operativa de
+demostración es Data Seed V6; el dataset de ML V6 es una fuente de experimento separada.
+
+## Preparar y ejecutar localmente
+
+Requisitos: Node.js 20 o superior, Python 3.9 o superior, `pip` y MySQL 8 (por ejemplo, servicio `mysql` de
+`docker-compose.yml`). Configure las variables a partir de [`.env.example`](.env.example); mantenga tokens,
+contraseñas y `.env.local` fuera de Git.
+
+```bash
+npm ci
+npm run build --workspace=@tesis/shared
+npm run db:generate
+pip install -r machine-learning/requirements.txt
+npm run dev
+```
+
+`npm run dev` inicia frontend en `:3029`, backend en `:4000` y ML en `:5000`. Para iniciar cada uno por
+separado: `npm run dev:web`, `npm run dev:api` o `npm run dev:ml`. Configure las URLs de la API y ML y las
+credenciales locales según `.env.example` antes de intentar operaciones que requieren MySQL.
+
+Comandos habituales:
+
+```bash
+npm run type-check
+npm run lint
+npm run test
+npm run coverage
+npm run build
+npm run ml:train       # vuelve a entrenar y regenera artifacts/synthetic
+npm run ml:evaluate    # evalúa el holdout guardado sin crear otra partición
+npm run ml:test
+```
+
+No commitees resultados reentrenados sin registrar el entorno/versión y revisar el cambio de métricas y
+artefactos. El modelo experimental serializado no es una autorización para usarlo en decisiones reales.
+
+## Pruebas, cobertura y estado auditado
+
+**Última medición local documentada: 2026-11-10.** Pasaron backend **603/603**, frontend **558/558** y ML
+**104/104** pruebas; también `type-check`, `lint` y `build`. SonarQube local midió **90.0% de cobertura
+global**, 93.6% de líneas, 77.3% de condiciones y 0.7% de duplicación. El Quality Gate de esa ejecución
+estaba OK para código nuevo (89.9% de cobertura de código nuevo, umbral 80%); **la cobertura global no era
+100%**. Son mediciones fechadas, no una afirmación de estado continuo ni una cobertura 100% de frontend y
+backend.
+
+La auditoría de cobertura, archivos pendientes y comandos de validación está en
+[`docs/auditoria-cobertura-local-2026-11-10.md`](docs/auditoria-cobertura-local-2026-11-10.md). El estado de
+producto y sus límites está en [`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md). La importación,
+despliegues y base productiva no se verifican al correr las pruebas locales.
+
+## Documentación para elaborar el informe
+
+Usá estos documentos como fuentes de evidencia y conservá separados los hechos de código, los resultados
+experimentales y las limitaciones:
+
+| Si el informe trata sobre… | Fuente recomendada |
+|---|---|
+| Estado vigente, alcance de V6 y qué se verificó | [`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md) |
+| Fuente XLSX, huella, hojas, validación y conteos de importación local | [`docs/DATASET_DEFINITIVO_2026_V6_LOCAL.md`](docs/DATASET_DEFINITIVO_2026_V6_LOCAL.md) |
+| Tamaño, diseño, splits y métricas del dataset experimental | [`docs/ml/RESULTADOS_EXPERIMENTALES_V6.md`](docs/ml/RESULTADOS_EXPERIMENTALES_V6.md) |
+| Generación, variables y cautelas del dataset sintético | [`docs/ml/DATA_SEED_V6_METODOLOGIA.md`](docs/ml/DATA_SEED_V6_METODOLOGIA.md) |
+| Entrenamiento, umbral, contrato API/ML y artefactos | [`docs/ml/PIPELINE_ML_V6.md`](docs/ml/PIPELINE_ML_V6.md) y [`machine-learning/README.md`](machine-learning/README.md) |
+| Arquitectura, reglas de negocio y permisos | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) |
+| Rutas, autenticación y contratos de API | [`docs/API.md`](docs/API.md) |
+| Resultados y pendientes de cobertura | [`docs/auditoria-cobertura-local-2026-11-10.md`](docs/auditoria-cobertura-local-2026-11-10.md) |
+| Casos, matriz y evidencia de QA | [`plan-pruebas/README.md`](plan-pruebas/README.md) |
+
+Al citar resultados, indicá siempre versión del dataset/modelo, tamaño de muestra, split, fecha de la medición
+y si el resultado es local. No mezcles las 275 cuentas de la aplicación con las 450 observaciones de ML; no
+atribuyas resultados sintéticos a estudiantes reales ni presentes una prueba local como verificación de
+producción.
