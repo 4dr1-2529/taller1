@@ -41,14 +41,6 @@ Estado de esta verificación (**2026-09-26**, sin redespliegue ni cambio de vari
 - Si `ML_SERVICE_URL` no apuntara a ese dominio, `/predict` responde `503` controlado (nunca un riesgo
   Bajo ficticio).
 
-## Limpieza demo (deshabilitada)
+## Dataset operativo
 
-Los scripts de limpieza y población legacy quedaron **deshabilitados** en el código: `db:reset:demo`,
-`db:reset:full`, `db:reset:academic`, `db:seed:demo` y `db:seed:prod` ejecutan todos
-`backend/scripts/legacy-population-disabled.mjs`, que aborta con
-`LEGACY: población y reparaciones antiguas deshabilitadas` (exit 1) **sin tocar la base de datos**.
-Comportamiento histórico del mecanismo (archivo `backend/scripts/reset-demo-safe.ts`, ya no invocado):
-requería `ALLOW_DEMO_RESET=true`, `DATABASE_URL` explícita y `DEMO_RESET_MANIFEST`, rechazaba
-`NODE_ENV=production` y solo operaba sobre una copia de pruebas. No se ejecutó ninguna limpieza en esta auditoría.
-
-La fuente canónica del proyecto es el Data Seed V6 (275 cuentas: 1 director, 24 docentes y 250 estudiantes). No ejecutar `db:seed`, `db:seed:demo`, `db:push`, migraciones de reset ni limpieza en producción. El estado de producción debe consultarse y aprobarse por separado antes de cualquier importación; esta documentación no afirma que el V6 ya esté cargado en Railway. Las contraseñas se configuran por rol mediante variables de entorno.
+La fuente canónica del proyecto es Data Seed V6 (275 cuentas: 1 director, 24 docentes y 250 estudiantes). Los antiguos generadores y scripts de demo/reset se retiraron de los manifests y del código activo. Para revisar la fuente, use `npm run db:dataset:validate --workspace=backend` y `npm run db:dataset:dry-run --workspace=backend`. No ejecutar `db:seed`, `db:push`, migraciones de reset ni importaciones sobre producción. El estado de producción debe consultarse y aprobarse por separado; esta documentación no afirma que V6 esté cargado en Railway. Las contraseñas se configuran por rol mediante variables de entorno.

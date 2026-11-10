@@ -32,7 +32,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 - **Exportación verificada:** endpoint `GET /admin/cuentas-acceso` + scripts `export:accounts:web` y `verify-production-accounts`
 - **8 tutores** exclusivos 1°–2° + **15 docentes** polidocencia 3°–6° (23 total)
 - Scripts raíz: `db:repair:all`, `export:accounts:web`
-- CSV canónicos en `docs/cuentas-demo/` (660 estudiantes + 23 profesores)
+- CSV históricos en `docs/cuentas-demo/` (población anterior, fuera del flujo vigente)
 
 ### Corregido
 
@@ -82,7 +82,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 - **Matrículas institucionales** (estudiante + año lectivo + sección)
 - **Mensajería académica** (comunicados, avisos de curso, mensajes directos)
 - Schema Prisma **Blenkir v3** (~51 tablas)
-- Seed demo: 660 estudiantes, 23 profesores, 22 secciones, predicciones y alertas
+- Seed demo histórico: población anterior, secciones, predicciones y alertas
 - Dashboard por rol con KPIs, gráficos Recharts y predicción ensemble ML
 - Tests de roles, alcance docente/estudiante y formato de respuesta API
 - Preparación SonarQube (bugs, accesibilidad, seguridad)

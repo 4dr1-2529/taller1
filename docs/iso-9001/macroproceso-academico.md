@@ -191,7 +191,7 @@ flowchart TB
 |-------|----------------|--------|---------|----------------|-----------|--------|
 | ISO 9001 | 4.4 — Procesos del SGC | Macroproceso académico | `docs/iso-9001/macroproceso-academico.md` | Entradas → procesos → salidas documentados | Diagrama Mermaid §2.1 | ✅ Verificado |
 | ISO 9001 | 7.5 — Información documentada | Entrada estudiante | `frontend/src/components/views/StudentsView.tsx` | EN-01 ficha + `POST /students` | `evidencias-finales/estudiantes/estudiantes.png` | ✅ Verificado |
-| ISO 9001 | 7.5 — Información documentada | Matrículas | `frontend/src/components/views/EnrollmentsView.tsx` | EN-02 `POST /matriculas` | `plan-pruebas/evidencias-finales/api/matricula-post-201-aislado-20260926.json` (HTTP 201, BD aislada) | ✅ Verificado |
+| ISO 9001 | 7.5 — Información documentada | Matrículas | `frontend/src/components/views/EnrollmentsView.tsx` | EN-02 `POST /matriculas` | Evidencia anterior retirada; repetir en BD aislada con V6 | 📋 Pendiente |
 | ISO 9001 | 8.5 — Producción del servicio | Notas | `backend/src/controllers/grades.controller.ts` | EN-03 notas 0–20 bimestre | `evidencias-finales/notas/notas.png` | ✅ Verificado |
 | ISO 9001 | 8.5 — Producción del servicio | Asistencia | `backend/src/controllers/attendance.controller.ts` | EN-04 registro asistencia | `AttendanceView` + API `/attendance` | ✅ Verificado |
 | ISO 9001 | 8.5 — Producción del servicio | LMS | `frontend/src/components/views/LMSView.tsx` | EN-05 tablas `LmsActividad` | `prisma/schema.prisma` modelo LMS | ✅ Verificado |

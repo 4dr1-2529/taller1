@@ -34,10 +34,10 @@ npm run db:bootstrap       # opcional: admin inicial
 ```
 
 En una **BD local recién creada** puede usarse `npm run db:push` en lugar de `db:migrate`.
-`npm run db:seed:demo`, `npm run db:reset:full` y `npm run db:reset:demo` están **deshabilitados**
-(`backend/scripts/legacy-population-disabled.mjs`) y terminan con `exit 1` sin tocar la BD.
+La fuente de demo vigente es Data Seed V6. Valide y previsualice la importación con `db:dataset:validate`
+y `db:dataset:dry-run` desde el workspace backend.
 
-> ⛔ **Prohibido** ejecutar `db:push`, `db:migrate`, `db:seed`, `db:seed:demo` o cualquier
+> ⛔ **Prohibido** ejecutar `db:push`, `db:migrate`, `db:seed` o cualquier
 > `db:reset:*` sobre la BD de **producción**. La población operativa/demo (1 director ·
 > 24 profesores · 250 estudiantes = 275 usuarios) es la composición definida por Data Seed V6.
 > La fuente del proyecto es el Data Seed V6. Esto no confirma que la base productiva esté sincronizada:

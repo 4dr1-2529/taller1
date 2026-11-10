@@ -1,7 +1,6 @@
 # Reporte final de pruebas — Tesis Dashboard v2.0
 
-> **HISTÓRICO.** Ejecución del **2026-06-30** sobre la población demo de entonces; los recuentos que
-> aparecen (660 estudiantes · 23 profesores · 31 pruebas backend · 6 ML) **no describen el estado actual**
+> **HISTÓRICO.** Ejecución del **2026-06-30** sobre la población demo de entonces; sus recuentos **no describen el estado actual**
 > y no se usan como vigentes. Resultados verificados el **2026-09-26** (auditoría técnica V6):
 > `type-check` 0 errores · `lint` 0 · unitarias 4/4 · frontend 40/40 · backend 81/81 · ML 32/32 ·
 > `build` correcto · `test:smoke` **NO DISPONIBLE** (faltan las contraseñas iniciales del entorno) ·
@@ -16,7 +15,7 @@
 
 ## Resumen general
 
-**Ejecución histórica (2026-06-30) — no vigente.** Se completó el plan de pruebas sobre la población demo de aquella etapa (660 estudiantes, 23 profesores, 19 680 notas bimestre I-II): pruebas unitarias (31 backend + 6 ML), smoke API, caja negra/seguridad/integración HTTP, rendimiento medido, auditoría caja blanca (41 archivos), capturas Playwright **20/20** (Director, Profesor, Alumno) y validación `type-check` / `build` / `test`. **Los recuentos de esta línea son históricos**: la cobertura vigente son 81 pruebas backend + 32 ML + 40 frontend + 4 unitarias (ver aviso de cabecera).
+**Ejecución histórica (2026-06-30) — no vigente.** Se completó el plan de pruebas sobre la población demo de aquella etapa. Los recuentos de pruebas y capturas pertenecen a esa ejecución; la población vigente es Data Seed V6 (250 estudiantes, 24 docentes y 1 director). Las cifras antiguas no describen el estado actual.
 
 ## Totales
 
@@ -78,7 +77,7 @@ Detalle: `pruebas-rendimiento/evidencias/performance-report.json`
 ## Recomendaciones
 
 1. Ejecutar `npm run qa:pipeline` antes de cada entrega.
-2. No usar `npm run db:seed:demo`: está deshabilitado (legacy); preparar la BD aislada de pruebas.
+2. Ejecutar validación y dry-run de Data Seed V6 antes de preparar la BD aislada de pruebas.
 3. `POST /auth/refresh` y `POST /matriculas` ya tienen prueba automatizada y se revalidaron el 2026-09-26.
 
 ## Conclusión

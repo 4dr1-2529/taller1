@@ -668,7 +668,7 @@ El arranque `backend/scripts/railway-start.mjs`:
 3. Ejecuta `prisma generate`.
 4. Ejecuta `prisma migrate deploy`.
 5. Si aparece P3009, detiene el despliegue y requiere reparación manual; no elimina tablas automáticamente.
-6. Puede lanzar seed demo o reparacion mediante flags temporales.
+6. No ejecuta semillas poblacionales ni reparaciones durante el arranque de producción.
 7. Inicia `node dist/index.js`.
 
 ### 8.3 Railway: MySQL

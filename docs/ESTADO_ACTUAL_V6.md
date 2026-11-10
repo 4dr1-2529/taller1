@@ -276,8 +276,8 @@ Evidencia: `docs/evidencias/seguridad/barrido-secretos-20260926.json`,
 **Históricos / superados (conservados sin modificar sus resultados):**
 
 - Informes y evidencias de etapas anteriores, conservados solo en sus ubicaciones históricas.
-  `docs/PENDIENTES_PRE_DATA_SEED_200.md`, `docs/MAIN_RELEASE_READINESS_2026.md`,
-  `docs/QA_FINAL_BLENKIR_2026.md`, `plan-pruebas/REPORTE-FINAL-PRUEBAS.md`,
+  `docs/MAIN_RELEASE_READINESS_2026.md`, `docs/QA_FINAL_BLENKIR_2026.md`,
+  `plan-pruebas/REPORTE-FINAL-PRUEBAS.md`,
   `plan-pruebas/evidencias-finales/` y `docs/evidencias_finales/`.
 - `docs/INFORME_FINAL_V6.md` y `docs/PRESENTACION_V6_ESTADO.md` — ejecución local de su ciclo, con nota de
   actualización.

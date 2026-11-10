@@ -11,7 +11,7 @@
 ## Ejecución QA completa (recomendado)
 
 ```bash
-# Requiere MySQL + npm run dev (api+web+ml). db:seed:demo esta deshabilitado (legacy).
+# Requiere MySQL aislado + npm run dev (api+web+ml). Validar y previsualizar Data Seed V6 antes de cargar.
 npm run qa:pipeline
 ```
 

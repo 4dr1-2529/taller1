@@ -47,7 +47,7 @@ Leyenda: **PASS** = verificado ejecutando; **NOTA** = limitación conocida docum
 | 31 | Sin commit / push / merge / deploy | **PASS** | 38 entradas sin commitear (30 modificados + 8 nuevos), **0 en staging**; `30 files changed, 1702 insertions(+), 392 deletions(-)`; `.env` ignorado (sin secretos) |
 | 32 | Digesto lógico anclado en tests | **PASS** | `definitive-production-readonly.test.mjs` actualizado al digesto V6 `9eb428bd…` (incluye `sourceHash` del XLSX) |
 | 33 | Coherencia `model_used` | **PASS** | `train.py` ahora escribe `model_used = best_model`; `metrics.json` corregido a `stacking` (antes decía `XGBoost`, campo descriptivo legado que contradecía al modelo servido) |
-| 34 | Discrepancia de scripts `db:*` legacy | **NOTA** | `db:reset:full`, `db:seed:demo`, `db:reseed`, `db:reset:demo`, `db:legacy-users`, `db:prod` apuntan a `legacy-population-disabled.mjs` (error intencional). Equivalente real: `prisma migrate reset --force` + `db:seed:structure` |
+| 34 | Herramientas de población anterior | **ACTUALIZADO 2026-11-10** | Generadores y comandos de seed/reset antiguos retirados; validar/previsualizar Data Seed V6 con `db:dataset:validate` y `db:dataset:dry-run` |
 | 35 | Alta de estudiante local (secciones) | **NOTA** | Las 22 secciones × 30 = 30/30 plazas ocupadas y `POST /academic/secciones` devuelve 409 (capacidad completa). Limitación conocida, sin cambios de negocio |
 | 36 | Rate limit y recarga del servicio ML | **NOTA** | API: 300 peticiones / 15 min (reiniciar el proceso reinicia la ventana). `uvicorn --reload` solo observa `*.py`: para recargar tras editar `metrics.json` debe tocarse un `.py` o reiniciar `npm run dev` |
 

@@ -21,7 +21,8 @@
 ```bash
 npm run db:push      # solo sobre la BD local recién creada (si no, usar db:migrate)
 npm run db:seed      # estructura + RBAC (db:seed:structure)
-# db:seed:demo DESHABILITADO (legacy-population-disabled.mjs): no puebla la BD
+npm run db:dataset:validate --workspace=backend
+npm run db:dataset:dry-run --workspace=backend
 ```
 
 ---

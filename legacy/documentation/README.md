@@ -133,7 +133,7 @@ tesis-dashboard/                    # Monorepo npm workspaces
 │   ├── evidencias/                 # Capturas y logs QA
 │   ├── evidencias_finales/         # Paquete evidencias locales
 │   ├── DEPLOY.md
-│   ├── cuentas-demo/               # CSV login (660 + 23)
+│   ├── cuentas-demo/               # CSV de población demo histórica
 │   └── postman/
 │
 ├── estado-del-arte-software/       # Estado del arte tecnológico (7 capítulos)
@@ -161,7 +161,7 @@ Tras `npm run db:seed:demo`:
 
 | Recurso | Cantidad |
 |---------|----------|
-| Estudiantes | **660** (22 salones × 30) |
+| Estudiantes | Población demo de una etapa anterior (no vigente) |
 | Profesores | **23** (8 tutores 1°-2° + 15 polidocencia 3°-6°) |
 | Secciones | **22** (grados 1°–6°) |
 | Cursos | **16** en catálogo |

@@ -26,10 +26,9 @@
 5. **BD local reconstruida desde cero**: `prisma migrate reset --force` (5 migraciones) +
    `db:seed:structure` → `PRESEED_ZERO_OK` (0 usuarios, 22 secciones, 3 roles,
    7 `ml_feature_def`, correlativos en 0).
-6. **Discrepancia identificada y reportada**: `db:reset:full`, `db:seed:demo`, `db:reseed`,
-   `db:reset:demo`, `db:legacy-users` y `db:prod` apuntan a
-   `scripts/legacy-population-disabled.mjs` (error intencional). Equivalente real usado:
-   `prisma migrate reset --force` + `npm run db:seed:structure`.
+6. **Actualización 2026-11-10:** las herramientas de población/reset anteriores se retiraron.
+   La fuente vigente se valida y previsualiza con `db:dataset:validate` y `db:dataset:dry-run`;
+   el seed estructural es `db:seed:structure`.
 7. **Import ejecutado** con las 3 autorizaciones + `NODE_ENV=production` (solo en ese
    proceso) + contraseñas locales ≥12: `MODE=EXECUTE`, `DEFINITIVE_DATASET_IMPORTED=true`,
    transacción serializable con postchecks; nunca conectado a startup, migraciones o deploy.

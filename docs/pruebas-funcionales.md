@@ -49,8 +49,8 @@ Sistema técnico vigente: **BLENKIR V6**. Población: 1 director · 24 profesore
 Contraseñas: variables de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD`
 y `STUDENT_INITIAL_PASSWORD`; no se publican valores en la documentación.
 
-> **Deprecated:** las cuentas `*.demo@…` y el comando `npm run db:seed:demo` pertenecen a la
-> población demo anterior y ya no existen. Ver `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md`.
+> Las cuentas demo anteriores ya no forman parte de la fuente operativa. El conjunto vigente es Data Seed
+> V6; consulta `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md` para los roles y variables de contraseña.
 
 ## Ejecución local
 
@@ -66,9 +66,9 @@ npm run test
 npm run test:smoke        # requiere API y ML en ejecución + *_INITIAL_PASSWORD
 ```
 
-`npm run db:seed:demo` está **deshabilitado** (`backend/scripts/legacy-population-disabled.mjs`,
-`exit 1` sin tocar la BD): la población demo antigua ya no se siembra. El ML **no** necesita
-`ml:train` para funcionar: los artefactos V6 (`BLENKIR_V6_BIN_20260924`) ya están versionados en
+La población demo se valida con `npm run db:dataset:validate --workspace=backend` y se previsualiza
+sin escritura con `npm run db:dataset:dry-run --workspace=backend`. El ML **no** necesita `ml:train` para
+funcionar: los artefactos V6 (`BLENKIR_V6_BIN_20260924`) ya están versionados en
 `machine-learning/artifacts/synthetic/`.
 
 ### Resultados verificados (revalidación 2026‑09‑27)

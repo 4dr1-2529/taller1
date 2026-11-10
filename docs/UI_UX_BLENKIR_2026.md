@@ -37,7 +37,7 @@ perfil+rol, sin repetir el nombre institucional.
   pluralización "1 curso".
 - **Estructura**: eliminado hardcode "I.E.P. Huancayo" del título (P3).
 - **Matrícula**: subtítulo shell corregido a regla 2026; hint de filtros sin estimación ficticia
-  ("22 secciones · ~660 estudiantes" eliminado, P1).
+  (conteo de población fija eliminado; la interfaz consulta la fuente de datos vigente, P1).
 - **Dashboard**: `avgGrade/avgAttendance` ahora `null` sin registros (backend cuenta notas/
   asistencias 2026) → "—" en vez de "0/20" (P2 verificado en captura).
 - **Encabezados**: 12 vistas con h2 unificado vía `SectionHeading` (mismo tamaño/peso/tracking).

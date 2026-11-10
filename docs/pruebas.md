@@ -23,8 +23,9 @@ Verificar por rol:
 
 Data Seed V6: la **población operativa/demo** define 1 director · 24 profesores · 250 estudiantes = 275
 cuentas. El dataset científico-sintético de ML es independiente (225 estudiantes, 450 observaciones).
-El estado de la BD productiva requiere verificación directa. **No ejecutar** `db:seed`, `db:seed:demo`,
-`db:push` ni ningún reset sobre esa BD.
+El estado de la BD productiva requiere verificación directa. Valide V6 con `db:dataset:validate` y
+`db:dataset:dry-run` antes de preparar una importación local. No ejecutar semillas, `db:push` ni resets
+sobre producción.
 
 Guía: [DEPLOY.md](DEPLOY.md)
 

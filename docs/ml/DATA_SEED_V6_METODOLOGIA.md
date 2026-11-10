@@ -66,11 +66,8 @@ son ficticias, no se validan contra RENIEC y no sirven para contacto real.
 ## 3. Secuencia de reconstrucción local (BD desde cero)
 
 1. `npx prisma migrate reset --force` con `DATABASE_URL` local (5 migraciones del repo).
-   - **Discrepancia reportada:** `db:reset:full`, `db:seed:demo`, `db:reseed`,
-     `db:reset:demo`, `db:legacy-users` y `db:prod` apuntan a
-     `scripts/legacy-population-disabled.mjs` y terminan con error
-     "LEGACY: población y reparaciones antiguas deshabilitadas". El equivalente real es
-     `prisma migrate reset --force` + `npm run db:seed:structure`.
+   - **Actualización 2026-11-10:** los comandos de población/reset anteriores se retiraron. Para V6,
+     ejecutar `db:dataset:validate` y `db:dataset:dry-run`; el seed de estructura es `db:seed:structure`.
 2. `npm run db:seed:structure` → 1 institución, 22 secciones, 90 cursos-grado,
    3 roles, 9 permisos, 7 `ml_feature_def`, 3 correlativos en `0`, **0 usuarios**.
 3. `npm run db:dataset:import --workspace=backend -- --execute` con

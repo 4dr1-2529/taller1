@@ -3,7 +3,7 @@
 Estos archivos pertenecen a la arquitectura anterior. No son scripts de inicialización ni contratos vigentes. No ejecutar contra la arquitectura 2026-v2.
 
 - backend/prisma/seed-demo.ts: antigua población de 1 Director, 3 profesores y 9 alumnos.
-- database/blenkir-v3/generate-poblacion.mjs: antiguo generador de 660 estudiantes.
+- database/blenkir-v3: esquema y generador de población retirados del proyecto activo.
 - ml-v1: modelos, métricas y programas anteriores conservados sin reinterpretar sus resultados. Incompatibles con el vector de siete variables.
 - frontend y backend: implementación anterior de métricas ficticias y simulación, fuera del código compilado.
 - documentation: versiones históricas de documentación reemplazada.

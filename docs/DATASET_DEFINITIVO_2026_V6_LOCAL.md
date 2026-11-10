@@ -59,10 +59,10 @@ Serializada, bloqueo del año lectivo, inserciones por lotes y postchecks antes 
 Una segunda ejecución no cumple `PRESEED_ZERO` y aborta. Nunca hay cleanup, reset, DROP ni
 TRUNCATE. Salida: `MODE=EXECUTE`, `DEFINITIVE_DATASET_IMPORTED=true`.
 
-**Discrepancia conocida:** `db:reset:full`, `db:seed:demo`, `db:reseed`, `db:reset:demo`,
-`db:legacy-users` y `db:prod` apuntan a `scripts/legacy-population-disabled.mjs` y terminan
-con el error «LEGACY: población y reparaciones antiguas deshabilitadas». El equivalente real
-es `prisma migrate reset --force` + `npm run db:seed:structure`.
+Los comandos de población demo y reset anteriores fueron retirados. Para la fuente V6, use los
+comandos de validación y dry-run anteriores. La recreación de un entorno local debe seguir las
+migraciones de Prisma y `npm run db:seed:structure`; ninguna de estas instrucciones autoriza una
+operación sobre producción.
 
 ## Conteos verificados en la BD local
 

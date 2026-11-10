@@ -3,6 +3,9 @@
 **Fecha:** 2026-06-30  
 **Script:** `plan-pruebas/scripts/run-api-tests.mjs` + `run-capture-ui.mjs`
 
+> Los snapshots API de este ciclo que contenían la población anterior se retiraron el 2026-11-10.
+> Se deben regenerar contra una BD aislada preparada con Data Seed V6 antes de reutilizar estos casos.
+
 ## API (sin revisar código interno)
 
 | Caso | Resultado | Evidencia |
@@ -11,10 +14,10 @@
 | Login Profesor | 200 JWT | `evidencias-finales/api/login-profesor-200.json` |
 | Login Alumno | 200 JWT | `evidencias-finales/api/login-alumno-200.json` |
 | Login inválido | HTTP 400 | `evidencias-finales/api/login-invalido-400.json` |
-| KPIs dashboard | 200 byLevel | `evidencias-finales/api/dashboard-kpis.json` |
-| Listado estudiantes | items paginados | `evidencias-finales/api/students-list.json` |
-| Listado profesores | HTTP 200 | `evidencias-finales/api/teachers-list.json` |
-| Alertas | HTTP 200 | `evidencias-finales/api/alerts-list.json` |
+| KPIs dashboard | 200 byLevel | Pendiente de reejecución con V6 |
+| Listado estudiantes | 250 estudiantes V6, paginado | Pendiente de reejecución con V6 |
+| Listado profesores | 24 docentes V6, paginado | Pendiente de reejecución con V6 |
+| Alertas | HTTP 200 | Pendiente de reejecución con V6 |
 
 ## UI Playwright (20 capturas)
 

@@ -1,9 +1,8 @@
 # Evidencias finales — ejecución histórica local
 
-> **HISTÓRICO / SUPERADO — NO DESCRIBE EL DATA SEED V6 VIGENTE.** Este paquete registra una ejecución
-> anterior con una población demo de 660 estudiantes y 23 profesores y credenciales de esa época.
-> Las capturas, JSON y logs se conservan como evidencia histórica; no describen el sistema ni los datos
-> operativos actuales.
+> **ARCHIVO HISTÓRICO — NO DESCRIBE LA POBLACIÓN VIGENTE.** Este paquete registra ejecuciones y
+> credenciales demo anteriores a la fuente operativa V6. No es un dataset ejecutable ni una referencia
+> de los datos actuales. Los conteos vigentes del archivo fuente se documentan en `docs/ESTADO_ACTUAL_V6.md`.
 >
 > **Contexto documentado el 2026-09-26 (no re-verificado en esta evidencia):** sistema **V6** — modelo Stacking `BLENKIR_V6_BIN_20260924`
 > (7 variables, `dataMode=synthetic_scientific`, `experimental=true`) desplegado en Railway y refresh
@@ -29,7 +28,7 @@
 | Frontend | http://localhost:3029 | Next.js |
 | Backend API | http://localhost:4000/api/v1 | Express + Prisma |
 | Modelo IA | http://localhost:5000 | FastAPI |
-| MySQL | `tesis_dashboard` | 660 estudiantes · 23 profesores |
+| MySQL | `tesis_dashboard` | Instantánea histórica retirada; no usar para describir V6 |
 
 ### Credenciales demo (capturas) — históricas
 

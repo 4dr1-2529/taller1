@@ -9,7 +9,7 @@
 | ID | Riesgo | Prob. | Impacto | Mitigación en código/proceso | Responsable |
 |----|--------|-------|---------|------------------------------|-------------|
 | R-01 | ML no levantado (`:5000` / Railway) → `POST /predict` responde 503 controlado | Media | Alta | `ml-client.ts` informa "ML service no disponible"; **sin heurística ni riesgo inventado**; smoke `ML health` en `smoke-tests.mjs` | QA + Dev |
-| R-02 | BD de pruebas vacía → login smoke omitido | Media | Alta | BD aislada `127.0.0.1:33316`; `db:seed:demo` está deshabilitado (legacy) | DevOps |
+| R-02 | BD de pruebas vacía → login smoke omitido | Media | Alta | BD aislada `127.0.0.1:33316`; validar y preparar solo con el flujo Data Seed V6 | DevOps |
 | R-03 | Token JWT expirado en sesión larga UAT | Media | Media | `POST /auth/refresh`; `AuthProvider` en frontend | Frontend |
 | R-04 | Profesor accede estudiante fuera de `seccionId` de sus cursos | Baja | Crítica | `teacher-scope.ts` + `uniqueSectionIds()` testeado en `teacher-scope.test.ts` | Backend |
 | R-05 | Estudiante envía `?studentId=otro` en `/estudiante/notas` | Baja | Crítica | `rejectClientStudentId()` en `estudiante-scope.ts` — test `estudiante-scope.test.ts` | Backend |

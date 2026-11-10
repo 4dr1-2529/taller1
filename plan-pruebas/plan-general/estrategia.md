@@ -22,7 +22,7 @@
 
 - Código en rama `main` estable
 - `npm run type-check` sin errores
-- BD local aislada de pruebas; `npm run db:seed:demo` está deshabilitado (legacy)
+- BD local aislada; `db:dataset:validate` y `db:dataset:dry-run` confirman la fuente V6 antes de la carga
 - Modelo ML entrenado (`npm run ml:train`) para pruebas IA
 
 ---

@@ -1,7 +1,7 @@
 # Reporte final de pruebas — Tesis Dashboard v2.0
 
 > **HISTÓRICO / SUPERADO.** Copia generada el 2026-06-30 por `run-qa-pipeline.mjs` sobre la población demo
-> antigua (660 estudiantes · 23 profesores · 77 casos · 31 pruebas backend · 6 ML). No describe el estado
+> anterior. No describe el estado
 > actual: la matriz vigente tiene **86 casos** y la cobertura verificada el 2026-09-26 es de 81 backend +
 > 40 frontend + 32 ML. Ver [`REPORTE-FINAL-PRUEBAS.md`](../../REPORTE-FINAL-PRUEBAS.md) (con su aviso de
 > cabecera) y [`../../../docs/ESTADO_ACTUAL_V6.md`](../../../docs/ESTADO_ACTUAL_V6.md).
@@ -12,7 +12,7 @@
 
 ## Resumen general
 
-Se ejecutó el pipeline QA completo contra el código y datos reales del proyecto (660 estudiantes, 23 profesores, credenciales demo Blenkir). Las pruebas incluyen unitarias (backend + ML), smoke API, caja negra/seguridad/integración HTTP, rendimiento, capturas Playwright (Director, Profesor, Alumno), auditoría caja blanca y validación `type-check` / `build` / `test`.
+Se ejecutó el pipeline QA completo contra el código y datos locales disponibles en esa fecha. La población y las credenciales pertenecían a una versión anterior del seed y no deben usarse como referencia operativa. La fuente actual es Data Seed V6.
 
 ## Totales
 
@@ -59,7 +59,7 @@ Se ejecutó el pipeline QA completo contra el código y datos reales del proyect
 ## Recomendaciones
 
 1. Ejecutar `node plan-pruebas/scripts/run-qa-pipeline.mjs` antes de cada release.
-2. Mantener `db:seed:demo` para datos coherentes con casos UAT.
+2. Usar exclusivamente Data Seed V6 para preparar datos sintéticos de UAT en una BD aislada.
 3. Automatizar pipeline en CI local (sin Railway/Vercel).
 
 ## Conclusión

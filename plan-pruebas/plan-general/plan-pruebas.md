@@ -69,7 +69,7 @@ Login · Dashboard (3 roles) · Usuarios/Estudiantes · Profesores · Cursos · 
 ## 8. Criterios de entrada
 
 - MySQL activo con schema migrado.
-- Esquema migrado en la BD de pruebas; los scripts de población legacy (`db:seed:demo`) están deshabilitados.
+- Esquema migrado en BD de pruebas; Data Seed V6 validado y previsualizado antes de importar en la BD aislada.
 - API :4000, Web :3029, ML :5000 respondiendo `GET /health` → 200.
 - `npm install` completado en raíz del monorepo.
 

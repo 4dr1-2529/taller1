@@ -4,15 +4,14 @@
 Se corrigieron los controles de reset demo, logout, recuperación P3009, configuración MySQL, contrato ML y documentación principal. La demo de **esa fase** quedó definida para 1 director, 3 profesores y 9 estudiantes ficticios.
 
 > ⚠️ **HISTÓRICO — todo este documento describe una fase anterior (no es el estado vigente).**
-> La población demo de esa fase (660 estudiantes / 23 profesores, y antes 1 director · 3
-> profesores · 9 estudiantes) ya fue reemplazada por la **población operativa/demo persistida**
+> La población demo de esa fase ya fue reemplazada por la **población operativa/demo definida**
 > definida por el Data Seed V6: **275 usuarios (1 director · 24 profesores · 250 estudiantes)**.
 > El archivo de datos es sintético y su presencia en el repositorio no acredita el estado de producción.
 > Tampoco son «datos reales institucionales» (aún no disponibles).
 > El estado vigente se documenta en [`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md).
 
 ## 2. Problemas encontrados
-- Seed demo heredado para 660 estudiantes y 23 profesores.
+- Seed demo heredado; sus generadores y fuentes ejecutables fueron retirados.
 - Docker Compose usaba PostgreSQL y una contraseña fija.
 - P3009 podía ejecutar borrado automático de tablas.
 - `estado` participaba en el vector ML.

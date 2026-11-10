@@ -107,6 +107,6 @@ Contraseña: variable `DEMO_PASSWORD` en `backend/.env` (local) o Railway (produ
 | **Profesor tutor** | `pro50000001@blenkir.edu.pe` |
 | **Estudiante** | `mateo.quispe0001@blenkir.edu.pe` |
 
-Listado completo: [../docs/cuentas-demo/](../docs/cuentas-demo/README.md) (660 alumnos + 23 docentes).
+Listado histórico: [../docs/cuentas-demo/](../docs/cuentas-demo/README.md). No corresponde al Data Seed V6.
 
 Ver [../README.md](../README.md) y [../docs/DEPLOY.md](../docs/DEPLOY.md) para seed y despliegue.

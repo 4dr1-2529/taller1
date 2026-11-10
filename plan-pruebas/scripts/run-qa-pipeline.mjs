@@ -185,7 +185,7 @@ ${failSteps > 0 ? "- Algunos pasos del pipeline reportaron incidencias — revis
 ## Recomendaciones
 
 1. Ejecutar \`node plan-pruebas/scripts/run-qa-pipeline.mjs\` antes de cada release.
-2. No usar \`db:seed:demo\`: está deshabilitado (legacy).
+2. Validar y previsualizar Data Seed V6 antes de preparar una BD aislada.
 3. Automatizar pipeline en CI local (sin Railway/Vercel).
 
 ## Conclusión

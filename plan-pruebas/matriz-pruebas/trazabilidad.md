@@ -10,7 +10,7 @@
 |----------------------|----------------|-------|-----------|
 | Login JWT 3 roles | `auth.controller.ts`, `login/page.tsx` | TC-BE-02, TC-FE-02, TC-CN-01 | `evidencias-finales/login/login.png` |
 | RBAC 109 rutas, 82 con `authorize()` | `routes/index.ts` | TC-SEC-03/04, TC-ROL-* | permissions.test.mjs |
-| Población legacy deshabilitada | `scripts/legacy-population-disabled.mjs` | TC-DB-03 | salida `LEGACY...` + exit 1 (2026-09-26) |
+| Dataset operativo V6 | `scripts/validate-definitive-dataset-2026.mjs` | TC-DB-03 | `DEFINITIVE_DATASET_VALID=true` (2026-11-10) |
 | Notas 0–20 bimestre | `gradeSchema`, `GradesView` | TC-CB-01, TC-CN-06 | notas-bimestre-*.png |
 | Predicción ensemble | `ml-client.ts`, `PredictionView` | TC-IA-*, TC-CN-07 | `evidencias-finales/prediccion/prediccion.png` |
 | Alertas automáticas | `predict` + tabla `alert` | TC-CN-08, TC-INT-03 | `evidencias-finales/alertas/alertas.png` |

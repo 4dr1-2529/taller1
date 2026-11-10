@@ -17,4 +17,4 @@ El tiempo es una aproximación de actividad observada, no atención ni permanenc
 
 Revisar instrumento, unidad de análisis, periodos, etiquetas reales, validez y protocolo de entrenamiento antes de trasladar cambios a la tesis. El riesgo de clase alta no equivale automáticamente a probabilidad calibrada de abandono observado: esa interpretación requiere validación empírica de etiquetas y calibración.
 
-Los futuros 200 registros serán sintéticos para pruebas tecnológicas y NO evidencia científica. No se modificaron conclusiones ni resultados científicos históricos.
+El Data Seed V6 actual se compone de datos sintéticos para pruebas tecnológicas y NO evidencia científica. No se modificaron conclusiones ni resultados científicos históricos.
