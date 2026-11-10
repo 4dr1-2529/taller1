@@ -90,19 +90,20 @@ pip install -r machine-learning/requirements.txt
 2. Levante los servicios con `npm run dev` (o por separado: `npm run dev:web` → :3029,
    `npm run dev:api` → :4000, `npm run dev:ml` → :5000).
 
-Verificaciones: `npm run type-check`, `npm run lint`, `npm run test` (unitarios, backend y ML),
-`npm run build`.
+Verificaciones: `npm run type-check`, `npm run lint`, `npm run test` (unitarios, backend, frontend y ML),
+`npm run coverage` (reportes por backend, frontend y ML), `npm run build`.
 
-## Datos de demostración
+## Dataset operativo
 
-La única fuente operativa de demostración del proyecto es el **Data Seed V6**: 275 cuentas (1 director,
-24 docentes y 250 estudiantes), generadas sintéticamente. El experimento de ML usa un dataset V6 separado
-de 225 estudiantes con dos observaciones por estudiante (450 registros). Ninguno de los dos conjuntos
-contiene datos institucionales reales ni demuestra la prevalencia real del riesgo en la institución.
+La fuente operativa es exclusivamente el **Data Seed V6**: 275 cuentas sintéticas (1 director,
+24 docentes y 250 estudiantes). El experimento de ML usa un dataset V6 separado, con 225 estudiantes y
+450 observaciones. Ninguno contiene datos institucionales reales ni demuestra la prevalencia real del
+riesgo en la institución. Los generadores y comandos ejecutables del seed de demostración anterior se
+retiraron; el seed estructural de Prisma sigue disponible para preparar roles y catálogos.
 
-Los scripts de población antigua (`db:seed:demo`, `db:reset:full`, `db:seed:prod`, entre otros) están
-**deshabilitados** y responden con error `LEGACY`; sobre producción no se ejecutan semillas ni
-migraciones de reset.
+Valide e importe el dataset V6 con los comandos documentados en
+[`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md). La importación exige configuración explícita y
+no debe ejecutarse contra producción sin el procedimiento aprobado.
 
 ## Estado y limitaciones verificadas (2026-10-20)
 

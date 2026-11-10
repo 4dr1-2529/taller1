@@ -2,6 +2,9 @@
 
 import type { Student } from "@/types/academic";
 
+type PdfDocument = InstanceType<typeof import("jspdf").jsPDF>;
+type PdfSaver = (document: PdfDocument, filename: string) => void;
+
 export function buildStudentExcelRows(rows: Student[]) {
   return rows.map((s) => ({
     Codigo: s.codigo,
@@ -60,6 +63,7 @@ export async function exportCourseRiskPdf(
   rows: { nombre: string; riesgoPromedio: number | null; estudiantes: number }[],
   title: string,
   filename = "reporte_cursos_riesgo.pdf",
+  savePdf?: PdfSaver,
 ): Promise<void> {
   const { jsPDF } = await import("jspdf");
   const autoTable = (await import("jspdf-autotable")).default;
@@ -71,7 +75,7 @@ export async function exportCourseRiskPdf(
     head: [["Curso", "Riesgo promedio", "Matriculados"]],
     body: buildCourseRiskPdfRows(rows),
   });
-  doc.save(filename);
+  (savePdf ?? ((document, path) => document.save(path)))(doc, filename);
 }
 
 export async function exportLowLmsExcel(
@@ -89,6 +93,7 @@ export async function exportLowLmsExcel(
 export async function exportFailsByCoursePdf(
   rows: { nombre: string; desaprobados: number }[],
   filename = "reporte_desaprobados_por_curso.pdf",
+  savePdf?: PdfSaver,
 ): Promise<void> {
   const { jsPDF } = await import("jspdf");
   const autoTable = (await import("jspdf-autotable")).default;
@@ -100,5 +105,5 @@ export async function exportFailsByCoursePdf(
     head: [["Curso", "Cantidad desaprobados"]],
     body: buildFailsByCoursePdfRows(rows),
   });
-  doc.save(filename);
+  (savePdf ?? ((document, path) => document.save(path)))(doc, filename);
 }

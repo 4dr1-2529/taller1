@@ -18,5 +18,4 @@ prismaExecOrThrow(["generate"]);
 console.log("\n✓ Listo. Redeploy o npm run start:prod");
 console.log("\nSeed opcional:");
 console.log("  npm run db:seed");
-console.log("  npm run db:seed:demo");
 console.log("  ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run db:bootstrap");

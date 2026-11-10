@@ -2,7 +2,7 @@
 
 **Proyecto:** Tesis Dashboard v2.0 - Sistema predictivo de riesgo de desercion estudiantil  
 **Institucion objetivo:** I.E.P. Blenkir, Huancayo, Peru  
-**Analisis realizado:** 2026-09-09  
+**Analisis realizado:** 2026-11-10
 **Fuente principal del modelo de datos:** `backend/prisma/schema.prisma`  
 **Estado:** documento generado a partir del codigo, configuracion, esquemas y evidencias existentes en el repositorio.
 
@@ -76,9 +76,11 @@ El `package.json` raiz declara workspaces para `backend`, `frontend` y `packages
 | `npm run build` | Compila shared, backend y frontend. |
 | `npm run type-check` | Verifica tipos de shared, frontend y backend. |
 | `npm run test` | Ejecuta pruebas unitarias, backend y ML. |
+| `npm run coverage` | Genera cobertura de backend, frontend y ML; la etapa Python detecta el interprete del entorno local. |
 | `npm run db:migrate:deploy` | Aplica migraciones Prisma. |
 | `npm run db:seed` | Carga estructura institucional. |
-| `npm run db:seed:demo` | *(Deshabilitado: responde error `LEGACY`; la población demo ya no se siembra con este comando.)* |
+| `npm run db:dataset:validate --workspace=backend` | Valida los archivos operativos del Data Seed V6. |
+| `npm run db:dataset:dry-run --workspace=backend` | Simula la importación V6 sin escribir en la base de datos. |
 | `npm run ml:train` | Entrena los modelos Python. |
 | `npm run qa:pipeline` | Ejecuta el pipeline de pruebas documentado. |
 
@@ -108,9 +110,12 @@ frontend/src/
 │   ├── (auth)/login/page.tsx    # Pantalla de inicio de sesion
 │   ├── (shell)/page.tsx         # Dashboard principal y seleccion de vistas
 │   ├── layout.tsx               # Layout, fuentes, metadata y toaster
-│   ├── globals.css              # Estilos globales y variables visuales
+│   ├── globals.css              # Punto de entrada de Tailwind y estilos globales
 │   ├── error.tsx
-│   └── not-found.tsx
+│   ├── not-found.tsx
+│   └── styles/
+│       ├── base.css             # Tokens, resets y componentes base
+│       └── presentation.css     # Estilos de vistas, dashboards y responsive
 ├── components/
 │   ├── dashboard/               # Dashboard Director, Profesor y compartido
 │   ├── student/                 # Vistas exclusivas del estudiante
@@ -293,7 +298,7 @@ La fuente de verdad actual es [backend/prisma/schema.prisma](../backend/prisma/s
 - Nombres de tablas: espanol mediante `@@map`.
 - Hay **57 modelos Prisma** (54 activos + 3 `@@ignore`) declarados en el schema; los activos se mapean a tablas de dominio mediante `@@map`.
 - Las migraciones se encuentran en `backend/prisma/migrations/`.
-- Las semillas principales son `seed.ts`, `seed-demo.ts` y scripts de asignaciones.
+- El seed estructural activo es `backend/prisma/seed.ts`; la población V6 se valida e importa con los scripts `db:dataset:*` del backend.
 
 ### 5.2 Inventario de tablas/modelos
 
@@ -454,13 +459,13 @@ erDiagram
 
 ### 5.5 Diferencia entre esquemas SQL y Prisma
 
-El repositorio contiene `database/mysql`, `database/postgresql` y `database/blenkir-v3`, pero la aplicacion actual se conecta mediante Prisma al provider MySQL. El archivo `docker-compose.yml` levanta PostgreSQL y monta `database/postgresql/schema.sql`; esto sirve como entorno alternativo o historico, pero no coincide con la configuracion productiva documentada.
+El repositorio contiene `database/mysql` y `database/postgresql`, pero la aplicacion actual se conecta mediante Prisma al provider MySQL. El archivo `docker-compose.yml` levanta PostgreSQL y monta `database/postgresql/schema.sql`; esto sirve como entorno alternativo o historico, pero no coincide con la configuracion productiva documentada.
 
 Para despliegue y desarrollo del backend debe priorizarse:
 
 1. `backend/prisma/schema.prisma`.
 2. `backend/prisma/migrations/`.
-3. `backend/prisma/seed.ts` y `backend/prisma/seed-demo.ts`.
+3. `backend/prisma/seed.ts` para estructura y los scripts `db:dataset:*` para Data Seed V6.
 4. `DATABASE_URL` con formato MySQL.
 
 ---
@@ -692,34 +697,24 @@ La documentacion actual indica que FastAPI no se despliega en Railway por defect
   (verificado en `backend/src/services/ml-client.ts`: si el servicio ML falla o no está configurado,
   la API no inventa predicciones).
 
-### 8.5 Datos demo
+### 8.5 Dataset operativo
 
-> **Nota (2026-10-20):** las semillas de población descritas aquí están **deshabilitadas** en el sistema
-> vigente (`db:seed:demo`, `db:reset:*` y similares responden error `LEGACY`). La población de
-> demostración actual se importa con el Data Seed V6 (`db:dataset:import --workspace=backend`), descrito
-> más abajo. El listado siguiente se conserva como descripción del escenario de demostración histórico.
+El proyecto trabaja exclusivamente con Data Seed V6 para datos sintéticos de demostración: 250 estudiantes,
+24 docentes y 1 director. El experimento ML V6 es un conjunto separado de 225 estudiantes y 450
+observaciones. Los archivos y scripts del seed de demostración previo se retiraron del repositorio y sus
+comandos ya no están publicados en los manifests npm.
 
-Las semillas documentadas generan una instalacion demo con:
-
-- 660 estudiantes.
-- 23 profesores.
-- 22 secciones.
-- Datos de notas de los bimestres I-II.
-- Predicciones y alertas.
-- Cuentas de Director, Profesor y Estudiante.
-
-Comandos principales:
+Para validar e importar V6 en una base aislada:
 
 ```bash
-npm run db:seed --workspace=backend
-npm run db:seed:demo --workspace=backend
+npm run db:dataset:validate --workspace=backend
+npm run db:dataset:dry-run --workspace=backend
+npm run db:dataset:import --workspace=backend
 ```
 
-El Data Seed V6 define 275 usuarios (1 director, 24 docentes y 250 estudiantes). Esta fuente local
-no confirma el estado actual de la base productiva; consulta sus conteos antes de afirmarlo. Las cuentas se
-documentan en `docs/BLENKIR_LOGIN_ACCOUNTS_2026.md` y las contraseñas viven solo en las variables
-de entorno `DIRECTOR_INITIAL_PASSWORD`, `TEACHER_INITIAL_PASSWORD` y `STUDENT_INITIAL_PASSWORD`.
-No se ejecutan `db:seed`, `db:seed:demo`, `db:push` ni resets sobre produccion.
+La validación y el dry-run son los pasos previos obligatorios. Un resultado local no demuestra qué datos
+hay cargados en producción; no ejecutar una importación ni un reset contra producción. Las contraseñas se
+configuran solo mediante variables de entorno.
 
 ---
 
@@ -763,7 +758,7 @@ Se documentan pruebas de:
 - Rendimiento.
 - Build, lint y type-check.
 
-El reporte final existente indica como evidencia de ejecucion local: 660 estudiantes, 23 profesores, API en 4000, web en 3029 y ML en 5000. Tambien informa incidencias en algunos pasos unitarios/caja blanca, aunque los pasos de build, type-check, API y capturas aparecen como aprobados en ese reporte. Para afirmar el estado actual, se debe volver a ejecutar el pipeline, ya que esas evidencias tienen fecha propia y pueden quedar desactualizadas.
+Las evidencias de pruebas guardadas son históricas y no describen el estado actual de la base. La fuente operativa definida es V6 (250 estudiantes, 24 docentes y 1 director); la fuente ML V6 separada tiene 225 estudiantes y 450 observaciones. Una validación local del 2026-11-09 confirmó `DEFINITIVE_DATASET_VALID=true`. Estos conteos describen los archivos validados, no la base de producción.
 
 Referencias:
 
@@ -784,7 +779,7 @@ Referencias:
 5. **El sistema tiene soporte de trazabilidad, pero el enlace formal modelo/periodo de la predicción está incompleto.** El controlador de predicción persiste, en una sola transacción: estudiante, score, nivel, probabilidades, `modelName`, `contractVersion`, `recommendation`, el JSON `input_data` con las 7 variables y la metadata del modelo (`modelVersion`, `datasetVersion`, `dataMode`, `decisionThreshold`), 7 filas de `prediccion_feature_snapshot` por predicción y sus `prediccion_factor`, más alerta, historial de alerta, notificación, recomendación IA y registro de auditoría (verificado en `backend/src/services/prediction-persistence.service.ts`, 2026-10-20). Lo que **no** se persiste son las claves foráneas `modeloId` y `periodoId` (quedan NULL), por lo que la predicción no queda enlazada a `ml_modelo` ni al periodo académico: la versión del modelo solo queda como texto en `input_data`. Las tablas `ml_dataset`, `ml_entrenamiento`, `ml_modelo` y `ml_metrica` no tienen flujo de escritura en la aplicación activa (solo se poblaron por SQL histórico). Las alertas guardan factores e historial y las acciones sensibles se auditan.
 6. **El frontend y el backend tienen URLs separadas.** Vercel sirve la interfaz; Railway sirve API y BD mediante servicios independientes.
 7. **Las variables de entorno son parte critica del despliegue.** Un `JWT_SECRET` corto, un `CORS_ORIGIN` incorrecto, una `DATABASE_URL` ausente o un `NEXT_PUBLIC_API_URL` faltante impiden el funcionamiento completo.
-8. **Los numeros de datos demo son datos de semilla.** 660 estudiantes, 23 profesores y 22 secciones describen el escenario de demostracion, no necesariamente datos reales de produccion.
+8. **Los conteos descritos son del dataset local V6**, no de la base de producción. La base productiva debe verificarse por separado.
 9. **El reporte de pruebas debe actualizarse.** Las evidencias existentes son utiles para trazabilidad, pero no sustituyen una ejecucion nueva despues de cambios del codigo.
 
 ---
@@ -819,11 +814,16 @@ La validacion ejecutada durante este analisis produjo:
 
 | Validacion | Resultado |
 |---|---|
-| `npm run type-check` | Correcto en `@tesis/shared`, `frontend` y `backend`. |
-| Pruebas unitarias de formato de prediccion | 4 correctas, 0 fallos. |
-| Pruebas backend | 27 correctas en el primer bloque y 31 correctas en el segundo bloque. |
-| Pruebas Python de ML | 6 correctas. |
-| Diagnosticos del archivo de este informe | Sin errores detectados. |
+| `npm run type-check` | Correcto en shared, frontend, backend y herramientas. |
+| `npm run lint` | Correcto. |
+| `npm run build` | Correcto; shared, API y Next.js compilados. |
+| Backend | 598 pruebas aprobadas, 0 fallos; LCOV fusionado por archivo: 96.59% de líneas, 75.99% de ramas y 79.18% de funciones. |
+| Frontend | 551 pruebas aprobadas, 0 fallos; cobertura de líneas 91.81%, ramas 77.10%. |
+| ML | 104 pruebas aprobadas, 0 fallos; 100% de 554 statements y 138 ramas. |
+| Dataset V6 | 250 estudiantes, 24 docentes, 1 director; contrato validado. |
+| SonarQube | Tarea `19e82164-cfee-4e45-9c93-858741ad777c` procesada; 89.9% general, 93.6% de líneas y 77.1% de condiciones; 1,546 líneas y 1,567 condiciones sin cubrir. Sigue pendiente alcanzar 95% global. |
+
+Estas mediciones no alcanzan cobertura total en backend ni frontend. No debe afirmarse 100% global: para ello faltan rutas de codigo ejecutadas por pruebas, en especial en controladores backend y ramas de vistas frontend.
 
 Estas pruebas son principalmente unitarias y de contrato. No demuestran por si solas que Vercel, Railway, MySQL y el servicio ML remoto esten disponibles al mismo tiempo.
 
@@ -878,7 +878,7 @@ La API devuelve `inputData`, pero devolverlo no equivale a conservarlo en la bas
 
 El schema actual contiene **57 modelos Prisma** (54 activos + 3 `@@ignore`), confirmado con `npm run db:count-models` (reconteo 2026‑09‑27) y con el conteo de declaraciones `model` en `backend/prisma/schema.prisma`. Las cifras anteriores —**52 modelos** y **51 tablas**— describen etapas anteriores del schema.
 
-Esto no rompe la ejecucion, pero puede producir errores en la memoria de tesis, diagramas ER, auditorias ISO y presentaciones. Cifra vigente: **57 modelos Prisma**; **51 tablas** queda solo como referencia historica (diseño SQL de `database/blenkir-v3/`). En esta revision se corrigieron los comentarios del `seed.ts` y los documentos que todavía fijaban 51 tablas como estado actual.
+Esto no rompe la ejecucion, pero puede producir errores en la memoria de tesis, diagramas ER, auditorias ISO y presentaciones. Cifra vigente: **57 modelos Prisma**. En esta revision se corrigieron los comentarios del `seed.ts` y los documentos que todavía fijaban un recuento anterior como estado actual.
 
 #### E. Scripts legacy mezclan nombres de schema antiguos
 
@@ -888,7 +888,7 @@ Debe tratarse como migracion historica, no como procedimiento operativo. Ejecuta
 
 #### F. Dos motores de base de datos en el repositorio
 
-Prisma y Railway usan MySQL, pero `docker-compose.yml` levanta PostgreSQL y monta `database/postgresql/schema.sql`. Tambien existe un esquema MySQL legacy en `database/blenkir-v3`.
+Prisma y Railway usan MySQL, pero `docker-compose.yml` levanta PostgreSQL y monta `database/postgresql/schema.sql` como entorno alternativo.
 
 La coexistencia es util para antecedentes de la tesis, pero aumenta el riesgo de que un colaborador levante PostgreSQL y crea estar probando la misma aplicacion. Debe existir una guia local unica o nombres explicitos como `docker-compose.postgresql-legacy.yml`.
 

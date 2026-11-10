@@ -9,8 +9,12 @@ npx prisma db push --accept-data-loss
 npx prisma generate
 cd ..
 npm run db:seed
-# npm run db:seed:demo  # DESHABILITADO (legacy-population-disabled.mjs)
+npm run db:dataset:validate
+npm run db:dataset:dry-run
 ```
+
+La única población de demostración vigente se importa con Data Seed V6. La validación y el dry-run
+preceden cualquier importación; trabajar siempre contra una base local aislada.
 
 > **HISTÓRICO / YA APLICADO.** Esta migración puntual ya se ejecutó. No usar
 > `prisma db push --accept-data-loss` sobre producción: el esquema vigente se aplica con

@@ -68,6 +68,23 @@ test("assertDirectConversation lanza 403 si no hay usuarios", async () => {
   }
 });
 
+test("assertDirectConversation rechaza cuando falta cualquiera de los dos usuarios", async (t) => {
+  const cases = [
+    { name: "falta el emisor", users: [{ id: 2n, rol: { codigo: "docente" } }] },
+    { name: "falta el destinatario", users: [{ id: 1n, rol: { codigo: "docente" } }] },
+  ];
+  for (const scenario of cases) {
+    await t.test(scenario.name, async () => {
+      mockPrisma.user.findMany = async () => scenario.users;
+      await assert.rejects(assertDirectConversation("1", "2"), (error) => {
+        assert.equal(error.statusCode, 403);
+        assert.equal(error.message, "Relación de mensajería no permitida");
+        return true;
+      });
+    });
+  }
+});
+
 test("assertDirectConversation lanza 403 si roles no permitidos", async () => {
   mockPrisma.user.findMany = async () => [
     { id: 1n, rol: { codigo: "estudiante" } },
@@ -109,6 +126,22 @@ test("assertDirectConversation permite docente-estudiante con enrollamiento", as
   } catch (err) {
     assert.fail(`No debería haber lanzado error: ${err.message}`);
   }
+});
+
+test("assertDirectConversation admite estudiante-emisor cuando comparte matrícula activa", async () => {
+  let enrollmentQuery;
+  mockPrisma.user.findMany = async () => [
+    { id: 1n, rol: { codigo: "estudiante" } },
+    { id: 2n, rol: { codigo: "docente" } },
+  ];
+  mockPrisma.enrollment.findFirst = async (args) => {
+    enrollmentQuery = args;
+    return { id: 3n };
+  };
+
+  await assert.doesNotReject(assertDirectConversation("1", "2"));
+  assert.equal(enrollmentQuery.where.student.usuarioId, 1n);
+  assert.equal(enrollmentQuery.where.course.profesor.usuarioId, 2n);
 });
 
 test("assertDirectConversation lanza 403 si docente-estudiante sin enrollamiento", async () => {

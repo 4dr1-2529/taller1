@@ -98,6 +98,7 @@ test("createCommunication deniega scopes ajenos al rol y conversaciones mal form
     { name: "estudiante no publica global", role: "estudiante", announcement: false, body: { scope: "global", contenido: "x" }, status: 403 },
     { name: "docente no publica en canal de profesores", role: "docente", announcement: false, body: { scope: "profesores", contenido: "x" }, status: 403 },
     { name: "estudiante no publica aviso de curso", role: "estudiante", announcement: false, body: { scope: "curso", contenido: "x", courseId: "9" }, status: 403 },
+    { name: "estudiante no puede publicar anuncio académico", role: "estudiante", announcement: true, body: { scope: "curso", contenido: "x", courseId: "9" }, status: 403 },
     { name: "un aviso no admite scope de profesores", role: "admin", announcement: true, body: { scope: "profesores", contenido: "x" }, status: 403 },
     { name: "admin no publica anuncios académicos", role: "admin", announcement: true, body: { scope: "curso", contenido: "x" }, status: 403 },
     { name: "conversación directa debe incluir al remitente", role: "admin", announcement: false, body: { scope: "directo", roomId: "direct:7:8", contenido: "x" }, status: 403 },

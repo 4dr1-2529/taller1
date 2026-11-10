@@ -363,7 +363,7 @@ function extractModelComparison(metrics: unknown) {
     .filter((k) => m[k]?.f1_score != null)
     .map((k) => ({
       modelo: k.replaceAll("_", " "),
-      f1: Math.round((m[k].f1_score ?? 0) * 1000) / 10,
+      f1: Math.round(Number(m[k].f1_score) * 1000) / 10,
       accuracy: Math.round((m[k].accuracy ?? 0) * 1000) / 10,
     }));
 }

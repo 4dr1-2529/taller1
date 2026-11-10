@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Guardia de arranque: el script legacy de población se detiene antes de ejecutar su cuerpo. */
 function assertLegacyDemoPopulationDisabled() {
-  throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+  throw new Error("Historical demo account tool removed from the active V6 workflow.");
 }
 assertLegacyDemoPopulationDisabled();
 import bcrypt from "bcryptjs";

@@ -1,6 +1,6 @@
 /** Guardia de arranque: el script legacy de población se detiene antes de ejecutar su cuerpo. */
 function assertLegacyDemoPopulationDisabled(): void {
-  throw new Error("Legacy demo population disabled. Use the approved Data Seed V2 workflow.");
+  throw new Error("Historical demo reset removed. Use the validated V6 dataset workflow on an isolated database.");
 }
 assertLegacyDemoPopulationDisabled();
 /** Explicit, scoped demo cleanup. Never invoked by migrations or deployment. */

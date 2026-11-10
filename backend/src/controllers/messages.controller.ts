@@ -65,13 +65,6 @@ async function recipientUserIdsForMessage(
     });
     return users.map((u) => u.id);
   }
-  if (scope === "profesores") {
-    const teachers = await prisma.user.findMany({
-      where: { activo: true, rol: { codigo: "docente" } },
-      select: { id: true },
-    });
-    return teachers.map((t) => t.id);
-  }
   if (scope === "curso" && roomId.startsWith("curso:")) {
     const courseId = toDbId(roomId.replace("curso:", ""));
     const enrollments = await prisma.enrollment.findMany({
@@ -93,11 +86,6 @@ async function recipientUserIdsForMessage(
     return [...new Set(ids.map((id) => id.toString()))]
       .map((id) => toDbId(id))
       .filter((id) => id !== senderBig);
-  }
-  if (roomId.startsWith("direct:")) {
-    const parts = roomId.split(":");
-    const other = parts[1] === senderId ? parts[2] : parts[1];
-    return [toDbId(other)];
   }
   return [];
 }
@@ -314,14 +302,10 @@ async function createCommunication(req: Request, res: Response, next: NextFuncti
     if (scope === "global" && user.role !== "admin") {
       throw new AppError(403, "Solo el director puede enviar comunicados globales");
     }
-    if (scope === "profesores" && user.role !== "admin") {
-      throw new AppError(403, "Solo el director puede mensajear a profesores");
-    }
     if (scope === "curso" && user.role === "estudiante") {
       throw new AppError(403, "Los estudiantes no publican avisos de curso");
     }
     if (scope === "global") roomId = "global:institucional";
-    if (scope === "profesores") roomId = "canal:profesores";
     if (scope === "curso" && courseId) {
       if (user.role === "docente") {
         const teacher = await prisma.teacher.findFirst({ where: { usuarioId: toDbId(user.sub) } });

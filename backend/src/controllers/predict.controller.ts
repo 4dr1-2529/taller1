@@ -13,7 +13,7 @@ import { buildPredictionApiPayload } from "../utils/prediction-format.js";
 import { buildDashboardAnalytics } from "../services/dashboard-analytics.service.js";
 import { toDbId, idToString } from "../utils/ids.js";
 
-function buildRecommendation(level: string, factors: { label: string }[], mlRec?: string): string {
+export function buildRecommendation(level: string, factors: { label: string }[], mlRec?: string): string {
   if (mlRec) return mlRec;
   const top = factors[0]?.label ?? "seguimiento general";
   if (level === "alto") {

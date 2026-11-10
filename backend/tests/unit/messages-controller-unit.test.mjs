@@ -57,6 +57,24 @@ test("listMessages mapea remitente, destinatario y lectura; sala ausente devuelv
   } finally { restoreNoMessages(); restoreMissing(); }
 });
 
+test("listMessages y markRoomRead propagan errores de persistencia a Express", async (t) => {
+  for (const [name, handler] of [
+    ["listMessages", listMessages],
+    ["markRoomRead", markRoomRead],
+  ]) {
+    await t.test(name, async () => {
+      const restore = replace(prisma.mensajeSala, "findUnique", async () => {
+        throw new Error("database unavailable");
+      });
+      try {
+        let error;
+        await handler(req({ sub: "2", role: "estudiante" }), mockRes(), (value) => { error = value; });
+        assert.match(error.message, /database unavailable/);
+      } finally { restore(); }
+    });
+  }
+});
+
 test("markRoomRead actualiza cada mensaje y devuelve cero para sala inexistente", async () => {
   const calls = [];
   const restoreRoom = replace(prisma.mensajeSala, "findUnique", async () => ({ id: 5n }));

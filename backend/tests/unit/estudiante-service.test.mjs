@@ -111,6 +111,36 @@ test("notas agrupa periodos, calcula promedios y cuenta estados con cursos sin n
   } finally { restore(); }
 });
 
+test("notas incluye aprobados, redondea promedios y mantiene el estado si faltan bimestres", async () => {
+  const restore = setup({
+    "student.findUnique": { ...baseStudent, seccionId: 8n },
+    "course.findMany": [
+      { id: 10n, codigo: "MAT", cursoCatalogo: { nombre: "Matemática" }, profesor: null },
+      { id: 11n, codigo: "COM", cursoCatalogo: { nombre: "Comunicación" }, profesor: { nombres: "Luz", apellidos: "Sol" } },
+      { id: 12n, codigo: "CIE", cursoCatalogo: { nombre: "Ciencia" }, profesor: null },
+    ],
+    "grade.findMany": [
+      { cursoOfertaId: 10n, nota: 14, periodo: { numero: 1 } },
+      { cursoOfertaId: 10n, nota: 15, periodo: { numero: 4 } },
+      { cursoOfertaId: 11n, nota: 11, periodo: { numero: 2 } },
+      { cursoOfertaId: 12n, nota: 10.5, periodo: { numero: 3 } },
+    ],
+  });
+  try {
+    const result = await buildEstudianteNotas(sid);
+    assert.deepEqual(result.filas.map(({ promedioFinal, estado, profesor }) => [promedioFinal, estado, profesor]), [
+      [14.5, "Aprobado", null], [11, "En riesgo", "Luz Sol"], [10.5, "Desaprobado", null],
+    ]);
+    assert.deepEqual(result.resumen, {
+      promedioGeneral: 11.5,
+      cursosAprobados: 1,
+      cursosEnRiesgo: 1,
+      cursosDesaprobados: 1,
+      totalCursos: 3,
+    });
+  } finally { restore(); }
+});
+
 test("asistencia filtra estado, calcula porcentaje computable y devuelve tutor", async () => {
   const restore = setup();
   try {
@@ -122,6 +152,31 @@ test("asistencia filtra estado, calcula porcentaje computable y devuelve tutor",
     const onlyExcused = await buildEstudianteAsistencia(sid, { estado: "justificada" });
     assert.strictEqual(onlyExcused.resumen.porcentaje, null);
     assert.strictEqual(onlyExcused.resumen.justificadas, 1);
+  } finally { restore(); }
+});
+
+test("asistencia reconoce tardanza, falta, alias asistio y filtro de estado parcial", async () => {
+  const restore = setup({
+    "attendance.findMany": [
+      { id: 10n, fecha: now, presente: true, tardanza: false, justificado: false, observacion: null },
+      { id: 11n, fecha: now, presente: true, tardanza: true, justificado: false, observacion: null },
+      { id: 12n, fecha: now, presente: false, tardanza: false, justificado: false, observacion: null },
+    ],
+  });
+  try {
+    const tardy = await buildEstudianteAsistencia(sid, { estado: "tardanza" });
+    assert.deepEqual(tardy.items.map((item) => item.estado), ["Tardanza"]);
+    assert.equal(tardy.resumen.porcentaje, 100);
+
+    const absent = await buildEstudianteAsistencia(sid, { estado: "falta" });
+    assert.deepEqual(absent.items.map((item) => item.estado), ["Falta"]);
+    assert.equal(absent.resumen.faltas, 1);
+    assert.equal(absent.resumen.porcentaje, 0);
+
+    const alias = await buildEstudianteAsistencia(sid, { estado: "asistio" });
+    assert.deepEqual(alias.items.map((item) => item.estado), ["Asistió"]);
+    const partial = await buildEstudianteAsistencia(sid, { estado: "tard" });
+    assert.deepEqual(partial.items.map((item) => item.estado), ["Tardanza"]);
   } finally { restore(); }
 });
 

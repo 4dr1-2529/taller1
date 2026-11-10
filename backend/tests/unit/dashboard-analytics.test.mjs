@@ -11,7 +11,7 @@ const methods = [
   ["systemConfig", "findUnique"], ["user", "findFirst"],
 ];
 
-function installMocks({ empty = false } = {}) {
+function installMocks({ empty = false, overrides = {}, metrics, metricsUnavailable = false, lmsRows } = {}) {
   const original = new Map();
   const values = {
     "student.count": 4, "teacher.count": 2, "seccion.count": 3, "alert.count": 3,
@@ -64,11 +64,13 @@ function installMocks({ empty = false } = {}) {
       else values[key] = [];
     }
   }
+  Object.assign(values, overrides);
   for (const [model, method] of methods) {
     const key = `${model}.${method}`;
     original.set(key, prisma[model][method]);
     prisma[model][method] = async (args) => {
       if (key === "student.findMany" && args?.select?.resourceEvents) {
+        if (lmsRows) return lmsRows;
         if (empty) return [];
         const day = new Date("2026-05-01T00:00:00Z");
         return [
@@ -81,13 +83,16 @@ function installMocks({ empty = false } = {}) {
     };
   }
   const originalFetch = globalThis.fetch;
-  globalThis.fetch = async () => new Response(JSON.stringify(empty ? {} : {
+  globalThis.fetch = async (url) => {
+    if (metricsUnavailable && String(url).endsWith("/metrics")) throw new Error("ML temporalmente fuera de servicio");
+    return new Response(JSON.stringify(metrics ?? (empty ? {} : {
     data_mode: "real", dataset_version: "2026.1", model_version: "v6",
     best_model: "random_forest", contract_version: "v3", decision_threshold: 0.65,
     risk_thresholds: { medio: 0.41 }, n_features: 7,
     random_forest: { f1_score: 0.8, accuracy: 0.9 }, xgboost: { accuracy: 0.85 },
     feature_importance: { asistencia: 0.6, promedio: 0.4 },
-  }), { status: 200, headers: { "content-type": "application/json" } });
+    })), { status: 200, headers: { "content-type": "application/json" } });
+  };
   return () => {
     for (const [key, fn] of original) {
       const [model, method] = key.split(".");
@@ -150,5 +155,150 @@ test("buildDashboardAnalytics representa sin datos sin inventar promedios o meta
     assert.strictEqual(result.ml.dataMode, null);
     assert.deepStrictEqual(result.modelComparison, []);
     assert.deepStrictEqual(result.featureImportance, []);
+  } finally { restore(); }
+});
+
+test("buildDashboardAnalytics cubre metadata V6, rangos LMS y promedios sin asistencia computable", async () => {
+  const restore = installMocks({
+    overrides: {
+      "student.findMany": [
+        { id: 1n, codigo: "A1", nombres: "Ana", apellidos: "Uno", seccionId: 10n,
+          seccion: { nombre: "A", grado: { numero: 1, nombre: "Primero", nivel: { nombre: "Primaria" } } },
+          predicciones: [{ nivelRiesgo: "alto", score: 80, probabilidadAbandono: 0.81234 }] },
+        { id: 2n, codigo: "B2", nombres: "Beto", apellidos: "Dos", seccionId: 20n,
+          seccion: { nombre: "B", grado: { numero: null, nombre: "2° Secundaria", nivel: null } },
+          predicciones: [{ nivelRiesgo: "medio", score: 50, probabilidadAbandono: null }] },
+        { id: 3n, codigo: "C3", nombres: "Ceci", apellidos: "Tres", seccionId: null,
+          seccion: null, predicciones: [] },
+      ],
+      "grade.groupBy": [{ studentId: 1n, cursoOfertaId: 1n, _avg: { nota: 0 } }],
+      "attendance.findMany": [
+        { studentId: 1n, presente: false, tardanza: true, justificado: false },
+        { studentId: 2n, presente: true, tardanza: false, justificado: true },
+      ],
+    },
+    metrics: {
+      data_mode: "synthetic_scientific", dataset_version: "2026.1", model_version: "v6",
+      best_model: "stacking", contract_version: "v3", decision_threshold: 0.5,
+      risk_thresholds: { bajo: 0.2, medio: 0.5 }, n_features: 7,
+      random_forest: { f1_score: 0.81234 },
+      hist_gradient_boosting: { f1_score: 0.7, accuracy: 0.78 },
+      stacking: { f1_score: 0.9, accuracy: 0.92 },
+      feature_importance: { asistencia: 0.75 },
+    },
+  });
+  try {
+    const result = await buildDashboardAnalytics({ activo: true });
+    assert.equal(result.kpis.avgGrade, 0);
+    assert.equal(result.kpis.avgAttendance, 100);
+    assert.deepEqual(result.riskByGrado, [
+      { grado: "1°", alto: 1, medio: 0, bajo: 0 },
+      { grado: "2°", alto: 0, medio: 1, bajo: 0 },
+    ]);
+    assert.deepEqual(result.lmsActivityByGrado, [
+      { grado: "1°", alta: 1, media: 0, baja: 1, sin: 0 },
+      { grado: "2°", alta: 0, media: 0, baja: 0, sin: 1 },
+    ]);
+    assert.equal(result.ml.experimental, true);
+    assert.equal(result.ml.avgProbability, 0.812);
+    assert.deepEqual(result.ml.prioritized.map((row) => row.studentId), ["1", "2"]);
+    assert.deepEqual(result.modelComparison, [
+      { modelo: "random forest", f1: 81.2, accuracy: 0 },
+      { modelo: "hist gradient boosting", f1: 70, accuracy: 78 },
+      { modelo: "stacking", f1: 90, accuracy: 92 },
+    ]);
+  } finally { restore(); }
+});
+
+test("buildDashboardAnalytics cubre cada nivel de actividad LMS en el límite correcto", async () => {
+  const day = new Date("2026-05-01T00:00:00Z");
+  const lmsRows = [
+    { seccion: { grado: { numero: 3 } }, resourceEvents: Array.from({ length: 20 }, (_, i) => ({ createdAt: new Date(day.getTime() + i * 86400000) })) },
+    { seccion: { grado: { numero: 4 } }, resourceEvents: Array.from({ length: 12 }, (_, i) => ({ createdAt: new Date(day.getTime() + i * 86400000) })) },
+    { seccion: { grado: { numero: 5 } }, resourceEvents: [{ createdAt: day }] },
+    { seccion: { grado: { numero: 6 } }, resourceEvents: [] },
+    { seccion: { grado: { numero: 0 } }, resourceEvents: [{ createdAt: day }] },
+  ];
+  const restore = installMocks({ empty: true, lmsRows });
+  try {
+    const result = await buildDashboardAnalytics({});
+    assert.deepEqual(result.lmsActivityByGrado, [
+      { grado: "3°", alta: 1, media: 0, baja: 0, sin: 0 },
+      { grado: "4°", alta: 0, media: 1, baja: 0, sin: 0 },
+      { grado: "5°", alta: 0, media: 0, baja: 1, sin: 0 },
+      { grado: "6°", alta: 0, media: 0, baja: 0, sin: 1 },
+    ]);
+  } finally { restore(); }
+});
+
+test("buildDashboardAnalytics preserva los KPIs cuando ML no está disponible", async () => {
+  const restore = installMocks({ empty: true, metricsUnavailable: true });
+  try {
+    const result = await buildDashboardAnalytics({});
+    assert.equal(result.ml.metricsAvailable, false);
+    assert.equal(result.ml.dataMode, null);
+    assert.equal(result.ml.datasetVersion, null);
+    assert.deepEqual(result.modelComparison, []);
+    assert.deepEqual(result.featureImportance, []);
+    assert.equal(result.kpis.totalStudents, 0);
+  } finally { restore(); }
+});
+
+test("buildDashboardAnalytics conserva salidas vacías con relaciones y metadatos parciales", async () => {
+  const restore = installMocks({
+    empty: true,
+    overrides: {
+      "student.findMany": [{
+        id: 9n,
+        codigo: "S9",
+        nombres: "Eva",
+        apellidos: "Cruz",
+        seccionId: 90n,
+        seccion: { nombre: "B", grado: { numero: null, nombre: "Inicial", nivel: null } },
+        predicciones: [{ nivelRiesgo: null, score: null, probabilidadAbandono: null }],
+      }],
+      "prediction.findMany": [],
+      "grade.groupBy": [],
+      "attendance.findMany": [
+        { studentId: 9n, presente: false, tardanza: false, justificado: true },
+      ],
+      "alert.findMany": [{ student: { seccion: { nombre: "", grado: { numero: 2 } } } }],
+      "user.findFirst": { nombres: "", apellidos: "", email: null },
+    },
+    lmsRows: [{ seccion: null, resourceEvents: [] }],
+    metrics: {
+      data_mode: "real",
+      dataset_version: 6,
+      model_version: null,
+      best_model: false,
+      contract_version: null,
+      decision_threshold: "0.5",
+      n_features: "7",
+      random_forest: { f1_score: null },
+      xgboost: { f1_score: 0.6134, accuracy: null },
+      feature_importance: null,
+    },
+  });
+  try {
+    const result = await buildDashboardAnalytics({});
+
+    assert.equal(result.kpis.avgGrade, null);
+    assert.equal(result.kpis.avgAttendance, null);
+    assert.equal(result.kpis.directorName, "");
+    assert.equal(result.kpis.directorEmail, null);
+    assert.equal(result.ml.avgProbability, null);
+    assert.equal(result.ml.evaluated, 1);
+    assert.equal(result.ml.prioritized.length, 0);
+    assert.equal(result.ml.datasetVersion, null);
+    assert.equal(result.ml.modelVersion, null);
+    assert.equal(result.ml.nFeatures, null);
+    assert.deepEqual(result.riskByGrado, []);
+    assert.deepEqual(result.attendanceByGrado, []);
+    assert.deepEqual(result.alertsBySalonShort, []);
+    assert.deepEqual(result.lmsActivityByGrado, []);
+    assert.deepEqual(result.modelComparison, [
+      { modelo: "xgboost", f1: 61.3, accuracy: 0 },
+    ]);
+    assert.deepEqual(result.featureImportance, []);
   } finally { restore(); }
 });

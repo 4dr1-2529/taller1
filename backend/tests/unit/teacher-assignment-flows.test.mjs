@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../../src/utils/prisma.js";
-import { createCourseAssignment, assignTutorToSection, deactivateAssignment, assertTeacherAssignmentAccess } from "../../src/services/teacher-assignment.service.js";
+import { createCourseAssignment, assignTutorToSection, deactivateAssignment, assertTeacherAssignmentAccess, syncCourseOffering } from "../../src/services/teacher-assignment.service.js";
 
 function replace(target, key, implementation, restore) {
   const original = target[key]; target[key] = implementation;
@@ -38,6 +38,37 @@ test("createCourseAssignment valida límites y persiste una asignación 2026 con
     assert.strictEqual(calls.offers[0].create.codigo, "MAT-4A");
     assert.deepStrictEqual(calls.enrollments[0].data, [{ studentId: 101n, cursoOfertaId: 90n }]);
     assert.deepStrictEqual(calls.updates[0].data, { cursoOfertaId: 90n });
+  } finally { restore.reverse().forEach((fn) => fn()); }
+});
+
+test("createCourseAssignment sincroniza la tutoría cuando se asigna explícitamente en primero", async () => {
+  const restore = [];
+  const calls = { tutor: [], assignment: [], updates: [] };
+  const section = { id: 40n, gradoId: 1n, nombre: "A", activo: true, grado: { id: 1n, numero: 1, nombre: "Primero", nivel: { codigo: "primaria" } } };
+  const row = { id: 52n, profesorId: 8n, cursoId: 9n, gradoId: 1n, seccionId: 40n, anioLectivoId: 2026n, cursoOfertaId: 90n, esTutor: true, activo: true };
+  const full = { ...row, profesor: { id: 8n, nombres: "Ana", apellidos: "Paz" }, curso: { id: 9n, codigo: "MAT", nombre: "Matemática" }, grado: { id: 1n, numero: 1, nombre: "Primero" }, seccion: { id: 40n, nombre: "A" }, anioLectivo: { id: 2026n, anio: 2026, nombre: "2026" } };
+  const tx = {
+    teacher: { findUnique: async () => ({ id: 8n, activo: true }) },
+    tutorSeccion: { findUnique: async () => null, upsert: async (args) => calls.tutor.push(args) },
+    teacherCourseAssignment: {
+      findMany: async () => [], findFirst: async () => null, findUnique: async () => null,
+      upsert: async (args) => { calls.assignment.push(args); return row; },
+      update: async (args) => calls.updates.push(args), findUniqueOrThrow: async () => full,
+    },
+    cursoCatalogo: { findUniqueOrThrow: async () => ({ codigo: "MAT" }) },
+    course: { upsert: async () => ({ id: 90n }) },
+    matricula: { findMany: async () => [] },
+    enrollment: { createMany: async () => undefined },
+  };
+  replace(prisma.seccion, "findFirst", async () => section, restore);
+  replace(prisma.anioLectivo, "findFirst", async () => ({ id: 2026n, anio: 2026, activo: true }), restore);
+  replace(prisma, "$transaction", async (callback) => callback(tx), restore);
+  try {
+    const result = await createCourseAssignment({ profesorId: "8", cursoId: "9", seccionId: "40", anioLectivoId: "2026", esTutor: true });
+    assert.equal(result.id, "52");
+    assert.equal(calls.tutor.length, 1);
+    assert.equal(calls.assignment[0].create.esTutor, true);
+    assert.deepEqual(calls.updates[0].data, { cursoOfertaId: 90n });
   } finally { restore.reverse().forEach((fn) => fn()); }
 });
 
@@ -94,6 +125,40 @@ test("assignTutorToSection crea tutorías y cursos de la sección activa", async
     assert.equal(calls.offerings[0].create.codigo, "MAT-2B");
     assert.deepEqual(calls.enrollments[0].data, [{ studentId: 101n, cursoOfertaId: 90n }]);
   } finally { restore.reverse().forEach((fn) => fn()); }
+});
+
+test("assignTutorToSection admite un grado sin cursos y devuelve cero asignaciones", async () => {
+  const restore = [];
+  const section = { id: 41n, gradoId: 1n, nombre: "C", activo: true, grado: { id: 1n, numero: 1, nombre: "Primero", nivel: { codigo: "primaria" } } };
+  replace(prisma.seccion, "findFirst", async () => section, restore);
+  replace(prisma.anioLectivo, "findFirst", async () => ({ id: 2026n, anio: 2026, activo: true }), restore);
+  replace(prisma, "$transaction", async (callback) => callback({
+    teacher: { findUnique: async () => ({ id: 8n, activo: true }) },
+    tutorSeccion: { findUnique: async () => null, upsert: async () => undefined },
+    cursoGrado: { findMany: async () => [] },
+  }), restore);
+  try {
+    assert.deepEqual(await assignTutorToSection({ profesorId: "8", seccionId: "41", anioLectivoId: "2026" }), {
+      tutor: true, totalCursos: 0, seccionId: "41",
+    });
+  } finally { restore.reverse().forEach((fn) => fn()); }
+});
+
+test("syncCourseOffering no inscribe estudiantes cuando la asignación está inactiva", async () => {
+  const calls = { matriculas: 0, enrollments: 0, update: null };
+  const assignment = { id: 52n, profesorId: 8n, cursoId: 9n, seccionId: 40n, anioLectivoId: 2026n, activo: false };
+  const section = { id: 40n, nombre: "A", grado: { numero: 4, nombre: "Cuarto", nivel: { codigo: "secundaria" } } };
+  const tx = {
+    cursoCatalogo: { findUniqueOrThrow: async () => ({ codigo: "MAT" }) },
+    course: { upsert: async () => ({ id: 90n }) },
+    teacherCourseAssignment: { update: async (args) => { calls.update = args; } },
+    matricula: { findMany: async () => { calls.matriculas++; return []; } },
+    enrollment: { createMany: async () => { calls.enrollments++; } },
+  };
+  assert.deepEqual(await syncCourseOffering(assignment, section, tx), { id: 90n });
+  assert.equal(calls.matriculas, 0);
+  assert.equal(calls.enrollments, 0);
+  assert.deepEqual(calls.update.data, { cursoOfertaId: 90n });
 });
 
 test("deactivateAssignment revoca la asignación y oferta sin notas históricas; 404 si no existe", async () => {
