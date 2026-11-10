@@ -1,4 +1,4 @@
-# Auditoría local de SonarQube — 10 de noviembre de 2026
+# Auditoría local de SonarQube — 9 de noviembre de 2026
 
 ## Resultado
 
