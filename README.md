@@ -93,26 +93,35 @@ pip install -r machine-learning/requirements.txt
 Verificaciones: `npm run type-check`, `npm run lint`, `npm run test` (unitarios, backend, frontend y ML),
 `npm run coverage` (reportes por backend, frontend y ML), `npm run build`.
 
-## Dataset operativo
+## Dataset vigente: V6
 
-La fuente operativa es exclusivamente el **Data Seed V6**: 275 cuentas sintéticas (1 director,
-24 docentes y 250 estudiantes). El experimento de ML usa un dataset V6 separado, con 225 estudiantes y
-450 observaciones. Ninguno contiene datos institucionales reales ni demuestra la prevalencia real del
-riesgo en la institución. Los generadores y comandos ejecutables del seed de demostración anterior se
-retiraron; el seed estructural de Prisma sigue disponible para preparar roles y catálogos.
+La aplicación usa exclusivamente el **Data Seed V6**: 275 cuentas sintéticas (1 director, 24 docentes y
+250 estudiantes). El experimento de ML usa un dataset V6 independiente, con 225 estudiantes y 450
+observaciones. No son datos institucionales reales y no demuestran la prevalencia del riesgo en la
+institución. El seed estructural de Prisma prepara roles y catálogos; la importación de datos V6 es un
+procedimiento separado.
 
-Valide e importe el dataset V6 con los comandos documentados en
-[`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md). La importación exige configuración explícita y
-no debe ejecutarse contra producción sin el procedimiento aprobado.
+Para comprobar los archivos fuente sin conectarse a una base de datos:
 
-## Estado y limitaciones verificadas (2026-10-20)
+```bash
+npm run db:dataset:validate --workspace=backend
+npm run db:dataset:dry-run --workspace=backend
+```
 
-- Frontend, API y servicio ML desplegados y respondiendo correctamente.
-- SonarCloud activo sobre `main`, con Quality Gate en estado **OK**.
+La importación exige configuración explícita; no debe ejecutarse contra producción sin el procedimiento
+aprobado. El estado y los límites de la verificación están en
+[`docs/ESTADO_ACTUAL_V6.md`](docs/ESTADO_ACTUAL_V6.md).
+
+## Estado verificado localmente (2026-11-10)
+
+- La suite local pasó: backend 603/603, frontend 558/558 y ML 104/104 pruebas.
+- También pasaron `npm run type-check`, `npm run lint` y `npm run build`.
+- En SonarQube local, la cobertura general medida fue **90.0%** (líneas 93.6%, condiciones 77.3%,
+  duplicación 0.7%). El Quality Gate está **OK para código nuevo**; la cobertura global todavía no es 100%.
 - El modelo es **experimental** (`experimental: true`), entrenado solo con datos sintéticos y **sin
   validación científica con estudiantes reales**: es la limitación principal del proyecto.
-- No se han ejecutado pruebas de carga, pentest ni verificación del contenido de la base de datos
-  productiva.
+- La verificación anterior fue local: no confirma el estado actual de los despliegues ni la sincronización
+  de la base de datos productiva. No se han ejecutado pruebas de carga o pentest.
 
 ## Documentación técnica
 
