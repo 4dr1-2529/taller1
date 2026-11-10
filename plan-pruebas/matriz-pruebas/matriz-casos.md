@@ -2,10 +2,9 @@
 
 **Total:** 86 casos · **Fuente:** código real + ejecución pipeline QA local
 
-> **Auditoría V6 — 2026-09-26.** Los casos fueron reformulados contra el sistema vigente: vector de **7 features**
+> **Auditoría V6 — actualización 2026-11-10.** Los casos corresponden al sistema vigente: vector de **7 features**
 > (Stacking V6, contrato 2026-v3), `ROLE_SECTIONS` **20 / 15 / 12** secciones, **57 modelos Prisma** (54 activos + 3
-> legacy `@@ignore`) y scripts de población legacy deshabilitados. Ninguna cifra de la población demo anterior
-> La población de una ejecución histórica no describe el estado actual; la fuente operativa es Data Seed V6.
+> legacy `@@ignore`). La población de referencia es Data Seed V6 (250 estudiantes, 24 docentes y 1 director).
 
 > TC-BE-09 y TC-DB-06 se **revalidaron el 2026-09-26** sobre la BD aislada local `127.0.0.1:33316/blenkir_refactor_test`
 > (39/39 `test:integration`; `POST /matriculas` → 201 con persistencia). Los casos en estado **Observado** conservan
@@ -19,17 +18,17 @@
 | ID | Tipo | Módulo | Funcionalidad | Caso | Entrada | Esperado | Obtenido | Estado | Prioridad | Evidencia | Responsable |
 |----|------|--------|---------------|------|---------|----------|----------|--------|-----------|-----------|-------------|
 
-| TC-BE-01 | Integración | Backend | Health API | GET /api/v1/health sin auth | sin token | HTTP 200 | HTTP 200 (232ms) | Aprobado | Alta | evidencias-finales/api/health.json | QA Senior — plan-pruebas |
-| TC-BE-02 | Caja negra | Auth | Login Director | POST /auth/login director válido | director@blenkir.edu.pe / DEMO_PASSWORD | 200 + JWT | 200 JWT (1165ms) | Aprobado | Alta | evidencias-finales/api/login-director-200.json | QA Senior — plan-pruebas |
+| TC-BE-01 | Integración | Backend | Health API | GET /api/v1/health sin auth | sin token | HTTP 200 | ver api-results.json | Aprobado | Alta | evidencias-finales/api/health.json | QA Senior — plan-pruebas |
+| TC-BE-02 | Caja negra | Auth | Login Director | POST /auth/login director válido | director@blenkir.edu.pe / DEMO_PASSWORD | 200 + JWT | 200 JWT | Aprobado | Alta | evidencias-finales/api/login-director-200.json | QA Senior — plan-pruebas |
 | TC-BE-03 | Caja negra | Auth | Login email inválido | POST /auth/login Zod | {email:x, password:123456} | 400 validación | HTTP 400 | Aprobado | Alta | evidencias-finales/api/login-invalido-400.json | QA Senior — plan-pruebas |
 | TC-BE-04 | Seguridad | Auth | Listar estudiantes sin token | GET /students sin Authorization | sin Bearer | 401 Token requerido | HTTP 401 | Aprobado | Alta | evidencias-finales/api/api-token-ausente-401.json | QA Senior — plan-pruebas |
 | TC-BE-05 | Seguridad | RBAC | Crear estudiante solo admin | POST /students token docente | token docente | 403 Permiso denegado | HTTP 403 | Aprobado | Alta | pruebas-seguridad/evidencias/docente-post-students.json | QA Senior — plan-pruebas |
 | TC-BE-06 | Unitaria | Backend | Envelope respuesta | Formato {success,data} | response helper | {success, message, data} | response.test.mjs PASS | Aprobado | Media | pruebas-unitarias/evidencias/backend-tests.log | QA Senior — plan-pruebas |
-| TC-BE-07 | Caja negra | Dashboard | KPIs director | GET /dashboard/kpis admin | Bearer admin | kpis.byLevel | Evidencia API V6 pendiente de regeneración | Observado | Alta | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
+| TC-BE-07 | Caja negra | Dashboard | KPIs director | GET /dashboard/kpis admin | Bearer admin | kpis.byLevel | evidencia API V6 pendiente de regeneración | Observado | Alta | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
 | TC-BE-08 | Integración | Admin | Export cuentas acceso | GET /admin/cuentas-acceso | admin token | JSON con las cuentas vigentes (usuario + rol), sin hashes ni contraseñas | sin reejecución en la auditoría V6; la cifra histórica de la población demo no aplica | Observado | Media | backend/src/controllers/accounts-export.controller.ts | QA Senior — plan-pruebas |
 | TC-BE-09 | Integración | Auth | Refresh token | POST /auth/refresh | refresh válido | 200 + accessToken nuevo; logout invalida el refresh (401) | 200 y refresh revocado · 39/39 integration tests (BD aislada, 2026-09-26) | Aprobado | Media | evidencias-finales/terminal/integration-refactor-2026-20260926.log | QA Senior — plan-pruebas |
 | TC-BE-10 | Unitaria | Auth | Cambio contraseña débil | changePasswordSchema | newPassword: weak | 400 Zod | schemas.test.ts PASS | Aprobado | Media | pruebas-unitarias/evidencias/backend-tests.log | QA Senior — plan-pruebas |
-| TC-BE-11 | Caja negra | Profesores | Listar profesores | GET /teachers JWT | admin token | 200 lista paginada | Evidencia API V6 pendiente de regeneración | Observado | Media | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
+| TC-BE-11 | Caja negra | Profesores | Listar profesores | GET /teachers JWT | admin token | 200 lista paginada | evidencia API V6 pendiente de regeneración | Observado | Media | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
 | TC-BE-12 | Seguridad | RBAC | Detalle profesor docente | GET /teachers/:id/detail docente | token docente | 403 | HTTP 403 | Aprobado | Media | pruebas-seguridad/evidencias/docente-teacher-detail.json | QA Senior — plan-pruebas |
 | TC-FE-01 | Caja negra | Frontend | Render login | Navegar /login | GET /login | Formulario #login-email | login-pantalla-inicial.png | Aprobado | Alta | evidencias-finales/capturas/login-pantalla-inicial.png | QA Senior — plan-pruebas |
 | TC-FE-02 | Integración | Frontend | Login shell sin F5 | submitLogin director | director creds | URL sin /login | capture-ui director | Aprobado | Alta | evidencias-finales/capturas/login-director-ok.png | QA Senior — plan-pruebas |
@@ -42,8 +41,8 @@
 | TC-FE-09 | Caja negra | Frontend | Toast error login | password incorrecta | wrongpass | error visible | manual / captura | Aprobado | Media | evidencias-finales/capturas/ | QA Senior — plan-pruebas |
 | TC-DB-01 | Caja blanca | Base de datos | Schema Prisma | schema.prisma | 57 modelos (54 activos + 3 legacy con @@ignore) | modelos contados por script | npm run db:count-models → 57 (2026-09-26) | Aprobado | Media | backend/scripts/count-prisma-models.mjs | QA Senior — plan-pruebas |
 | TC-DB-02 | Integración | Base de datos | Seed estructura | npm run db:seed (db:seed:structure) | prisma/seed.ts | Grados, niveles y catálogos | db:seed → tsx prisma/seed.ts | Aprobado | Alta | backend/prisma/seed.ts | QA Senior — plan-pruebas |
-| TC-DB-03 | Validación | Base de datos | Validar dataset V6 | npm run db:dataset:validate | XLSX V6 | `DEFINITIVE_DATASET_VALID=true` (250 estudiantes, 24 docentes, 1 director) | PASS local 2026-11-10 | Aprobado | Alta | backend/scripts/validate-definitive-dataset-2026.mjs | QA Senior — plan-pruebas |
-| TC-DB-04 | Integración | Base de datos | Listado docente | GET /teachers | admin token | 24 docentes de V6 | Evidencia anterior retirada; reejecución en BD aislada V6 pendiente | Observado | Media | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
+| TC-DB-03 | Validación | Base de datos | Validar dataset operativo V6 | npm run db:dataset:validate --workspace=backend | XLSX V6 | DEFINITIVE_DATASET_VALID=true; 250 estudiantes, 24 docentes, 1 director | PASS local 2026-11-10 | Aprobado | Alta | backend/scripts/validate-definitive-dataset-2026.mjs | QA Senior — plan-pruebas |
+| TC-DB-04 | Integración | Base de datos | Listado docente | GET /teachers | admin token | 24 docentes de V6 | evidencia anterior retirada; reejecución en BD aislada V6 pendiente | Observado | Media | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
 | TC-DB-05 | Caja blanca | Base de datos | Períodos académicos 2026 | resolvePeriodoByParam | BD aislada de pruebas | periodo III 2026 activo y evidencia restringida al año 2026 | 39/39 integration tests (2026-09-26) | Aprobado | Media | evidencias-finales/terminal/integration-refactor-2026-20260926.log | QA Senior — plan-pruebas |
 | TC-DB-06 | Integración | Base de datos | Matrícula por sección | POST /matriculas | admin token | 201 + matriculaId | 201 item.id=15 persistida en BD aislada (2026-09-26) | Aprobado | Media | evidencias-finales/api/matricula-post-201-aislado-20260926.json | QA Senior — plan-pruebas |
 | TC-IA-01 | Unitaria | IA | Artefactos del modelo V6 | artifacts/synthetic/ | entrenamiento 2026-09-24 | best_model.joblib + metadata.json + metrics.json | model_version BLENKIR_V6_BIN_20260924 | Aprobado | Alta | machine-learning/artifacts/synthetic/metadata.json | QA Senior — plan-pruebas |
@@ -69,24 +68,24 @@
 | TC-ROL-05 | Unitaria | Roles | Scope profesor secciones | uniqueSectionIds | cursos docente | [10n,20n] | teacher-scope.test.ts | Aprobado | Alta | pruebas-unitarias/evidencias/backend-tests.log | QA Senior — plan-pruebas |
 | TC-INT-01 | Integración | API | Smoke health | fetch /health | local :4000 | 200 | smoke-tests.log | Aprobado | Alta | pruebas-unitarias/evidencias/smoke-tests.log | QA Senior — plan-pruebas |
 | TC-INT-02 | Integración | Predicción | Historial predicciones | GET /predictions | admin token | Historial de predicciones en BD aislada V6 | Evidencia anterior retirada; reejecución V6 pendiente | Observado | Alta | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
-| TC-INT-03 | Integración | Predicción | Predict estudiante real | POST /predict | studentId real | probabilidad+nivel | HTTP 200 nivel=Medio (696ms) | Aprobado | Alta | pruebas-integracion/evidencias/predict-student.json | QA Senior — plan-pruebas |
+| TC-INT-03 | Integración | Predicción | Predict estudiante real | POST /predict | studentId real | probabilidad+nivel | predict-student.json | Aprobado | Alta | pruebas-integracion/evidencias/predict-student.json | QA Senior — plan-pruebas |
 | TC-INT-04 | Integración | Frontend-API | api.predict | PredictionView | runApiPrediction | apiResult.prediction | frontend/src/lib/api.ts | Aprobado | Alta | evidencias-finales/capturas/prediccion-riesgo-alto-ok.png | QA Senior — plan-pruebas |
-| TC-INT-05 | Integración | Backend-BD | Prisma students | listStudents | MySQL | 250 estudiantes V6, items[] paginado | Evidencia anterior retirada; reejecución en BD aislada V6 pendiente | Observado | Alta | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
+| TC-INT-05 | Integración | Backend-BD | Prisma students | listStudents | MySQL | 250 estudiantes V6, items[] paginado | evidencia anterior retirada; reejecución en BD aislada V6 pendiente | Observado | Alta | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
 | TC-INT-06 | Integración | Backend-IA | ml-client predict | FastAPI :5000 | remoto | predicción | smoke ML predict | Aprobado | Alta | pruebas-unitarias/evidencias/smoke-tests.log | QA Senior — plan-pruebas |
 | TC-INT-07 | Integración | Frontend | MlMetricsSection | api.getMlMetrics | admin UI | métricas ML | dashboard director | Aprobado | Media | evidencias-finales/capturas/dashboard-director-ok.png | QA Senior — plan-pruebas |
 | TC-INT-08 | Integración | Auth | JWT en api.ts | Authorization Bearer | post-login | hasToken true | api.ts | Aprobado | Alta | frontend/src/lib/api.ts | QA Senior — plan-pruebas |
 | TC-CN-01 | Caja negra | Login | Pantalla inicial | GET /login | sin auth | branding + campos | login-pantalla-inicial.png | Aprobado | Alta | evidencias-finales/capturas/login-pantalla-inicial.png | QA Senior — plan-pruebas |
 | TC-CN-02 | Caja negra | Dashboard | KPIs director | dashboard director | admin login | kpis.byLevel, riskTrend y modelComparison | captura histórica de la población demo anterior | Observado | Alta | evidencias-finales/capturas/dashboard-director-ok.png | QA Senior — plan-pruebas |
-| TC-CN-03 | Caja negra | Estudiantes | Listado director | StudentsView | admin | tabla paginada | Evidencia API V6 pendiente de regeneración | Observado | Alta | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
+| TC-CN-03 | Caja negra | Estudiantes | Listado director | StudentsView | admin | tabla paginada | estudiantes-listado-director.png | Aprobado | Alta | evidencias-finales/capturas/estudiantes-listado-director.png | QA Senior — plan-pruebas |
 | TC-CN-04 | Caja negra | Profesores | Listado docente | TeachersView | admin | tabla paginada con buscador por nombre, código, especialidad o correo | captura previa al refresh V6; reejecución pendiente | Observado | Alta | evidencias-finales/capturas/profesores-listado.png | QA Senior — plan-pruebas |
-| TC-CN-05 | Caja negra | Cursos | CoursesView | GET /courses | admin | catálogo | HTTP 200 (204ms) | Aprobado | Media | evidencias-finales/api/courses-list.json | QA Senior — plan-pruebas |
-| TC-CN-06 | Caja negra | Notas | GradesView bimestre I | Notas sección | bimestre 1 | notas numéricas | Evidencia API V6 pendiente de regeneración | Observado | Alta | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
+| TC-CN-05 | Caja negra | Cursos | CoursesView | GET /courses | admin | catálogo | cursos-listado.png | Aprobado | Media | evidencias-finales/capturas/cursos-listado.png | QA Senior — plan-pruebas |
+| TC-CN-06 | Caja negra | Notas | GradesView bimestre I | Notas sección | bimestre 1 | notas numéricas | notas-bimestre-1-ok.png | Aprobado | Alta | evidencias-finales/capturas/notas-bimestre-1-ok.png | QA Senior — plan-pruebas |
 | TC-CN-07 | Caja negra | Predicción | Ejecutar predicción | PredictionView | sección + ejecutar | riesgo + % | prediccion-riesgo-alto-ok.png | Aprobado | Alta | evidencias-finales/capturas/prediccion-riesgo-alto-ok.png | QA Senior — plan-pruebas |
-| TC-CN-08 | Caja negra | Alertas | AlertsView director | GET /alerts | admin | lista alertas | Evidencia API V6 pendiente de regeneración | Observado | Alta | Ejecutar QA local contra BD aislada V6 | QA Senior — plan-pruebas |
+| TC-CN-08 | Caja negra | Alertas | AlertsView director | GET /alerts | admin | lista alertas | alertas-listado.png | Aprobado | Alta | evidencias-finales/capturas/alertas-listado.png | QA Senior — plan-pruebas |
 | TC-CN-09 | Caja negra | Reportes | ReportsView exports | Excel/PDF | admin | descarga | reportes-vista-completa.png | Aprobado | Media | evidencias-finales/capturas/reportes-vista-completa.png | QA Senior — plan-pruebas |
 | TC-CN-10 | Caja negra | Configuración | Asignaciones docentes | TeacherAssignmentsView | admin | tutoría | asignaciones-docentes.png | Aprobado | Media | evidencias-finales/capturas/asignaciones-docentes.png | QA Senior — plan-pruebas |
-| TC-CN-PROF-01 | Caja negra | Auth | Login Profesor | POST /auth/login | pro50000001@blenkir.edu.pe | 200 JWT docente | 200 JWT (1087ms) | Aprobado | Alta | evidencias-finales/api/login-profesor-200.json | QA Senior — plan-pruebas |
-| TC-CN-ALU-01 | Caja negra | Auth | Login Alumno | POST /auth/login | mateo.quispe0001@blenkir.edu.pe | 200 JWT estudiante | 200 JWT (1158ms) | Aprobado | Alta | evidencias-finales/api/login-alumno-200.json | QA Senior — plan-pruebas |
+| TC-CN-PROF-01 | Caja negra | Auth | Login Profesor | POST /auth/login | pro50000001@blenkir.edu.pe | 200 JWT docente | login-profesor-200.json | Aprobado | Alta | evidencias-finales/api/login-profesor-200.json | QA Senior — plan-pruebas |
+| TC-CN-ALU-01 | Caja negra | Auth | Login Alumno | POST /auth/login | mateo.quispe0001@blenkir.edu.pe | 200 JWT estudiante | login-alumno-200.json | Aprobado | Alta | evidencias-finales/api/login-alumno-200.json | QA Senior — plan-pruebas |
 | TC-CB-01 | Caja blanca | Validación | gradeSchema inválida | nota: 25 | Zod | safeParse false | schemas.test.ts | Aprobado | Alta | pruebas-unitarias/evidencias/backend-tests.log | QA Senior — plan-pruebas |
 | TC-CB-02 | Caja blanca | Validación | predictSchema vacío | {} | sin studentId | fail | schemas.test.ts | Aprobado | Alta | pruebas-unitarias/evidencias/backend-tests.log | QA Senior — plan-pruebas |
 | TC-CB-03 | Caja blanca | Validación | alertStatus cerrada | status cerrada | enum | fail | schemas.test.ts | Aprobado | Media | pruebas-unitarias/evidencias/backend-tests.log | QA Senior — plan-pruebas |
@@ -98,8 +97,8 @@
 | TC-PERF-04 | Rendimiento | API | Predict IA < 5s | POST /predict | studentId | < 5000ms | avg 563ms | Aprobado | Media | pruebas-rendimiento/evidencias/performance-report.json | QA Senior — plan-pruebas |
 | TC-PERF-05 | Rendimiento | Auth | Login < 2s | POST /auth/login | director | < 2000ms | avg 1836ms | Aprobado | Media | pruebas-rendimiento/evidencias/performance-report.json | QA Senior — plan-pruebas |
 | TC-UAT-01 | Aceptación | Director | CRUD completo | 20 secciones director | director@blenkir.edu.pe | operativos | UAT histórico ejecutado con 14 secciones; reejecución pendiente tras el refresh V6 | Observado | Alta | pruebas-aceptacion/director.md | QA Senior — plan-pruebas |
-| TC-UAT-02 | Aceptación | Profesor | Ámbito salón | profesor dashboard | pro50000001@blenkir.edu.pe | solo sus secciones | HTTP 200 (555ms) | Aprobado | Alta | pruebas-aceptacion/evidencias/profesor-dashboard.json | QA Senior — plan-pruebas |
-| TC-UAT-03 | Aceptación | Estudiante | Datos propios | estudiante me | mateo.quispe0001@blenkir.edu.pe | sin CRUD global | HTTP 200 (18ms) | Aprobado | Alta | pruebas-aceptacion/evidencias/estudiante-me.json | QA Senior — plan-pruebas |
+| TC-UAT-02 | Aceptación | Profesor | Ámbito salón | profesor dashboard | pro50000001@blenkir.edu.pe | solo sus secciones | dashboard-profesor-ok.png | Aprobado | Alta | evidencias-finales/capturas/dashboard-profesor-ok.png | QA Senior — plan-pruebas |
+| TC-UAT-03 | Aceptación | Estudiante | Datos propios | estudiante me | mateo.quispe0001@blenkir.edu.pe | sin CRUD global | dashboard-alumno-ok.png | Aprobado | Alta | evidencias-finales/capturas/dashboard-alumno-ok.png | QA Senior — plan-pruebas |
 | TC-UAT-04 | Aceptación | Profesor | Notas bimestre | GET /profesor/notas | docente token | notas visibles | notas-profesor-bimestre.png | Aprobado | Alta | evidencias-finales/capturas/notas-profesor-bimestre.png | QA Senior — plan-pruebas |
 | TC-UAT-05 | Aceptación | Estudiante | Ver notas propias | Notas UI alumno | estudiante login | solo propias | notas-alumno.png | Aprobado | Alta | evidencias-finales/capturas/notas-alumno.png | QA Senior — plan-pruebas |
 | TC-UAT-06 | Aceptación | Estudiante | Asistencias | Asistencia UI | estudiante login | registro asistencia | asistencia-alumno.png | Aprobado | Media | evidencias-finales/capturas/asistencia-alumno.png | QA Senior — plan-pruebas |
@@ -111,6 +110,6 @@
 | Métrica | Valor |
 |---------|-------|
 | Total casos | 86 |
-| Aprobados | 80 |
-| Observados/Pendientes | 6 |
+| Aprobados | 76 |
+| Observados/Pendientes | 10 |
 | Fallidos | 0 |
