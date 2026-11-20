@@ -194,7 +194,7 @@ test("SPRINT 5 — rotación segura de refresh tokens sobre BD aislada", async t
   });
 
   await t.test("access token expirado o firmado con otro propósito se rechaza", async () => {
-    const a = await login(u3.email, "S5-Rotacion3");
+    const a = await login(u3.email, pwd3);
     const expired = jwt.sign(
       { sub: String(u3.id), email: u3.email, role: "admin", sid: sidOf(a.token) },
       env.JWT_SECRET,

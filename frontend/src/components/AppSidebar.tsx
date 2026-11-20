@@ -184,7 +184,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                   exit={{ opacity: 0 }}
                 >
                   <div className="h-px flex-1 bg-white/10" />
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-orange)]/80">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-300">
                     {group.label}
                   </p>
                   <div className="h-px flex-1 bg-white/10" />
@@ -316,7 +316,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
                     exit={{ opacity: 0, width: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    Salir
+                    Cerrar sesión
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -335,7 +335,7 @@ export function AppSidebar({ sections, activeSection, onSelect, alertCount }: Ap
               transition={{ duration: 0.25 }}
             >
               <div className="flex items-center gap-3">
-                <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--brand-orange)] text-[12px] font-bold text-white shadow-sm ring-1 ring-white/10">
+                <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--brand-orange)] text-[12px] font-bold text-[#172d49] shadow-sm ring-1 ring-white/10">
                   {getSidebarInitials(user.nombres, user.apellidos)}
                 </div>
                 <div className="min-w-0 flex-1">

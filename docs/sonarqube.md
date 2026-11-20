@@ -1,5 +1,13 @@
 # SonarQube
 
+> **Estado al 2026-11-19:** las métricas de SonarCloud descritas abajo son snapshots históricos
+> (última comprobación documentada: 2026-10-20). En esta fecha no se completó un nuevo análisis:
+> la instancia local `http://localhost:9000` no respondió en 5 segundos y no se dispuso de acceso
+> utilizable a SonarCloud. No interpretar los valores históricos como el estado actual del código.
+> La configuración local (`MiProyecto`) permanece en `sonar-project.properties`; la configuración
+> independiente de SonarCloud (`4dr1-2529_taller1`) está en `sonar-project-cloud.properties`.
+> Ambas abarcan backend, frontend, servicio ML, `backend/scripts` y `machine-learning/utils`.
+
 > **Actualización (2026-10-20):** los problemas de New Code descritos en esta página fueron corregidos en
 > `main` por los commits `40d066e` (2026-09-28, corrección de los hallazgos del Quality Gate) y `b0d5cf5`
 > (2026-09-28, corrección de fiabilidad histórica). El estado actual de `main` es **Quality Gate OK**
@@ -48,30 +56,36 @@ Un nuevo análisis de SonarQube Cloud debe confirmar el cierre de los hallazgos 
 
 ## Configuración
 
-Archivo raíz: `sonar-project.properties`
+La configuración local usa el proyecto `MiProyecto` en `http://localhost:9000`:
 
 ```bash
 sonar-scanner -Dproject.settings=sonar-project.properties
 ```
 
+SonarCloud usa un archivo separado. Definir `SONAR_TOKEN` únicamente en el entorno del proceso
+(GitHub Actions Secret o variable de entorno local); no guardar el token en propiedades, logs ni Git:
+
+```bash
+sonar-scanner -Dproject.settings=sonar-project-cloud.properties
+```
+
 ## Fuentes analizadas
 
-- `backend/src`
+- `backend/src`, `backend/scripts`
 - `frontend/src`
-- `machine-learning/app`, `machine-learning/utils`
+- `machine-learning/app`, `machine-learning/train.py`, `machine-learning/utils`
 
 ## Exclusiones
 
 | Patrón | Motivo |
 |--------|--------|
-| `**/node_modules/**` | Dependencias |
-| `**/.next/**`, `**/dist/**`, `**/build/**` | Artefactos compilados |
-| `**/coverage/**` | Reportes de cobertura |
-| `**/venv/**`, `**/.venv/**`, `**/__pycache__/**` | Python virtualenv |
-| `**/.env`, `**/.env.*` | Secretos |
-| `**/*.joblib`, `**/models/**` | Modelos ML binarios |
-| `**/prisma/migrations/**` | SQL generado |
-| `**/database/**` | Scripts SQL de referencia |
+| `**/node_modules/**`, `**/.next/**`, `**/dist/**`, `**/coverage/**` | Dependencias, builds y reportes generados; no son código fuente mantenido. |
+
+El alcance es explícito mediante `sonar.sources`, por lo que los directorios de documentación,
+material histórico, pruebas y datos no se incorporan como fuentes. No se excluyen globalmente
+`scripts`, Markdown ni migraciones del sensor de secretos. Los archivos de entorno no se añaden a
+las fuentes y los secretos nunca deben guardarse en Git. La lista exacta de cobertura y exclusiones
+está en `sonar-project-cloud.properties` y `sonar-project.properties`.
 
 ## Checklist antes del análisis
 

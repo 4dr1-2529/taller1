@@ -7,6 +7,19 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci-test-password
+          MYSQL_DATABASE: blenkir_refactor_test
+        ports:
+          - 33316:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci-test-password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,10 +38,27 @@ jobs:
       - name: Test backend
         env:
           NODE_ENV: test
-          DATABASE_URL: postgresql://localhost:5432/ci
+          DATABASE_URL: mysql://root:ci-test-password@127.0.0.1:33316/blenkir_refactor_test
         run: |
           export JWT_SECRET="$(openssl rand -hex 32)"
           npm run test:backend
+      - name: Apply MySQL migrations
+        env:
+          DATABASE_URL: mysql://root:ci-test-password@127.0.0.1:33316/blenkir_refactor_test
+        run: npm run prisma:migrate:deploy
+      - name: Test MySQL integrations
+        env:
+          NODE_ENV: test
+          DATABASE_URL: mysql://root:ci-test-password@127.0.0.1:33316/blenkir_refactor_test
+        run: |
+          export JWT_SECRET="$(openssl rand -hex 32)"
+          export S5_ROT_PWD1="$(openssl rand -hex 16)Aa1!"
+          export S5_ROT_PWD2="$(openssl rand -hex 16)Bb2!"
+          export S5_ROT_PWD3="$(openssl rand -hex 16)Cc3!"
+          npm run test:integration --workspace=backend
+          npm run test:integration:roles --workspace=backend
+          npm run test:integration:ratelimit --workspace=backend
+          npm run test:integration:refresh --workspace=backend
       - name: Test frontend
         run: npm run test --workspace=frontend
       - run: >-

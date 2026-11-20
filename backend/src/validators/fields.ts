@@ -57,12 +57,18 @@ export const observacionField = z.preprocess(
 export const courseNameField = personNameField;
 
 export const gradeField = z.coerce
-  .number({ invalid_type_error: "Solo se permiten números" })
+  .number({
+    error: (issue) =>
+      issue.code === "invalid_type" ? "Solo se permiten números" : undefined,
+  })
   .min(0, "La nota debe estar entre 0 y 20")
   .max(GRADE_MAX, "La nota debe estar entre 0 y 20");
 
 export const percentageField = z.coerce
-  .number({ invalid_type_error: "Solo se permiten números" })
+  .number({
+    error: (issue) =>
+      issue.code === "invalid_type" ? "Solo se permiten números" : undefined,
+  })
   .min(0, "La asistencia debe estar entre 0 y 100")
   .max(PERCENT_MAX, "La asistencia debe estar entre 0 y 100");
 
@@ -75,7 +81,7 @@ export const securePasswordField = z
   .regex(/\d/, "Debe incluir al menos un número");
 
 export const roleCodeField = z.enum(["admin", "docente", "estudiante"], {
-  errorMap: () => ({ message: "Rol inválido. Use admin, docente o estudiante" }),
+  error: "Rol inválido. Use admin, docente o estudiante",
 });
 
 export const optionalEmailField = z

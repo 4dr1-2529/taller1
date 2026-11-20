@@ -191,7 +191,8 @@ test("login screen renders its full sign-in experience and authenticated loading
 
 test("login actions validate credentials, toggle password visibility and handle success or rejection", async () => {
   const oldWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
-  const fakeWindow = { location: { href: "", replace: () => undefined } };
+  let replacedPath = "";
+  const fakeWindow = { location: { href: "", replace: (path: string) => { replacedPath = path; } } };
   Object.defineProperty(globalThis, "window", { configurable: true, value: fakeWindow });
   const attempts: string[][] = [];
   const validAuth = { ...authFor("admin"), isAuthenticated: false, login: async (email: string, password: string) => { attempts.push([email, password]); } };
@@ -212,7 +213,7 @@ test("login actions validate credentials, toggle password visibility and handle 
     (successForm!.props as { onSubmit: (event: { preventDefault(): void }) => void }).onSubmit({ preventDefault() {} });
     await new Promise(resolve => setTimeout(resolve, 0));
     assert.deepEqual(attempts, [["ana@example.test", "ValidPass1!"]]);
-    assert.equal(fakeWindow.location.href, "/");
+    assert.equal(replacedPath, "/");
 
     const rejectedAuth = { ...validAuth, login: async () => { throw new Error("Cuenta bloqueada"); } };
     const rejected = withHookHarness(rejectedAuth, undefined, () => LoginPage(), successState);

@@ -1,5 +1,5 @@
 import type { Response } from "express";
-import type { ZodError } from "zod";
+import { z, type ZodError } from "zod";
 
 export type ApiSuccessBody<T = Record<string, unknown>> = {
   success: true;
@@ -21,7 +21,10 @@ export type ApiErrorBody = {
 export const DEFAULT_SUCCESS_MESSAGE = "Operación realizada correctamente";
 
 export function zodToFieldErrors(err: ZodError): FieldError[] {
-  const flat = err.flatten();
+  const flat = z.flattenError(err) as {
+    formErrors: string[];
+    fieldErrors: Record<string, string[]>;
+  };
   const list: FieldError[] = [];
   for (const [field, msgs] of Object.entries(flat.fieldErrors)) {
     if (msgs?.length) {

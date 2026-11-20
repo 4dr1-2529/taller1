@@ -45,6 +45,6 @@ function run(args) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
-run(["-m", "coverage", "run", "--branch", "--source=app,train", "-m", "pytest", "tests"]);
+run(["-m", "coverage", "run", "--branch", "--source=app,train,utils", "-m", "pytest", "tests"]);
 run(["-m", "coverage", "xml", "-o", "coverage.xml"]);
 run(["-m", "coverage", "report"]);

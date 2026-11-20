@@ -2,6 +2,12 @@
 
 El proyecto local es `MiProyecto`, en http://localhost:9000. La documentación de SonarCloud en `docs/sonarqube.md` describe otro análisis y no acredita el estado de esta instancia.
 
+La configuración local incluye `backend/scripts` y `machine-learning/utils`; sus informes de cobertura
+se generan con los runners versionados de `scripts/run-backend-coverage.mjs` y
+`scripts/run-ml-coverage.mjs`. La configuración local no define ni reemplaza el proyecto Cloud.
+En 2026-11-19 el endpoint local no respondió al sondeo de estado (5 s); no hay un análisis nuevo
+ni un Quality Gate vigente que pueda atribuirse a esta ejecución.
+
 ## Ejecución
 
 1. Iniciar Docker Desktop y el contenedor existente: `docker start sonarqube`.

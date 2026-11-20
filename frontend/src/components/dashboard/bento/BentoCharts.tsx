@@ -156,7 +156,7 @@ export function BentoCourseBars({ rows }: { rows: CourseRiskRow[] }) {
         <h3 className="text-base font-semibold text-[var(--text-primary)]">Riesgo por curso</h3>
         <p className="text-xs text-[var(--text-secondary)]">Promedio por matrícula activa</p>
       </header>
-      <div className="mt-4 overflow-x-auto table-scroll"><div className="h-80" style={{ minWidth: Math.max(280, rows.length * 96) }}>
+      <div className="mt-4 overflow-x-auto table-scroll" role="region" aria-label="Gráfico de riesgo por curso, desplazable horizontalmente" tabIndex={/* NOSONAR - WCAG 2.1.1 exige foco por teclado en esta región desplazable. */ 0}><div className="h-80" style={{ minWidth: Math.max(280, rows.length * 96) }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={rows} margin={{ top: 16, right: 16, bottom: 45, left: -15 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />

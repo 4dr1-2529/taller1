@@ -56,7 +56,7 @@ export default function LoginPage() {
     try {
       await login(email.trim().toLowerCase(), password);
       toast.success("Sesión iniciada correctamente");
-      window.location.href = "/";
+      window.location.replace("/");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al iniciar sesión");
     } finally {
