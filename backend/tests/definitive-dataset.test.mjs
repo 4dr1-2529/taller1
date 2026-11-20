@@ -23,6 +23,13 @@ test("V6: reject source flags, counter, duplicate identity and bad references", 
     assert.throws(() => validateSource(d), /DATASET_INVALID/);
   }
 });
+test("V6: reject malformed emails without backtracking regex", () => {
+  for (const email of ["missing-at.example", "@domain.example", "name@domain", "name@@domain.example", "name@domain. example", `${"a".repeat(10000)}@${"b".repeat(10000)}`]) {
+    const d = structuredClone(source);
+    d.Usuarios[0].email = email;
+    assert.throws(() => validateSource(d), /DATASET_INVALID/);
+  }
+});
 test("V6: reject fabricated history, altered aggregates, future events, scope bypass", () => {
   for (const mutate of [d => { d.tables.academicHistory[0].promedio = -1; }, d => { d.tables.lmsEvent[0].createdAt = "2027-01-01"; }, d => { d.tables.enrollment[0].estado = "activa"; }, d => { d.tables.grade[0].nota = 21; }, d => { d.tables.prediction.push({}); }]) {
     const d = structuredClone(dataset); mutate(d);

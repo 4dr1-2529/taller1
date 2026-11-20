@@ -64,7 +64,9 @@ export function validateSource(d) {
   for (const u of d.Usuarios) {
     check(typeof u.dni_sintetico === "string" && /^\d{8}$/.test(u.dni_sintetico), "DNI string format");
     check(typeof u.telefono_sintetico === "string" && /^9\d{8}$/.test(u.telefono_sintetico), "phone string format");
-    check(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.email) && !u.email.includes(".demo"), "email format");
+    const emailAt = u.email.indexOf("@");
+    const emailDot = u.email.lastIndexOf(".");
+    check(emailAt > 0 && emailAt === u.email.lastIndexOf("@") && emailDot > emailAt + 1 && emailDot < u.email.length - 1 && !/\s/.test(u.email) && !u.email.includes(".demo"), "email format");
     check(u.activo === true && u.password_env === envs[u.rol], "user active/role/password reference");
     check(typeof u.nombres === "string" && u.nombres.length > 0 && u.nombres.length <= 80 && u.apellidos.length > 0 && u.apellidos.length <= 80, "identity length");
   }
